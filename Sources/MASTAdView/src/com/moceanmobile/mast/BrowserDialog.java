@@ -20,6 +20,7 @@ package com.moceanmobile.mast;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -32,9 +33,11 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+@SuppressLint("NewApi")
 public class BrowserDialog extends Dialog {
 	static private final int ActionBarHeightDp = 50;
 
@@ -64,8 +67,15 @@ public class BrowserDialog extends Dialog {
 		actionBarLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
 		LinearLayout actionBar = new LinearLayout(getContext());
 		actionBar.setId(100);
-		actionBar.setBackgroundDrawable(new BitmapDrawable(resources,
-				BrowserDialog.class.getResourceAsStream("/ib_bg_down.png")));
+
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
+			actionBar.setBackground(new BitmapDrawable(resources,
+					BrowserDialog.class.getResourceAsStream("/ib_bg_down.png")));
+		} else {
+			actionBar.setBackgroundDrawable(new BitmapDrawable(resources,
+					BrowserDialog.class.getResourceAsStream("/ib_bg_down.png")));
+		}
+
 		actionBar.setOrientation(LinearLayout.HORIZONTAL);
 		actionBar.setVerticalGravity(Gravity.CENTER_VERTICAL);
 		contentView.addView(actionBar, actionBarLayoutParams);
@@ -74,9 +84,10 @@ public class BrowserDialog extends Dialog {
 				0, LayoutParams.WRAP_CONTENT, 1);
 
 		ImageButton imageButton = new ImageButton(getContext());
-		imageButton.setImageDrawable(new BitmapDrawable(resources,
-				BrowserDialog.class
-						.getResourceAsStream("/ib_close_regular.png")));
+		imageButton.setScaleType(ScaleType.FIT_XY);
+		imageButton.setImageDrawable(new BitmapDrawable(
+				resources,
+				BrowserDialog.class.getResourceAsStream("/ib_close_regular.png")));
 		imageButton.setOnClickListener(new Button.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -86,9 +97,10 @@ public class BrowserDialog extends Dialog {
 		actionBar.addView(imageButton, imageButtonLayout);
 
 		backButton = new ImageButton(getContext());
-		backButton.setImageDrawable(new BitmapDrawable(resources,
-				BrowserDialog.class
-						.getResourceAsStream("/ib_arrow_left_regular.png")));
+		backButton.setImageDrawable(new BitmapDrawable(
+				resources,
+				BrowserDialog.class.getResourceAsStream("/ib_arrow_left_regular.png")));
+		backButton.setScaleType(ScaleType.FIT_XY);
 		backButton.setEnabled(false);
 		backButton.setOnClickListener(new Button.OnClickListener() {
 			@Override
@@ -99,9 +111,10 @@ public class BrowserDialog extends Dialog {
 		actionBar.addView(backButton, imageButtonLayout);
 
 		forwardButton = new ImageButton(getContext());
-		forwardButton.setImageDrawable(new BitmapDrawable(resources,
-				BrowserDialog.class
-						.getResourceAsStream("/ib_arrow_right_regular.png")));
+		forwardButton.setImageDrawable(new BitmapDrawable(
+				resources,
+				BrowserDialog.class.getResourceAsStream("/ib_arrow_right_regular.png")));
+		forwardButton.setScaleType(ScaleType.FIT_XY);
 		forwardButton.setEnabled(false);
 		forwardButton.setOnClickListener(new Button.OnClickListener() {
 			@Override
@@ -112,9 +125,10 @@ public class BrowserDialog extends Dialog {
 		actionBar.addView(forwardButton, imageButtonLayout);
 
 		imageButton = new ImageButton(getContext());
-		imageButton.setImageDrawable(new BitmapDrawable(resources,
-				BrowserDialog.class
-						.getResourceAsStream("/ib_apdate_regular.png")));
+		imageButton.setScaleType(ScaleType.FIT_XY);
+		imageButton.setImageDrawable(new BitmapDrawable(
+				resources,
+				BrowserDialog.class.getResourceAsStream("/ib_apdate_regular.png")));
 		imageButton.setOnClickListener(new Button.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -124,9 +138,10 @@ public class BrowserDialog extends Dialog {
 		actionBar.addView(imageButton, imageButtonLayout);
 
 		imageButton = new ImageButton(getContext());
-		imageButton.setImageDrawable(new BitmapDrawable(resources,
-				BrowserDialog.class
-						.getResourceAsStream("/ib_window_regular.png")));
+		imageButton.setScaleType(ScaleType.FIT_XY);
+		imageButton.setImageDrawable(new BitmapDrawable(
+				resources,
+				BrowserDialog.class.getResourceAsStream("/ib_window_regular.png")));
 		imageButton.setOnClickListener(new Button.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -143,15 +158,16 @@ public class BrowserDialog extends Dialog {
 		webView = new android.webkit.WebView(getContext());
 		webView.setWebViewClient(new Client());
 		// To set normal zooming level of webView.
-		webView.getSettings().setLoadWithOverviewMode(true);
-		webView.getSettings().setUseWideViewPort(true);
+		webView.getSettings()
+				.setLoadWithOverviewMode(true);
+		webView.getSettings()
+				.setUseWideViewPort(true);
 		contentView.addView(webView, webViewLayoutParams);
 
 		setOnDismissListener(new OnDismissListener() {
 			@Override
 			public void onDismiss(DialogInterface dialog) {
-				BrowserDialog.this.handler
-						.browserDialogDismissed(BrowserDialog.this);
+				BrowserDialog.this.handler.browserDialogDismissed(BrowserDialog.this);
 			}
 		});
 	}
@@ -182,7 +198,8 @@ public class BrowserDialog extends Dialog {
 		public boolean shouldOverrideUrlLoading(WebView view, String url) {
 			try {
 				URI uri = new URI(url);
-				String scheme = uri.getScheme().toLowerCase();
+				String scheme = uri.getScheme()
+									.toLowerCase();
 				if (scheme.startsWith("http")) {
 					return false;
 				}

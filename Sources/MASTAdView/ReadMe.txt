@@ -1,4 +1,4 @@
-Welcome to the Mocean Mobile SDK package for Android, version 3.2
+Welcome to the Mocean Mobile SDK package for Android, version 3.3
 /*
  * PubMatic Inc. (�PubMatic�) CONFIDENTIAL
  * Unpublished Copyright (c) 2006-2014 PubMatic, All Rights Reserved.
@@ -58,3 +58,16 @@ For instance: age=10&age15.
 -Now we have separate methods for adding default parameters and custom parameters as stated below.
 -getAdRequestParameters() - This method is used for adding default parameters in the request like size_x,size_y etc.
 -getAdRequestCustomParameters() - This method is used for adding custom network parameters defined by user, in the request.  
+
+
+ 3.3
+
+- Native Ads Support : Native Ads allow a publisher to display ads using the same structure and 
+formatting of their site/app without hindering the user's experience. 
+Such ads grasp the attention of the visitors more than the traditional ad formats. 
+Mocean and PubMatic now allow publishers to serve native ads on their inventory.
+- Added support for client side mediation in SDK. 
+- Added Library projects for adapters of FacebookAudienceNetwork and MoPub SDK.
+- New class added for Native Ads support: MASTNativeAd
+- Added new Ad request listener for Native ads: NativeRequestListener
+

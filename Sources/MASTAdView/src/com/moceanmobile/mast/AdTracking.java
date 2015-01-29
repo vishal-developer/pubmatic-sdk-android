@@ -1,5 +1,5 @@
 /*
- * PubMatic Inc. (“PubMatic”) CONFIDENTIAL
+ * PubMatic Inc. (Â“PubMaticÂ”) CONFIDENTIAL
  * Unpublished Copyright (c) 2006-2014 PubMatic, All Rights Reserved.
  *
  * NOTICE:  All information contained herein is, and remains the property of PubMatic. The intellectual and technical concepts contained
@@ -25,28 +25,48 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
-public class AdTracking
-{
-	public static void invokeTrackingUrl(int timeout, String url, String userAgent)
-	{
-		try
-		{
+import android.util.Log;
+
+public class AdTracking {
+	public static void invokeTrackingUrl(int timeout, String url,
+			String userAgent) {
+		try {
 			HttpParams httpParams = new BasicHttpParams();
-			HttpConnectionParams.setConnectionTimeout(httpParams, timeout * 1000);
+			HttpConnectionParams.setConnectionTimeout(httpParams,
+					timeout * 1000);
 
 			HttpClient httpClient = new DefaultHttpClient(httpParams);
-			
+
 			HttpGet httpGet = new HttpGet(url);
 			httpGet.setHeader("User-Agent", userAgent);
 			httpGet.setHeader("Connection", "close");
-			
+
 			HttpResponse httpResponse = httpClient.execute(httpGet);
-			
+
 			httpResponse.getStatusLine();
+		} catch (Exception ex) {
+
 		}
-		catch (Exception ex)
-		{
-			
+	}
+
+	/**
+	 * This method is used for sending multiple trackers typically in case of
+	 * Native ads or may be Video Ads.
+	 * 
+	 * @param timeout
+	 * @param urls
+	 *            - tracker urls
+	 * @param userAgent
+	 */
+	public static void invokeTrackingUrl(int timeout, String[] urls,
+			String userAgent) {
+
+		if (urls != null) {
+			for (String url : urls) {
+				Log.d("AdTracker", "Sending tracker : " + url);
+
+				invokeTrackingUrl(timeout, url, userAgent);
+			}
 		}
 	}
 }

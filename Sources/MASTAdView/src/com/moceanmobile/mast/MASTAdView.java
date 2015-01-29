@@ -33,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.collections4.map.MultiValueMap;
 import org.json.JSONObject;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -92,6 +93,7 @@ import com.moceanmobile.mast.mraid.WebView;
  * To obtain ad content simply place an ad view of appropriate size in the view
  * tree, set the zone and call update.
  */
+@SuppressLint("NewApi")
 public class MASTAdView extends ViewGroup {
 	public enum LogLevel {
 		None, Error, Debug,
@@ -261,7 +263,8 @@ public class MASTAdView extends ViewGroup {
 
 	private void initUserAgent() {
 		if (TextUtils.isEmpty(userAgent)) {
-			userAgent = getWebView().getSettings().getUserAgentString();
+			userAgent = getWebView().getSettings()
+									.getUserAgentString();
 
 			if (TextUtils.isEmpty(userAgent)) {
 				userAgent = Defaults.USER_AGENT;
@@ -721,7 +724,8 @@ public class MASTAdView extends ViewGroup {
 			throw new IllegalArgumentException("criteria or provider required");
 
 		locationManager = (LocationManager) MASTAdView.this.getContext()
-				.getSystemService(Context.LOCATION_SERVICE);
+															.getSystemService(
+																	Context.LOCATION_SERVICE);
 		if (locationManager != null) {
 			try {
 				if (provider == null) {
@@ -800,13 +804,15 @@ public class MASTAdView extends ViewGroup {
 
 		if (updateInterval > 0) {
 			adUpdateIntervalFuture = Background.getExecutor()
-					.scheduleAtFixedRate(new Runnable() {
-						@Override
-						public void run() {
-							internalUpdate();
-						}
+												.scheduleAtFixedRate(
+														new Runnable() {
+															@Override
+															public void run() {
+																internalUpdate();
+															}
 
-					}, 0, updateInterval, TimeUnit.SECONDS);
+														}, 0, updateInterval,
+														TimeUnit.SECONDS);
 		}
 
 		if (force) {
@@ -928,45 +934,45 @@ public class MASTAdView extends ViewGroup {
 		int size_y = getHeight();
 		if (isInterstitial()) {
 			DisplayMetrics displayMetrics = Resources.getSystem()
-					.getDisplayMetrics();
+														.getDisplayMetrics();
 			size_x = displayMetrics.widthPixels;
 			size_y = displayMetrics.heightPixels;
 		}
 		boolean isX = false, isY = false;
 		if (adRequestDefaultParameters.size() > 0) {
-			for (Map.Entry<String, String> entry : adRequestDefaultParameters
-					.entrySet()) {
-				if (entry.getKey().equals("size_x")) {
+			for (Map.Entry<String, String> entry : adRequestDefaultParameters.entrySet()) {
+				if (entry.getKey()
+							.equals("size_x")) {
 					isX = true;
 				}
-				if (entry.getKey().equals("size_y")) {
+				if (entry.getKey()
+							.equals("size_y")) {
 					isY = true;
 				}
 			}
 			if (!isX)
-				adRequestDefaultParameters
-						.put("size_x", String.valueOf(size_x));
+				adRequestDefaultParameters.put("size_x", String.valueOf(size_x));
 			if (!isY)
-				adRequestDefaultParameters
-						.put("size_y", String.valueOf(size_y));
+				adRequestDefaultParameters.put("size_y", String.valueOf(size_y));
 		} else {
 			adRequestDefaultParameters.put("size_x", String.valueOf(size_x));
 			adRequestDefaultParameters.put("size_y", String.valueOf(size_y));
 		}
 		try {
-			TelephonyManager tm = (TelephonyManager) getContext()
-					.getSystemService(Context.TELEPHONY_SERVICE);
+			TelephonyManager tm = (TelephonyManager) getContext().getSystemService(
+					Context.TELEPHONY_SERVICE);
 			String networkOperator = tm.getNetworkOperator();
 			if ((networkOperator != null) && (networkOperator.length() > 3)) {
 				String mcc = networkOperator.substring(0, 3);
 				String mnc = networkOperator.substring(3);
 				boolean isMCC = false, isMNC = false;
-				for (Map.Entry<String, String> entry : adRequestDefaultParameters
-						.entrySet()) {
-					if (entry.getKey().equals("mcc")) {
+				for (Map.Entry<String, String> entry : adRequestDefaultParameters.entrySet()) {
+					if (entry.getKey()
+								.equals("mcc")) {
 						isMCC = true;
 					}
-					if (entry.getKey().equals("mnc")) {
+					if (entry.getKey()
+								.equals("mnc")) {
 						isMNC = true;
 					}
 				}
@@ -991,8 +997,7 @@ public class MASTAdView extends ViewGroup {
 			adRequestDefaultParameters.put("test", "1");
 		}
 		addCustomParams(args);
-		for (Map.Entry<String, String> entry : adRequestDefaultParameters
-				.entrySet()) {
+		for (Map.Entry<String, String> entry : adRequestDefaultParameters.entrySet()) {
 			Log.d("Test",
 					"Default params : " + entry.getValue() + entry.getKey());
 			args.put(entry.getKey(), entry.getValue());
@@ -1023,31 +1028,40 @@ public class MASTAdView extends ViewGroup {
 			Map.Entry mapEntry = (Map.Entry) it.next();
 			list = (List) adRequestCustomParameters.get(mapEntry.getKey());
 			for (int j = 0; j < list.size(); j++) {
-				if (mapEntry.getKey().equals("size_x")) {
+				if (mapEntry.getKey()
+							.equals("size_x")) {
 					args.remove("size_x");
 				}
-				if (mapEntry.getKey().equals("size_y")) {
+				if (mapEntry.getKey()
+							.equals("size_y")) {
 					args.remove("size_y");
 				}
-				if (mapEntry.getKey().equals("mcc")) {
+				if (mapEntry.getKey()
+							.equals("mcc")) {
 					args.remove("mcc");
 				}
-				if (mapEntry.getKey().equals("mnc")) {
+				if (mapEntry.getKey()
+							.equals("mnc")) {
 					args.remove("mnc");
 				}
-				if (mapEntry.getKey().equals("ua")) {
+				if (mapEntry.getKey()
+							.equals("ua")) {
 					args.remove("ua");
 				}
-				if (mapEntry.getKey().equals("version")) {
+				if (mapEntry.getKey()
+							.equals("version")) {
 					args.remove("version");
 				}
-				if (mapEntry.getKey().equals("count")) {
+				if (mapEntry.getKey()
+							.equals("count")) {
 					args.remove("count");
 				}
-				if (mapEntry.getKey().equals("key")) {
+				if (mapEntry.getKey()
+							.equals("key")) {
 					args.remove("key");
 				}
-				if (mapEntry.getKey().equals("zone")) {
+				if (mapEntry.getKey()
+							.equals("zone")) {
 					args.remove("zone");
 				}
 			}
@@ -1074,14 +1088,15 @@ public class MASTAdView extends ViewGroup {
 		performAdTracking();
 
 		if (durationSeconds > 0) {
-			interstitialDelayFuture = Background.getExecutor().schedule(
-					new Runnable() {
-						@Override
-						public void run() {
-							closeInterstitial();
-						}
+			interstitialDelayFuture = Background.getExecutor()
+												.schedule(new Runnable() {
+													@Override
+													public void run() {
+														closeInterstitial();
+													}
 
-					}, durationSeconds, TimeUnit.SECONDS);
+												}, durationSeconds,
+														TimeUnit.SECONDS);
 		}
 	}
 
@@ -1196,8 +1211,7 @@ public class MASTAdView extends ViewGroup {
 				if (content.contains("client_side_external_campaign") == true) {
 					try {
 						if (requestListener != null) {
-							ThirdPartyDescriptor thirdPartyDescriptor = ThirdPartyDescriptor
-									.parseDescriptor(content);
+							ThirdPartyDescriptor thirdPartyDescriptor = ThirdPartyDescriptor.parseDescriptor(content);
 
 							requestListener.onReceivedThirdPartyRequest(this,
 									thirdPartyDescriptor.getProperties(),
@@ -1427,7 +1441,11 @@ public class MASTAdView extends ViewGroup {
 		}
 
 		if (webView != null) {
-			webView.clearView();
+			if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+				webView.loadUrl("about:blank");
+			} else {
+				webView.clearView();
+			}
 			webView.clearHistory();
 		}
 
@@ -1442,8 +1460,7 @@ public class MASTAdView extends ViewGroup {
 		mraidTwoPartWebView.setHandler(webViewHandler);
 		mraidTwoPartBridgeInit = false;
 		mraidTwoPartBridge = new Bridge(mraidTwoPartWebView, mraidBridgeHandler);
-		mraidTwoPartBridge.setExpandProperties(mraidBridge
-				.getExpandProperties());
+		mraidTwoPartBridge.setExpandProperties(mraidBridge.getExpandProperties());
 
 		mraidTwoPartWebView.loadUrl(url, mraidTwoPartBridge);
 
@@ -1587,8 +1604,7 @@ public class MASTAdView extends ViewGroup {
 						public void browserDialogDismissed(
 								BrowserDialog browserDialog) {
 							if (internalBrowserListener != null) {
-								internalBrowserListener
-										.onInternalBrowserDismissed(MASTAdView.this);
+								internalBrowserListener.onInternalBrowserDismissed(MASTAdView.this);
 							}
 						}
 
@@ -1686,10 +1702,8 @@ public class MASTAdView extends ViewGroup {
 		if (featureSupportHandler != null) {
 			smsSupported = featureSupportHandler.shouldSupportSMS(this);
 			phoneSupported = featureSupportHandler.shouldSupportPhone(this);
-			calendarSupported = featureSupportHandler
-					.shouldSupportCalendar(this);
-			pictureSupported = featureSupportHandler
-					.shouldSupportStorePicture(this);
+			calendarSupported = featureSupportHandler.shouldSupportCalendar(this);
+			pictureSupported = featureSupportHandler.shouldSupportStorePicture(this);
 		}
 
 		if (smsSupported == null) {
@@ -1702,9 +1716,8 @@ public class MASTAdView extends ViewGroup {
 		}
 		if (calendarSupported == null) {
 			calendarSupported = ((getContext().checkCallingOrSelfPermission(
-					android.Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED) && (getContext()
-					.checkCallingOrSelfPermission(
-							android.Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED));
+					android.Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED) && (getContext().checkCallingOrSelfPermission(
+					android.Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED));
 		}
 		if (pictureSupported == null) {
 			pictureSupported = getContext().checkCallingOrSelfPermission(
@@ -1726,7 +1739,7 @@ public class MASTAdView extends ViewGroup {
 		boolean viewable = webView.isShown();
 
 		DisplayMetrics displayMetrics = Resources.getSystem()
-				.getDisplayMetrics();
+													.getDisplayMetrics();
 		View rootView = getRootView();
 
 		float defaultWidthPx = getWidth();
@@ -1746,8 +1759,7 @@ public class MASTAdView extends ViewGroup {
 
 		int[] webViewScreenLocation = new int[2];
 		if ((state == State.Resized) && (mraidResizeLayout != null)) {
-			RelativeLayout.LayoutParams webViewLayoutParams = (RelativeLayout.LayoutParams) webView
-					.getLayoutParams();
+			RelativeLayout.LayoutParams webViewLayoutParams = (RelativeLayout.LayoutParams) webView.getLayoutParams();
 			webViewScreenLocation[0] = webViewLayoutParams.leftMargin;
 			webViewScreenLocation[1] = webViewLayoutParams.topMargin;
 		} else {
@@ -1815,11 +1827,9 @@ public class MASTAdView extends ViewGroup {
 			mraidOriginalOrientation = activity.getRequestedOrientation();
 		}
 
-		OrientationProperties orientationProperties = mraidBridge
-				.getOrientationProperties();
+		OrientationProperties orientationProperties = mraidBridge.getOrientationProperties();
 
-		ForceOrientation forceOrientation = orientationProperties
-				.getForceOrientation();
+		ForceOrientation forceOrientation = orientationProperties.getForceOrientation();
 		switch (forceOrientation) {
 		case Portrait:
 			activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -1836,7 +1846,7 @@ public class MASTAdView extends ViewGroup {
 		} else {
 			if (forceOrientation == ForceOrientation.None) {
 				int currentOrientation = activity.getResources()
-						.getConfiguration().orientation;
+													.getConfiguration().orientation;
 
 				switch (currentOrientation) {
 				case Configuration.ORIENTATION_PORTRAIT:
@@ -1879,7 +1889,8 @@ public class MASTAdView extends ViewGroup {
 			switch (mraidBridge.getState()) {
 			case Default:
 				if (placementType == PlacementType.Interstitial) {
-					if (mraidBridge.getExpandProperties().useCustomClose() == false) {
+					if (mraidBridge.getExpandProperties()
+									.useCustomClose() == false) {
 						showCloseButton();
 					}
 					return;
@@ -1889,8 +1900,7 @@ public class MASTAdView extends ViewGroup {
 			case Expanded:
 				// When expanded use the built in button or the custom one, else
 				// nothing else.
-				ExpandProperties expandProperties = mraidBridge
-						.getExpandProperties();
+				ExpandProperties expandProperties = mraidBridge.getExpandProperties();
 				if (mraidTwoPartExpand && mraidTwoPartBridgeInit
 						&& (mraidTwoPartBridge != null)) {
 					expandProperties = mraidTwoPartBridge.getExpandProperties();
@@ -1919,24 +1929,23 @@ public class MASTAdView extends ViewGroup {
 			return;
 		}
 
-		closeButtonFuture = Background.getExecutor().schedule(new Runnable() {
-			@Override
-			public void run() {
-				showCloseButton();
-			}
+		closeButtonFuture = Background.getExecutor()
+										.schedule(new Runnable() {
+											@Override
+											public void run() {
+												showCloseButton();
+											}
 
-		}, closeButtonDelay, TimeUnit.SECONDS);
+										}, closeButtonDelay, TimeUnit.SECONDS);
 	}
 
 	// main thread
-	@SuppressWarnings("deprecation")
 	private void showCloseButton() {
 		Drawable closeButtonDrawable = closeButtonCustomDrawable;
 
 		if (closeButtonDrawable == null) {
 			try {
-				InputStream is = WebView.class
-						.getResourceAsStream("/close_button.png");
+				InputStream is = WebView.class.getResourceAsStream("/close_button.png");
 				closeButtonDrawable = new BitmapDrawable(getResources(), is);
 				// ((BitmapDrawable)
 				// closeButtonDrawable).setGravity(Gravity.CENTER);
@@ -1968,8 +1977,12 @@ public class MASTAdView extends ViewGroup {
 				return;
 
 			case Resized:
-				// Supporting API8 and higher. Avoiding reflection for now.
-				mraidResizeCloseArea.setBackgroundDrawable(closeButtonDrawable);
+				// Supporting API8 and higher.
+				if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
+					mraidResizeCloseArea.setBackground(closeButtonDrawable);
+				} else {
+					mraidResizeCloseArea.setBackgroundDrawable(closeButtonDrawable);
+				}
 				return;
 			}
 		}
@@ -2008,7 +2021,7 @@ public class MASTAdView extends ViewGroup {
 
 		@Override
 		public void webViewPageFinished(WebView webView) {
-			if (mraidBridge.webView == webView) {
+			if ((mraidBridge != null) && (mraidBridge.webView == webView)) {
 				initMRAIDBridge(mraidBridge);
 			} else if ((mraidTwoPartBridge != null)
 					&& (mraidTwoPartBridge.webView == webView)) {
@@ -2307,7 +2320,7 @@ public class MASTAdView extends ViewGroup {
 			}
 
 			DisplayMetrics displayMetrics = Resources.getSystem()
-					.getDisplayMetrics();
+														.getDisplayMetrics();
 			int screenWidth = pxToDp(displayMetrics.widthPixels);
 			int screenHeight = pxToDp(displayMetrics.heightPixels);
 
@@ -2322,8 +2335,7 @@ public class MASTAdView extends ViewGroup {
 			int y = currentY + resizeProperties.getOffsetY();
 			int width = resizeProperties.getWidth();
 			int height = resizeProperties.getHeight();
-			Consts.CustomClosePosition customClosePosition = resizeProperties
-					.getCustomClosePosition();
+			Consts.CustomClosePosition customClosePosition = resizeProperties.getCustomClosePosition();
 
 			if ((width >= screenWidth) && (height >= screenHeight)) {
 				bridge.sendErrorMessage(
@@ -2447,8 +2459,8 @@ public class MASTAdView extends ViewGroup {
 			runOnUiThread(new Runnable() {
 				public void run() {
 					Activity activity = getActivity();
-					ViewGroup windowDecorView = (ViewGroup) activity
-							.getWindow().getDecorView();
+					ViewGroup windowDecorView = (ViewGroup) activity.getWindow()
+																	.getDecorView();
 
 					RelativeLayout.LayoutParams webViewLayoutParams = new RelativeLayout.LayoutParams(
 							widthPx, heightPx);
@@ -2461,24 +2473,22 @@ public class MASTAdView extends ViewGroup {
 							Integer.MIN_VALUE, Integer.MIN_VALUE);
 
 					if (mraidResizeLayout == null) {
-						ViewGroup webViewParent = (ViewGroup) webView
-								.getParent();
+						ViewGroup webViewParent = (ViewGroup) webView.getParent();
 						if (webViewParent != null) {
 							webViewParent.removeView(webView);
 						}
 
 						mraidResizeCloseArea = new View(getContext());
 						mraidResizeCloseArea.setBackgroundColor(0x00000000);
-						mraidResizeCloseArea
-								.setOnClickListener(new OnClickListener() {
-									@Override
-									public void onClick(View v) {
-										if (v != mraidResizeCloseArea)
-											return;
+						mraidResizeCloseArea.setOnClickListener(new OnClickListener() {
+							@Override
+							public void onClick(View v) {
+								if (v != mraidResizeCloseArea)
+									return;
 
-										mraidBridgeHandler.mraidClose(bridge);
-									}
-								});
+								mraidBridgeHandler.mraidClose(bridge);
+							}
+						});
 
 						mraidResizeLayout = new RelativeLayout(getContext());
 						mraidResizeLayout.addView(webView, webViewLayoutParams);
@@ -2551,13 +2561,15 @@ public class MASTAdView extends ViewGroup {
 
 				if (jsonEvent.has("start")) {
 					String value = jsonEvent.getString("start");
-					long time = dateFormat.parse(value).getTime();
+					long time = dateFormat.parse(value)
+											.getTime();
 					intent.putExtra("beginTime", time);
 				}
 
 				if (jsonEvent.has("end")) {
 					String value = jsonEvent.getString("end");
-					long time = dateFormat.parse(value).getTime();
+					long time = dateFormat.parse(value)
+											.getTime();
 					intent.putExtra("endTime", time);
 				}
 
@@ -2583,8 +2595,7 @@ public class MASTAdView extends ViewGroup {
 							getContext().startActivity(intent);
 
 							if (activityListener != null) {
-								activityListener
-										.onLeavingApplication(MASTAdView.this);
+								activityListener.onLeavingApplication(MASTAdView.this);
 							}
 						} else {
 							logEvent(
@@ -2645,11 +2656,10 @@ public class MASTAdView extends ViewGroup {
 									String errorMessage = "Error saving picture to device.";
 
 									try {
-										String insertedUrl = MediaStore.Images.Media
-												.insertImage(getContext()
-														.getContentResolver(),
-														bitmap, "AdImage",
-														"Image created by rich media ad.");
+										String insertedUrl = MediaStore.Images.Media.insertImage(
+												getContext().getContentResolver(),
+												bitmap, "AdImage",
+												"Image created by rich media ad.");
 										if (TextUtils.isEmpty(insertedUrl)) {
 											bridge.sendErrorMessage(
 													errorMessage,
@@ -2679,7 +2689,23 @@ public class MASTAdView extends ViewGroup {
 	}
 
 	private class AdRequestHandler implements AdRequest.Handler {
+		/*
+		 * Deprecating these methods as these methods are public and may be
+		 * accidentally called by the user causing unexpected behavior.
+		 * 
+		 * The access modifier will be changed to protected or default in the
+		 * future so that the user will not be able to see these methods and
+		 * will not be able to invoke these.
+		 */
 		@Override
+		@Deprecated
+		/**
+		 * 
+		 * @param request
+		 * @param exception
+		 * 
+		 * @deprecated - Do not use this method. It is being used internally.
+		 */
 		public void adRequestFailed(AdRequest request, Exception exception) {
 			if (request != adRequest)
 				return;
@@ -2694,6 +2720,15 @@ public class MASTAdView extends ViewGroup {
 		}
 
 		@Override
+		@Deprecated
+		/**
+		 * 
+		 * @param request
+		 * @param errorCode
+		 * @param errorMessage
+		 * 
+		 * @deprecated - Do not use this method. It is being used internally.
+		 */
 		public void adRequestError(AdRequest request, String errorCode,
 				String errorMessage) {
 			if (request != adRequest)
@@ -2704,7 +2739,8 @@ public class MASTAdView extends ViewGroup {
 			}
 
 			LogLevel logLevel = LogLevel.Error;
-			if (String.valueOf(404).equals(errorCode)) {
+			if (String.valueOf(404)
+						.equals(errorCode)) {
 				logLevel = LogLevel.Debug;
 			}
 
@@ -2715,6 +2751,14 @@ public class MASTAdView extends ViewGroup {
 		}
 
 		@Override
+		@Deprecated
+		/**
+		 * 
+		 * @param request
+		 * @param adDescriptor
+		 * 
+		 * @deprecated - Do not use this method. It is being used internally.
+		 */
 		public void adRequestCompleted(AdRequest request,
 				AdDescriptor adDescriptor) {
 			if (request != adRequest)
@@ -2763,8 +2807,7 @@ public class MASTAdView extends ViewGroup {
 				@Override
 				public void onClick(View v) {
 					if (activityListener != null) {
-						if (activityListener
-								.onCloseButtonClick(MASTAdView.this) == true) {
+						if (activityListener.onCloseButtonClick(MASTAdView.this) == true) {
 							return;
 						}
 					}
@@ -2968,9 +3011,8 @@ public class MASTAdView extends ViewGroup {
 
 	private final boolean intentAvailable(Intent intent) {
 		PackageManager packageManager = getContext().getPackageManager();
-		List<ResolveInfo> resolveInfoList = packageManager
-				.queryIntentActivities(intent,
-						PackageManager.MATCH_DEFAULT_ONLY);
+		List<ResolveInfo> resolveInfoList = packageManager.queryIntentActivities(
+				intent, PackageManager.MATCH_DEFAULT_ONLY);
 		if ((resolveInfoList != null) && (resolveInfoList.isEmpty() == false)) {
 			return true;
 		}
@@ -3009,11 +3051,13 @@ public class MASTAdView extends ViewGroup {
 
 		int statusBarHeightDp = 25;
 		if (rootView != null) {
-			int resourceId = rootView.getResources().getIdentifier(
-					"status_bar_height", "dimen", "android");
+			int resourceId = rootView.getResources()
+										.getIdentifier("status_bar_height",
+												"dimen", "android");
 			if (resourceId > 0)
 				statusBarHeightDp = pxToDp(rootView.getResources()
-						.getDimensionPixelSize(resourceId));
+													.getDimensionPixelSize(
+															resourceId));
 		}
 
 		return statusBarHeightDp;
@@ -3021,14 +3065,14 @@ public class MASTAdView extends ViewGroup {
 
 	public static int pxToDp(float px) {
 		DisplayMetrics displayMetrics = Resources.getSystem()
-				.getDisplayMetrics();
+													.getDisplayMetrics();
 		int dp = (int) (px / displayMetrics.density + .5f);
 		return dp;
 	}
 
 	public static int dpToPx(int dp) {
 		DisplayMetrics displayMetrics = Resources.getSystem()
-				.getDisplayMetrics();
+													.getDisplayMetrics();
 		int px = (int) (dp * displayMetrics.density + .5f);
 		return px;
 	}

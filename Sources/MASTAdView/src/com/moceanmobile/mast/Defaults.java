@@ -19,7 +19,7 @@ package com.moceanmobile.mast;
 
 public class Defaults
 {
-	public static final String SDK_VERSION = "3.2";
+	public static final String SDK_VERSION = "3.3";
 	
 	// This is used if the WebView's value returned is empty.
 	public static final String USER_AGENT = "MASTAdView/" + SDK_VERSION + " (Android)";

@@ -6,7 +6,7 @@
 
     <uses-sdk
         android:minSdkVersion="8"
-        android:targetSdkVersion="18" />
+        android:targetSdkVersion="20" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.SEND_SMS" />
@@ -71,7 +71,7 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_advanced_list" >
         </activity>
-		<activity
+        <activity
             android:name="com.moceanmobile.mast.samples.AdvancedListNative"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_advanced_list_native" >
@@ -135,6 +135,15 @@
             android:name="com.moceanmobile.mast.samples.WebViewTest"
             android:label="@string/title_activity_web_view_test" >
         </activity>
+        <activity
+            android:name="com.moceanmobile.mast.samples.NativeActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="@string/title_activity_native" >
+        </activity>
+        <!-- Required for MoPub Native SDK -->
+        <activity
+            android:name="com.mopub.common.MoPubBrowser"
+            android:configChanges="keyboardHidden|orientation" />
     </application>
 
 </manifest>

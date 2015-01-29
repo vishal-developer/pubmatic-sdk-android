@@ -1,5 +1,5 @@
 /*
- * PubMatic Inc. (“PubMatic”) CONFIDENTIAL
+ * PubMatic Inc. (ï¿½PubMaticï¿½) CONFIDENTIAL
  * Unpublished Copyright (c) 2006-2014 PubMatic, All Rights Reserved.
  *
  * NOTICE:  All information contained herein is, and remains the property of PubMatic. The intellectual and technical concepts contained
