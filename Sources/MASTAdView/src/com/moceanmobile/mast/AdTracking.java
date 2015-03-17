@@ -28,25 +28,31 @@ import org.apache.http.params.HttpParams;
 import android.util.Log;
 
 public class AdTracking {
-	public static void invokeTrackingUrl(int timeout, String url,
-			String userAgent) {
-		try {
-			HttpParams httpParams = new BasicHttpParams();
-			HttpConnectionParams.setConnectionTimeout(httpParams,
-					timeout * 1000);
+	public static void invokeTrackingUrl(final int timeout, final String url,
+			final String userAgent) {
+		new Thread(new Runnable() {
+			// Thread to stop network calls on the UI thread
+			public void run() {
+				try {
+					HttpParams httpParams = new BasicHttpParams();
+					HttpConnectionParams.setConnectionTimeout(httpParams,
+							timeout * 1000);
 
-			HttpClient httpClient = new DefaultHttpClient(httpParams);
+					HttpClient httpClient = new DefaultHttpClient(httpParams);
 
-			HttpGet httpGet = new HttpGet(url);
-			httpGet.setHeader("User-Agent", userAgent);
-			httpGet.setHeader("Connection", "close");
+					HttpGet httpGet = new HttpGet(url);
+					httpGet.setHeader("User-Agent", userAgent);
+					httpGet.setHeader("Connection", "close");
 
-			HttpResponse httpResponse = httpClient.execute(httpGet);
+					HttpResponse httpResponse = httpClient.execute(httpGet);
 
-			httpResponse.getStatusLine();
-		} catch (Exception ex) {
+					httpResponse.getStatusLine();
+				} catch (Exception ex) {
 
-		}
+				}
+			}
+		}).start();
+
 	}
 
 	/**
