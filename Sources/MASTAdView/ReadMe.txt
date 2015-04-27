@@ -1,6 +1,6 @@
 Welcome to the Mocean Mobile SDK package for Android, version 3.3
 /*
- * PubMatic Inc. (�PubMatic�) CONFIDENTIAL
+ * PubMatic Inc. ("PubMatic") CONFIDENTIAL
  * Unpublished Copyright (c) 2006-2014 PubMatic, All Rights Reserved.
  *
  * NOTICE:  All information contained herein is, and remains the property of PubMatic. The intellectual and technical concepts contained
@@ -18,12 +18,16 @@ Welcome to the Mocean Mobile SDK package for Android, version 3.3
 
 Release Notes:
 
+------
 3.1.0
+------
 
 - Updated code base with new interface.
 - Animated GIF and images now render on a native ImageView view.
 
+------
 3.1.1
+------
 
 - Updating expand dialog to properly handle clicks when using full screen image or
   text (non-web based ad creatives) for interstitial ads.
@@ -31,7 +35,9 @@ Release Notes:
 - Updated tracking logic to cover proper cases of tracking (when view is made visible).
 
 
+------
 3.1.2
+------
 
 - Updating URL handling for non-HTTP/S links and the internal browser.  The browser
   will now only be invoked with HTTP/S URLs and internally open new HTTP/S URLs.  Any
@@ -46,7 +52,10 @@ Release Notes:
 - Adding validation to third party ad descriptors that attempts to ensure image and
   text ads are rendered natively only if it appears the server's parsing was proper.
   
+
+------
  3.2
+------
  
 Issues Fixed :  
 -Issue related to improper scaling of webView has been fixed. Now webView is scaling properly as expected.
@@ -60,7 +69,9 @@ For instance: age=10&age15.
 -getAdRequestCustomParameters() - This method is used for adding custom network parameters defined by user, in the request.  
 
 
+------
  3.3
+------
 
 - Native Ads Support : Native Ads allow a publisher to display ads using the same structure and 
 formatting of their site/app without hindering the user's experience. 
@@ -70,4 +81,34 @@ Mocean and PubMatic now allow publishers to serve native ads on their inventory.
 - Added Library projects for adapters of FacebookAudienceNetwork and MoPub SDK.
 - New class added for Native Ads support: MASTNativeAd
 - Added new Ad request listener for Native ads: NativeRequestListener
+
+
+------
+3.3.1
+------
+
+- Refracted code to avoid Network operations on main UI thread and handled the crashes during AdTracking.
+
+
+------
+ 3.4
+------
+
+Native:
+- Changes in SDK to support OpenRTB Dynamic Native Ads API Specification (Version 1)
+Link: http://www.iab.net/media/file/OpenRTB-Native-Ads-Specification-1_0-Final.pdf
+- Major code change for Native Ad serving to support OpenRTB Native ads specification.
+- Changed request and response methods for Native ads.
+- Use addNativeAssetRequestList() or addNativeAssetRequest() methods from MASTNativeAd class to request for Native assets.
+- On ad response, assets can be retreived using getNativeAssets() method.
+- Refer to NativeActivity.java in Samples application for sample implementation of Native ads.
+- Changes in mediation adapters for MoPub and FacebookAudienceNetwork as per OpenRTB native ads specification.
+
+
+Banner:
+- No code changes.
+
+Interstitial:
+- No code changes.
+
 
