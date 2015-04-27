@@ -1,18 +1,28 @@
 /*
- * PubMatic Inc. (�PubMatic�) CONFIDENTIAL
- * Unpublished Copyright (c) 2006-2014 PubMatic, All Rights Reserved.
- *
- * NOTICE:  All information contained herein is, and remains the property of PubMatic. The intellectual and technical concepts contained
- * herein are proprietary to PubMatic and may be covered by U.S. and Foreign Patents, patents in process, and are protected by trade secret or copyright law.
- * Dissemination of this information or reproduction of this material is strictly forbidden unless prior written permission is obtained
- * from PubMatic.  Access to the source code contained herein is hereby forbidden to anyone except current PubMatic employees, managers or contractors who have executed 
- * Confidentiality and Non-disclosure agreements explicitly covering such access.
- *
- * The copyright notice above does not evidence any actual or intended publication or disclosure  of  this source code, which includes  
- * information that is confidential and/or proprietary, and is a trade secret, of  PubMatic.   ANY REPRODUCTION, MODIFICATION, DISTRIBUTION, PUBLIC  PERFORMANCE, 
- * OR PUBLIC DISPLAY OF OR THROUGH USE  OF THIS  SOURCE CODE  WITHOUT  THE EXPRESS WRITTEN CONSENT OF PubMatic IS STRICTLY PROHIBITED, AND IN VIOLATION OF APPLICABLE 
- * LAWS AND INTERNATIONAL TREATIES.  THE RECEIPT OR POSSESSION OF  THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS  
- * TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.                
+ * PubMatic Inc. ("PubMatic") CONFIDENTIAL Unpublished Copyright (c) 2006-2014
+ * PubMatic, All Rights Reserved.
+ * 
+ * NOTICE: All information contained herein is, and remains the property of
+ * PubMatic. The intellectual and technical concepts contained herein are
+ * proprietary to PubMatic and may be covered by U.S. and Foreign Patents,
+ * patents in process, and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material is
+ * strictly forbidden unless prior written permission is obtained from PubMatic.
+ * Access to the source code contained herein is hereby forbidden to anyone
+ * except current PubMatic employees, managers or contractors who have executed
+ * Confidentiality and Non-disclosure agreements explicitly covering such
+ * access.
+ * 
+ * The copyright notice above does not evidence any actual or intended
+ * publication or disclosure of this source code, which includes information
+ * that is confidential and/or proprietary, and is a trade secret, of PubMatic.
+ * ANY REPRODUCTION, MODIFICATION, DISTRIBUTION, PUBLIC PERFORMANCE, OR PUBLIC
+ * DISPLAY OF OR THROUGH USE OF THIS SOURCE CODE WITHOUT THE EXPRESS WRITTEN
+ * CONSENT OF PubMatic IS STRICTLY PROHIBITED, AND IN VIOLATION OF APPLICABLE
+ * LAWS AND INTERNATIONAL TREATIES. THE RECEIPT OR POSSESSION OF THIS SOURCE
+ * CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS TO
+ * REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR
+ * SELL ANYTHING THAT IT MAY DESCRIBE, IN WHOLE OR IN PART.
  */
 
 package com.moceanmobile.mast;
@@ -32,191 +42,178 @@ import android.view.ViewGroup.LayoutParams;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
-@SuppressLint("NewApi")
 public class BrowserDialog extends Dialog {
-	static private final int ActionBarHeightDp = 50;
+    static private final int ActionBarHeightDp = 40;
 
-	private final Handler handler;
-	private String url = null;
-	private ImageButton backButton = null;
-	private ImageButton forwardButton = null;
-	private android.webkit.WebView webView = null;
+    private final Handler handler;
+    private String url = null;
+    private ImageView backButton = null;
+    private ImageView forwardButton = null;
+    private android.webkit.WebView webView = null;
 
-	@SuppressWarnings("deprecation")
-	public BrowserDialog(Context context, String url, Handler handler) {
-		super(context, android.R.style.Theme_Black_NoTitleBar);
+    public BrowserDialog(Context context, String url, Handler handler) {
+        super(context, android.R.style.Theme_Black_NoTitleBar);
 
-		this.url = url;
-		this.handler = handler;
+        this.url = url;
+        this.handler = handler;
 
-		Resources resources = getContext().getResources();
+        Resources resources = getContext().getResources();
 
-		LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
-				LayoutParams.MATCH_PARENT);
-		RelativeLayout contentView = new RelativeLayout(getContext());
-		contentView.setBackgroundColor(0xffffffff);
-		setContentView(contentView, layoutParams);
+        LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        RelativeLayout contentView = new RelativeLayout(getContext());
+        contentView.setBackgroundColor(0xffffffff);
+        setContentView(contentView, layoutParams);
 
-		RelativeLayout.LayoutParams actionBarLayoutParams = new RelativeLayout.LayoutParams(
-				LayoutParams.MATCH_PARENT, MASTAdView.dpToPx(ActionBarHeightDp));
-		actionBarLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-		LinearLayout actionBar = new LinearLayout(getContext());
-		actionBar.setId(100);
+        RelativeLayout.LayoutParams actionBarLayoutParams = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,
+                MASTAdView.dpToPx(ActionBarHeightDp));
+        actionBarLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        LinearLayout actionBar = new LinearLayout(getContext());
+        actionBar.setId(100);
 
-		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
-			actionBar.setBackground(new BitmapDrawable(resources,
-					BrowserDialog.class.getResourceAsStream("/ib_bg_down.png")));
-		} else {
-			actionBar.setBackgroundDrawable(new BitmapDrawable(resources,
-					BrowserDialog.class.getResourceAsStream("/ib_bg_down.png")));
-		}
+        actionBar.setBackgroundColor(0xFF1A1A1A);
 
-		actionBar.setOrientation(LinearLayout.HORIZONTAL);
-		actionBar.setVerticalGravity(Gravity.CENTER_VERTICAL);
-		contentView.addView(actionBar, actionBarLayoutParams);
+        actionBar.setOrientation(LinearLayout.HORIZONTAL);
+        actionBar.setVerticalGravity(Gravity.CENTER_VERTICAL);
+        contentView.addView(actionBar, actionBarLayoutParams);
 
-		LinearLayout.LayoutParams imageButtonLayout = new LinearLayout.LayoutParams(
-				0, LayoutParams.WRAP_CONTENT, 1);
+        @SuppressWarnings("static-access")
+        LinearLayout.LayoutParams imageButtonLayout = new LinearLayout.LayoutParams(layoutParams.MATCH_PARENT,
+                LayoutParams.MATCH_PARENT, 1);
+        imageButtonLayout.setMargins(2,4,2,2);
+        ScaleType imageScaleType = ScaleType.FIT_CENTER;
 
-		ImageButton imageButton = new ImageButton(getContext());
-		imageButton.setScaleType(ScaleType.FIT_XY);
-		imageButton.setImageDrawable(new BitmapDrawable(
-				resources,
-				BrowserDialog.class.getResourceAsStream("/ib_close_regular.png")));
-		imageButton.setOnClickListener(new Button.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				BrowserDialog.this.dismiss();
-			}
-		});
-		actionBar.addView(imageButton, imageButtonLayout);
+        ImageView imageButton = new ImageView(getContext());
+        imageButton.setScaleType(imageScaleType);
+        imageButton.setImageDrawable(new BitmapDrawable(resources, BrowserDialog.class
+                .getResourceAsStream("/ic_action_cancel.png")));
+        imageButton.setBackgroundColor(getContext().getResources().getColor(android.R.color.background_dark));
+        imageButton.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                BrowserDialog.this.dismiss();
+            }
+        });
+        actionBar.addView(imageButton, imageButtonLayout);
 
-		backButton = new ImageButton(getContext());
-		backButton.setImageDrawable(new BitmapDrawable(
-				resources,
-				BrowserDialog.class.getResourceAsStream("/ib_arrow_left_regular.png")));
-		backButton.setScaleType(ScaleType.FIT_XY);
-		backButton.setEnabled(false);
-		backButton.setOnClickListener(new Button.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				webView.goBack();
-			}
-		});
-		actionBar.addView(backButton, imageButtonLayout);
+        backButton = new ImageView(getContext());
+        backButton.setImageDrawable(new BitmapDrawable(resources, BrowserDialog.class
+                .getResourceAsStream("/ic_action_back.png")));
+        backButton.setBackgroundColor(getContext().getResources().getColor(android.R.color.background_dark));
+        backButton.setScaleType(imageScaleType);
+        backButton.setEnabled(false);
+        backButton.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                webView.goBack();
+            }
+        });
+        actionBar.addView(backButton, imageButtonLayout);
 
-		forwardButton = new ImageButton(getContext());
-		forwardButton.setImageDrawable(new BitmapDrawable(
-				resources,
-				BrowserDialog.class.getResourceAsStream("/ib_arrow_right_regular.png")));
-		forwardButton.setScaleType(ScaleType.FIT_XY);
-		forwardButton.setEnabled(false);
-		forwardButton.setOnClickListener(new Button.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				webView.goForward();
-			}
-		});
-		actionBar.addView(forwardButton, imageButtonLayout);
+        forwardButton = new ImageView(getContext());
+        forwardButton.setImageDrawable(new BitmapDrawable(resources, BrowserDialog.class
+                .getResourceAsStream("/ic_action_forward.png")));
+        forwardButton.setBackgroundColor(getContext().getResources().getColor(android.R.color.background_dark));
+        forwardButton.setScaleType(imageScaleType);
+        forwardButton.setEnabled(false);
+        forwardButton.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                webView.goForward();
+            }
+        });
+        actionBar.addView(forwardButton, imageButtonLayout);
 
-		imageButton = new ImageButton(getContext());
-		imageButton.setScaleType(ScaleType.FIT_XY);
-		imageButton.setImageDrawable(new BitmapDrawable(
-				resources,
-				BrowserDialog.class.getResourceAsStream("/ib_apdate_regular.png")));
-		imageButton.setOnClickListener(new Button.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				webView.reload();
-			}
-		});
-		actionBar.addView(imageButton, imageButtonLayout);
+        imageButton = new ImageView(getContext());
+        imageButton.setScaleType(imageScaleType);
+        imageButton.setImageDrawable(new BitmapDrawable(resources, BrowserDialog.class
+                .getResourceAsStream("/ic_action_refresh.png")));
+        imageButton.setBackgroundColor(getContext().getResources().getColor(android.R.color.background_dark));
+        imageButton.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                webView.reload();
+            }
+        });
+        actionBar.addView(imageButton, imageButtonLayout);
 
-		imageButton = new ImageButton(getContext());
-		imageButton.setScaleType(ScaleType.FIT_XY);
-		imageButton.setImageDrawable(new BitmapDrawable(
-				resources,
-				BrowserDialog.class.getResourceAsStream("/ib_window_regular.png")));
-		imageButton.setOnClickListener(new Button.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				BrowserDialog.this.handler.browserDialogOpenUrl(
-						BrowserDialog.this, webView.getUrl(), true);
-			}
-		});
-		actionBar.addView(imageButton, imageButtonLayout);
+        imageButton = new ImageView(getContext());
+        imageButton.setScaleType(imageScaleType);
+        imageButton.setImageDrawable(new BitmapDrawable(resources, BrowserDialog.class
+                .getResourceAsStream("/ic_action_web_site.png")));
+        imageButton.setBackgroundColor(getContext().getResources().getColor(android.R.color.background_dark));
+        imageButton.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                BrowserDialog.this.handler.browserDialogOpenUrl(BrowserDialog.this, webView.getUrl(), true);
+            }
+        });
+        actionBar.addView(imageButton, imageButtonLayout);
 
-		RelativeLayout.LayoutParams webViewLayoutParams = new RelativeLayout.LayoutParams(
-				LayoutParams.MATCH_PARENT, 0);
-		webViewLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-		webViewLayoutParams.addRule(RelativeLayout.ABOVE, actionBar.getId());
-		webView = new android.webkit.WebView(getContext());
-		webView.setWebViewClient(new Client());
-		// To set normal zooming level of webView.
-		webView.getSettings()
-				.setLoadWithOverviewMode(true);
-		webView.getSettings()
-				.setUseWideViewPort(true);
-		contentView.addView(webView, webViewLayoutParams);
+        RelativeLayout.LayoutParams webViewLayoutParams = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0);
+        webViewLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+        webViewLayoutParams.addRule(RelativeLayout.ABOVE, actionBar.getId());
+        webView = new android.webkit.WebView(getContext());
+        webView.setWebViewClient(new Client());
+        // To set normal zooming level of webView.
+        webView.getSettings().setLoadWithOverviewMode(true);
+        webView.getSettings().setUseWideViewPort(true);
+        contentView.addView(webView, webViewLayoutParams);
 
-		setOnDismissListener(new OnDismissListener() {
-			@Override
-			public void onDismiss(DialogInterface dialog) {
-				BrowserDialog.this.handler.browserDialogDismissed(BrowserDialog.this);
-			}
-		});
-	}
+        setOnDismissListener(new OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                BrowserDialog.this.handler.browserDialogDismissed(BrowserDialog.this);
+            }
+        });
+    }
 
-	public void loadUrl(String url) {
-		this.url = url;
+    public void loadUrl(String url) {
+        this.url = url;
 
-		webView.stopLoading();
-		webView.clearHistory();
-		webView.loadUrl(url);
-	}
+        webView.stopLoading();
+        webView.clearHistory();
+        webView.loadUrl(url);
+    }
 
-	@Override
-	protected void onStart() {
-		super.onStart();
+    @Override
+    protected void onStart() {
+        super.onStart();
 
-		webView.loadUrl(url);
-	}
+        webView.loadUrl(url);
+    }
 
-	private class Client extends WebViewClient {
-		@Override
-		public void onPageFinished(WebView view, String url) {
-			backButton.setEnabled(view.canGoBack());
-			forwardButton.setEnabled(view.canGoForward());
-		}
+    private class Client extends WebViewClient {
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            backButton.setEnabled(view.canGoBack());
+            forwardButton.setEnabled(view.canGoForward());
+        }
 
-		@Override
-		public boolean shouldOverrideUrlLoading(WebView view, String url) {
-			try {
-				URI uri = new URI(url);
-				String scheme = uri.getScheme()
-									.toLowerCase();
-				if (scheme.startsWith("http")) {
-					return false;
-				}
-			} catch (URISyntaxException e) {
-				// If it can't be parsed, don't try it.
-			}
+        @SuppressLint("DefaultLocale")
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            try {
+                URI uri = new URI(url);
+                String scheme = uri.getScheme().toLowerCase();
+                if (scheme.startsWith("http")) {
+                    return false;
+                }
+            } catch (URISyntaxException e) {
+                // If it can't be parsed, don't try it.
+            }
 
-			BrowserDialog.this.handler.browserDialogOpenUrl(BrowserDialog.this,
-					url, false);
-			return true;
-		}
-	}
+            BrowserDialog.this.handler.browserDialogOpenUrl(BrowserDialog.this, url, false);
+            return true;
+        }
+    }
 
-	public interface Handler {
-		public void browserDialogDismissed(BrowserDialog browserDialog);
+    public interface Handler {
+        public void browserDialogDismissed(BrowserDialog browserDialog);
 
-		public void browserDialogOpenUrl(BrowserDialog browserDialog,
-				String url, boolean dismiss);
-	}
+        public void browserDialogOpenUrl(BrowserDialog browserDialog, String url, boolean dismiss);
+    }
 }
