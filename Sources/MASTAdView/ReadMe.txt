@@ -111,4 +111,14 @@ Banner:
 Interstitial:
 - No code changes.
 
+------
+ 4.1.1
+------
 
+CUU-486-94742 | MAST - Android SDK
+
+------
+ 4.1.2
+------
+
+RJX-889-37479 | setCloseButtonDelay() issue
