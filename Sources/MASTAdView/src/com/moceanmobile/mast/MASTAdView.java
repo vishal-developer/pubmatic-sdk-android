@@ -2937,22 +2937,32 @@ public class MASTAdView extends ViewGroup {
 			}
 		}
 
-		public void setCloseImage(Drawable image) {
-			closeArea.removeAllViews();
+		public void setCloseImage(final Drawable image) {
+			runOnUiThread(new Runnable() {
 
-			if (image != null) {
-				RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
-						LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+				@Override
+				public void run() {
+					closeArea.removeAllViews();
 
-				int marginPx = pxToDp(15);
-				layoutParams.setMargins(marginPx, marginPx, marginPx, marginPx);
+					if (image != null) {
+						RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
+								LayoutParams.MATCH_PARENT,
+								LayoutParams.MATCH_PARENT);
 
-				ImageView imageView = new ImageView(getContext());
-				imageView.setBackgroundColor(0x00000000);
-				imageView.setImageDrawable(image);
+						int marginPx = pxToDp(15);
+						layoutParams.setMargins(marginPx, marginPx, marginPx,
+								marginPx);
 
-				((RelativeLayout) closeArea).addView(imageView, layoutParams);
-			}
+						ImageView imageView = new ImageView(getContext());
+						imageView.setBackgroundColor(0x00000000);
+						imageView.setImageDrawable(image);
+
+						((RelativeLayout) closeArea).addView(imageView,
+								layoutParams);
+					}
+				}
+			});
+
 		}
 
 		@Override
