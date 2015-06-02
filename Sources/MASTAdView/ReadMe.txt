@@ -127,6 +127,6 @@ RJX-889-37479 | setCloseButtonDelay() issue
  4.1.3
 ------
 
-Enabled multi-pixel tracking for SDK [1.5]
+Enabled multi-pixel tracking for SDK.
 
 
