@@ -122,3 +122,11 @@ CUU-486-94742 | MAST - Android SDK
 ------
 
 RJX-889-37479 | setCloseButtonDelay() issue
+
+------
+ 4.1.3
+------
+
+Enabled multi-pixel tracking for SDK.
+
+

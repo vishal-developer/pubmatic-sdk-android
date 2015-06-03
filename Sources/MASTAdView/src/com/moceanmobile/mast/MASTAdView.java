@@ -1280,14 +1280,15 @@ public class MASTAdView extends ViewGroup {
 		if ((isInterstitial() == false) && (isShown() == false)) {
 			return;
 		}
-
 		if (invokeTracking && (adDescriptor != null)) {
 			invokeTracking = false;
 
-			String url = adDescriptor.getTrack();
-			if (TextUtils.isEmpty(url) == false) {
-				AdTracking.invokeTrackingUrl(Defaults.NETWORK_TIMEOUT_SECONDS,
-						url, userAgent);
+			// String url = adDescriptor.getTrack();
+			if (adDescriptor.getImpressionTrackers().size() > 0) {
+				for (String urls : adDescriptor.getImpressionTrackers()) {
+					AdTracking.invokeTrackingUrl(
+							Defaults.NETWORK_TIMEOUT_SECONDS, urls, userAgent);
+				}
 			}
 		}
 	}
