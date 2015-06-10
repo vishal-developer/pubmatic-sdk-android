@@ -1,5 +1,5 @@
 /*
- * PubMatic Inc. (�PubMatic�) CONFIDENTIAL
+ * PubMatic Inc. ("PubMatic") CONFIDENTIAL
  * Unpublished Copyright (c) 2006-2014 PubMatic, All Rights Reserved.
  *
  * NOTICE:  All information contained herein is, and remains the property of PubMatic. The intellectual and technical concepts contained
@@ -27,11 +27,10 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.text.TextUtils;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebChromeClient;
-import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebViewClient;
 
@@ -40,7 +39,6 @@ import com.moceanmobile.mast.Defaults;
 public class WebView extends android.webkit.WebView {
 	private static String MRAID_JAVASCRIPT_INTERFACE_NAME = "MASTMRAIDWebView";
 
-	private boolean hasAPI11 = false;
 	private Handler handler = null;
 	private boolean loaded = false;
 
@@ -48,20 +46,11 @@ public class WebView extends android.webkit.WebView {
 	private Object mraidBridgeJavascript = null;
 
 	// @SuppressWarnings("deprecation")
-	@SuppressLint("SetJavaScriptEnabled")
+	@SuppressLint({ "SetJavaScriptEnabled", "ClickableViewAccessibility" })
 	public WebView(Context context) {
 		super(context);
 
-		try {
-			WebViewClient.class.getMethod("shouldInterceptRequest",
-					new Class[] { android.webkit.WebView.class, String.class });
-
-			hasAPI11 = true;
-			setWebViewClient(new ViewClientAPI11());
-		} catch (NoSuchMethodException exception) {
-			setWebViewClient(new ViewClientAPI8());
-		}
-
+		setWebViewClient(new ViewClient());
 		setWebChromeClient(new ChromeClient());
 		getSettings().setJavaScriptEnabled(true);
 		getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
@@ -79,7 +68,6 @@ public class WebView extends android.webkit.WebView {
 
 	public void loadUrl(String url, Bridge bridge) {
 		addJavascriptInterface(bridge, MRAID_JAVASCRIPT_INTERFACE_NAME);
-
 		super.loadUrl(url);
 	}
 
@@ -88,12 +76,9 @@ public class WebView extends android.webkit.WebView {
 
 		String content = null;
 		Formatter formatter = new Formatter(Locale.US);
-		if (hasAPI11) {
-			formatter.format(Defaults.RICHMEDIA_FORMAT_API11, fragment);
-		} else {
-			formatter.format(Defaults.RICHMEDIA_FORMAT, mraidBridgeJavascript,
-					fragment);
-		}
+
+		formatter.format(Defaults.RICHMEDIA_FORMAT, mraidBridgeJavascript,
+				fragment);
 		content = formatter.toString();
 		formatter.close();
 
@@ -122,6 +107,7 @@ public class WebView extends android.webkit.WebView {
 	}
 
 	private class TouchListener implements View.OnTouchListener {
+		@SuppressLint("ClickableViewAccessibility")
 		@Override
 		public boolean onTouch(View v, MotionEvent event) {
 			switch (event.getAction()) {
@@ -140,8 +126,8 @@ public class WebView extends android.webkit.WebView {
 		}
 	}
 
-	private class ViewClientAPI8 extends WebViewClient {
-		public ViewClientAPI8() {
+	private class ViewClient extends WebViewClient {
+		public ViewClient() {
 			initJavascriptBridge();
 		}
 
@@ -162,7 +148,9 @@ public class WebView extends android.webkit.WebView {
 					}
 					mraidBridgeJavascript = sb.toString();
 				} catch (Exception ex) {
-					// TODO: Log this?
+					Log.e("MASTAdView.WebView",
+							"Error during injecting mraid script in creative. "
+									+ ex.getMessage());
 				}
 			}
 		}
@@ -210,33 +198,6 @@ public class WebView extends android.webkit.WebView {
 						(WebView) view, url);
 
 			return override;
-		}
-	}
-
-	private class ViewClientAPI11 extends ViewClientAPI8 {
-		public ViewClientAPI11() {
-			super();
-		}
-
-		@Override
-		protected void initJavascriptBridge() {
-			InputStream is = WebView.class
-					.getResourceAsStream("/MASTMRAIDController.js");
-			mraidBridgeJavascript = is;
-		}
-
-		@SuppressLint("NewApi")
-		@Override
-		public WebResourceResponse shouldInterceptRequest(
-				android.webkit.WebView webView, String url) {
-			WebResourceResponse response = null;
-
-			if ((TextUtils.isEmpty(url) == false) && url.endsWith("mraid.js")) {
-				response = new WebResourceResponse("text/javascript", "UTF-8",
-						(InputStream) mraidBridgeJavascript);
-			}
-
-			return response;
 		}
 	}
 

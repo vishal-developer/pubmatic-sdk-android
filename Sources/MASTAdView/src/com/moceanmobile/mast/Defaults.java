@@ -28,34 +28,34 @@
 package com.moceanmobile.mast;
 
 public class Defaults {
-    public static final String SDK_VERSION = "3.4";
+	public static final String SDK_VERSION = "3.4";
 
-    // This is used if the WebView's value returned is empty.
-    public static final String USER_AGENT = "MASTAdView/" + SDK_VERSION + " (Android)";
+	// This is used if the WebView's value returned is empty.
+	public static final String USER_AGENT = "MASTAdView/" + SDK_VERSION
+			+ " (Android)";
 
-    public static final int NETWORK_TIMEOUT_SECONDS = 5;
+	public static final int NETWORK_TIMEOUT_SECONDS = 5;
 
-    // 10 mins in ms
-    public static final int LOCATION_DETECTION_MINTIME = 10 * 60 * 1000;
-    public static final int LOCATION_DETECTION_MINDISTANCE = 20; // Meters
+	// 10 mins in ms
+	public static final int LOCATION_DETECTION_MINTIME = 10 * 60 * 1000;
+	public static final int LOCATION_DETECTION_MINDISTANCE = 20; // Meters
 
-    // How much content is allowed after parsing out click url and image or text
-    // content before
-    // falling through and rendering as html vs. native rendering.
-    public static final int DESCRIPTOR_THIRD_PARTY_VALIDATOR_LENGTH = 20;
+	// How much content is allowed after parsing out click url and image or text
+	// content before
+	// falling through and rendering as html vs. native rendering.
+	public static final int DESCRIPTOR_THIRD_PARTY_VALIDATOR_LENGTH = 20;
 
-    public static final String AD_NETWORK_URL = "http://ads.moceanads.com/ad";
+	public static final String AD_NETWORK_URL = "http://ads.moceanads.com/ad";
 
-    // Default injection HTML rich media ads.
-    // IMPORTANT: These strings have specific format specifiers (%s).
-    // Improper modification to these strings can cause ad rendering failures.
-    public static final String RICHMEDIA_FORMAT = "<html><head><meta name=\"viewport\" content=\"user-scalable=0\"/><style>body{margin:0;padding:0;}</style><script type=\"text/javascript\">%s</script></head><body>%s</body></html>";
-    public static final String RICHMEDIA_FORMAT_API11 = "<html><head><meta name=\"viewport\" content=\"user-scalable=0\"/><style>body{margin:0;padding:0;}</style></head><body>%s</body></html>";
+	// Default injection HTML rich media ads.
+	// IMPORTANT: These strings have specific format specifiers (%s).
+	// Improper modification to these strings can cause ad rendering failures.
+	public static final String RICHMEDIA_FORMAT = "<html><head><meta name=\"viewport\" content=\"user-scalable=0\"/><style>body{margin:0;padding:0;}</style><script type=\"text/javascript\">%s</script></head><body>%s</body></html>";
 
-    // Defaults for native ad serving
-    public static final String NATIVE_REQUEST_COUNT = "1";
-    public static final String NATIVE_REQUEST_KEY = "8";
-    public static final String NATIVE_REQUEST_AD_TYPE = "8";
-    public static final String NATIVE_REQUEST_TEST_TRUE = "1";
-    public static final String ENCODING_UTF_8 = "UTF-8";
+	// Defaults for native ad serving
+	public static final String NATIVE_REQUEST_COUNT = "1";
+	public static final String NATIVE_REQUEST_KEY = "8";
+	public static final String NATIVE_REQUEST_AD_TYPE = "8";
+	public static final String NATIVE_REQUEST_TEST_TRUE = "1";
+	public static final String ENCODING_UTF_8 = "UTF-8";
 }

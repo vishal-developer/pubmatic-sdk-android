@@ -119,6 +119,7 @@ public class MASTAdView extends ViewGroup {
 	// Configuration
 	private int zone = 0;
 	private boolean test = false;
+	private String creativeCode = null;
 	private int updateInterval = 0;
 	private String adNetworkURL = Defaults.AD_NETWORK_URL;
 	private Map<String, String> adRequestDefaultParameters = new HashMap<String, String>();
@@ -549,6 +550,23 @@ public class MASTAdView extends ViewGroup {
 	 */
 	public boolean isTest() {
 		return test;
+	}
+
+	/** Get the test creativeCode you have set */
+	public String getCreativeCode() {
+		return creativeCode;
+	}
+
+	/**
+	 * Set the creativeCode script to request this test creative in SDK. <br>
+	 * <b>Note:</b> Use only while testing. Do not use this in production. <br>
+	 * Server side configuration might be required to use this feature.
+	 * 
+	 * @param creativeCode
+	 *            The javascript creative code to set.
+	 */
+	public void setCreativeCode(String creativeCode) {
+		this.creativeCode = creativeCode;
 	}
 
 	/**
@@ -1002,6 +1020,11 @@ public class MASTAdView extends ViewGroup {
 		if (this.test) {
 			adRequestDefaultParameters.put("test", "1");
 		}
+
+		if (creativeCode != null && !creativeCode.trim().equals("")) {
+			adRequestDefaultParameters.put("creativecode", creativeCode);
+		}
+
 		addCustomParams(args);
 		for (Map.Entry<String, String> entry : adRequestDefaultParameters
 				.entrySet()) {
