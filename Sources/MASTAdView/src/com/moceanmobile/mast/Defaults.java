@@ -28,6 +28,7 @@
 package com.moceanmobile.mast;
 
 public class Defaults {
+
 	public static final String SDK_VERSION = "4.1.4";
 
 	// This is used if the WebView's value returned is empty.
