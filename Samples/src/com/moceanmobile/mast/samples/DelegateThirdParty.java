@@ -1,5 +1,5 @@
 /*
- * PubMatic Inc. (“PubMatic”) CONFIDENTIAL
+ * PubMatic Inc. (ï¿½PubMaticï¿½) CONFIDENTIAL
  * Unpublished Copyright (c) 2006-2014 PubMatic, All Rights Reserved.
  *
  * NOTICE:  All information contained herein is, and remains the property of PubMatic. The intellectual and technical concepts contained
@@ -22,16 +22,15 @@ import android.os.Bundle;
 import com.moceanmobile.mast.MASTAdView;
 import com.moceanmobile.mast.MASTAdView.LogLevel;
 
-public class DelegateThirdParty extends DelegateGeneric
-{
+public class DelegateThirdParty extends DelegateGeneric {
 	@Override
-	protected void onCreate(Bundle savedInstanceState)
-	{
+	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		// Just swap out the zone and disable logging to prevent output spam.
 		MASTAdView adView = (MASTAdView) findViewById(R.id.adView);
 		adView.setZone(90038);
+
 		adView.setLogLevel(LogLevel.None);
 	}
 }

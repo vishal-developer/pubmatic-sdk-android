@@ -43,11 +43,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.moceanmobile.mast.MASTAdView.LogLevel;
-import com.moceanmobile.mast.MASTBaseAdapter.MediationNetwork;
 import com.moceanmobile.mast.MASTNativeAd;
 import com.moceanmobile.mast.MASTNativeAd.Image;
 import com.moceanmobile.mast.MASTNativeAd.LogListener;
 import com.moceanmobile.mast.MASTNativeAd.NativeRequestListener;
+import com.moceanmobile.mast.MediationData;
 import com.moceanmobile.mast.bean.AssetRequest;
 import com.moceanmobile.mast.bean.AssetResponse;
 import com.moceanmobile.mast.bean.DataAssetRequest;
@@ -61,343 +61,372 @@ import com.moceanmobile.mast.bean.TitleAssetResponse;
 
 public class NativeActivity extends Activity {
 
-    private static final String LOG_TAG = NativeActivity.class.getSimpleName();
-    private MASTNativeAd ad = null;
-    private ImageView imgLogo = null;
-    private ImageView imgMain = null;
-    private TextView txtTitle = null;
-    private TextView txtDescription = null;
-    private RatingBar ratingBar = null;
-    private TextView txtLogView = null;
-    private RelativeLayout mLayout = null;
+	private static final String LOG_TAG = NativeActivity.class.getSimpleName();
+	private MASTNativeAd ad = null;
+	private ImageView imgLogo = null;
+	private ImageView imgMain = null;
+	private TextView txtTitle = null;
+	private TextView txtDescription = null;
+	private RatingBar ratingBar = null;
+	private TextView txtLogView = null;
+	private RelativeLayout mLayout = null;
 
-    // Base URL for mocean adserver
-    private final String AD_URL = "http://ads.test.mocean.mobi/ad";
+	// Base URL for mocean adserver
+	private final String AD_URL = "http://ads.test.mocean.mobi/ad";
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_native);
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_native);
 
-        mLayout = (RelativeLayout) findViewById(R.id.layout);
-        imgLogo = (ImageView) findViewById(R.id.imgLogo);
-        imgMain = (ImageView) findViewById(R.id.imgMain);
-        txtTitle = (TextView) findViewById(R.id.txtTitle);
-        txtDescription = (TextView) findViewById(R.id.txtDescription);
-        ratingBar = (RatingBar) findViewById(R.id.ratingbar);
-        txtLogView = (TextView) findViewById(R.id.textView);
+		mLayout = (RelativeLayout) findViewById(R.id.layout);
+		imgLogo = (ImageView) findViewById(R.id.imgLogo);
+		imgMain = (ImageView) findViewById(R.id.imgMain);
+		txtTitle = (TextView) findViewById(R.id.txtTitle);
+		txtDescription = (TextView) findViewById(R.id.txtDescription);
+		ratingBar = (RatingBar) findViewById(R.id.ratingbar);
+		txtLogView = (TextView) findViewById(R.id.textView);
 
-        // Initialize the adview
-        ad = new MASTNativeAd(this);
+		// Initialize the adview
+		ad = new MASTNativeAd(this);
 
-        ad.setLogLevel(LogLevel.Debug); // Logging should be disabled in
-                                        // production
-        ad.setLogListener(new LogEventListner()); // Set LogListener
-        ad.setRequestListener(new AdRequestListener());
-        ad.setZone(264415); // TODO: Add your ZoneId
+		ad.setLogLevel(LogLevel.Debug); // Logging should be disabled in
+										// production
+		ad.setLogListener(new LogEventListner()); // Set LogListener
+		ad.setRequestListener(new AdRequestListener());
+		ad.setZone(179492); // TODO: Add your ZoneId
 
-        ad.setAdNetworkURL(AD_URL);
+		ad.setAdNetworkURL(AD_URL);
 
-        // Request for native assets
-        ad.addNativeAssetRequestList(getAssetRequests());
-        /*
-         * Uncomment following line to use internal browser instead system
-         * default browser, to open ads when clicked
-         */
-        ad.setUseInternalBrowser(true);
+		// Request for native assets
+		ad.addNativeAssetRequestList(getAssetRequests());
+		/*
+		 * Uncomment following line to use internal browser instead system
+		 * default browser, to open ads when clicked
+		 */
+		ad.setUseInternalBrowser(true);
 
-        // Add some custom parameters
-        ad.addCustomParameter("keywords", "NFL,Football,Sports,Games,WordsCup");
-        ad.addCustomParameter("isp", "T-mobile");
-        ad.addCustomParameter("age", "25");
-        ad.addCustomParameter("gender", "m");
-        ad.addCustomParameter("androidid", "testandroidid1234");
-        ad.addCustomParameter("country", "US");
-        ad.addCustomParameter("city", "New York, NY");
+		// Add some custom parameters
+		ad.addCustomParameter("keywords", "NFL,Football,Sports,Games,WordsCup");
+		ad.addCustomParameter("isp", "T-mobile");
+		ad.addCustomParameter("age", "25");
+		ad.addCustomParameter("gender", "m");
+		ad.addCustomParameter("androidid", "testandroidid1234");
+		ad.addCustomParameter("country", "US");
+		ad.addCustomParameter("city", "New York, NY");
 
-        // ad.setTest(true); // Uncomment to serve ads in test mode
+		// ad.setTest(true); // Uncomment to serve ads in test mode
 
-        // This is by default false.
-        ad.overrideAdapterLoading(false);
+		// Request for ads
+		ad.update();
+	}
 
-        /*
-         * Add your device id for Facebook Audience network to get test ads.
-         * This will be printed in the logs once you launch the application for
-         * the first time.
-         */
-        ad.addTestDeviceIdForNetwork(MediationNetwork.FACEBOOK_AUDIENCE_NETWORK, "<test_device_hash_id>");
-        // TODO: Add your test device hash id above
+	private List<AssetRequest> getAssetRequests() {
+		List<AssetRequest> assets = new ArrayList<AssetRequest>();
 
-        ad.update();
-    }
+		TitleAssetRequest titleAsset = new TitleAssetRequest();
+		titleAsset.setAssetId(1); // Unique assetId is mandatory for each
+									// asset
+		titleAsset.setLength(50);
+		titleAsset.setRequired(true); // Optional (Default: false)
+		assets.add(titleAsset);
 
-    private List<AssetRequest> getAssetRequests() {
-        List<AssetRequest> assets = new ArrayList<AssetRequest>();
+		ImageAssetRequest imageAssetIcon = new ImageAssetRequest();
+		imageAssetIcon.setAssetId(2);
+		imageAssetIcon.setImageType(ImageAssetTypes.icon);
+		imageAssetIcon.setWidth(60); // Optional
+		imageAssetIcon.setHeight(60); // Optional
+		assets.add(imageAssetIcon);
 
-        TitleAssetRequest titleAsset = new TitleAssetRequest();
-        titleAsset.setAssetId(1); // Unique assetId is mandatory for each
-                                  // asset
-        titleAsset.setLength(50);
-        titleAsset.setRequired(true); // Optional (Default: false)
-        assets.add(titleAsset);
+		ImageAssetRequest imageAssetLogo = new ImageAssetRequest();
+		imageAssetLogo.setAssetId(3);
+		imageAssetLogo.setImageType(ImageAssetTypes.logo);
+		assets.add(imageAssetLogo);
 
-        ImageAssetRequest imageAssetIcon = new ImageAssetRequest();
-        imageAssetIcon.setAssetId(2);
-        imageAssetIcon.setImageType(ImageAssetTypes.icon);
-        imageAssetIcon.setWidth(60); // Optional
-        imageAssetIcon.setHeight(60); // Optional
-        assets.add(imageAssetIcon);
+		ImageAssetRequest imageAssetMainImage = new ImageAssetRequest();
+		imageAssetMainImage.setAssetId(4);
+		imageAssetMainImage.setImageType(ImageAssetTypes.main);
+		assets.add(imageAssetMainImage);
 
-        ImageAssetRequest imageAssetLogo = new ImageAssetRequest();
-        imageAssetLogo.setAssetId(3);
-        imageAssetLogo.setImageType(ImageAssetTypes.logo);
-        assets.add(imageAssetLogo);
+		DataAssetRequest dataAssetDesc = new DataAssetRequest();
+		dataAssetDesc.setAssetId(5);
+		dataAssetDesc.setDataAssetType(DataAssetTypes.desc);
+		dataAssetDesc.setLength(25);
+		assets.add(dataAssetDesc);
 
-        ImageAssetRequest imageAssetMainImage = new ImageAssetRequest();
-        imageAssetMainImage.setAssetId(4);
-        imageAssetMainImage.setImageType(ImageAssetTypes.main);
-        assets.add(imageAssetMainImage);
+		DataAssetRequest dataAssetRating = new DataAssetRequest();
+		dataAssetRating.setAssetId(6);
+		dataAssetRating.setDataAssetType(DataAssetTypes.rating);
+		assets.add(dataAssetRating);
 
-        DataAssetRequest dataAssetDesc = new DataAssetRequest();
-        dataAssetDesc.setAssetId(5);
-        dataAssetDesc.setDataAssetType(DataAssetTypes.desc);
-        dataAssetDesc.setLength(25);
-        assets.add(dataAssetDesc);
+		return assets;
+	}
 
-        DataAssetRequest dataAssetRating = new DataAssetRequest();
-        dataAssetRating.setAssetId(6);
-        dataAssetRating.setDataAssetType(DataAssetTypes.rating);
-        assets.add(dataAssetRating);
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
 
-        return assets;
-    }
+		resetViews();
+		ad.destroy();
+	}
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
+	public void onReloadAdClicked(View v) {
+		if (ad != null) {
 
-        resetViews();
-        ad.destroy();
-    }
+			resetViews();
+			ad.update();
+		}
+	}
 
-    public void onReloadAdClicked(View v) {
-        if (ad != null) {
+	private void resetViews() {
+		imgLogo.setImageBitmap(null);
 
-            resetViews();
-            ad.update();
-        }
-    }
+		imgMain.setImageBitmap(null);
 
-    private void resetViews() {
-        imgLogo.setImageBitmap(null);
+		txtTitle.setText("<Native Title>");
 
-        imgMain.setImageBitmap(null);
+		txtDescription.setText("<Native Description>");
 
-        txtTitle.setText("<Native Title>");
+		ratingBar.setRating(0f);
+		ratingBar.setVisibility(View.GONE);
 
-        txtDescription.setText("<Native Description>");
+		txtLogView.setText("");
+	}
 
-        ratingBar.setRating(0f);
-        ratingBar.setVisibility(View.GONE);
+	private void appendOutput(final String message) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				if (txtLogView != null && !TextUtils.isEmpty(message)) {
+					txtLogView.append(java.text.DateFormat.getTimeInstance(
+							java.text.DateFormat.DEFAULT).format(
+							Calendar.getInstance().getTime())
+							+ " : " + message + "\n");
+					Log.d(LOG_TAG, message);
+				}
+			}
+		});
+	}
 
-        txtLogView.setText("");
-    }
+	private class AdRequestListener implements NativeRequestListener {
 
-    private void appendOutput(final String message) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (txtLogView != null && !TextUtils.isEmpty(message)) {
-                    txtLogView.append(java.text.DateFormat.getTimeInstance(java.text.DateFormat.DEFAULT).format(
-                            Calendar.getInstance().getTime())
-                            + " : " + message + "\n");
-                    Log.d(LOG_TAG, message);
-                }
-            }
-        });
-    }
+		@Override
+		public void onNativeAdFailed(MASTNativeAd ad, Exception ex) {
+			ex.printStackTrace();
+			appendOutput("Error Message/Code : " + ex.getMessage());
+		}
 
-    private class AdRequestListener implements NativeRequestListener {
+		@Override
+		public void onNativeAdReceived(final MASTNativeAd ad) {
 
-        @Override
-        public void onNativeAdFailed(MASTNativeAd ad, Exception ex) {
-            ex.printStackTrace();
-            appendOutput("Error Message/Code : " + ex.getMessage());
-        }
+			if (ad != null) {
 
-        @Override
-        public void onNativeAdReceived(final MASTNativeAd ad) {
+				appendOutput("Native Ad Received. Response is : \n "
+						+ ad.getAdResponse());
 
-            if (ad != null) {
+				runOnUiThread(new Runnable() {
 
-                appendOutput("Native Ad Received. Response is : \n " + ad.getAdResponse());
+					@Override
+					public void run() {
+						List<AssetResponse> nativeAssets = ad.getNativeAssets();
+						for (AssetResponse asset : nativeAssets) {
+							try {
 
-                runOnUiThread(new Runnable() {
+								if (!ad.isMediationResponse()) {
+									/*
+									 * As per openRTB standard, assetId in
+									 * response must match that of in request.
+									 */
+									switch (asset.getAssetId()) {
+									case 1:
+										txtTitle.setText(((TitleAssetResponse) asset)
+												.getTitleText());
+										break;
+									case 2:
+										Image iconImage = ((ImageAssetResponse) asset)
+												.getImage();
+										if (iconImage != null) {
+											imgLogo.setImageBitmap(null);
+											ad.loadImage(imgLogo,
+													iconImage.getUrl());
+										}
+										break;
+									case 3:
+										// Code to render logo image ...
+										break;
+									case 4:
+										Image mainImage = ((ImageAssetResponse) asset)
+												.getImage();
+										if (mainImage != null) {
+											imgMain.setImageBitmap(null);
+											ad.loadImage(imgMain,
+													mainImage.getUrl());
+										}
+										break;
+									case 5:
+										txtDescription
+												.setText(((DataAssetResponse) asset)
+														.getValue());
+										break;
+									case 6:
+										String ratingStr = ((DataAssetResponse) asset)
+												.getValue();
+										try {
+											float rating = Float
+													.parseFloat(ratingStr);
+											if (rating > 0f) {
+												ratingBar.setRating(rating);
+												ratingBar
+														.setVisibility(View.VISIBLE);
+											} else {
+												ratingBar.setRating(rating);
+												ratingBar
+														.setVisibility(View.GONE);
+											}
+										} catch (Exception e) {
+											// Invalid rating string
+											Log.e("NativeActivity",
+													"Error parsing 'rating'");
+										}
+										break;
 
-                    @Override
-                    public void run() {
-                        List<AssetResponse> nativeAssets = ad.getNativeAssets();
-                        for (AssetResponse asset : nativeAssets) {
-                            try {
+									default: // NOOP
+										break;
+									}
+								} else {
+									// For mediation response
+									/*
+									 * Mediation partners do not support OpenRTB
+									 * native specifications as of now. The
+									 * response may not contain assetId as per
+									 * request. Hence, rendering the mediation
+									 * response assets by asset types.
+									 */
+									if (asset instanceof TitleAssetResponse) {
+										txtTitle.setText(((TitleAssetResponse) asset)
+												.getTitleText());
+										continue;
+									} else if (asset instanceof ImageAssetResponse) {
+										switch (((ImageAssetResponse) asset)
+												.getImageType()) {
+										case icon:
+											Image iconImage = ((ImageAssetResponse) asset)
+													.getImage();
+											if (iconImage != null) {
+												imgLogo.setImageBitmap(null);
+												ad.loadImage(imgLogo,
+														iconImage.getUrl());
+											}
+											break;
+										case logo:
+											// Code to render logo image ...
+											break;
+										case main:
+											Image mainImage = ((ImageAssetResponse) asset)
+													.getImage();
+											if (mainImage != null) {
+												imgMain.setImageBitmap(null);
+												ad.loadImage(imgMain,
+														mainImage.getUrl());
+											}
+											break;
+										}
+										continue;
+									} else if (asset instanceof DataAssetResponse) {
+										switch (((DataAssetResponse) asset)
+												.getDataAssetType()) {
+										case desc:
+											txtDescription
+													.setText(((DataAssetResponse) asset)
+															.getValue());
+											break;
+										case ctatext:
+											// Code to render CTA
+											// text/button
+											break;
+										case rating:
+											String ratingStr = ((DataAssetResponse) asset)
+													.getValue();
+											try {
+												float rating = Float
+														.parseFloat(ratingStr);
+												if (rating > 0f) {
+													ratingBar.setRating(rating);
+													ratingBar
+															.setVisibility(View.VISIBLE);
+												} else {
+													ratingBar.setRating(rating);
+													ratingBar
+															.setVisibility(View.GONE);
+												}
+											} catch (Exception e) {
+												// Invalid rating string
+												Log.e("NativeActivity",
+														"Error parsing 'rating'");
+											}
+											break;
+										default: // NOOP
+											break;
+										}
+									}
+								}
+							} catch (Exception ex) {
+								appendOutput("ERROR in rendering asset. Skipping asset.");
+							}
+						}
+					}
+				});
 
-                                if (!ad.isMediationResponse()) {
-                                    /*
-                                     * As per openRTB standard, assetId in
-                                     * response must match that of in request.
-                                     */
-                                    switch (asset.getAssetId()) {
-                                        case 1:
-                                            txtTitle.setText(((TitleAssetResponse) asset).getTitleText());
-                                            break;
-                                        case 2:
-                                            Image iconImage = ((ImageAssetResponse) asset).getImage();
-                                            if (iconImage != null) {
-                                                imgLogo.setImageBitmap(null);
-                                                ad.loadImage(imgLogo, iconImage.getUrl());
-                                            }
-                                            break;
-                                        case 3:
-                                            // Code to render logo image ...
-                                            break;
-                                        case 4:
-                                            Image mainImage = ((ImageAssetResponse) asset).getImage();
-                                            if (mainImage != null) {
-                                                imgMain.setImageBitmap(null);
-                                                ad.loadImage(imgMain, mainImage.getUrl());
-                                            }
-                                            break;
-                                        case 5:
-                                            txtDescription.setText(((DataAssetResponse) asset).getValue());
-                                            break;
-                                        case 6:
-                                            String ratingStr = ((DataAssetResponse) asset).getValue();
-                                            try {
-                                                float rating = Float.parseFloat(ratingStr);
-                                                if (rating > 0f) {
-                                                    ratingBar.setRating(rating);
-                                                    ratingBar.setVisibility(View.VISIBLE);
-                                                } else {
-                                                    ratingBar.setRating(rating);
-                                                    ratingBar.setVisibility(View.GONE);
-                                                }
-                                            } catch (Exception e) {
-                                                // Invalid rating string
-                                                Log.e("NativeActivity", "Error parsing 'rating'");
-                                            }
-                                            break;
+				if (ad.getJsTracker() != null) {
+					appendOutput(ad.getJsTracker());
+					/*
+					 * Note: Publisher should execute the javascript tracker
+					 * whenever possible.
+					 */
+				}
 
-                                        default: // NOOP
-                                            break;
-                                    }
-                                } else {
-                                    // For mediation response
-                                    /*
-                                     * Mediation partners do not support OpenRTB
-                                     * native specifications as of now. The
-                                     * response may not contain assetId as per
-                                     * request. Hence, rendering the mediation
-                                     * response assets by asset types.
-                                     */
-                                    if (asset instanceof TitleAssetResponse) {
-                                        txtTitle.setText(((TitleAssetResponse) asset).getTitleText());
-                                        continue;
-                                    } else if (asset instanceof ImageAssetResponse) {
-                                        switch (((ImageAssetResponse) asset).getImageType()) {
-                                            case icon:
-                                                Image iconImage = ((ImageAssetResponse) asset).getImage();
-                                                if (iconImage != null) {
-                                                    imgLogo.setImageBitmap(null);
-                                                    ad.loadImage(imgLogo, iconImage.getUrl());
-                                                }
-                                                break;
-                                            case logo:
-                                                // Code to render logo image ...
-                                                break;
-                                            case main:
-                                                Image mainImage = ((ImageAssetResponse) asset).getImage();
-                                                if (mainImage != null) {
-                                                    imgMain.setImageBitmap(null);
-                                                    ad.loadImage(imgMain, mainImage.getUrl());
-                                                }
-                                                break;
-                                        }
-                                        continue;
-                                    } else if (asset instanceof DataAssetResponse) {
-                                        switch (((DataAssetResponse) asset).getDataAssetType()) {
-                                            case desc:
-                                                txtDescription.setText(((DataAssetResponse) asset).getValue());
-                                                break;
-                                            case ctatext:
-                                                // Code to render CTA
-                                                // text/button
-                                                break;
-                                            case rating:
-                                                String ratingStr = ((DataAssetResponse) asset).getValue();
-                                                try {
-                                                    float rating = Float.parseFloat(ratingStr);
-                                                    if (rating > 0f) {
-                                                        ratingBar.setRating(rating);
-                                                        ratingBar.setVisibility(View.VISIBLE);
-                                                    } else {
-                                                        ratingBar.setRating(rating);
-                                                        ratingBar.setVisibility(View.GONE);
-                                                    }
-                                                } catch (Exception e) {
-                                                    // Invalid rating string
-                                                    Log.e("NativeActivity", "Error parsing 'rating'");
-                                                }
-                                                break;
-                                            default: // NOOP
-                                                break;
-                                        }
-                                    }
-                                }
-                            } catch (Exception ex) {
-                                appendOutput("ERROR in rendering asset. Skipping asset.");
-                            }
-                        }
-                    }
-                });
+				/*
+				 * IMPORTANT : Must call this method when response rendering is
+				 * complete. This method sets click listener on the ad container
+				 * layout. This is required for firing click tracker when ad is
+				 * clicked by the user.
+				 */
+				ad.trackViewForInteractions(mLayout);
+			}
 
-                if (ad.getJsTracker() != null) {
-                    appendOutput(ad.getJsTracker());
-                    /*
-                     * Note: Publisher should execute the javascript tracker
-                     * whenever possible.
-                     */
-                }
+		}
 
-                /*
-                 * IMPORTANT : Must call this method when response rendering is
-                 * complete. This method sets click listener on the ad container
-                 * layout. This is required for firing click tracker when ad is
-                 * clicked by the user.
-                 */
-                ad.trackViewForInteractions(mLayout);
-            }
+		@Override
+		public void onReceivedThirdPartyRequest(MASTNativeAd ad,
+				Map<String, String> properties, Map<String, String> parameters) {
 
-        }
+			appendOutput("Third Party Ad Received. \n Properties : \n "
+					+ properties + " Parameters : \n " + parameters);
+			MediationData mediationData = ad.getMediationData();
+			if (mediationData != null) {
+				appendOutput("Name: " + mediationData.getMediationNetworkName());
+				appendOutput("NetworkId: "
+						+ mediationData.getMediationNetworkId());
+				appendOutput("Source: " + mediationData.getMediationSource());
+				appendOutput("AdId: " + mediationData.getMediationAdId());
+			}
 
-        @Override
-        public void onReceivedThirdPartyRequest(MASTNativeAd ad, Map<String, String> properties,
-                Map<String, String> parameters) {
+		}
 
-            appendOutput("Third Party Ad Received. \n Properties : \n " + properties + " Parameters : \n " + parameters);
-        }
+		@Override
+		public void onNativeAdClicked(MASTNativeAd ad) {
+			appendOutput("Ad is clicked.");
+		}
+	}
 
-        @Override
-        public void onNativeAdClicked(MASTNativeAd ad) {
-            appendOutput("Ad is clicked.");
-        }
-    }
+	private class LogEventListner implements LogListener {
 
-    private class LogEventListner implements LogListener {
+		@Override
+		public boolean onLogEvent(MASTNativeAd nativeAd, String eventMessage,
+				LogLevel logLevel) {
+			Log.i(LOG_TAG, eventMessage);
+			return false;
+		}
 
-        @Override
-        public boolean onLogEvent(MASTNativeAd nativeAd, String eventMessage, LogLevel logLevel) {
-            Log.i(LOG_TAG, eventMessage);
-            return false;
-        }
-
-    }
+	}
 }
