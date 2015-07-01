@@ -89,22 +89,26 @@ public class AdDescriptor {
 	 * 
 	 * In case of receiving ad : { "type": "thirdparty", "subtype": "native",
 	 * "creativeid": 1, "feedid": 1115, "native": { "ver": 1, "link": { "url":
-	 * "http:\/\/ads.moceanads.com\/1\/redir\/9bde02d0-6017-11e4-9df7-005056967c35\/0\/1"
-	 * , "fallback": "http:\/\/example.com\/fallback", "clicktrackers": [
+	 * "http:\/\/ads.moceanads.com\/1\/redir\/9bde02d0-6017-11e4-9df7-005056967c
+	 * 3 5 \ / 0 \ / 1
+	 * " , "fallback": "http:\/\/example.com\/fallback", "clicktrackers": [
 	 * "http:\/\/clicktracker.com\/main\/9bde02d0-6017-11e4-9df7-005056967c35" ]
 	 * }, "assets": [ { "id": 2, "img": { "url": "http:\/\/example_320x50.png",
 	 * "w": 320, "h": 50 }, "link": { "url":
-	 * "http:\/\/ads.moceanads.com\/1\/redir\/9bde02d0-6017-11e4-9df7-005056967c35\/1\/1"
-	 * , "fallback": "http:\/\/example.com\/custom_fallback", "clicktrackers": [
+	 * "http:\/\/ads.moceanads.com\/1\/redir\/9bde02d0-6017-11e4-9df7-005056967c
+	 * 3 5 \ / 1 \ / 1
+	 * " , "fallback": "http:\/\/example.com\/custom_fallback", "clicktrackers
+	 * ": [
 	 * "http:\/\/clicktracker.com\/custom\/9bde02d0-6017-11e4-9df7-005056967c35"
 	 * ] } }, { "id": 3, "title": { "text": "Native title" }, "link": { "url":
-	 * "http:\/\/ads.moceanads.com\/1\/redir\/9bde02d0-6017-11e4-9df7-005056967c35\/2\/1
-	 * " } }, { "id": 4, "data": { "value": "Native description" }, "link": {
-	 * "url":
-	 * "http:\/\/ads.moceanads.com\/1\/redir\/9bde02d0-6017-11e4-9df7-005056967c35\/3\/1
+	 * "http:\/\/ads.moceanads.com\/1\/redir\/9bde02d0-6017-11e4-9df7-005056967c
+	 * 3 5 \ / 2 \ / 1 " } }, { "id": 4, "data": { "value": "Native
+	 * description" }, "link": { "url":
+	 * "http:\/\/ads.moceanads.com\/1\/redir\/9bde02d0-6017-11e4-9df7-005056967c
+	 * 3 5 \ / 3 \ / 1
 	 * " } }, { "id": 6, "data": { "value": "5" }, "link": { "url":
-	 * "http:\/\/ads.moceanads.com\/1\/redir\/9bde02d0-6017-11e4-9df7-005056967c35\/4\/1
-	 * " } } ], "imptrackers": [
+	 * "http:\/\/ads.moceanads.com\/1\/redir\/9bde02d0-6017-11e4-9df7-005056967c
+	 * 3 5 \ / 4 \ / 1 " } } ], "imptrackers": [
 	 * "http:\/\/ads.moceanads.com\/1\/img\/9bde02d0-6017-11e4-9df7-005056967c35
 	 * " ] } }
 	 * 
@@ -114,8 +118,8 @@ public class AdDescriptor {
 	 * "mediation", "data": { "adid": "123" }, "imptrackers": [
 	 * "http:\/\/ads.moceanads.com\/1\/img\/9bde02d0-6017-11e4-9df7-005056967c35
 	 * " ], "clicktrackers": [
-	 * "http:\/\/ads.moceanads.com\/1\/click\/9bde02d0-6017-11e4-9df7-005056967c35\/1
-	 * " ] } }
+	 * "http:\/\/ads.moceanads.com\/1\/click\/9bde02d0-6017-11e4-9df7-005056967c
+	 * 3 5 \ / 1 " ] } }
 	 * 
 	 * @param inputStream
 	 *            Input Stream data to parse
@@ -456,6 +460,8 @@ public class AdDescriptor {
 			throws XmlPullParserException, IOException {
 		Map<String, String> adInfo = new HashMap<String, String>();
 		ArrayList<String> impressionTrackers = new ArrayList<String>();
+		ArrayList<String> clickTrackers = new ArrayList<String>();
+		MediationData mediationData = null;
 
 		String adType = parser.getAttributeValue(null, "type");
 		adInfo.put("type", adType);
@@ -477,6 +483,11 @@ public class AdDescriptor {
 				if (TextUtils.isEmpty(subType) == false) {
 					adInfo.put(name + "Type", subType);
 				}
+
+				String adSubType = parser.getAttributeValue(null, "subtype");
+				if (TextUtils.isEmpty(adSubType) == false) {
+					adInfo.put("subtype", adSubType);
+				}
 				parser.next();
 				XmlPullParser mParser = parser;
 				int newEventType = mParser.getEventType();
@@ -497,6 +508,26 @@ public class AdDescriptor {
 							}
 						}
 					}
+				} else if (name.equals("clicktrackers")) {
+					String clkT = mParser.getName();
+					if (("clicktracker").equalsIgnoreCase(clkT)) {
+						while (newEventType != XmlPullParser.END_DOCUMENT) {
+							String valueCT = "";
+							if (eventType == XmlPullParser.START_TAG) {
+								if (mParser.getEventType() == XmlPullParser.TEXT) {
+									valueCT = mParser.getText();
+								}
+								if (TextUtils.isEmpty(valueCT) == false) {
+									clickTrackers.add(valueCT);
+								}
+								mParser.next();
+								newEventType = mParser.getEventType();
+							}
+						}
+					}
+				} else if (name.equals("mediation")) {
+					// TODO: Parse Mediation Obj
+
 				} else {
 					if (parser.getEventType() == XmlPullParser.TEXT) {
 						value = parser.getText();
@@ -513,11 +544,17 @@ public class AdDescriptor {
 
 		AdDescriptor adDescriptor = new AdDescriptor(adInfo);
 		adDescriptor.setImpressionTrackers(impressionTrackers);
+		adDescriptor.setClickTrackers(clickTrackers);
+		// Mediation data will be available only in case of third-party
+		// mediation response
+		adDescriptor.setMediationData(mediationData);
 		return adDescriptor;
 	}
 
 	private final Map<String, String> adInfo;
 	private ArrayList<String> mImpressionTrackers = new ArrayList<String>();
+	private ArrayList<String> mClickTrackers = new ArrayList<String>();
+	private MediationData mMediationData = null;
 	/*
 	 * This parameter will be used for Native Ads. It will be set when error
 	 * occurs while serving the Native ad and server returns a json with error.
@@ -534,6 +571,11 @@ public class AdDescriptor {
 
 	public String getType() {
 		String value = adInfo.get("type");
+		return value;
+	}
+
+	public String getSubType() {
+		String value = adInfo.get("subtype");
 		return value;
 	}
 
@@ -574,6 +616,41 @@ public class AdDescriptor {
 	public void setImpressionTrackers(ArrayList<String> mImpressionTrackers) {
 		this.mImpressionTrackers.clear();
 		this.mImpressionTrackers = mImpressionTrackers;
+	}
+
+	/**
+	 * Get click trackers list is received from server
+	 * 
+	 * @return List of click tracker URL's
+	 */
+	public ArrayList<String> getClickTrackers() {
+		return mClickTrackers;
+	}
+
+	/**
+	 * Set the list of click tracker url's
+	 * 
+	 * @param clickTrackers
+	 */
+	public void setClickTrackers(ArrayList<String> clickTrackers) {
+		if (this.mClickTrackers != null) {
+			this.mClickTrackers.clear();
+		}
+		this.mClickTrackers = clickTrackers;
+	}
+
+	/**
+	 * Get the mediation data received in case of third-party mediation response
+	 */
+	public MediationData getMediationData() {
+		return mMediationData;
+	}
+
+	/**
+	 * Set the mediation data received in case of third-party mediation response
+	 */
+	public void setMediationData(MediationData mediationData) {
+		this.mMediationData = mediationData;
 	}
 
 	/**
