@@ -36,18 +36,35 @@ public class MediationData {
 	private String mediationNetworkName;
 	private String mediationSource;
 	private String mediationAdId;
+	private String mediationAdFormat;
 
 	public MediationData(String mediationNetworkId,
 			String mediationNetworkName, String mediationSource,
-			String mediationAdId) {
+			String mediationAdId, String mediationAdFormat) {
 		this.mediationNetworkId = mediationNetworkId;
 		this.mediationNetworkName = mediationNetworkName;
+		this.mediationAdFormat = mediationAdFormat;
 		this.mediationSource = mediationSource;
 		this.mediationAdId = mediationAdId;
 	}
 
 	public MediationData() {
 		// Default constructor.
+	}
+
+	/**
+	 * @return the mediationAdFormat
+	 */
+	public String getMediationAdFormat() {
+		return mediationAdFormat;
+	}
+
+	/**
+	 * @param mediationAdFormat
+	 *            the mediationAdFormat to set
+	 */
+	public void setMediationAdFormat(String mediationAdFormat) {
+		this.mediationAdFormat = mediationAdFormat;
 	}
 
 	/**
@@ -108,6 +125,24 @@ public class MediationData {
 	 */
 	public void setMediationAdId(String mediationAdId) {
 		this.mediationAdId = mediationAdId;
+	}
+
+	@Override
+	public String toString() {
+		StringBuffer strBuffer = new StringBuffer();
+		strBuffer.append("MediationData:{");
+		strBuffer.append("ID:");
+		strBuffer.append(this.getMediationNetworkId());
+		strBuffer.append(", Name:");
+		strBuffer.append(this.getMediationNetworkName());
+		strBuffer.append(", Source:");
+		strBuffer.append(this.getMediationSource());
+		strBuffer.append(", AdFormat:");
+		strBuffer.append(this.getMediationAdFormat());
+		strBuffer.append(", AdId:");
+		strBuffer.append(this.getMediationAdId());
+		strBuffer.append("}");
+		return strBuffer.toString();
 	}
 
 }

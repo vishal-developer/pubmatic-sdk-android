@@ -466,6 +466,9 @@ public class AdDescriptor {
 		String adType = parser.getAttributeValue(null, "type");
 		adInfo.put("type", adType);
 
+		String subAdType = parser.getAttributeValue(null, "subtype");
+		adInfo.put("subtype", subAdType);
+
 		// read past start tag
 		parser.next();
 
@@ -484,10 +487,6 @@ public class AdDescriptor {
 					adInfo.put(name + "Type", subType);
 				}
 
-				String adSubType = parser.getAttributeValue(null, "subtype");
-				if (TextUtils.isEmpty(adSubType) == false) {
-					adInfo.put("subtype", adSubType);
-				}
 				parser.next();
 				XmlPullParser mParser = parser;
 				int newEventType = mParser.getEventType();
@@ -496,7 +495,11 @@ public class AdDescriptor {
 					if (impT.equalsIgnoreCase("impressiontracker")) {
 						while (newEventType != XmlPullParser.END_DOCUMENT) {
 							String valueIT = "";
-							if (eventType == XmlPullParser.START_TAG) {
+							String newName = mParser.getName();
+							if (newEventType == XmlPullParser.END_TAG
+									&& "impressiontrackers".equals(newName)) {
+								break;
+							} else if (eventType == XmlPullParser.START_TAG) {
 								if (mParser.getEventType() == XmlPullParser.TEXT) {
 									valueIT = mParser.getText();
 								}
@@ -511,9 +514,14 @@ public class AdDescriptor {
 				} else if (name.equals("clicktrackers")) {
 					String clkT = mParser.getName();
 					if (("clicktracker").equalsIgnoreCase(clkT)) {
+						newEventType = mParser.getEventType();
 						while (newEventType != XmlPullParser.END_DOCUMENT) {
 							String valueCT = "";
-							if (eventType == XmlPullParser.START_TAG) {
+							String newName = parser.getName();
+							if (newEventType == XmlPullParser.END_TAG
+									&& "clicktrackers".equals(newName)) {
+								break;
+							} else if (eventType == XmlPullParser.START_TAG) {
 								if (mParser.getEventType() == XmlPullParser.TEXT) {
 									valueCT = mParser.getText();
 								}
@@ -526,8 +534,7 @@ public class AdDescriptor {
 						}
 					}
 				} else if (name.equals("mediation")) {
-					// TODO: Parse Mediation Obj
-
+					mediationData = parseMediation(mParser);
 				} else {
 					if (parser.getEventType() == XmlPullParser.TEXT) {
 						value = parser.getText();
@@ -549,6 +556,102 @@ public class AdDescriptor {
 		// mediation response
 		adDescriptor.setMediationData(mediationData);
 		return adDescriptor;
+	}
+
+	private static MediationData parseMediation(XmlPullParser mParser)
+			throws XmlPullParserException, IOException {
+
+		MediationData mediationData = new MediationData();
+		int eventType = mParser.getEventType();
+		while (eventType != XmlPullParser.END_DOCUMENT) {
+
+			String fieldName = mParser.getName();
+			if (mParser.getEventType() == XmlPullParser.START_TAG) {
+
+				String field = mParser.getName();
+				if ("id".equals(field)) {
+					mediationData.setMediationNetworkId(getXmlValue(mParser));
+				} else if ("name".equals(field)) {
+					mediationData.setMediationNetworkName(getXmlValue(mParser));
+				} else if ("source".equals(field)) {
+					mediationData.setMediationSource(getXmlValue(mParser));
+				} else if ("adformat".equals(field)) {
+					mediationData.setMediationAdFormat(getXmlValue(mParser));
+				} else if ("data".equals(field)) {
+
+					while (mParser.next() != XmlPullParser.END_TAG) {
+						if (mParser.getEventType() == XmlPullParser.START_TAG) {
+							String id = mParser.getName();
+							if ("adid".equals(id)) {
+								mediationData
+										.setMediationAdId(getXmlValue(mParser));
+							}
+						} else if (mParser.getEventType() == XmlPullParser.END_TAG
+								&& "adid".equals(fieldName)) {
+							break;
+						}
+					}
+
+				} else {
+					seekToCurrentEndTag(mParser);
+				}
+			} else if (mParser.getEventType() == XmlPullParser.END_TAG
+					&& "mediation".equals(fieldName)) {
+				break;
+			}
+
+			mParser.next();
+			eventType = mParser.getEventType();
+		}
+		return mediationData;
+	}
+
+	/**
+	 * Returns the value of the current XML tag.
+	 * 
+	 * @param parser
+	 * @return
+	 * @throws IOException
+	 * @throws XmlPullParserException
+	 */
+	private static String getXmlValue(XmlPullParser parser) throws IOException,
+			XmlPullParserException {
+		if (parser.next() == XmlPullParser.TEXT) {
+			String result = parser.getText();
+			parser.nextTag();
+			return result != null ? result.trim() : null;
+		}
+		return null;
+	}
+
+	/**
+	 * Caller should only call this method to point to the end tag of current
+	 * level of START_TAG and ignoring the next upcoming xml tags. It throws
+	 * IllegalStateException if the current event type is not START_TAG
+	 * 
+	 * @param parser
+	 * @throws XmlPullParserException
+	 * @throws IOException
+	 */
+	private static void seekToCurrentEndTag(XmlPullParser parser)
+			throws XmlPullParserException, IOException {
+
+		if (parser.getEventType() != XmlPullParser.START_TAG) {
+			throw new IllegalStateException(
+					"Current event of parser is not pointing to XmlPullParser.START_TAG");
+		}
+		int remainingTag = 1;
+		while (remainingTag != 0) {
+			switch (parser.next()) {
+			case XmlPullParser.END_TAG:
+				remainingTag--;
+				break;
+			case XmlPullParser.START_TAG:
+				remainingTag++;
+				break;
+			}
+		}
+
 	}
 
 	private final Map<String, String> adInfo;
@@ -606,6 +709,11 @@ public class AdDescriptor {
 
 	public String getContent() {
 		String value = adInfo.get("content");
+		return value;
+	}
+
+	public String getAdCreativeId() {
+		String value = adInfo.get("creativeid");
 		return value;
 	}
 

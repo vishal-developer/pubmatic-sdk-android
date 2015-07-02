@@ -71,9 +71,6 @@ public class NativeActivity extends Activity {
 	private TextView txtLogView = null;
 	private RelativeLayout mLayout = null;
 
-	// Base URL for mocean adserver
-	private final String AD_URL = "http://ads.test.mocean.mobi/ad";
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -96,7 +93,8 @@ public class NativeActivity extends Activity {
 		ad.setRequestListener(new AdRequestListener());
 		ad.setZone(179492); // TODO: Add your ZoneId
 
-		ad.setAdNetworkURL(AD_URL);
+		// Set custom Base URL for mocean adserver if required
+		// ad.setAdNetworkURL("http://ads.mocean.mobi/ad");
 
 		// Request for native assets
 		ad.addNativeAssetRequestList(getAssetRequests());
@@ -397,12 +395,12 @@ public class NativeActivity extends Activity {
 		}
 
 		@Override
-		public void onReceivedThirdPartyRequest(MASTNativeAd ad,
+		public void onReceivedThirdPartyRequest(MASTNativeAd mastNativeAd,
 				Map<String, String> properties, Map<String, String> parameters) {
 
 			appendOutput("Third Party Ad Received. \n Properties : \n "
 					+ properties + " Parameters : \n " + parameters);
-			MediationData mediationData = ad.getMediationData();
+			MediationData mediationData = mastNativeAd.getMediationData();
 			if (mediationData != null) {
 				appendOutput("Name: " + mediationData.getMediationNetworkName());
 				appendOutput("NetworkId: "
@@ -410,6 +408,22 @@ public class NativeActivity extends Activity {
 				appendOutput("Source: " + mediationData.getMediationSource());
 				appendOutput("AdId: " + mediationData.getMediationAdId());
 			}
+
+			// ---------------------------------------------------------
+			// Write Code to initialize third party SDK and request ads.
+			// ---------------------------------------------------------
+
+			// Test sending impression tracker and click trackers.
+
+			// Note: This method should be called only when ad from third party
+			// SDK is rendered.
+			mastNativeAd.sendImpression(); // Method added here only for testing
+											// purpose
+			
+			// Note: This method should be called only when ad clicked callback
+			// is received from third party SDK.
+			mastNativeAd.sendClickTracker(); // Method added here only for
+												// testing purpose
 
 		}
 

@@ -932,7 +932,7 @@ public final class MASTNativeAd implements AdRequest.Handler {
 	 */
 	public void sendImpression() {
 		if (!mThirdPartyImpTrackerSent && mNativeAdDescriptor != null
-				&& "thirdparty".equals(mNativeAdDescriptor.getType())) {
+				&& mNativeAdDescriptor.isTypeMediation()) {
 			sendImpressions(TrackerType.IMPRESSION_TRACKER);
 			mThirdPartyImpTrackerSent = true;
 		}
@@ -945,7 +945,7 @@ public final class MASTNativeAd implements AdRequest.Handler {
 	 */
 	public void sendClickTracker() {
 		if (!mThirdPartyClickTrackerSent && mNativeAdDescriptor != null
-				&& "thirdparty".equals(mNativeAdDescriptor.getType())) {
+				&& mNativeAdDescriptor.isTypeMediation()) {
 			sendImpressions(TrackerType.CLICK_TRACKER);
 			mThirdPartyClickTrackerSent = true;
 		}
