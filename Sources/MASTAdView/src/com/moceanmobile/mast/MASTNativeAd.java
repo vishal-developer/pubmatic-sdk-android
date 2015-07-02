@@ -144,6 +144,8 @@ public final class MASTNativeAd implements AdRequest.Handler {
 	// Used to store the the current native response
 	private NativeAdDescriptor mNativeAdDescriptor = null;
 	private boolean mImpressionTrackerSent = false;
+	private boolean mThirdPartyImpTrackerSent = false;
+	private boolean mThirdPartyClickTrackerSent = false;
 	private boolean mClickTrackerSent = false;
 	private NativeRequestListener mListener = null;
 	private String mUserAgent = null;
@@ -795,6 +797,8 @@ public final class MASTNativeAd implements AdRequest.Handler {
 		mMediationData = null;
 
 		mImpressionTrackerSent = false;
+		mThirdPartyImpTrackerSent = false;
+		mThirdPartyClickTrackerSent = false;
 		mClickTrackerSent = false;
 
 		if (mBaseAdapter != null) {
@@ -917,6 +921,33 @@ public final class MASTNativeAd implements AdRequest.Handler {
 			if (mLogListener.onLogEvent(this, event, eventLevel)) {
 				return;
 			}
+		}
+	}
+
+	/**
+	 * Call this method whenever a client side thirdparty response is received
+	 * and user have rendered ad using third-party SDK. User should call this
+	 * method when successful ad load complete callback is received from third
+	 * party SDK.
+	 */
+	public void sendImpression() {
+		if (!mThirdPartyImpTrackerSent && mNativeAdDescriptor != null
+				&& "thirdparty".equals(mNativeAdDescriptor.getType())) {
+			sendImpressions(TrackerType.IMPRESSION_TRACKER);
+			mThirdPartyImpTrackerSent = true;
+		}
+	}
+
+	/**
+	 * Call this method whenever ad received from client side thirdparty SDK is
+	 * clicked. User should call this method when ad clicked callback is
+	 * received from third party SDK.
+	 */
+	public void sendClickTracker() {
+		if (!mThirdPartyClickTrackerSent && mNativeAdDescriptor != null
+				&& "thirdparty".equals(mNativeAdDescriptor.getType())) {
+			sendImpressions(TrackerType.CLICK_TRACKER);
+			mThirdPartyClickTrackerSent = true;
 		}
 	}
 
