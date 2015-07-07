@@ -119,6 +119,7 @@ public class MASTAdView extends ViewGroup {
 	// Configuration
 	private int zone = 0;
 	private boolean test = false;
+	private String creativeCode = null;
 	private int updateInterval = 0;
 	private String adNetworkURL = Defaults.AD_NETWORK_URL;
 	private Map<String, String> adRequestDefaultParameters = new HashMap<String, String>();
@@ -161,13 +162,16 @@ public class MASTAdView extends ViewGroup {
 	// Updating
 	private boolean updateOnLayout = false;
 	private boolean deferredUpdate = false;
-	private AdRequest adRequest = null;
-	private AdDescriptor adDescriptor = null;
+	private AdRequest mAdRequest = null;
+	private AdDescriptor mAdDescriptor = null;
+	private MediationData mMediationData;
 	private AdRequestHandler adRequestHandler = new AdRequestHandler();
 	private ScheduledFuture<?> adUpdateIntervalFuture = null;
 
 	// Tracking
 	private boolean invokeTracking = false;
+	private boolean mImpressionTrackerSent = false;
+	private boolean mClickTrackerSent = false;
 
 	// Internal browser
 	private BrowserDialog browserDialog = null;
@@ -551,6 +555,23 @@ public class MASTAdView extends ViewGroup {
 		return test;
 	}
 
+	/** Get the test creativeCode you have set */
+	public String getCreativeCode() {
+		return creativeCode;
+	}
+
+	/**
+	 * Set the creativeCode script to request this test creative in SDK. <br>
+	 * <b>Note:</b> Use only while testing. Do not use this in production. <br>
+	 * Server side configuration might be required to use this feature.
+	 * 
+	 * @param creativeCode
+	 *            The javascript creative code to set.
+	 */
+	public void setCreativeCode(String creativeCode) {
+		this.creativeCode = creativeCode;
+	}
+
 	/**
 	 * Used with interstitial to show a close button. If not set, users will not
 	 * see a close button on interstitial ads. Does nothing if used with inline
@@ -815,7 +836,7 @@ public class MASTAdView extends ViewGroup {
 					.scheduleAtFixedRate(new Runnable() {
 						@Override
 						public void run() {
-							internalUpdate();
+							internalUpdate(false);
 						}
 
 					}, 0, updateInterval, TimeUnit.SECONDS);
@@ -841,7 +862,7 @@ public class MASTAdView extends ViewGroup {
 			}
 		}
 
-		internalUpdate();
+		internalUpdate(false);
 	}
 
 	/**
@@ -855,6 +876,8 @@ public class MASTAdView extends ViewGroup {
 	 */
 	public void reset() {
 		deferredUpdate = false;
+		mImpressionTrackerSent = false;
+		mClickTrackerSent = false;
 
 		removeContent();
 
@@ -893,10 +916,20 @@ public class MASTAdView extends ViewGroup {
 			interstitialDialog.removeAllViews();
 		}
 
-		adDescriptor = null;
+		mAdDescriptor = null;
+		mMediationData = null;
 	}
 
-	private void internalUpdate() {
+	/**
+	 * Call this method if the third party partner defaults or gives the error.
+	 * SDK will initiate a new request eliminating the call to the defaulted
+	 * partner.
+	 */
+	public void thirdpartyPartnerDefaulted() {
+		internalUpdate(true);
+	}
+
+	private void internalUpdate(boolean isLastRequestDafaulted) {
 
 		deferredUpdate = false;
 
@@ -1002,6 +1035,39 @@ public class MASTAdView extends ViewGroup {
 		if (this.test) {
 			adRequestDefaultParameters.put("test", "1");
 		}
+
+		if (creativeCode != null && !creativeCode.trim().equals("")) {
+			adRequestDefaultParameters.put("creativecode", creativeCode);
+		}
+
+		/*
+		 * If the mediation partner has defaulted, add this parameter to denote
+		 * that this network has defaulted and to remove this network from
+		 * auction next time. In case the source is direct send the creativeId
+		 * instead of network id.
+		 */
+		// Clear old params if present.
+		adRequestDefaultParameters
+				.remove(MASTAdViewConstants.DEFAULTED_EXCREATIVES);
+		adRequestDefaultParameters
+				.remove(MASTAdViewConstants.DEFAULTED_PUBMATIC_EXFEEDS);
+		if (mAdDescriptor != null && isLastRequestDafaulted
+				&& "thirdparty".equalsIgnoreCase(mAdDescriptor.getType())) {
+			if ("mediation".equals(mAdDescriptor.getMediationData()
+					.getMediationSource())) {
+				// For thirdparty mediation, send pubmatic_exfeed
+				adRequestDefaultParameters.put(
+						MASTAdViewConstants.DEFAULTED_PUBMATIC_EXFEEDS,
+						mAdDescriptor.getMediationData()
+								.getMediationNetworkId());
+			} else {
+				// For thirdparty direct, send excreatives
+				adRequestDefaultParameters.put(
+						MASTAdViewConstants.DEFAULTED_EXCREATIVES,
+						mAdDescriptor.getAdCreativeId());
+			}
+		}
+
 		addCustomParams(args);
 		for (Map.Entry<String, String> entry : adRequestDefaultParameters
 				.entrySet()) {
@@ -1009,12 +1075,13 @@ public class MASTAdView extends ViewGroup {
 					"Default params : " + entry.getValue() + entry.getKey());
 			args.put(entry.getKey(), entry.getValue());
 		}
+		mMediationData = null; // Reset old mediation data
 		try {
-			if (adRequest != null)
-				adRequest.cancel();
-			adRequest = AdRequest.create(Defaults.NETWORK_TIMEOUT_SECONDS,
+			if (mAdRequest != null)
+				mAdRequest.cancel();
+			mAdRequest = AdRequest.create(Defaults.NETWORK_TIMEOUT_SECONDS,
 					adNetworkURL, userAgent, args, adRequestHandler);
-			String requestUrl = adRequest.getRequestUrl();
+			String requestUrl = mAdRequest.getRequestUrl();
 			logEvent("Ad request:" + requestUrl, LogLevel.Debug);
 		} catch (UnsupportedEncodingException e) {
 			logEvent("Exception encountered while generating ad request URL:"
@@ -1160,6 +1227,8 @@ public class MASTAdView extends ViewGroup {
 			throw new IllegalArgumentException("adDescriptor null");
 
 		invokeTracking = true;
+		mImpressionTrackerSent = false;
+		mClickTrackerSent = false;
 
 		String adType = adDescriptor.getType();
 		if (adType.startsWith("image")) {
@@ -1184,9 +1253,9 @@ public class MASTAdView extends ViewGroup {
 
 		if (adType.startsWith("thirdparty")) {
 			String url = adDescriptor.getURL();
-			if (TextUtils.isEmpty(url) == false) {
+			if (TextUtils.isEmpty(url) == false && url.trim().length() > 0) {
 				String img = adDescriptor.getImage();
-				if (TextUtils.isEmpty(img) == false) {
+				if (TextUtils.isEmpty(img) == false && img.trim().length() > 0) {
 					if (verifyThirdPartyRendering(content, url, img)) {
 						fetchImage(adDescriptor, img);
 						return;
@@ -1194,8 +1263,8 @@ public class MASTAdView extends ViewGroup {
 				}
 
 				final String txt = adDescriptor.getText();
-				if (TextUtils.isEmpty(txt) == false) {
-					if (verifyThirdPartyRendering(content, url, img)) {
+				if (TextUtils.isEmpty(txt) == false && txt.trim().length() > 0) {
+					if (verifyThirdPartyRendering(content, url, txt)) {
 						runOnUiThread(new Runnable() {
 							public void run() {
 								renderText(adDescriptor, txt);
@@ -1206,11 +1275,14 @@ public class MASTAdView extends ViewGroup {
 				}
 			} else if (TextUtils.isEmpty(content) == false) {
 				if (content.contains("client_side_external_campaign") == true) {
+					mMediationData = null;
 					try {
 						if (requestListener != null) {
 							ThirdPartyDescriptor thirdPartyDescriptor = ThirdPartyDescriptor
 									.parseDescriptor(content);
-
+							// Set MediationData as member object
+							mMediationData = adDescriptor.getMediationData();
+							this.mAdDescriptor = adDescriptor;
 							requestListener.onReceivedThirdPartyRequest(this,
 									thirdPartyDescriptor.getProperties(),
 									thirdPartyDescriptor.getParams());
@@ -1241,6 +1313,21 @@ public class MASTAdView extends ViewGroup {
 				renderRichMedia(adDescriptor);
 			}
 		});
+	}
+
+	/**
+	 * Call this method to get the third-party mediation data if available. <br>
+	 * In case if third party mediation response is received from Mocean server
+	 * (when source=mediation), then user should call this method after
+	 * onReceivedThirdPartyRequest() callback, to get mediation data. This
+	 * mediation data can then be used to Initialize third party SDK. <br>
+	 * Please note that MediationData will be null when mediation source is
+	 * direct.
+	 * 
+	 * @return {@link MediationData} if available, else returns null.
+	 */
+	public MediationData getMediationData() {
+		return mMediationData;
 	}
 
 	private boolean verifyThirdPartyRendering(String content, String url,
@@ -1280,16 +1367,55 @@ public class MASTAdView extends ViewGroup {
 		if ((isInterstitial() == false) && (isShown() == false)) {
 			return;
 		}
-		if (invokeTracking && (adDescriptor != null)) {
+		if (invokeTracking && (mAdDescriptor != null)) {
 			invokeTracking = false;
 
 			// String url = adDescriptor.getTrack();
-			if (adDescriptor.getImpressionTrackers().size() > 0) {
-				for (String urls : adDescriptor.getImpressionTrackers()) {
+			if (mAdDescriptor.getImpressionTrackers().size() > 0) {
+				for (String urls : mAdDescriptor.getImpressionTrackers()) {
 					AdTracking.invokeTrackingUrl(
 							Defaults.NETWORK_TIMEOUT_SECONDS, urls, userAgent);
 				}
 			}
+		}
+	}
+
+	/**
+	 * Call this method whenever a client side thirdparty response is received
+	 * and user have rendered ad using third-party SDK. User should call this
+	 * method when successful ad load complete callback is received from third
+	 * party SDK.
+	 */
+	public void sendImpression() {
+		if (!mImpressionTrackerSent && mAdDescriptor != null
+				&& "thirdparty".equals(mAdDescriptor.getType())) {
+			if (mAdDescriptor.getImpressionTrackers() != null
+					&& mAdDescriptor.getImpressionTrackers().size() > 0) {
+				for (String url : mAdDescriptor.getImpressionTrackers()) {
+					AdTracking.invokeTrackingUrl(
+							Defaults.NETWORK_TIMEOUT_SECONDS, url, userAgent);
+				}
+			}
+			mImpressionTrackerSent = true;
+		}
+	}
+
+	/**
+	 * Call this method whenever ad received from client side thirdparty SDK is
+	 * clicked. User should call this method when ad clicked callback is
+	 * received from third party SDK.
+	 */
+	public void sendClickTracker() {
+		if (!mClickTrackerSent && mAdDescriptor != null
+				&& "thirdparty".equals(mAdDescriptor.getType())) {
+			if (mAdDescriptor.getClickTrackers() != null
+					&& mAdDescriptor.getClickTrackers().size() > 0) {
+				for (String url : mAdDescriptor.getClickTrackers()) {
+					AdTracking.invokeTrackingUrl(
+							Defaults.NETWORK_TIMEOUT_SECONDS, url, userAgent);
+				}
+			}
+			mClickTrackerSent = true;
 		}
 	}
 
@@ -1340,7 +1466,7 @@ public class MASTAdView extends ViewGroup {
 			imageView.setImageGifDecoder((GifDecoder) imageObject);
 		}
 
-		this.adDescriptor = adDescriptor;
+		this.mAdDescriptor = adDescriptor;
 
 		prepareCloseButton();
 		performAdTracking();
@@ -1355,7 +1481,7 @@ public class MASTAdView extends ViewGroup {
 			imageView.setImageBitmap(null);
 		}
 
-		adDescriptor = null;
+		mAdDescriptor = null;
 	}
 
 	// main thread
@@ -1372,7 +1498,7 @@ public class MASTAdView extends ViewGroup {
 
 		textView.setText(text);
 
-		this.adDescriptor = adDescriptor;
+		this.mAdDescriptor = adDescriptor;
 
 		prepareCloseButton();
 		performAdTracking();
@@ -1387,7 +1513,7 @@ public class MASTAdView extends ViewGroup {
 			textView.setText("");
 		}
 
-		adDescriptor = null;
+		mAdDescriptor = null;
 	}
 
 	// main thread
@@ -1410,7 +1536,7 @@ public class MASTAdView extends ViewGroup {
 		String fragment = adDescriptor.getContent();
 		webView.loadFragment(fragment, mraidBridge);
 
-		this.adDescriptor = adDescriptor;
+		this.mAdDescriptor = adDescriptor;
 
 		if (requestListener != null) {
 			requestListener.onReceivedAd(MASTAdView.this);
@@ -1449,7 +1575,7 @@ public class MASTAdView extends ViewGroup {
 			webView.clearHistory();
 		}
 
-		adDescriptor = null;
+		mAdDescriptor = null;
 	}
 
 	// main thread
@@ -1545,7 +1671,7 @@ public class MASTAdView extends ViewGroup {
 	protected Parcelable onSaveInstanceState() {
 		Parcelable parcelable = super.onSaveInstanceState();
 
-		if (adDescriptor == null)
+		if (mAdDescriptor == null)
 			return parcelable;
 
 		return parcelable;
@@ -2017,9 +2143,9 @@ public class MASTAdView extends ViewGroup {
 		public void onClick(View view) {
 			if (((imageView != null) && (imageView.getParent() == view))
 					|| ((textView != null) && (textView.getParent() == view))) {
-				if ((adDescriptor != null)
-						&& (TextUtils.isEmpty(adDescriptor.getURL()) == false)) {
-					openUrl(adDescriptor.getURL(), false);
+				if ((mAdDescriptor != null)
+						&& (TextUtils.isEmpty(mAdDescriptor.getURL()) == false)) {
+					openUrl(mAdDescriptor.getURL(), false);
 				}
 			}
 		}
@@ -2725,7 +2851,7 @@ public class MASTAdView extends ViewGroup {
 		 * @deprecated - Do not use this method. It is being used internally.
 		 */
 		public void adRequestFailed(AdRequest request, Exception exception) {
-			if (request != adRequest)
+			if (request != mAdRequest)
 				return;
 
 			logEvent("Ad request failed: " + exception, LogLevel.Error);
@@ -2734,7 +2860,7 @@ public class MASTAdView extends ViewGroup {
 				requestListener.onFailedToReceiveAd(MASTAdView.this, exception);
 			}
 
-			adRequest = null;
+			mAdRequest = null;
 		}
 
 		@Override
@@ -2749,7 +2875,7 @@ public class MASTAdView extends ViewGroup {
 		 */
 		public void adRequestError(AdRequest request, String errorCode,
 				String errorMessage) {
-			if (request != adRequest)
+			if (request != mAdRequest)
 				return;
 
 			if (requestListener != null) {
@@ -2764,7 +2890,7 @@ public class MASTAdView extends ViewGroup {
 			logEvent("Error response from server.  Error code: " + errorCode
 					+ ". Error message: " + errorMessage, logLevel);
 
-			adRequest = null;
+			mAdRequest = null;
 		}
 
 		@Override
@@ -2778,12 +2904,12 @@ public class MASTAdView extends ViewGroup {
 		 */
 		public void adRequestCompleted(AdRequest request,
 				AdDescriptor adDescriptor) {
-			if (request != adRequest)
+			if (request != mAdRequest)
 				return;
 
 			renderAdDescriptor(adDescriptor);
 
-			adRequest = null;
+			mAdRequest = null;
 		}
 	}
 
@@ -2805,9 +2931,9 @@ public class MASTAdView extends ViewGroup {
 				public void onClick(View v) {
 					if (((imageView != null) && (imageView.getParent() == container))
 							|| ((textView != null) && (textView.getParent() == container))) {
-						if ((adDescriptor != null)
-								&& (TextUtils.isEmpty(adDescriptor.getURL()) == false)) {
-							openUrl(adDescriptor.getURL(), false);
+						if ((mAdDescriptor != null)
+								&& (TextUtils.isEmpty(mAdDescriptor.getURL()) == false)) {
+							openUrl(mAdDescriptor.getURL(), false);
 						}
 					}
 				}

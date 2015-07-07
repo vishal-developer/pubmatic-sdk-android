@@ -89,22 +89,26 @@ public class AdDescriptor {
 	 * 
 	 * In case of receiving ad : { "type": "thirdparty", "subtype": "native",
 	 * "creativeid": 1, "feedid": 1115, "native": { "ver": 1, "link": { "url":
-	 * "http:\/\/ads.moceanads.com\/1\/redir\/9bde02d0-6017-11e4-9df7-005056967c35\/0\/1"
-	 * , "fallback": "http:\/\/example.com\/fallback", "clicktrackers": [
+	 * "http:\/\/ads.moceanads.com\/1\/redir\/9bde02d0-6017-11e4-9df7-005056967c
+	 * 3 5 \ / 0 \ / 1
+	 * " , "fallback": "http:\/\/example.com\/fallback", "clicktrackers": [
 	 * "http:\/\/clicktracker.com\/main\/9bde02d0-6017-11e4-9df7-005056967c35" ]
 	 * }, "assets": [ { "id": 2, "img": { "url": "http:\/\/example_320x50.png",
 	 * "w": 320, "h": 50 }, "link": { "url":
-	 * "http:\/\/ads.moceanads.com\/1\/redir\/9bde02d0-6017-11e4-9df7-005056967c35\/1\/1"
-	 * , "fallback": "http:\/\/example.com\/custom_fallback", "clicktrackers": [
+	 * "http:\/\/ads.moceanads.com\/1\/redir\/9bde02d0-6017-11e4-9df7-005056967c
+	 * 3 5 \ / 1 \ / 1
+	 * " , "fallback": "http:\/\/example.com\/custom_fallback", "clicktrackers
+	 * ": [
 	 * "http:\/\/clicktracker.com\/custom\/9bde02d0-6017-11e4-9df7-005056967c35"
 	 * ] } }, { "id": 3, "title": { "text": "Native title" }, "link": { "url":
-	 * "http:\/\/ads.moceanads.com\/1\/redir\/9bde02d0-6017-11e4-9df7-005056967c35\/2\/1
-	 * " } }, { "id": 4, "data": { "value": "Native description" }, "link": {
-	 * "url":
-	 * "http:\/\/ads.moceanads.com\/1\/redir\/9bde02d0-6017-11e4-9df7-005056967c35\/3\/1
+	 * "http:\/\/ads.moceanads.com\/1\/redir\/9bde02d0-6017-11e4-9df7-005056967c
+	 * 3 5 \ / 2 \ / 1 " } }, { "id": 4, "data": { "value": "Native
+	 * description" }, "link": { "url":
+	 * "http:\/\/ads.moceanads.com\/1\/redir\/9bde02d0-6017-11e4-9df7-005056967c
+	 * 3 5 \ / 3 \ / 1
 	 * " } }, { "id": 6, "data": { "value": "5" }, "link": { "url":
-	 * "http:\/\/ads.moceanads.com\/1\/redir\/9bde02d0-6017-11e4-9df7-005056967c35\/4\/1
-	 * " } } ], "imptrackers": [
+	 * "http:\/\/ads.moceanads.com\/1\/redir\/9bde02d0-6017-11e4-9df7-005056967c
+	 * 3 5 \ / 4 \ / 1 " } } ], "imptrackers": [
 	 * "http:\/\/ads.moceanads.com\/1\/img\/9bde02d0-6017-11e4-9df7-005056967c35
 	 * " ] } }
 	 * 
@@ -114,8 +118,8 @@ public class AdDescriptor {
 	 * "mediation", "data": { "adid": "123" }, "imptrackers": [
 	 * "http:\/\/ads.moceanads.com\/1\/img\/9bde02d0-6017-11e4-9df7-005056967c35
 	 * " ], "clicktrackers": [
-	 * "http:\/\/ads.moceanads.com\/1\/click\/9bde02d0-6017-11e4-9df7-005056967c35\/1
-	 * " ] } }
+	 * "http:\/\/ads.moceanads.com\/1\/click\/9bde02d0-6017-11e4-9df7-005056967c
+	 * 3 5 \ / 1 " ] } }
 	 * 
 	 * @param inputStream
 	 *            Input Stream data to parse
@@ -456,9 +460,14 @@ public class AdDescriptor {
 			throws XmlPullParserException, IOException {
 		Map<String, String> adInfo = new HashMap<String, String>();
 		ArrayList<String> impressionTrackers = new ArrayList<String>();
+		ArrayList<String> clickTrackers = new ArrayList<String>();
+		MediationData mediationData = null;
 
 		String adType = parser.getAttributeValue(null, "type");
 		adInfo.put("type", adType);
+
+		String subAdType = parser.getAttributeValue(null, "subtype");
+		adInfo.put("subtype", subAdType);
 
 		// read past start tag
 		parser.next();
@@ -477,6 +486,7 @@ public class AdDescriptor {
 				if (TextUtils.isEmpty(subType) == false) {
 					adInfo.put(name + "Type", subType);
 				}
+
 				parser.next();
 				XmlPullParser mParser = parser;
 				int newEventType = mParser.getEventType();
@@ -485,7 +495,11 @@ public class AdDescriptor {
 					if (impT.equalsIgnoreCase("impressiontracker")) {
 						while (newEventType != XmlPullParser.END_DOCUMENT) {
 							String valueIT = "";
-							if (eventType == XmlPullParser.START_TAG) {
+							String newName = mParser.getName();
+							if (newEventType == XmlPullParser.END_TAG
+									&& "impressiontrackers".equals(newName)) {
+								break;
+							} else if (eventType == XmlPullParser.START_TAG) {
 								if (mParser.getEventType() == XmlPullParser.TEXT) {
 									valueIT = mParser.getText();
 								}
@@ -497,6 +511,30 @@ public class AdDescriptor {
 							}
 						}
 					}
+				} else if (name.equals("clicktrackers")) {
+					String clkT = mParser.getName();
+					if (("clicktracker").equalsIgnoreCase(clkT)) {
+						newEventType = mParser.getEventType();
+						while (newEventType != XmlPullParser.END_DOCUMENT) {
+							String valueCT = "";
+							String newName = parser.getName();
+							if (newEventType == XmlPullParser.END_TAG
+									&& "clicktrackers".equals(newName)) {
+								break;
+							} else if (eventType == XmlPullParser.START_TAG) {
+								if (mParser.getEventType() == XmlPullParser.TEXT) {
+									valueCT = mParser.getText();
+								}
+								if (TextUtils.isEmpty(valueCT) == false) {
+									clickTrackers.add(valueCT);
+								}
+								mParser.next();
+								newEventType = mParser.getEventType();
+							}
+						}
+					}
+				} else if (name.equals("mediation")) {
+					mediationData = parseMediation(mParser);
 				} else {
 					if (parser.getEventType() == XmlPullParser.TEXT) {
 						value = parser.getText();
@@ -513,11 +551,113 @@ public class AdDescriptor {
 
 		AdDescriptor adDescriptor = new AdDescriptor(adInfo);
 		adDescriptor.setImpressionTrackers(impressionTrackers);
+		adDescriptor.setClickTrackers(clickTrackers);
+		// Mediation data will be available only in case of third-party
+		// mediation response
+		adDescriptor.setMediationData(mediationData);
 		return adDescriptor;
+	}
+
+	private static MediationData parseMediation(XmlPullParser mParser)
+			throws XmlPullParserException, IOException {
+
+		MediationData mediationData = new MediationData();
+		int eventType = mParser.getEventType();
+		while (eventType != XmlPullParser.END_DOCUMENT) {
+
+			String fieldName = mParser.getName();
+			if (mParser.getEventType() == XmlPullParser.START_TAG) {
+
+				String field = mParser.getName();
+				if ("id".equals(field)) {
+					mediationData.setMediationNetworkId(getXmlValue(mParser));
+				} else if ("name".equals(field)) {
+					mediationData.setMediationNetworkName(getXmlValue(mParser));
+				} else if ("source".equals(field)) {
+					mediationData.setMediationSource(getXmlValue(mParser));
+				} else if ("adformat".equals(field)) {
+					mediationData.setMediationAdFormat(getXmlValue(mParser));
+				} else if ("data".equals(field)) {
+
+					while (mParser.next() != XmlPullParser.END_TAG) {
+						if (mParser.getEventType() == XmlPullParser.START_TAG) {
+							String id = mParser.getName();
+							if ("adid".equals(id)) {
+								mediationData
+										.setMediationAdId(getXmlValue(mParser));
+							}
+						} else if (mParser.getEventType() == XmlPullParser.END_TAG
+								&& "adid".equals(fieldName)) {
+							break;
+						}
+					}
+
+				} else {
+					seekToCurrentEndTag(mParser);
+				}
+			} else if (mParser.getEventType() == XmlPullParser.END_TAG
+					&& "mediation".equals(fieldName)) {
+				break;
+			}
+
+			mParser.next();
+			eventType = mParser.getEventType();
+		}
+		return mediationData;
+	}
+
+	/**
+	 * Returns the value of the current XML tag.
+	 * 
+	 * @param parser
+	 * @return
+	 * @throws IOException
+	 * @throws XmlPullParserException
+	 */
+	private static String getXmlValue(XmlPullParser parser) throws IOException,
+			XmlPullParserException {
+		if (parser.next() == XmlPullParser.TEXT) {
+			String result = parser.getText();
+			parser.nextTag();
+			return result != null ? result.trim() : null;
+		}
+		return null;
+	}
+
+	/**
+	 * Caller should only call this method to point to the end tag of current
+	 * level of START_TAG and ignoring the next upcoming xml tags. It throws
+	 * IllegalStateException if the current event type is not START_TAG
+	 * 
+	 * @param parser
+	 * @throws XmlPullParserException
+	 * @throws IOException
+	 */
+	private static void seekToCurrentEndTag(XmlPullParser parser)
+			throws XmlPullParserException, IOException {
+
+		if (parser.getEventType() != XmlPullParser.START_TAG) {
+			throw new IllegalStateException(
+					"Current event of parser is not pointing to XmlPullParser.START_TAG");
+		}
+		int remainingTag = 1;
+		while (remainingTag != 0) {
+			switch (parser.next()) {
+			case XmlPullParser.END_TAG:
+				remainingTag--;
+				break;
+			case XmlPullParser.START_TAG:
+				remainingTag++;
+				break;
+			}
+		}
+
 	}
 
 	private final Map<String, String> adInfo;
 	private ArrayList<String> mImpressionTrackers = new ArrayList<String>();
+	private ArrayList<String> mClickTrackers = new ArrayList<String>();
+	private MediationData mMediationData = null;
 	/*
 	 * This parameter will be used for Native Ads. It will be set when error
 	 * occurs while serving the Native ad and server returns a json with error.
@@ -534,6 +674,11 @@ public class AdDescriptor {
 
 	public String getType() {
 		String value = adInfo.get("type");
+		return value;
+	}
+
+	public String getSubType() {
+		String value = adInfo.get("subtype");
 		return value;
 	}
 
@@ -567,6 +712,11 @@ public class AdDescriptor {
 		return value;
 	}
 
+	public String getAdCreativeId() {
+		String value = adInfo.get("creativeid");
+		return value;
+	}
+
 	public ArrayList<String> getImpressionTrackers() {
 		return mImpressionTrackers;
 	}
@@ -574,6 +724,41 @@ public class AdDescriptor {
 	public void setImpressionTrackers(ArrayList<String> mImpressionTrackers) {
 		this.mImpressionTrackers.clear();
 		this.mImpressionTrackers = mImpressionTrackers;
+	}
+
+	/**
+	 * Get click trackers list is received from server
+	 * 
+	 * @return List of click tracker URL's
+	 */
+	public ArrayList<String> getClickTrackers() {
+		return mClickTrackers;
+	}
+
+	/**
+	 * Set the list of click tracker url's
+	 * 
+	 * @param clickTrackers
+	 */
+	public void setClickTrackers(ArrayList<String> clickTrackers) {
+		if (this.mClickTrackers != null) {
+			this.mClickTrackers.clear();
+		}
+		this.mClickTrackers = clickTrackers;
+	}
+
+	/**
+	 * Get the mediation data received in case of third-party mediation response
+	 */
+	public MediationData getMediationData() {
+		return mMediationData;
+	}
+
+	/**
+	 * Set the mediation data received in case of third-party mediation response
+	 */
+	public void setMediationData(MediationData mediationData) {
+		this.mMediationData = mediationData;
 	}
 
 	/**

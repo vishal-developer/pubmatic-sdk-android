@@ -130,3 +130,16 @@ RJX-889-37479 | setCloseButtonDelay() issue
 Enabled multi-pixel tracking for SDK.
 
 
+------
+ 4.2
+------
+
+- Added thirdparty mediation support via PubMatic SSP. 
+- Removed mediation adapters for native.
+- Changes in XML parsing for banner ads to support new <mediation> object.
+- Added MediationData bean/modal class for as a container for mediation data.
+- Added functionality for passback in case of mediation for banner ad view via thirdpartyPartnerDefaulted() method.
+- Added sendImpression and sendClickTracker API methods for thirdparty ads. User should call this methods when third party ad is rendered/clicked.
+
+
+

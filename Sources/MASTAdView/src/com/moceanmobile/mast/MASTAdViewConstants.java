@@ -17,8 +17,10 @@
 
 package com.moceanmobile.mast;
 
-public interface MASTAdViewConstants
-{
+public interface MASTAdViewConstants {
 	public static final String xml_layout_attribute_zone = "zone";
 	public static final String xml_layout_attribute_logLevel = "logLevel";
+
+	public static final String DEFAULTED_EXCREATIVES = "excreatives";
+	public static final String DEFAULTED_PUBMATIC_EXFEEDS = "pubmatic_exfeeds";
 }

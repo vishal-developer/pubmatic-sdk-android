@@ -32,11 +32,6 @@ package com.moceanmobile.mast;
  */
 public interface MASTNativeAdConstants {
 
-    public static final String MEDIATION_FAN_NAME = "FAN";
-    public static final String MEDIATION_MOPUB_NAME = "MoPub";
-    public static final String MEDIATION_FAN_ADAPTER_CLASS = "com.moceanmobile.mast.mediation.MASTFacebookAdapter";
-    public static final String MEDIATION_MOPUB_ADAPTER_CLASS = "com.moceanmobile.mast.mediation.MASTMoPubAdapter";
-
     public static final String DEFAULTED_EXCREATIVES = "excreatives";
     public static final String DEFAULTED_PUBMATIC_EXFEEDS = "pubmatic_exfeeds";
     public static final String TELEPHONY_MCC = "mcc";

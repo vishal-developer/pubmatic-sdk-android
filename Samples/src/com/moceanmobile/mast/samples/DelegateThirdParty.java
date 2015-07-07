@@ -1,5 +1,5 @@
 /*
- * PubMatic Inc. (“PubMatic”) CONFIDENTIAL
+ * PubMatic Inc. ("PubMatic") CONFIDENTIAL
  * Unpublished Copyright (c) 2006-2014 PubMatic, All Rights Reserved.
  *
  * NOTICE:  All information contained herein is, and remains the property of PubMatic. The intellectual and technical concepts contained
@@ -17,21 +17,68 @@
 
 package com.moceanmobile.mast.samples;
 
+import java.util.Map;
+
 import android.os.Bundle;
 
 import com.moceanmobile.mast.MASTAdView;
 import com.moceanmobile.mast.MASTAdView.LogLevel;
+import com.moceanmobile.mast.MASTAdViewDelegate.RequestListener;
 
-public class DelegateThirdParty extends DelegateGeneric
-{
+public class DelegateThirdParty extends DelegateGeneric {
 	@Override
-	protected void onCreate(Bundle savedInstanceState)
-	{
+	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		// Just swap out the zone and disable logging to prevent output spam.
-		MASTAdView adView = (MASTAdView) findViewById(R.id.adView);
-		adView.setZone(90038);
-		adView.setLogLevel(LogLevel.None);
+		final MASTAdView adView = (MASTAdView) findViewById(R.id.adView);
+
+		// adView.setZone(90038);
+		adView.setZone(179492); // Test tag
+
+		// Set custom Base URL for mocean adserver if required
+		adView.setAdNetworkURL("http://ads.test.mocean.mobi/ad?creatives=559665");
+
+		// Disable logging in production to prevent output spam.
+		adView.setLogLevel(LogLevel.Debug);
+
+		adView.setRequestListener(new RequestListener() {
+
+			@Override
+			public void onReceivedThirdPartyRequest(MASTAdView mastAdView,
+					Map<String, String> properties, Map<String, String> params) {
+				appendOutput("Properties: " + properties);
+				appendOutput("Parameters: " + params);
+				if (mastAdView.getMediationData() != null) {
+					appendOutput(mastAdView.getMediationData().toString());
+				}
+
+				// ---------------------------------------------------------
+				// Write Code to initialize third party SDK and request ads.
+				// ---------------------------------------------------------
+
+				// Test sending impression tracker and click trackers.
+
+				// Note: This method should be called only when ad from third
+				// party SDK is rendered.
+				mastAdView.sendImpression(); // Method added here only for
+												// testing purpose
+
+				// Note: This method should be called only when ad clicked
+				// callback is received from third party SDK.
+				mastAdView.sendClickTracker(); // Method added here only for
+												// testing purpose
+			}
+
+			@Override
+			public void onReceivedAd(MASTAdView mastAdView) {
+				appendOutput("DelegateThirdParty.onReceivedAd");
+			}
+
+			@Override
+			public void onFailedToReceiveAd(MASTAdView mastAdView, Exception ex) {
+				appendOutput("DelegateThirdParty.onFailedToReceiveAd. Exception: "
+						+ ex.getMessage());
+			}
+		});
 	}
 }
