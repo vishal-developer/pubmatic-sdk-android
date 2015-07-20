@@ -129,6 +129,11 @@ RJX-889-37479 | setCloseButtonDelay() issue
 
 Enabled multi-pixel tracking for SDK.
 
+------
+4.1.4
+------
+- Introduced functionality to retrieve image size when size_required = 1
+- Fixed bug to retrieve IDFA
 
 ------
  4.2

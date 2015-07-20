@@ -71,6 +71,7 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.moceanmobile.mast.MASTNativeAd.Image;
 import com.moceanmobile.mast.bean.AssetResponse;
@@ -483,8 +484,18 @@ public class AdDescriptor {
 				break;
 			} else if (eventType == XmlPullParser.START_TAG) {
 				String subType = parser.getAttributeValue(null, "type");
+				String width = parser.getAttributeValue(null, "width");
+				String height = parser.getAttributeValue(null, "height");
 				if (TextUtils.isEmpty(subType) == false) {
 					adInfo.put(name + "Type", subType);
+				}
+				if (TextUtils.isEmpty(width) == false && width != null) {
+					Log.d("Test", "Image in view widht" + width);
+					adInfo.put("width", width);
+				}
+				if (TextUtils.isEmpty(height) == false && height != null) {
+					Log.d("Test", "Image in view height" + height);
+					adInfo.put("height", height);
 				}
 
 				parser.next();
@@ -674,6 +685,16 @@ public class AdDescriptor {
 
 	public String getType() {
 		String value = adInfo.get("type");
+		return value;
+	}
+
+	public String getWidth() {
+		String value = adInfo.get("width");
+		return value;
+	}
+
+	public String getHeight() {
+		String value = adInfo.get("height");
 		return value;
 	}
 

@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.MessageDigest;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -67,6 +68,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -187,6 +189,9 @@ public class MASTAdView extends ViewGroup {
 	private LogListener logListener;
 	private RequestListener requestListener;
 	private RichMediaListener richMediaListener;
+
+	// androidaid
+	private boolean isAndroidaidEnabled;
 
 	/**
 	 * Used to create instances for placement in code. Only produces inline
@@ -811,6 +816,19 @@ public class MASTAdView extends ViewGroup {
 	}
 
 	/**
+	 * add androidaid as request param.
+	 * 
+	 * @param isAndroidaidEnabled
+	 */
+	public void setAndroidaidEnabled(boolean isAndroidaidEnabled) {
+		this.isAndroidaidEnabled = isAndroidaidEnabled;
+	}
+
+	public boolean isAndoridaidEnabled() {
+		return isAndroidaidEnabled;
+	}
+
+	/**
 	 * Invokes an update which requests and if received, renders ad content
 	 * replacing any previous ad content. If the force parameter is set to false
 	 * the update will be deferred if the user is interacting with the current
@@ -988,6 +1006,11 @@ public class MASTAdView extends ViewGroup {
 					isY = true;
 				}
 			}
+
+			adRequestDefaultParameters.put("size_required", "1");
+			if (isAndoridaidEnabled())
+				adRequestDefaultParameters.put("androidaid",
+						getUdidFromContext(getContext()));
 			if (!isX)
 				adRequestDefaultParameters
 						.put("size_x", String.valueOf(size_x));
@@ -1378,6 +1401,22 @@ public class MASTAdView extends ViewGroup {
 				}
 			}
 		}
+	}
+
+	public int getImageWidth() {
+		int width = 0;
+		if (mAdDescriptor != null && mAdDescriptor.getWidth() != null) {
+			return Integer.parseInt(mAdDescriptor.getWidth());
+		}
+		return width;
+	}
+
+	public int getImageHeight() {
+		int height = 0;
+		if (mAdDescriptor != null && mAdDescriptor.getHeight() != null) {
+			return Integer.parseInt(mAdDescriptor.getHeight());
+		}
+		return height;
 	}
 
 	/**
@@ -3228,5 +3267,32 @@ public class MASTAdView extends ViewGroup {
 				.getDisplayMetrics();
 		int px = (int) (dp * displayMetrics.density + .5f);
 		return px;
+	}
+
+	private static String getUdidFromContext(Context context) {
+		String deviceId = Settings.Secure.getString(
+				context.getContentResolver(), Settings.Secure.ANDROID_ID);
+		deviceId = (deviceId == null) ? "" : sha1(deviceId);
+		return deviceId;
+
+	}
+
+	public static String sha1(String string) {
+		StringBuilder stringBuilder = new StringBuilder();
+
+		try {
+			MessageDigest digest = MessageDigest.getInstance("SHA-1");
+			byte[] bytes = string.getBytes("UTF-8");
+			digest.update(bytes, 0, bytes.length);
+			bytes = digest.digest();
+
+			for (final byte b : bytes) {
+				stringBuilder.append(String.format("%02X", b));
+			}
+
+			return stringBuilder.toString().toLowerCase();
+		} catch (Exception e) {
+			return "";
+		}
 	}
 }
