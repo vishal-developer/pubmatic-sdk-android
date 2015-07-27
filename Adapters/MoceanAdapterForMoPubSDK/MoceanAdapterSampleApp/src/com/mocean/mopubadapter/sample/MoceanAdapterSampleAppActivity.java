@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -20,7 +19,6 @@ public class MoceanAdapterSampleAppActivity extends Activity {
 
 	protected static final String TAG = MoceanAdapterSampleAppActivity.class
 			.getSimpleName();
-	private Context mContext = this;
 	private MoPubView moPubView;
 
 	@Override
