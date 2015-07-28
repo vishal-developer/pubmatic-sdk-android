@@ -29,6 +29,7 @@ public class MoceanAdapterSampleAppActivity extends Activity {
 		moPubView = (MoPubView) findViewById(R.id.adview);
 		moPubView.setAdUnitId("8f32fb7c393a11e2a5ab12313900d932"); // MoPub AdUnit Id
 		moPubView.setBannerAdListener(moPubAdListener);
+		
 		// Local Extra parameters are optional
 		Map<String, Object> localExtras = new HashMap<String, Object>();
 		localExtras.put(MoceanBannerAdapter.KEY_MOCEAN_LOCATION_DETECTION_FLAG, Boolean.TRUE);

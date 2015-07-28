@@ -12,21 +12,17 @@ import com.moceanmobile.mast.MASTAdView.LogLevel;
 import com.moceanmobile.mast.MASTAdViewDelegate;
 
 /**
- * Mocean Banner Adapter for MoPub SDK. This adapter extends
+ * PubMatic Banner Adapter for MoPub SDK. This adapter extends
  * {@link CustomEventBanner} class. You can use this adapter class to integrate
- * Mocean SDK into MoPub SDK using client side mediation.
+ * PubMatic (Mocean) SDK into MoPub SDK using client side mediation.
  * <p>
  * <b>Mandatory server extra parameters required for Mocean SDK:</b><br>
  * In order to initialize and use Mocean SDK, following server extra parameters
  * needs to be configured on MoPub portal.
  * <ol>
  * <li>zoneId : Mocean ZoneID
- * <li>adWidth : Width of Mocean Banner Ad view in DIP (depth independent
- * pixels). Note: This value will be converted into pixels before initializing
- * Mocean SDK. Set this value to -1 if view width should
- * MATCH_PARENT/FILL_PARENT.
- * <li>adHeight : Height of Mocean Banner Ad view in DIP. Note: This value will
- * be converted into pixels before initializing Mocean SDK.
+ * <li>adWidth : Width of Mocean Banner Ad view in pixels.
+ * <li>adHeight : Height of Mocean Banner Ad view in pixels.
  * </ol>
  * </p>
  * On the MoPub web interface, create a network with the "Custom Native Network"
@@ -100,8 +96,8 @@ public class MoceanBannerAdapter extends CustomEventBanner implements
 	public static final String KEY_MOCEAN_LOCATION_DETECTION_FLAG = "mocean_sdk_location_detection_flag";
 
 	// For Internal Adapter use only
-	private static final String MOCEAN_CUSTOM_PARAM_FOR_AD_WIDHT = "size_x";
-	private static final String MOCEAN_CUSTOM_PARAM_FOR_AD_HEIGHT = "size_y";
+	private static final String MOCEAN_CUSTOM_PARAM_AD_WIDHT = "size_x";
+	private static final String MOCEAN_CUSTOM_PARAM_AD_HEIGHT = "size_y";
 
 	private static final String TAG = MoceanBannerAdapter.class.getSimpleName();
 	private MASTAdView mMastAdView;
@@ -134,8 +130,8 @@ public class MoceanBannerAdapter extends CustomEventBanner implements
 		// Get Custom Param Map
 		Map<String, String> customParamMap = mMastAdView
 				.getAdRequestParameters();
-		customParamMap.put(MOCEAN_CUSTOM_PARAM_FOR_AD_WIDHT, "" + adWidth);
-		customParamMap.put(MOCEAN_CUSTOM_PARAM_FOR_AD_HEIGHT, "" + adHeight);
+		customParamMap.put(MOCEAN_CUSTOM_PARAM_AD_WIDHT, "" + adWidth);
+		customParamMap.put(MOCEAN_CUSTOM_PARAM_AD_HEIGHT, "" + adHeight);
 
 		// Set custom network url if passed
 		if (!TextUtils.isEmpty(serverExtras.get(KEY_AD_SERVER_URL))
