@@ -12,9 +12,9 @@ import com.moceanmobile.mast.MASTAdView.LogLevel;
 import com.moceanmobile.mast.MASTAdViewDelegate;
 
 /**
- * Mocean Adapter for MoPub SDK. This adapter extends {@link CustomEventBanner}
- * class. You can use this adapter class to integrate Mocean SDK into MoPub SDK
- * using client side mediation.
+ * Mocean Banner Adapter for MoPub SDK. This adapter extends
+ * {@link CustomEventBanner} class. You can use this adapter class to integrate
+ * Mocean SDK into MoPub SDK using client side mediation.
  * <p>
  * <b>Mandatory server extra parameters required for Mocean SDK:</b><br>
  * In order to initialize and use Mocean SDK, following server extra parameters
@@ -31,7 +31,7 @@ import com.moceanmobile.mast.MASTAdViewDelegate;
  * </p>
  * On the MoPub web interface, create a network with the "Custom Native Network"
  * type. Place the fully-qualified class name of your custom event class
- * (<b>com.mopub.mobileads.MoceanAdapter</b>) in the "Custom Event Class"
+ * (<b>com.mopub.mobileads.MoceanBannerAdapter</b>) in the "Custom Event Class"
  * column.
  * <p>
  * <b>Note:</b> To configure above server extra parameters for MoPub Custom
@@ -66,7 +66,7 @@ import com.moceanmobile.mast.MASTAdViewDelegate;
  *      Custom Events Wiki</a>
  * 
  */
-public class MoceanAdapter extends CustomEventBanner implements
+public class MoceanBannerAdapter extends CustomEventBanner implements
 		MASTAdViewDelegate.RequestListener, MASTAdViewDelegate.ActivityListener {
 
 	// Server Extra Param keys
@@ -103,7 +103,7 @@ public class MoceanAdapter extends CustomEventBanner implements
 	private static final String MOCEAN_CUSTOM_PARAM_FOR_AD_WIDHT = "size_x";
 	private static final String MOCEAN_CUSTOM_PARAM_FOR_AD_HEIGHT = "size_y";
 
-	private static final String TAG = MoceanAdapter.class.getSimpleName();
+	private static final String TAG = MoceanBannerAdapter.class.getSimpleName();
 	private MASTAdView mMastAdView;
 	private CustomEventBannerListener mBannerListener;
 

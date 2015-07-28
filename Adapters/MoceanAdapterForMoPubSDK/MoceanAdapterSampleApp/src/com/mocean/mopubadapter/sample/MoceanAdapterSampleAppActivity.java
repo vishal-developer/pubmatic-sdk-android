@@ -13,7 +13,7 @@ import com.moceanmobile.mast.MASTAdView.LogLevel;
 import com.mopub.mobileads.MoPubErrorCode;
 import com.mopub.mobileads.MoPubView;
 import com.mopub.mobileads.MoPubView.BannerAdListener;
-import com.mopub.mobileads.MoceanAdapter;
+import com.mopub.mobileads.MoceanBannerAdapter;
 
 public class MoceanAdapterSampleAppActivity extends Activity {
 
@@ -29,11 +29,14 @@ public class MoceanAdapterSampleAppActivity extends Activity {
 		moPubView = (MoPubView) findViewById(R.id.adview);
 		moPubView.setAdUnitId("8f32fb7c393a11e2a5ab12313900d932"); // MoPub AdUnit Id
 		moPubView.setBannerAdListener(moPubAdListener);
+		// Local Extra parameters are optional
 		Map<String, Object> localExtras = new HashMap<String, Object>();
-		localExtras.put(MoceanAdapter.KEY_MOCEAN_LOCATION_DETECTION_FLAG, Boolean.TRUE);
-		localExtras.put(MoceanAdapter.KEY_MOCEAN_LOG_LEVEL, LogLevel.Debug);
+		localExtras.put(MoceanBannerAdapter.KEY_MOCEAN_LOCATION_DETECTION_FLAG, Boolean.TRUE);
+		// Remove/disable logging in production
+		localExtras.put(MoceanBannerAdapter.KEY_MOCEAN_LOG_LEVEL, LogLevel.Debug);
 		moPubView.setLocalExtras(localExtras);
-		// Finally
+		
+		// Load MoPub Ad
 		moPubView.loadAd();
 	}
 
