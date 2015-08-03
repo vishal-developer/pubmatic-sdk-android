@@ -33,6 +33,7 @@ import java.net.URISyntaxException;
 import java.security.MessageDigest;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -41,7 +42,6 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.collections4.map.MultiValueMap;
 import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
@@ -111,6 +111,8 @@ public class MASTAdView extends ViewGroup {
 		None, Error, Debug,
 	}
 
+	private static final String TAG = MASTAdView.class.getSimpleName();
+
 	final private String sdkVersion = Defaults.SDK_VERSION;
 	final private int CloseAreaSizeDp = 50;
 	final private int OrientationReset = Short.MIN_VALUE;
@@ -125,7 +127,8 @@ public class MASTAdView extends ViewGroup {
 	private int updateInterval = 0;
 	private String adNetworkURL = Defaults.AD_NETWORK_URL;
 	private Map<String, String> adRequestDefaultParameters = new HashMap<String, String>();
-	private MultiValueMap<String, String> adRequestCustomParameters = new MultiValueMap<String, String>();
+	private Map<String, List<String>> adRequestCustomParameters = new HashMap<String, List<String>>();
+
 	private boolean useInternalBrowser = false;
 	private LogLevel logLevel = LogLevel.Error;
 	private PlacementType placementType = PlacementType.Inline;
@@ -491,8 +494,38 @@ public class MASTAdView extends ViewGroup {
 		return adRequestDefaultParameters;
 	}
 
-	public MultiValueMap<String, String> getAdRequestCustomParameters() {
+	public Map<String, List<String>> getAdRequestCustomParameters() {
 		return adRequestCustomParameters;
+	}
+
+	/**
+	 * Add custom parameters in the Ad request. <br>
+	 * Mocean SDK allows its customers to add their own parameters and pass them
+	 * in ad requests. <br>
+	 * You can add multiple values with the same key name, by calling this method
+	 * multiple times for same key name. <br>
+	 * E.g.:<br>
+	 * 
+	 * <pre>
+	 * mastAdView.addAdRequestCustomParameter(&quot;age&quot;, &quot;20&quot;);
+	 * mastAdView.addAdRequestCustomParameter(&quot;age&quot;, &quot;25&quot;);
+	 * </pre>
+	 * 
+	 * @param key
+	 *            Key name for custom parameter to be passed. E.g.: "age"
+	 * @param value
+	 *            Value of the custom parameter to be passed. E.g.: "25"
+	 */
+	public void addAdRequestCustomParameter(String key, String value) {
+		if ((!TextUtils.isEmpty(key) || !TextUtils.isEmpty(value))
+				&& adRequestCustomParameters != null) {
+			List<String> valueList = adRequestCustomParameters.get(key);
+			if (valueList == null) {
+				valueList = new ArrayList<String>();
+			}
+			valueList.add(value);
+			adRequestCustomParameters.put(key, valueList);
+		}
 	}
 
 	/**
@@ -984,7 +1017,7 @@ public class MASTAdView extends ViewGroup {
 			}
 		}
 
-		MultiValueMap<String, String> args = new MultiValueMap<String, String>();
+		Map<String, List<String>> args = new HashMap<String, List<String>>();
 
 		// Default size_x/y used.
 		int size_x = getWidth();
@@ -1092,12 +1125,24 @@ public class MASTAdView extends ViewGroup {
 		}
 
 		addCustomParams(args);
+		List<String> argValueList;
 		for (Map.Entry<String, String> entry : adRequestDefaultParameters
 				.entrySet()) {
-			Log.d("Test",
-					"Default params : " + entry.getValue() + entry.getKey());
-			args.put(entry.getKey(), entry.getValue());
+
+			Log.d(TAG,
+					"Default params : " + entry.getKey() + " : "
+							+ entry.getValue());
+
+			argValueList = args.get(entry.getKey());
+
+			if (argValueList == null) {
+				argValueList = new ArrayList<String>();
+			}
+			argValueList.add(entry.getValue());
+
+			args.put(entry.getKey(), argValueList);
 		}
+
 		mMediationData = null; // Reset old mediation data
 		try {
 			if (mAdRequest != null)
@@ -1116,7 +1161,7 @@ public class MASTAdView extends ViewGroup {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public void addCustomParams(MultiValueMap<String, String> args) {
+	public void addCustomParams(Map<String, List<String>> args) {
 		args.putAll(adRequestCustomParameters);
 		Set entrySet = adRequestCustomParameters.entrySet();
 		Iterator it = entrySet.iterator();
@@ -3277,6 +3322,7 @@ public class MASTAdView extends ViewGroup {
 
 	}
 
+	@SuppressLint("DefaultLocale")
 	public static String sha1(String string) {
 		StringBuilder stringBuilder = new StringBuilder();
 

@@ -27,6 +27,29 @@
 
 package com.moceanmobile.mast;
 
+import static com.moceanmobile.mast.MASTNativeAdConstants.AMPERSAND;
+import static com.moceanmobile.mast.MASTNativeAdConstants.EQUAL;
+import static com.moceanmobile.mast.MASTNativeAdConstants.ID_STRING;
+import static com.moceanmobile.mast.MASTNativeAdConstants.NATIVE_ASSETS_STRING;
+import static com.moceanmobile.mast.MASTNativeAdConstants.NATIVE_IMAGE_H;
+import static com.moceanmobile.mast.MASTNativeAdConstants.NATIVE_IMAGE_W;
+import static com.moceanmobile.mast.MASTNativeAdConstants.QUESTIONMARK;
+import static com.moceanmobile.mast.MASTNativeAdConstants.REQUEST_DATA;
+import static com.moceanmobile.mast.MASTNativeAdConstants.REQUEST_HEADER_CONNECTION;
+import static com.moceanmobile.mast.MASTNativeAdConstants.REQUEST_HEADER_CONNECTION_VALUE_CLOSE;
+import static com.moceanmobile.mast.MASTNativeAdConstants.REQUEST_HEADER_CONTENT_TYPE;
+import static com.moceanmobile.mast.MASTNativeAdConstants.REQUEST_HEADER_CONTENT_TYPE_VALUE;
+import static com.moceanmobile.mast.MASTNativeAdConstants.REQUEST_HEADER_USER_AGENT;
+import static com.moceanmobile.mast.MASTNativeAdConstants.REQUEST_IMG;
+import static com.moceanmobile.mast.MASTNativeAdConstants.REQUEST_LEN;
+import static com.moceanmobile.mast.MASTNativeAdConstants.REQUEST_NATIVE_EQ_WRAPPER;
+import static com.moceanmobile.mast.MASTNativeAdConstants.REQUEST_REQUIRED;
+import static com.moceanmobile.mast.MASTNativeAdConstants.REQUEST_TITLE;
+import static com.moceanmobile.mast.MASTNativeAdConstants.REQUEST_TYPE;
+import static com.moceanmobile.mast.MASTNativeAdConstants.REQUEST_VER;
+import static com.moceanmobile.mast.MASTNativeAdConstants.REQUEST_VER_VALUE_1;
+import static com.moceanmobile.mast.MASTNativeAdConstants.RESPONSE_HEADER_CONTENT_TYPE_JSON;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -36,7 +59,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.collections4.map.MultiValueMap;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -61,7 +83,6 @@ import com.moceanmobile.mast.bean.AssetRequest;
 import com.moceanmobile.mast.bean.DataAssetRequest;
 import com.moceanmobile.mast.bean.ImageAssetRequest;
 import com.moceanmobile.mast.bean.TitleAssetRequest;
-import static com.moceanmobile.mast.MASTNativeAdConstants.*;
 
 public class AdRequest {
 
@@ -112,7 +133,7 @@ public class AdRequest {
 	 * @throws UnsupportedEncodingException
 	 */
 	public static AdRequest create(int timeout, String adServerUrl,
-			String userAgent, MultiValueMap<String, String> parameters,
+			String userAgent, Map<String, List<String>> parameters,
 			Handler handler) throws UnsupportedEncodingException {
 		AdRequest adRequest = new AdRequest(timeout, adServerUrl, userAgent,
 				parameters, handler);
@@ -157,7 +178,7 @@ public class AdRequest {
 
 	@SuppressWarnings("rawtypes")
 	private AdRequest(int timeout, String adServerUrl, String userAgent,
-			MultiValueMap<String, String> parameters, Handler handler)
+			Map<String, List<String>> parameters, Handler handler)
 			throws UnsupportedEncodingException {
 		this.isNative = false;
 		this.timeout = timeout;

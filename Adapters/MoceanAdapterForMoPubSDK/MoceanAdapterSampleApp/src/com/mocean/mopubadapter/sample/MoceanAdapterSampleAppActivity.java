@@ -27,7 +27,7 @@ public class MoceanAdapterSampleAppActivity extends Activity {
 		setContentView(R.layout.activity_main);
 
 		moPubView = (MoPubView) findViewById(R.id.adview);
-		moPubView.setAdUnitId("8f32fb7c393a11e2a5ab12313900d932"); // MoPub AdUnit Id
+		moPubView.setAdUnitId("<add_mopub_aduint_id_here>"); //TODO: Add MoPub AdUnit Id
 		moPubView.setBannerAdListener(moPubAdListener);
 		
 		// Local Extra parameters are optional
