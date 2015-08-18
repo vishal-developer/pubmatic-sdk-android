@@ -146,5 +146,10 @@ Enabled multi-pixel tracking for SDK.
 - Added functionality for passback in case of mediation for banner ad view via thirdpartyPartnerDefaulted() method.
 - Added sendImpression and sendClickTracker API methods for thirdparty ads. User should call this methods when third party ad is rendered/clicked.
 
+------
+ 4.2.1
+------
+
+- Fixed bug: RichMedia ads not serving when impression pixel is enabled.
 
 
