@@ -1557,9 +1557,6 @@ public class MASTAdView extends ViewGroup {
 
 	// main thread
 	private void renderRichMedia(AdDescriptor adDescriptor) {
-		
-		performAdTracking();
-		
 		invokeTracking = false;
 
 		resetImageAd();
