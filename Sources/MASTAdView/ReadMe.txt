@@ -147,4 +147,16 @@ Enabled multi-pixel tracking for SDK.
 - Added sendImpression and sendClickTracker API methods for thirdparty ads. User should call this methods when third party ad is rendered/clicked.
 
 
+------
+ 4.3
+------
+
+- Updated SDK version to 4.3
+- Added Mocean Adapter for MoPub SDK.
+- Added new Sample app for MoPub SDK to test Mocean adapter.
+- IMPORTANT: Removed dependency for commons-collections library.
+- Corresponding changes in MASTAdView class after removing above dependency.
+- Return type of method getAdRequestCustomParameters() changed from MultiValueMap<String, String> to Map<String, List<String>>.
+- Added convenience method for adding AdRequest custom parameters. (addAdRequestCustomParameter(String key, String value)).
+
 
