@@ -47,9 +47,11 @@ import org.json.JSONObject;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -2031,6 +2033,7 @@ public class MASTAdView extends ViewGroup {
 		bridge.setCurrentPosition(webViewScreenX, webViewScreenY,
 				currentWidthDp, currentHeightDp);
 		bridge.setViewable(viewable);
+		registerReceiver();
 	}
 
 	// main thread
@@ -3339,6 +3342,36 @@ public class MASTAdView extends ViewGroup {
 			return stringBuilder.toString().toLowerCase();
 		} catch (Exception e) {
 			return "";
+		}
+	}
+
+	public static boolean isScreenOn = true;
+
+	public class ScreenReceiver extends BroadcastReceiver {
+
+		@Override
+		public void onReceive(final Context context, final Intent intent) {
+			if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
+				isScreenOn = false;
+			} else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
+				isScreenOn = true;
+			}
+			setMraidViewable(isScreenOn);
+		}
+	}
+
+	public void registerReceiver() {
+		BroadcastReceiver mReceiver;
+		IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
+		filter.addAction(Intent.ACTION_SCREEN_OFF);
+		mReceiver = new ScreenReceiver();
+		getContext().registerReceiver(mReceiver, filter);
+	}
+
+	public void setMraidViewable(boolean isViewable) {
+		if (mraidBridge != null) {
+			Log.d("Test", "On set maraid " + isViewable);
+			mraidBridge.setViewable(isViewable);
 		}
 	}
 }
