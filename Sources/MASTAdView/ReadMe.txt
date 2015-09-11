@@ -159,4 +159,8 @@ Enabled multi-pixel tracking for SDK.
 - Return type of method getAdRequestCustomParameters() changed from MultiValueMap<String, String> to Map<String, List<String>>.
 - Added convenience method for adding AdRequest custom parameters. (addAdRequestCustomParameter(String key, String value)).
 
+------
+ 4.3.1
+------
 
+-RXM-499-23937 | Android Mocean viewableChange - Mraid 2.0.
