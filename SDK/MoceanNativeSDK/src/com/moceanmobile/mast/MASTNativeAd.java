@@ -72,6 +72,7 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 
 import com.moceanmobile.mast.Defaults.MediationNetwork;
+import com.moceanmobile.mast.MASTAdView.LogLevel;
 import com.moceanmobile.mast.bean.AssetRequest;
 import com.moceanmobile.mast.bean.AssetResponse;
 import com.moceanmobile.mast.bean.DataAssetRequest;
@@ -83,9 +84,7 @@ import com.moceanmobile.mast.bean.TitleAssetRequest;
  * Refer Sample application for example of implementation.
  */
 public final class MASTNativeAd implements AdRequest.Handler {
-	public enum LogLevel {
-		None, Error, Debug,
-	}
+
 
 	/**
 	 * Interface allowing application developers to control logging.
