@@ -343,6 +343,7 @@ public class MoceanNativeAdapter extends CustomEventNative {
 
 			TitleAssetRequest titleAsset = new TitleAssetRequest();
 			titleAsset.setAssetId(ASSET_ID_TITLE);
+			titleAsset.length = 50;
 			titleAsset.setRequired(true);
 			nativeAd.addNativeAssetRequest(titleAsset);
 
