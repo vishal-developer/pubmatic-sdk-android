@@ -229,144 +229,65 @@ public class NativeActivity extends Activity {
 						List<AssetResponse> nativeAssets = ad.getNativeAssets();
 						for (AssetResponse asset : nativeAssets) {
 							try {
-
-								if (!ad.isMediationResponse()) {
-									/*
-									 * As per openRTB standard, assetId in
-									 * response must match that of in request.
-									 */
-									switch (asset.getAssetId()) {
-									case 1:
-										txtTitle.setText(((TitleAssetResponse) asset)
-												.getTitleText());
-										break;
-									case 2:
-										Image iconImage = ((ImageAssetResponse) asset)
-												.getImage();
-										if (iconImage != null) {
-											imgLogo.setImageBitmap(null);
-											ad.loadImage(imgLogo,
-													iconImage.getUrl());
-										}
-										break;
-									case 3:
-										// Code to render logo image ...
-										break;
-									case 4:
-										Image mainImage = ((ImageAssetResponse) asset)
-												.getImage();
-										if (mainImage != null) {
-											imgMain.setImageBitmap(null);
-											ad.loadImage(imgMain,
-													mainImage.getUrl());
-										}
-										break;
-									case 5:
-										txtDescription
-												.setText(((DataAssetResponse) asset)
-														.getValue());
-										break;
-									case 6:
-										String ratingStr = ((DataAssetResponse) asset)
-												.getValue();
-										try {
-											float rating = Float
-													.parseFloat(ratingStr);
-											if (rating > 0f) {
-												ratingBar.setRating(rating);
-												ratingBar
-														.setVisibility(View.VISIBLE);
-											} else {
-												ratingBar.setRating(rating);
-												ratingBar
-														.setVisibility(View.GONE);
-											}
-										} catch (Exception e) {
-											// Invalid rating string
-											Log.e("NativeActivity",
-													"Error parsing 'rating'");
-										}
-										break;
-
-									default: // NOOP
-										break;
+								/*
+								 * As per openRTB standard, assetId in
+								 * response must match that of in request.
+								 */
+								switch (asset.getAssetId()) {
+								case 1:
+									txtTitle.setText(((TitleAssetResponse) asset)
+											.getTitleText());
+									break;
+								case 2:
+									Image iconImage = ((ImageAssetResponse) asset)
+											.getImage();
+									if (iconImage != null) {
+										imgLogo.setImageBitmap(null);
+										ad.loadImage(imgLogo,
+												iconImage.getUrl());
 									}
-								} else {
-									// For mediation response
-									/*
-									 * Mediation partners do not support OpenRTB
-									 * native specifications as of now. The
-									 * response may not contain assetId as per
-									 * request. Hence, rendering the mediation
-									 * response assets by asset types.
-									 */
-									if (asset instanceof TitleAssetResponse) {
-										txtTitle.setText(((TitleAssetResponse) asset)
-												.getTitleText());
-										continue;
-									} else if (asset instanceof ImageAssetResponse) {
-										switch (((ImageAssetResponse) asset)
-												.getImageType()) {
-										case icon:
-											Image iconImage = ((ImageAssetResponse) asset)
-													.getImage();
-											if (iconImage != null) {
-												imgLogo.setImageBitmap(null);
-												ad.loadImage(imgLogo,
-														iconImage.getUrl());
-											}
-											break;
-										case logo:
-											// Code to render logo image ...
-											break;
-										case main:
-											Image mainImage = ((ImageAssetResponse) asset)
-													.getImage();
-											if (mainImage != null) {
-												imgMain.setImageBitmap(null);
-												ad.loadImage(imgMain,
-														mainImage.getUrl());
-											}
-											break;
-										}
-										continue;
-									} else if (asset instanceof DataAssetResponse) {
-										switch (((DataAssetResponse) asset)
-												.getDataAssetType()) {
-										case desc:
-											txtDescription
-													.setText(((DataAssetResponse) asset)
-															.getValue());
-											break;
-										case ctatext:
-											// Code to render CTA
-											// text/button
-											break;
-										case rating:
-											String ratingStr = ((DataAssetResponse) asset)
-													.getValue();
-											try {
-												float rating = Float
-														.parseFloat(ratingStr);
-												if (rating > 0f) {
-													ratingBar.setRating(rating);
-													ratingBar
-															.setVisibility(View.VISIBLE);
-												} else {
-													ratingBar.setRating(rating);
-													ratingBar
-															.setVisibility(View.GONE);
-												}
-											} catch (Exception e) {
-												// Invalid rating string
-												Log.e("NativeActivity",
-														"Error parsing 'rating'");
-											}
-											break;
-										default: // NOOP
-											break;
-										}
+									break;
+								case 3:
+									// Code to render logo image ...
+									break;
+								case 4:
+									Image mainImage = ((ImageAssetResponse) asset)
+											.getImage();
+									if (mainImage != null) {
+										imgMain.setImageBitmap(null);
+										ad.loadImage(imgMain,
+												mainImage.getUrl());
 									}
+									break;
+								case 5:
+									txtDescription
+											.setText(((DataAssetResponse) asset)
+													.getValue());
+									break;
+								case 6:
+									String ratingStr = ((DataAssetResponse) asset)
+											.getValue();
+									try {
+										float rating = Float
+												.parseFloat(ratingStr);
+										if (rating > 0f) {
+											ratingBar.setRating(rating);
+											ratingBar
+													.setVisibility(View.VISIBLE);
+										} else {
+											ratingBar.setRating(rating);
+											ratingBar
+													.setVisibility(View.GONE);
+										}
+									} catch (Exception e) {
+										// Invalid rating string
+										Log.e("NativeActivity",
+												"Error parsing 'rating'");
+									}
+									break;
+
+								default: // NOOP
+									break;
 								}
 							} catch (Exception ex) {
 								appendOutput("ERROR in rendering asset. Skipping asset.");
@@ -417,12 +338,12 @@ public class NativeActivity extends Activity {
 
 			// Note: This method should be called only when ad from third party
 			// SDK is rendered.
-			mastNativeAd.sendImpression(); // Method added here only for testing
+			//mastNativeAd.sendImpression(); // Method added here only for testing
 											// purpose
 			
 			// Note: This method should be called only when ad clicked callback
 			// is received from third party SDK.
-			mastNativeAd.sendClickTracker(); // Method added here only for
+			//mastNativeAd.sendClickTracker(); // Method added here only for
 												// testing purpose
 
 		}
