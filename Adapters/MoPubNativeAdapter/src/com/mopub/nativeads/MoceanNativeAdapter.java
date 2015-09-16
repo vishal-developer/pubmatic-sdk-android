@@ -163,6 +163,11 @@ public class MoceanNativeAdapter extends CustomEventNative {
 			}
 		}
 
+		// Set Log level if passed
+		if (localExtras.containsKey(KEY_MOCEAN_LOG_LEVEL)) {
+			setLogLevel(localExtras.get(KEY_MOCEAN_LOG_LEVEL), mastNativeAd);
+		}
+
 		// Set to use in-app browser
 		if (localExtras.containsKey(KEY_MOCEAN_INAPP_BROWSER)) {
 			try {
@@ -196,6 +201,16 @@ public class MoceanNativeAdapter extends CustomEventNative {
 				context, mastNativeAd, customEventNativeListener);
 		// Load Ad
 		moceanForwardingNativeAd.loadAd();
+	}
+
+	private void setLogLevel(Object logLevel, MASTNativeAd nativeAd) {
+		try {
+			LogLevel level = (LogLevel) logLevel;
+			nativeAd.setLogLevel(level);
+		} catch (Exception ex) {
+			Log.w(TAG,
+					"Invalid log level set. Valid values can be from MASTAdView.LogLevel enum");
+		}
 	}
 
 	private int parseInteger(String value) {
