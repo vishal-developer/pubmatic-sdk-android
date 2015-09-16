@@ -42,9 +42,9 @@ import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.moceanmobile.mast.MASTAdView.LogLevel;
 import com.moceanmobile.mast.MASTNativeAd;
 import com.moceanmobile.mast.MASTNativeAd.Image;
-import com.moceanmobile.mast.MASTNativeAd.LogLevel;
 import com.moceanmobile.mast.MASTNativeAd.LogListener;
 import com.moceanmobile.mast.MASTNativeAd.NativeRequestListener;
 import com.moceanmobile.mast.MediationData;
