@@ -247,6 +247,36 @@ public class MoceanNativeAdapter extends CustomEventNative {
 			mNativeAd.update();
 		}
 
+		// Override BaseForwardingNativeAd methods
+		@Override
+		public void prepare(final View view) {
+
+			MAIN_UI_THREAD_HANDLER.post(new Runnable() {
+
+				@Override
+				public void run() {
+					if (view != null) {
+						mNativeAd.trackViewForInteractions(view);
+					}
+					setOverridingClickTracker(true);
+					setOverridingImpressionTracker(true);
+					notifyAdImpressed();
+				}
+			});
+		}
+
+		@Override
+		public void clear(View view) {
+			mNativeAd.reset(); // Set all variables to null
+			super.clear(view);
+		}
+
+		@Override
+		public void destroy() {
+			// Destroy Native Ad
+			mNativeAd.destroy();
+		}
+
 		// Mocean Native Ad Event listeners
 		@Override
 		public void onNativeAdClicked(MASTNativeAd nativeAd) {
@@ -362,29 +392,6 @@ public class MoceanNativeAdapter extends CustomEventNative {
 							.onNativeAdFailed(NativeErrorCode.NETWORK_INVALID_STATE);
 				}
 			});
-		}
-
-		// Override BaseForwardingNativeAd methods
-		@Override
-		public void prepare(View view) {
-			if (view != null) {
-				mNativeAd.trackViewForInteractions(view);
-				notifyAdImpressed();
-			}
-			setOverridingImpressionTracker(true);
-			setOverridingClickTracker(true);
-		}
-
-		@Override
-		public void clear(View view) {
-			mNativeAd.reset(); // Set all variables to null
-			super.clear(view);
-		}
-
-		@Override
-		public void destroy() {
-			// Destroy Native Ad
-			mNativeAd.destroy();
 		}
 
 		private void addRequestAssets(MASTNativeAd nativeAd) {
