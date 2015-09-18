@@ -5,6 +5,7 @@ import java.util.EnumSet;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +13,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.mopub.common.MoPub;
 import com.mopub.nativeads.MoPubAdAdapter;
+import com.mopub.nativeads.MoPubNativeAdLoadedListener;
 import com.mopub.nativeads.MoPubNativeAdPositioning;
 import com.mopub.nativeads.MoPubNativeAdRenderer;
 import com.mopub.nativeads.RequestParameters;
@@ -29,32 +32,52 @@ public class NativeAdapterSample extends Activity {
 	private Context mContext = this;
 	private ListView mListView;
 	private MoPubAdAdapter mAdAdapter;
-	private static String[] titleArrary = { "Title 1", "Title 2", "Title 3",
-			"Title 4", "Title 5", "Title 6", "Title 7", "Title 8", "Title 9",
-			"Title 10" };
+	private static String[] listItemPlaceholders = { "List item 1",
+			"List item 2", "List item 3", "List item 4", "List item 5",
+			"List item 6", "List item 7", "List item 8", "List item 9",
+			"List item 10", "List item 11", "List item 12" };
+	private static final String TAG = NativeAdapterSample.class.getSimpleName();
 
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_native_adapter_sample);
-		mListView = (ListView) findViewById(R.id.listView);
-		mListView.setAdapter(new CustomAdapter(mContext, titleArrary));
 
-		// MoPub SDK
+		mListView = (ListView) findViewById(R.id.listView);
+
+		// MoPub SDK Initialization
 		ViewBinder viewBinder = new ViewBinder.Builder(R.layout.list_item)
 				.mainImageId(R.id.mainImage).iconImageId(R.id.logoImage)
 				.callToActionId(R.id.ctaButton).titleId(R.id.titleTextView)
 				.textId(R.id.descriptionTextView).build();
+
 		// Set up the positioning behavior your ads should have.
 		MoPubNativeAdPositioning.MoPubServerPositioning adPositioning = MoPubNativeAdPositioning
 				.serverPositioning();
-		MoPubNativeAdRenderer adRenderer = new MoPubNativeAdRenderer(viewBinder);
 
+		MoPubNativeAdRenderer adRenderer = new MoPubNativeAdRenderer(viewBinder);
+		
 		// Set up the MoPubAdAdapter
 		mAdAdapter = new MoPubAdAdapter(this, new CustomAdapter(mContext,
-				titleArrary), adPositioning);
+				listItemPlaceholders), adPositioning);
 		mAdAdapter.registerAdRenderer(adRenderer);
+		// Enable Location awareness
+		MoPub.setLocationAwareness(MoPub.LocationAwareness.NORMAL);
+
+		// Set Native ad listener
+		mAdAdapter.setAdLoadedListener(new MoPubNativeAdLoadedListener() {
+
+			@Override
+			public void onAdRemoved(int position) {
+				Log.i(TAG, "onAdRemoved. List position:" + position);
+			}
+
+			@Override
+			public void onAdLoaded(int position) {
+				Log.i(TAG, "onAdLoaded. List position:" + position);
+			}
+		});
 
 		mListView.setAdapter(mAdAdapter);
 	}

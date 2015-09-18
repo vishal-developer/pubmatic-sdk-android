@@ -23,7 +23,8 @@
         android:layout_alignParentTop="true"
         android:layout_marginRight="10dp"
         android:layout_marginTop="10dp"
-        android:padding="10dp" />
+        android:padding="10dp"
+        android:scaleType="fitCenter" />
 
     <TextView
         android:id="@+id/titleTextView"
@@ -41,12 +42,13 @@
     <ImageView
         android:id="@+id/mainImage"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="180dp"
         android:layout_alignLeft="@+id/logoImage"
         android:layout_below="@+id/logoImage"
         android:layout_marginRight="10dp"
         android:layout_marginTop="5dp"
-        android:background="@android:color/darker_gray" />
+        android:background="@android:color/darker_gray"
+        android:scaleType="fitCenter" />
 
     <TextView
         android:id="@+id/descriptionTextView"

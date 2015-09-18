@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -61,7 +63,7 @@ import com.moceanmobile.mast.bean.TitleAssetResponse;
  * values are from {@link LogLevel} enum.
  * <li>mocean_sdk_location_detection_flag : Add this extra param with value as
  * {@link Boolean}.TRUE to enable location detection in Mocean SDK. (Default is
- * false).
+ * true, i.e. location detection is enabled).
  * <li>mocean_sdk_test_mode_flag : Add this extra param with value as
  * {@link Boolean}.TRUE to serve ads in test mode. (Default is false).
  * <li>mocean_sdk_use_inapp_browser_flag : Add this extra param with value as
@@ -114,6 +116,8 @@ public class MoceanNativeAdapter extends CustomEventNative {
 	public static final String KEY_MOCEAN_LOCATION_DETECTION_FLAG = "mocean_sdk_location_detection_flag";
 
 	private static final String TAG = MoceanNativeAdapter.class.getSimpleName();
+	private static final Handler MAIN_UI_THREAD_HANDLER = new Handler(
+			Looper.getMainLooper());
 
 	// AssetId's
 	public static final int ASSET_ID_TITLE = 1001;
@@ -182,12 +186,15 @@ public class MoceanNativeAdapter extends CustomEventNative {
 				// Using internal browser by default
 				mastNativeAd.setUseInternalBrowser(true);
 			}
+		} else {
+			mastNativeAd.setUseInternalBrowser(true);
 		}
 
-		// Enable/Disable location detection
+		// Disable location detection
+		mastNativeAd.setLocationDetectionEnabled(true); // Default
 		if (localExtras.containsKey(KEY_MOCEAN_LOCATION_DETECTION_FLAG)) {
 			try {
-				boolean isEnabled = false;
+				boolean isEnabled = true; // Default
 				isEnabled = (Boolean) localExtras
 						.get(KEY_MOCEAN_LOCATION_DETECTION_FLAG);
 				mastNativeAd.setLocationDetectionEnabled(isEnabled);
@@ -248,26 +255,54 @@ public class MoceanNativeAdapter extends CustomEventNative {
 
 		@Override
 		public void onNativeAdFailed(MASTNativeAd nativeAd, Exception ex) {
+
 			if (ex == null) {
-				mCustomEventNativeListener
-						.onNativeAdFailed(NativeErrorCode.UNSPECIFIED);
+				MAIN_UI_THREAD_HANDLER.post(new Runnable() {
+
+					@Override
+					public void run() {
+						mCustomEventNativeListener
+								.onNativeAdFailed(NativeErrorCode.UNSPECIFIED);
+					}
+				});
+
 			} else {
-				mCustomEventNativeListener
-						.onNativeAdFailed(NativeErrorCode.NETWORK_INVALID_STATE);
+				MAIN_UI_THREAD_HANDLER.post(new Runnable() {
+
+					@Override
+					public void run() {
+						mCustomEventNativeListener
+								.onNativeAdFailed(NativeErrorCode.NETWORK_INVALID_STATE);
+					}
+				});
+
 			}
 		}
 
 		@Override
 		public void onNativeAdReceived(MASTNativeAd nativeAd) {
+
 			if (nativeAd == null || nativeAd.getNativeAssets() == null) {
-				mCustomEventNativeListener
-						.onNativeAdFailed(NativeErrorCode.NETWORK_INVALID_STATE);
+				MAIN_UI_THREAD_HANDLER.post(new Runnable() {
+
+					@Override
+					public void run() {
+						mCustomEventNativeListener
+								.onNativeAdFailed(NativeErrorCode.NETWORK_INVALID_STATE);
+					}
+				});
 				return;
 			}
 			NativeAdResponse nativeAssetResponse = getNativeAdAssets(nativeAd);
 			if (nativeAssetResponse == null) {
-				mCustomEventNativeListener
-						.onNativeAdFailed(NativeErrorCode.NETWORK_INVALID_STATE);
+				MAIN_UI_THREAD_HANDLER.post(new Runnable() {
+
+					@Override
+					public void run() {
+						mCustomEventNativeListener
+								.onNativeAdFailed(NativeErrorCode.NETWORK_INVALID_STATE);
+					}
+				});
 				return;
 			}
 			setImpressionMinTimeViewed(0); // No minimum impression view time
@@ -282,7 +317,7 @@ public class MoceanNativeAdapter extends CustomEventNative {
 			setMainImageUrl(nativeAssetResponse.mainImageUrl);
 			setStarRating(nativeAssetResponse.starRating);
 
-			List<String> imageUrlList = new ArrayList<String>();
+			final List<String> imageUrlList = new ArrayList<String>();
 			if (nativeAssetResponse.iconImageUrl != null) {
 				imageUrlList.add(nativeAssetResponse.iconImageUrl);
 			}
@@ -290,16 +325,24 @@ public class MoceanNativeAdapter extends CustomEventNative {
 				imageUrlList.add(nativeAssetResponse.mainImageUrl);
 			}
 
-			preCacheImages(mContext, imageUrlList, new ImageListener() {
-				@Override
-				public void onImagesCached() {
-					mCustomEventNativeListener
-							.onNativeAdLoaded(MoceanForwardingNativeAd.this);
-				}
+			MAIN_UI_THREAD_HANDLER.post(new Runnable() {
 
 				@Override
-				public void onImagesFailedToCache(NativeErrorCode errorCode) {
-					mCustomEventNativeListener.onNativeAdFailed(errorCode);
+				public void run() {
+					preCacheImages(mContext, imageUrlList, new ImageListener() {
+						@Override
+						public void onImagesCached() {
+							mCustomEventNativeListener
+									.onNativeAdLoaded(MoceanForwardingNativeAd.this);
+						}
+
+						@Override
+						public void onImagesFailedToCache(
+								NativeErrorCode errorCode) {
+							mCustomEventNativeListener
+									.onNativeAdFailed(errorCode);
+						}
+					});
 				}
 			});
 
@@ -308,23 +351,28 @@ public class MoceanNativeAdapter extends CustomEventNative {
 		@Override
 		public void onReceivedThirdPartyRequest(MASTNativeAd nativeAd,
 				Map<String, String> properties, Map<String, String> parameters) {
-			// Ignore third party response if received.
 			Log.w(MoceanNativeAdapter.class.getSimpleName(),
 					"Third party response can not be rendered in case of mediation.");
-			mCustomEventNativeListener
-					.onNativeAdFailed(NativeErrorCode.NETWORK_INVALID_STATE);
 
+			MAIN_UI_THREAD_HANDLER.post(new Runnable() {
+
+				@Override
+				public void run() {
+					mCustomEventNativeListener
+							.onNativeAdFailed(NativeErrorCode.NETWORK_INVALID_STATE);
+				}
+			});
 		}
 
 		// Override BaseForwardingNativeAd methods
 		@Override
 		public void prepare(View view) {
-			setOverridingImpressionTracker(true);
-			setOverridingClickTracker(true);
 			if (view != null) {
 				mNativeAd.trackViewForInteractions(view);
 				notifyAdImpressed();
 			}
+			setOverridingImpressionTracker(true);
+			setOverridingClickTracker(true);
 		}
 
 		@Override
