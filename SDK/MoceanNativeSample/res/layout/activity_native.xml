@@ -20,30 +20,13 @@
 
             <ImageView
                 android:id="@+id/imgLogo"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_alignParentLeft="true"
                 android:layout_margin="0dp"
                 android:adjustViewBounds="true"
                 android:padding="1dp"
-                android:scaleType="fitXY" />
-
-            <RatingBar
-                android:id="@+id/ratingbar"
-                style="?android:attr/ratingBarStyleIndicator"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                android:layout_toRightOf="@id/imgLogo"
-                android:clickable="false"
-                android:isIndicator="true"
-                android:maxHeight="30dp"
-                android:numStars="5"
-                android:padding="1dp"
-                android:rating="0.0"
-                android:stepSize="0.1"
-                android:visibility="gone" />
+                android:scaleType="fitCenter" />
 
             <TextView
                 android:id="@+id/txtTitle"
@@ -51,12 +34,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                android:layout_below="@id/ratingbar"
                 android:layout_toRightOf="@id/imgLogo"
                 android:paddingLeft="5dp"
-                android:text="&lt;Native Text>"
-                android:textColor="@android:color/holo_green_dark"
-                tools:ignore="NewApi" />
+                android:text="&lt;Native Title>"
+                android:textColor="#2164A1" />
 
             <TextView
                 android:id="@+id/txtDescription"
@@ -66,25 +47,53 @@
                 android:layout_below="@id/txtTitle"
                 android:layout_toRightOf="@id/imgLogo"
                 android:paddingLeft="5dp"
-                android:text="&lt;Native Description>" />
+                android:text="&lt;Native Description>"
+                android:textColor="#555555" />
 
             <ImageView
                 android:id="@+id/imgMain"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:layout_below="@id/txtDescription"
-                android:layout_marginTop="2dp"
+                android:layout_marginTop="5dp"
                 android:adjustViewBounds="true"
                 android:padding="1dp"
-                android:scaleType="fitXY" />
+                android:scaleType="fitCenter" />
+
+            <RatingBar
+                android:id="@+id/ratingbar"
+                style="?android:attr/ratingBarStyleIndicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@id/imgMain"
+                android:clickable="false"
+                android:isIndicator="true"
+                android:maxHeight="30dp"
+                android:numStars="5"
+                android:padding="1dp"
+                android:rating="0.0"
+                android:stepSize="0.1"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/buttonCta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_below="@id/imgMain"
+                android:layout_marginTop="2dp"
+                android:layout_toRightOf="@id/ratingbar"
+                android:text="&lt;CTA>" />
 
             <TextView
                 android:id="@+id/textView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@id/imgMain"
+                android:layout_below="@id/buttonCta"
                 android:layout_marginTop="5dp"
-                android:background="#66DDDDDD" />
+                android:background="#66DDDDDD"
+                android:textColor="#333333" />
         </RelativeLayout>
     </ScrollView>
 

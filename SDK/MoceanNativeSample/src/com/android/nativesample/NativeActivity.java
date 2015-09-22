@@ -37,6 +37,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.RelativeLayout;
@@ -61,11 +62,15 @@ import com.moceanmobile.mast.bean.TitleAssetResponse;
 
 public class NativeActivity extends Activity {
 
+	// TODO : Add your Mocean zone id
+	private static final int ZONE_ID = 179492;
+
 	private static final String LOG_TAG = NativeActivity.class.getSimpleName();
 	private MASTNativeAd ad = null;
 	private ImageView imgLogo = null;
 	private ImageView imgMain = null;
 	private TextView txtTitle = null;
+	private Button ctaButton = null;
 	private TextView txtDescription = null;
 	private RatingBar ratingBar = null;
 	private TextView txtLogView = null;
@@ -80,18 +85,18 @@ public class NativeActivity extends Activity {
 		imgLogo = (ImageView) findViewById(R.id.imgLogo);
 		imgMain = (ImageView) findViewById(R.id.imgMain);
 		txtTitle = (TextView) findViewById(R.id.txtTitle);
+		ctaButton = (Button) findViewById(R.id.buttonCta);
 		txtDescription = (TextView) findViewById(R.id.txtDescription);
 		ratingBar = (RatingBar) findViewById(R.id.ratingbar);
 		txtLogView = (TextView) findViewById(R.id.textView);
 
 		// Initialize the adview
 		ad = new MASTNativeAd(this);
-
 		ad.setLogLevel(LogLevel.Debug); // Logging should be disabled in
 										// production
 		ad.setLogListener(new LogEventListner()); // Set LogListener
 		ad.setRequestListener(new AdRequestListener());
-		ad.setZone(179492); // TODO: Add your ZoneId
+		ad.setZone(ZONE_ID);
 
 		// Set custom Base URL for mocean adserver if required
 		// ad.setAdNetworkURL("http://ads.mocean.mobi/ad");
@@ -104,15 +109,6 @@ public class NativeActivity extends Activity {
 		 */
 		ad.setUseInternalBrowser(true);
 
-		// Add some custom parameters
-		ad.addCustomParameter("keywords", "NFL,Football,Sports,Games,WordsCup");
-		ad.addCustomParameter("isp", "T-mobile");
-		ad.addCustomParameter("age", "25");
-		ad.addCustomParameter("gender", "m");
-		ad.addCustomParameter("androidid", "testandroidid1234");
-		ad.addCustomParameter("country", "US");
-		ad.addCustomParameter("city", "New York, NY");
-
 		// ad.setTest(true); // Uncomment to serve ads in test mode
 
 		// Request for ads
@@ -123,39 +119,39 @@ public class NativeActivity extends Activity {
 		List<AssetRequest> assets = new ArrayList<AssetRequest>();
 
 		TitleAssetRequest titleAsset = new TitleAssetRequest();
-		titleAsset.setAssetId(1); // Unique assetId is mandatory for each
-									// asset
+		titleAsset.setAssetId(1001); // Unique assetId is mandatory for each
+										// asset
 		titleAsset.setLength(50);
 		titleAsset.setRequired(true); // Optional (Default: false)
 		assets.add(titleAsset);
 
 		ImageAssetRequest imageAssetIcon = new ImageAssetRequest();
-		imageAssetIcon.setAssetId(2);
+		imageAssetIcon.setAssetId(1003);
 		imageAssetIcon.setImageType(ImageAssetTypes.icon);
 		imageAssetIcon.setWidth(60); // Optional
 		imageAssetIcon.setHeight(60); // Optional
 		assets.add(imageAssetIcon);
 
-		ImageAssetRequest imageAssetLogo = new ImageAssetRequest();
-		imageAssetLogo.setAssetId(3);
-		imageAssetLogo.setImageType(ImageAssetTypes.logo);
-		assets.add(imageAssetLogo);
-
 		ImageAssetRequest imageAssetMainImage = new ImageAssetRequest();
-		imageAssetMainImage.setAssetId(4);
+		imageAssetMainImage.setAssetId(1004);
 		imageAssetMainImage.setImageType(ImageAssetTypes.main);
 		assets.add(imageAssetMainImage);
 
 		DataAssetRequest dataAssetDesc = new DataAssetRequest();
-		dataAssetDesc.setAssetId(5);
+		dataAssetDesc.setAssetId(1002);
 		dataAssetDesc.setDataAssetType(DataAssetTypes.desc);
 		dataAssetDesc.setLength(25);
 		assets.add(dataAssetDesc);
 
 		DataAssetRequest dataAssetRating = new DataAssetRequest();
-		dataAssetRating.setAssetId(6);
+		dataAssetRating.setAssetId(1005);
 		dataAssetRating.setDataAssetType(DataAssetTypes.rating);
 		assets.add(dataAssetRating);
+
+		DataAssetRequest dataAssetCta = new DataAssetRequest();
+		dataAssetCta.setAssetId(1006);
+		dataAssetCta.setDataAssetType(DataAssetTypes.ctatext);
+		assets.add(dataAssetCta);
 
 		return assets;
 	}
@@ -178,16 +174,12 @@ public class NativeActivity extends Activity {
 
 	private void resetViews() {
 		imgLogo.setImageBitmap(null);
-
 		imgMain.setImageBitmap(null);
-
+		ctaButton.setText("<CTA>");
 		txtTitle.setText("<Native Title>");
-
 		txtDescription.setText("<Native Description>");
-
 		ratingBar.setRating(0f);
 		ratingBar.setVisibility(View.GONE);
-
 		txtLogView.setText("");
 	}
 
@@ -230,15 +222,15 @@ public class NativeActivity extends Activity {
 						for (AssetResponse asset : nativeAssets) {
 							try {
 								/*
-								 * As per openRTB standard, assetId in
-								 * response must match that of in request.
+								 * As per openRTB standard, assetId in response
+								 * must match that of in request.
 								 */
 								switch (asset.getAssetId()) {
-								case 1:
+								case 1001:
 									txtTitle.setText(((TitleAssetResponse) asset)
 											.getTitleText());
 									break;
-								case 2:
+								case 1003:
 									Image iconImage = ((ImageAssetResponse) asset)
 											.getImage();
 									if (iconImage != null) {
@@ -247,10 +239,7 @@ public class NativeActivity extends Activity {
 												iconImage.getUrl());
 									}
 									break;
-								case 3:
-									// Code to render logo image ...
-									break;
-								case 4:
+								case 1004:
 									Image mainImage = ((ImageAssetResponse) asset)
 											.getImage();
 									if (mainImage != null) {
@@ -259,12 +248,17 @@ public class NativeActivity extends Activity {
 												mainImage.getUrl());
 									}
 									break;
-								case 5:
+								case 1002:
 									txtDescription
 											.setText(((DataAssetResponse) asset)
 													.getValue());
 									break;
-								case 6:
+								case 1006:
+									ctaButton
+											.setText(((DataAssetResponse) asset)
+													.getValue());
+									break;
+								case 1005:
 									String ratingStr = ((DataAssetResponse) asset)
 											.getValue();
 									try {
@@ -276,8 +270,7 @@ public class NativeActivity extends Activity {
 													.setVisibility(View.VISIBLE);
 										} else {
 											ratingBar.setRating(rating);
-											ratingBar
-													.setVisibility(View.GONE);
+											ratingBar.setVisibility(View.GONE);
 										}
 									} catch (Exception e) {
 										// Invalid rating string
@@ -338,13 +331,14 @@ public class NativeActivity extends Activity {
 
 			// Note: This method should be called only when ad from third party
 			// SDK is rendered.
-			//mastNativeAd.sendImpression(); // Method added here only for testing
-											// purpose
-			
+			// mastNativeAd.sendImpression(); // Method added here only for
+			// testing
+			// purpose
+
 			// Note: This method should be called only when ad clicked callback
 			// is received from third party SDK.
-			//mastNativeAd.sendClickTracker(); // Method added here only for
-												// testing purpose
+			// mastNativeAd.sendClickTracker(); // Method added here only for
+			// testing purpose
 
 		}
 
