@@ -26,16 +26,12 @@ import com.mopub.nativeads.ViewBinder;
 public class NativeAdapterSample extends Activity {
 
 	private static final String MOPUB_AD_UNIT_ID = "11a17b188668469fb0412708c3d16813";
-	// TODO: Remove: MoPub Sample App Id: "11a17b188668469fb0412708c3d16813"
-	// Mocean Adapter test zone id: "2fd8cff353f547c189d608e9a14c9f8f"
 
 	private Context mContext = this;
 	private ListView mListView;
 	private MoPubAdAdapter mAdAdapter;
 	private static String[] listItemPlaceholders = { "List item 1",
-			"List item 2", "List item 3", "List item 4", "List item 5",
-			"List item 6", "List item 7", "List item 8", "List item 9",
-			"List item 10", "List item 11", "List item 12" };
+			"List item 2", "List item 3", "List item 4", "List item 5" };
 	private static final String TAG = NativeAdapterSample.class.getSimpleName();
 
 	@SuppressWarnings("deprecation")
@@ -57,7 +53,7 @@ public class NativeAdapterSample extends Activity {
 				.serverPositioning();
 
 		MoPubNativeAdRenderer adRenderer = new MoPubNativeAdRenderer(viewBinder);
-		
+
 		// Set up the MoPubAdAdapter
 		mAdAdapter = new MoPubAdAdapter(this, new CustomAdapter(mContext,
 				listItemPlaceholders), adPositioning);
@@ -137,7 +133,6 @@ public class NativeAdapterSample extends Activity {
 			if (title != null) {
 				holder.text.setText(title);
 			}
-
 			return convertView;
 		}
 
@@ -145,6 +140,5 @@ public class NativeAdapterSample extends Activity {
 			TextView text;
 
 		}
-
 	}
 }

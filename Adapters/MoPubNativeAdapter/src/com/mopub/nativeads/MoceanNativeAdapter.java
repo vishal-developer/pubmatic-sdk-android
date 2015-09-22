@@ -49,16 +49,26 @@ import com.moceanmobile.mast.bean.TitleAssetResponse;
  * {"zoneId":"123456"}
  * </pre>
  * 
+ * <b>Optional : </b><br>
+ * Optionally you can also set following extra parameters:
+ * <ol>
+ * <li>adServerUrl : Use this flag to set custom ad server URL. Permissible
+ * value could be a URL of custom ad server.
+ * </ol>
+ * Example JSON: (Note that adServerUrl is optional)
+ * 
+ * <pre>
+ * {"zoneId":"123456", "adServerUrl":"http://ads.test.mocean.mobi/ad?"}
+ * </pre>
+ * 
  * Once you've completed these steps, the MoPub SDK will be able to cause your
  * CustomEventNative subclass to be instantiated at the proper time while your
  * application is running. You do not need to instantiate any of these
  * subclasses in your application code. <br>
  * <p>
- * <b>Optional : </b><br>
+ * <b>Optional Local extra parameters: </b><br>
  * Optionally you can also set following local extra parameters in MoPub SDK.
  * <ol>
- * <li>adServerUrl : Use this flag to set custom ad server URL. Permissible
- * value could be a {@link String} URL of custom ad server.
  * <li>mocean_sdk_log_level : Set the log level of Mocean SDK. Permissible
  * values are from {@link LogLevel} enum.
  * <li>mocean_sdk_location_detection_flag : Add this extra param with value as
@@ -80,9 +90,10 @@ public class MoceanNativeAdapter extends CustomEventNative {
 
 	// Server Extra Parameter keys
 	public static final String KEY_ZONE_ID = "zoneId";
+	// Optional : adServerUrl
+	public static final String KEY_AD_SERVER_URL = "adServerUrl";
 
 	// Local Extra Parameter keys
-	public static final String KEY_AD_SERVER_URL = "adServerUrl";
 	/**
 	 * Set Log Level for Mocean Ad View using setLocalExtras method of MoPub
 	 * SDK. Refer {@link LogLevel} for valid values of LogLevel.
@@ -143,12 +154,13 @@ public class MoceanNativeAdapter extends CustomEventNative {
 		mastNativeAd.setZone(zoneId);
 
 		// Set custom ad network URL if set
-		if (localExtras.containsKey(KEY_AD_SERVER_URL)) {
+		if (serverExtras.containsKey(KEY_AD_SERVER_URL)) {
 			try {
-				String adNetworkURL = (localExtras.get(KEY_AD_SERVER_URL))
+				String adNetworkURL = (serverExtras.get(KEY_AD_SERVER_URL))
 						.toString();
 				if (!TextUtils.isEmpty(adNetworkURL)) {
 					mastNativeAd.setAdNetworkURL(adNetworkURL);
+					Log.i(TAG, "Using custom ad network URL: " + adNetworkURL);
 				}
 			} catch (Exception ex) {
 				Log.w(TAG, "Invalid value for Ad network URL");
@@ -251,6 +263,10 @@ public class MoceanNativeAdapter extends CustomEventNative {
 		@Override
 		public void prepare(final View view) {
 
+			setOverridingClickTracker(true);
+			setOverridingImpressionTracker(true);
+			notifyAdImpressed();
+
 			MAIN_UI_THREAD_HANDLER.post(new Runnable() {
 
 				@Override
@@ -258,17 +274,9 @@ public class MoceanNativeAdapter extends CustomEventNative {
 					if (view != null) {
 						mNativeAd.trackViewForInteractions(view);
 					}
-					setOverridingClickTracker(true);
-					setOverridingImpressionTracker(true);
-					notifyAdImpressed();
 				}
 			});
-		}
-
-		@Override
-		public void clear(View view) {
-			mNativeAd.reset(); // Set all variables to null
-			super.clear(view);
+			super.prepare(view);
 		}
 
 		@Override
@@ -337,9 +345,6 @@ public class MoceanNativeAdapter extends CustomEventNative {
 			}
 			setImpressionMinTimeViewed(0); // No minimum impression view time
 
-			if (nativeAd.getClick() != null) {
-				setClickDestinationUrl(nativeAd.getClick());
-			}
 			setTitle(nativeAssetResponse.title);
 			setText(nativeAssetResponse.descriptionText);
 			setCallToAction(nativeAssetResponse.callToAction);
