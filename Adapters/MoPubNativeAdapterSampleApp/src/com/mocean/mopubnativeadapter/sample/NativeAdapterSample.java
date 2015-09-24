@@ -17,7 +17,6 @@ import com.mopub.common.MoPub;
 import com.mopub.nativeads.MoPubAdAdapter;
 import com.mopub.nativeads.MoPubNativeAdLoadedListener;
 import com.mopub.nativeads.MoPubNativeAdPositioning;
-import com.mopub.nativeads.MoPubNativeAdRenderer;
 import com.mopub.nativeads.RequestParameters;
 import com.mopub.nativeads.RequestParameters.Builder;
 import com.mopub.nativeads.RequestParameters.NativeAdAsset;
@@ -25,7 +24,7 @@ import com.mopub.nativeads.ViewBinder;
 
 public class NativeAdapterSample extends Activity {
 
-	private static final String MOPUB_AD_UNIT_ID = "11a17b188668469fb0412708c3d16813";
+	private static final String MOPUB_AD_UNIT_ID = "2fd8cff353f547c189d608e9a14c9f8f";
 
 	private Context mContext = this;
 	private ListView mListView;
@@ -34,7 +33,6 @@ public class NativeAdapterSample extends Activity {
 			"List item 2", "List item 3", "List item 4", "List item 5" };
 	private static final String TAG = NativeAdapterSample.class.getSimpleName();
 
-	@SuppressWarnings("deprecation")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -46,18 +44,17 @@ public class NativeAdapterSample extends Activity {
 		ViewBinder viewBinder = new ViewBinder.Builder(R.layout.list_item)
 				.mainImageId(R.id.mainImage).iconImageId(R.id.logoImage)
 				.callToActionId(R.id.ctaButton).titleId(R.id.titleTextView)
+				.daaIconImageId(R.id.native_ad_daa_icon_image)
 				.textId(R.id.descriptionTextView).build();
 
 		// Set up the positioning behavior your ads should have.
 		MoPubNativeAdPositioning.MoPubServerPositioning adPositioning = MoPubNativeAdPositioning
 				.serverPositioning();
 
-		MoPubNativeAdRenderer adRenderer = new MoPubNativeAdRenderer(viewBinder);
-
 		// Set up the MoPubAdAdapter
 		mAdAdapter = new MoPubAdAdapter(this, new CustomAdapter(mContext,
 				listItemPlaceholders), adPositioning);
-		mAdAdapter.registerAdRenderer(adRenderer);
+		mAdAdapter.registerViewBinder(viewBinder);
 		// Enable Location awareness
 		MoPub.setLocationAwareness(MoPub.LocationAwareness.NORMAL);
 
