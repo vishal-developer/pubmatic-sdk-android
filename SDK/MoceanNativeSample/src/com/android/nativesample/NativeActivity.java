@@ -62,8 +62,7 @@ import com.moceanmobile.mast.bean.TitleAssetResponse;
 
 public class NativeActivity extends Activity {
 
-	// TODO : Add your Mocean zone id
-	private static final int ZONE_ID = 179492;
+	private static final int ZONE_ID = 179492; // TODO : Add your Mocean zone id
 
 	private static final String LOG_TAG = NativeActivity.class.getSimpleName();
 	private MASTNativeAd ad = null;

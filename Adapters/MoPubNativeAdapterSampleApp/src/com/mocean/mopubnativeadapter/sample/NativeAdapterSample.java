@@ -24,7 +24,7 @@ import com.mopub.nativeads.ViewBinder;
 
 public class NativeAdapterSample extends Activity {
 
-	private static final String MOPUB_AD_UNIT_ID = "2fd8cff353f547c189d608e9a14c9f8f";
+	private static final String MOPUB_AD_UNIT_ID = "xxxxxxxx"; // TODO: Add MoPub AdUnitId here
 
 	private Context mContext = this;
 	private ListView mListView;
