@@ -160,3 +160,12 @@ Enabled multi-pixel tracking for SDK.
 - Added convenience method for adding AdRequest custom parameters. (addAdRequestCustomParameter(String key, String value)).
 
 
+-------
+ 4.3.2
+-------
+
+- Separated Native SDK 
+- Added Mocean Native Adapter for MoPub SDK
+- Code optimization
+
+
