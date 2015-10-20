@@ -62,7 +62,7 @@ import com.moceanmobile.mast.bean.TitleAssetResponse;
 
 public class NativeActivity extends Activity {
 
-	private static final int ZONE_ID = 179492; // TODO : Add your Mocean zone id
+	private static final int ZONE_ID = 277298; // TODO : Add your Mocean zone id
 
 	private static final String LOG_TAG = NativeActivity.class.getSimpleName();
 	private MASTNativeAd ad = null;
@@ -98,7 +98,8 @@ public class NativeActivity extends Activity {
 		ad.setZone(ZONE_ID);
 
 		// Set custom Base URL for mocean adserver if required
-		// ad.setAdNetworkURL("http://ads.mocean.mobi/ad");
+		ad.setAdNetworkURL("http://ads.test.mocean.mobi/ad?");
+		// Note: Set Url only if required.
 
 		// Request for native assets
 		ad.addNativeAssetRequestList(getAssetRequests());
@@ -127,8 +128,6 @@ public class NativeActivity extends Activity {
 		ImageAssetRequest imageAssetIcon = new ImageAssetRequest();
 		imageAssetIcon.setAssetId(1003);
 		imageAssetIcon.setImageType(ImageAssetTypes.icon);
-		imageAssetIcon.setWidth(60); // Optional
-		imageAssetIcon.setHeight(60); // Optional
 		assets.add(imageAssetIcon);
 
 		ImageAssetRequest imageAssetMainImage = new ImageAssetRequest();
