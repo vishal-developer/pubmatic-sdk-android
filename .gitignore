@@ -13,6 +13,7 @@
 gen/
 !bin/
 bin/*
+Adapters/MoPubNativeAdapterSampleApp_4.0.0/bin/
 # Do not ignore generated jar file
 !bin/mastadview.jar
 !bin/moceannativesdk.jar
