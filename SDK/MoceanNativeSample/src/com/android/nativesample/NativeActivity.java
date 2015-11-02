@@ -108,6 +108,12 @@ public class NativeActivity extends Activity {
 		 * default browser, to open ads when clicked
 		 */
 		ad.setUseInternalBrowser(true);
+		
+		// Enable device location detection
+		ad.setLocationDetectionEnabled(true);
+		
+		// Enable device id detection
+		ad.setAndroidaidEnabled(true);
 
 		// ad.setTest(true); // Uncomment to serve ads in test mode
 

@@ -45,8 +45,10 @@ import static com.moceanmobile.mast.MASTNativeAdConstants.RESPONSE_MEDIATION;
 import static com.moceanmobile.mast.MASTNativeAdConstants.RESPONSE_URL;
 import static com.moceanmobile.mast.MASTNativeAdConstants.TELEPHONY_MCC;
 import static com.moceanmobile.mast.MASTNativeAdConstants.TELEPHONY_MNC;
+import static com.moceanmobile.mast.MASTNativeAdConstants.REQUESTPARAM_ANDROID_ID_SHA1;
 
 import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -56,6 +58,7 @@ import java.util.Set;
 
 import org.json.JSONObject;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Criteria;
@@ -64,6 +67,7 @@ import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.view.View;
@@ -84,7 +88,6 @@ import com.moceanmobile.mast.bean.TitleAssetRequest;
  * Refer Sample application for example of implementation.
  */
 public final class MASTNativeAd implements AdRequest.Handler {
-
 
 	/**
 	 * Interface allowing application developers to control logging.
@@ -176,6 +179,8 @@ public final class MASTNativeAd implements AdRequest.Handler {
 	// Use external system native browser by default
 	private boolean mUseInternalBrowser = false;
 	private MediationData mMediationData = null;
+	// Android Device ID androidaid
+	private boolean isAndroidaidEnabled;
 
 	/**
 	 * If false, denotes that SDK should handle the third party request with the
@@ -444,6 +449,19 @@ public final class MASTNativeAd implements AdRequest.Handler {
 	}
 
 	/**
+	 * add androidaid as request param.
+	 * 
+	 * @param isAndroidaidEnabled
+	 */
+	public void setAndroidaidEnabled(boolean isAndroidaidEnabled) {
+		this.isAndroidaidEnabled = isAndroidaidEnabled;
+	}
+
+	public boolean isAndoridaidEnabled() {
+		return isAndroidaidEnabled;
+	}
+
+	/**
 	 * Use this method to remove test devices ids for network.
 	 * 
 	 * e.g. if you have set device ids using
@@ -564,6 +582,11 @@ public final class MASTNativeAd implements AdRequest.Handler {
 			logEvent("Unable to obtain mcc and mnc. Exception:" + ex,
 					LogLevel.Debug);
 		}
+		// Add Device ID
+		if (isAndoridaidEnabled()) {
+			args.put(REQUESTPARAM_ANDROID_ID_SHA1,
+					getUdidFromContext(mContext));
+		}
 
 		// Put all the user sent parameters in the request
 		args.putAll(mAdRequestParameters);
@@ -627,9 +650,10 @@ public final class MASTNativeAd implements AdRequest.Handler {
 
 			// If the adapter has served the ad, inform to track this view for
 			// interactions.
-			/*if (mBaseAdapter != null) {
-				mBaseAdapter.trackViewForInteractions(view);
-			} else */{
+			/*
+			 * if (mBaseAdapter != null) {
+			 * mBaseAdapter.trackViewForInteractions(view); } else
+			 */{
 				/*
 				 * Set listener on this view, so that we will receive all the
 				 * interactions
@@ -1299,6 +1323,34 @@ public final class MASTNativeAd implements AdRequest.Handler {
 
 			mAdRequestParameters.remove(REQUESTPARAM_LATITUDE);
 			mAdRequestParameters.remove(REQUESTPARAM_LONGITUDE);
+		}
+	}
+
+	private static String getUdidFromContext(Context context) {
+		String deviceId = Settings.Secure.getString(
+				context.getContentResolver(), Settings.Secure.ANDROID_ID);
+		deviceId = (deviceId == null) ? "" : sha1(deviceId);
+		return deviceId;
+
+	}
+
+	@SuppressLint("DefaultLocale")
+	public static String sha1(String string) {
+		StringBuilder stringBuilder = new StringBuilder();
+
+		try {
+			MessageDigest digest = MessageDigest.getInstance("SHA-1");
+			byte[] bytes = string.getBytes("UTF-8");
+			digest.update(bytes, 0, bytes.length);
+			bytes = digest.digest();
+
+			for (final byte b : bytes) {
+				stringBuilder.append(String.format("%02X", b));
+			}
+
+			return stringBuilder.toString().toLowerCase();
+		} catch (Exception e) {
+			return "";
 		}
 	}
 }

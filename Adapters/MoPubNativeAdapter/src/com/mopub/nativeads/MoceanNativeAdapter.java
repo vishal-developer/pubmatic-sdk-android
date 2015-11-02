@@ -215,6 +215,9 @@ public class MoceanNativeAdapter extends CustomEventNative {
 						"invalid value for location detection flag. Valid values true/false");
 			}
 		}
+		
+		// Enable Device Id detection
+		mastNativeAd.setAndroidaidEnabled(true);
 
 		final MoceanForwardingNativeAd moceanForwardingNativeAd = new MoceanForwardingNativeAd(
 				context, mastNativeAd, customEventNativeListener);
