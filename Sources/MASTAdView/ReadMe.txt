@@ -163,4 +163,10 @@ Enabled multi-pixel tracking for SDK.
  4.3.1
 ------
 
--RXM-499-23937 | Android Mocean viewableChange - Mraid 2.0.
+- RXM-499-23937 | Android Mocean viewableChange - Mraid 2.0.
+
+------
+ 4.3.2
+------
+
+- YYB-245-58962 | Fixed bug for Android-id functionality.
