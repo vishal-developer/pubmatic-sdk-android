@@ -195,8 +195,8 @@ public class MASTAdView extends ViewGroup {
 	private RequestListener requestListener;
 	private RichMediaListener richMediaListener;
 
-	// androidaid
-	private boolean isAndroidaidEnabled;
+	// androidid
+	private boolean isAndroidIdEnabled;
 
 	/**
 	 * Used to create instances for placement in code. Only produces inline
@@ -851,16 +851,16 @@ public class MASTAdView extends ViewGroup {
 	}
 
 	/**
-	 * add androidaid as request param.
+	 * add androidid as request param.
 	 * 
-	 * @param isAndroidaidEnabled
+	 * @param isAndroidIdEnabled
 	 */
-	public void setAndroidaidEnabled(boolean isAndroidaidEnabled) {
-		this.isAndroidaidEnabled = isAndroidaidEnabled;
+	public void setAndroidIdEnabled(boolean isAndroidIdEnabled) {
+		this.isAndroidIdEnabled = isAndroidIdEnabled;
 	}
 
-	public boolean isAndoridaidEnabled() {
-		return isAndroidaidEnabled;
+	public boolean isAndoridIdEnabled() {
+		return isAndroidIdEnabled;
 	}
 
 	/**
@@ -1043,8 +1043,8 @@ public class MASTAdView extends ViewGroup {
 			}
 
 			adRequestDefaultParameters.put("size_required", "1");
-			if (isAndoridaidEnabled())
-				adRequestDefaultParameters.put("androidaid",
+			if (isAndoridIdEnabled())
+				adRequestDefaultParameters.put("androidid_sha1",
 						getUdidFromContext(getContext()));
 			if (!isX)
 				adRequestDefaultParameters
