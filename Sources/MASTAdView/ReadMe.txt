@@ -170,3 +170,9 @@ Enabled multi-pixel tracking for SDK.
 ------
 
 - YYB-245-58962 | Fixed bug for Android-id functionality.
+
+------
+ 4.3.3
+------
+
+- NJE-810-93352 | Fixed broadcast-receiver unregistering bug.
