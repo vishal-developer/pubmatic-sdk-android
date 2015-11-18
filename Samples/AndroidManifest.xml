@@ -82,6 +82,11 @@
             android:label="@string/title_activity_advanced_top_and_bottom" >
         </activity>
         <activity
+            android:name="com.moceanmobile.mast.samples.AdvancedResizeAdSlot"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="@string/title_activity_advanced_resize_ad_slot" >
+        </activity>
+        <activity
             android:name="com.moceanmobile.mast.samples.DelegateGeneric"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_delegate_generic" >
