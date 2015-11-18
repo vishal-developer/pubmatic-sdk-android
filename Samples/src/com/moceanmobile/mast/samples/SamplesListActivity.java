@@ -56,6 +56,7 @@ public class SamplesListActivity extends ListActivity {
 		samplesListAdapter.addItem(new SamplesItem("List", AdvancedList.class));
 		samplesListAdapter.addItem(new SamplesItem("Native", NativeActivity.class));
 		samplesListAdapter.addItem(new SamplesItem("Top and Bottom", AdvancedTopAndBottom.class));
+		samplesListAdapter.addItem(new SamplesItem("Resize Ad Slot", AdvancedResizeAdSlot.class));
 		
 		samplesListAdapter.addItem(new SamplesItem("Custom", "Custom Ad Setup", CustomConfig.class));
 		samplesListAdapter.addItem(new SamplesItem("Web Rendering", WebViewTest.class));
