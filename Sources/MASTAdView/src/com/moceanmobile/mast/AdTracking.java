@@ -60,7 +60,6 @@ public class AdTracking {
                     httpResponse.getStatusLine();
                 } catch (Exception ex) {
                     Log.w(LOGTAG, "Error while invoking tracking URL : " + url);
-                    Log.w(LOGTAG, ex.getMessage());
                 }
             }
         }).start();

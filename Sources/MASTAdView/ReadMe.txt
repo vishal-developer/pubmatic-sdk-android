@@ -176,3 +176,9 @@ Enabled multi-pixel tracking for SDK.
 ------
 
 - NJE-810-93352 | Fixed broadcast-receiver unregistering bug.
+
+------
+ 4.3.4
+------
+
+- Fixes to support AndroidAID & 3rd party pixel crash issues.

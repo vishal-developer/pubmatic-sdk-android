@@ -82,6 +82,7 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.moceanmobile.mast.AdvertisingIdClient.AdInfo;
 import com.moceanmobile.mast.MASTAdViewDelegate.ActivityListener;
 import com.moceanmobile.mast.MASTAdViewDelegate.FeatureSupportHandler;
 import com.moceanmobile.mast.MASTAdViewDelegate.InternalBrowserListener;
@@ -197,6 +198,10 @@ public class MASTAdView extends ViewGroup {
 
 	// androidid
 	private boolean isAndroidIdEnabled;
+	
+	// androidAid
+	private boolean isAndroidAidEnabled;
+	private String androidAid = "";
 
 	// Receiver
 	private BroadcastReceiver mReceiver;
@@ -855,6 +860,31 @@ public class MASTAdView extends ViewGroup {
 	}
 
 	/**
+	 * add androidaid as request param.
+	 * 
+	 * @param isAndroidaidEnabled
+	 */
+	public void setAndroidAidEnabled(boolean isAndroidAidEnabled) {
+		this.isAndroidAidEnabled = isAndroidAidEnabled;
+		if (isAndroidAidEnabled) {
+			new Thread(new Runnable() {
+				public void run() {
+					try {
+						AdInfo adInfo = AdvertisingIdClient.getAdvertisingIdInfo(getContext());
+						androidAid = adInfo.getId();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}).start();
+		}
+	}
+
+	public boolean isAndoridAidEnabled() {
+		return isAndroidAidEnabled;
+	}
+	
+	/**
 	 * Invokes an update which requests and if received, renders ad content
 	 * replacing any previous ad content. If the force parameter is set to false
 	 * the update will be deferred if the user is interacting with the current
@@ -1034,6 +1064,9 @@ public class MASTAdView extends ViewGroup {
 			adRequestDefaultParameters.put("size_required", "1");
 			if (isAndoridIdEnabled())
 				adRequestDefaultParameters.put("androidid_sha1", getUdidFromContext(getContext()));
+			if (isAndoridAidEnabled() && !androidAid.isEmpty()) {
+				adRequestDefaultParameters.put("androidaid_sha1", sha1(androidAid));
+			}
 			if (!isX)
 				adRequestDefaultParameters.put("size_x", String.valueOf(size_x));
 			if (!isY)
