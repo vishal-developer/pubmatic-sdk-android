@@ -17,16 +17,9 @@
 
 package com.moceanmobile.mast;
 
-import java.io.IOException;
 import java.io.InputStream;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -94,6 +87,7 @@ public final class ImageDownloader extends AsyncTask<String, Void, Bitmap> {
 	@Override
 	protected Bitmap doInBackground(String... params) {
 		InputStream inputStream = null;
+		HttpURLConnection urlConnection = null;
 		Bitmap bitmap = null;
 		String url = null;
 
@@ -101,21 +95,19 @@ public final class ImageDownloader extends AsyncTask<String, Void, Bitmap> {
 			if (params != null && params.length > 0
 					&& (url = params[0]) != null) {
 
-				HttpParams httpParams = new BasicHttpParams();
-				HttpConnectionParams.setConnectionTimeout(httpParams,
-						Defaults.NETWORK_TIMEOUT_SECONDS * 1000);
+				URL httpUrl = new URL(url);
+				urlConnection = (HttpURLConnection) httpUrl.openConnection();
+				urlConnection
+						.setConnectTimeout(Defaults.NETWORK_TIMEOUT_SECONDS * 1000);
+				urlConnection.setRequestProperty(
+						MASTAdViewConstants.HTTP_REQ_HEADER_CONNECTION,
+						MASTAdViewConstants.HTTP_REQ_HEADER_CONNECTION_CLOSE);
+				urlConnection.setDoInput(true);
+				urlConnection
+						.setRequestMethod(MASTAdViewConstants.HTTP_METHOD_GET);
 
-				HttpClient httpClient = new DefaultHttpClient(httpParams);
-
-				HttpGet httpGet = new HttpGet(url);
-				httpGet.setHeader("Connection", "close");
-
-				HttpResponse httpResponse = httpClient.execute(httpGet);
-
-				if (httpResponse.getStatusLine()
-								.getStatusCode() == 200) {
-					inputStream = httpResponse.getEntity()
-												.getContent();
+				if (urlConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+					inputStream = urlConnection.getInputStream();
 					if (!isCancelled()) {
 						bitmap = BitmapFactory.decodeStream(inputStream);
 					}
@@ -127,7 +119,15 @@ public final class ImageDownloader extends AsyncTask<String, Void, Bitmap> {
 			if (inputStream != null) {
 				try {
 					inputStream.close();
-				} catch (IOException e) {
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			if (urlConnection != null) {
+				try {
+					urlConnection.disconnect();
+					urlConnection = null;
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}

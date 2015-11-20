@@ -30,7 +30,10 @@ public class SimpleImage extends RefreshActivity
 		setContentView(R.layout.activity_simple_image);
 		
 		MASTAdView adView = (MASTAdView) findViewById(R.id.adView);
-		adView.setLocationDetectionEnabled(true);
+		adView.setUseInternalBrowser(true);
+		adView.setLocationDetectionEnabled(true); // Enable Location detection
+		adView.setAndroidIdEnabled(true); // Enable Device Id detection
+		
 	}
 	
 	@Override
