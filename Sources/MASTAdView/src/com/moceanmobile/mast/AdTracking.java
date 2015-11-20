@@ -61,7 +61,7 @@ public class AdTracking {
         					Log.w(LOGTAG, "Error while invoking tracking URL : " + url + "HttpResponse:"+responseCode);
         					return;
         				}else{
-        					Log.i(LOGTAG, "Ad Tracker fired successfully! URL: "+url);
+        					Log.i(LOGTAG, "Ad Tracker fired successfully");
         				}
         			}
         		} catch (Exception ex) {

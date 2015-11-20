@@ -198,7 +198,7 @@ public class MASTAdView extends ViewGroup {
 
 	// androidid
 	private boolean isAndroidIdEnabled;
-	
+
 	// androidAid
 	private boolean isAndroidAidEnabled;
 	private String androidAid = "";
@@ -276,9 +276,11 @@ public class MASTAdView extends ViewGroup {
 	}
 
 	protected void applyAttributeSet(AttributeSet attrs) {
-		setZone(attrs.getAttributeIntValue(null, MASTAdViewConstants.xml_layout_attribute_zone, zone));
+		setZone(attrs.getAttributeIntValue(null,
+				MASTAdViewConstants.xml_layout_attribute_zone, zone));
 
-		String strValue = attrs.getAttributeValue(null, MASTAdViewConstants.xml_layout_attribute_logLevel);
+		String strValue = attrs.getAttributeValue(null,
+				MASTAdViewConstants.xml_layout_attribute_logLevel);
 		if (TextUtils.isEmpty(strValue) == false) {
 			setLogLevel(LogLevel.valueOf(strValue));
 		}
@@ -347,7 +349,8 @@ public class MASTAdView extends ViewGroup {
 	 * @param activityListener
 	 *            MASTAdViewDelegate.ActivityListener implementation
 	 */
-	public void setActivityListener(MASTAdViewDelegate.ActivityListener activityListener) {
+	public void setActivityListener(
+			MASTAdViewDelegate.ActivityListener activityListener) {
 		this.activityListener = activityListener;
 	}
 
@@ -368,7 +371,8 @@ public class MASTAdView extends ViewGroup {
 	 * @param featureSupportHandler
 	 *            MASTAdViewDelegate.FeatureSupportHandler implementation
 	 */
-	public void setFeatureSupportHandler(MASTAdViewDelegate.FeatureSupportHandler featureSupportHandler) {
+	public void setFeatureSupportHandler(
+			MASTAdViewDelegate.FeatureSupportHandler featureSupportHandler) {
 		this.featureSupportHandler = featureSupportHandler;
 	}
 
@@ -389,7 +393,8 @@ public class MASTAdView extends ViewGroup {
 	 * @param internalBrowserListener
 	 *            MASTAdViewDelegate.InternalBrowserListener implementation
 	 */
-	public void setInternalBrowserListener(MASTAdViewDelegate.InternalBrowserListener internalBrowserListener) {
+	public void setInternalBrowserListener(
+			MASTAdViewDelegate.InternalBrowserListener internalBrowserListener) {
 		this.internalBrowserListener = internalBrowserListener;
 	}
 
@@ -430,7 +435,8 @@ public class MASTAdView extends ViewGroup {
 	 * @param internalBrowserListener
 	 *            MASTAdViewDelegate.RequestListener implementation
 	 */
-	public void setRequestListener(MASTAdViewDelegate.RequestListener requestListener) {
+	public void setRequestListener(
+			MASTAdViewDelegate.RequestListener requestListener) {
 		this.requestListener = requestListener;
 	}
 
@@ -450,7 +456,8 @@ public class MASTAdView extends ViewGroup {
 	 * @param internalBrowserListener
 	 *            MASTAdViewDelegate.RichMediaListener implementation
 	 */
-	public void setRichMediaListener(MASTAdViewDelegate.RichMediaListener richMediaListener) {
+	public void setRichMediaListener(
+			MASTAdViewDelegate.RichMediaListener richMediaListener) {
 		this.richMediaListener = richMediaListener;
 	}
 
@@ -521,7 +528,8 @@ public class MASTAdView extends ViewGroup {
 	 *            Value of the custom parameter to be passed. E.g.: "25"
 	 */
 	public void addAdRequestCustomParameter(String key, String value) {
-		if ((!TextUtils.isEmpty(key) || !TextUtils.isEmpty(value)) && adRequestCustomParameters != null) {
+		if ((!TextUtils.isEmpty(key) || !TextUtils.isEmpty(value))
+				&& adRequestCustomParameters != null) {
 			List<String> valueList = adRequestCustomParameters.get(key);
 			if (valueList == null) {
 				valueList = new ArrayList<String>();
@@ -769,8 +777,8 @@ public class MASTAdView extends ViewGroup {
 		criteria.setAltitudeRequired(false);
 		criteria.setAccuracy(Criteria.ACCURACY_COARSE);
 
-		enableLocationDetection(Defaults.LOCATION_DETECTION_MINTIME, Defaults.LOCATION_DETECTION_MINDISTANCE, criteria,
-				null);
+		enableLocationDetection(Defaults.LOCATION_DETECTION_MINTIME,
+				Defaults.LOCATION_DETECTION_MINDISTANCE, criteria, null);
 	}
 
 	/**
@@ -789,15 +797,18 @@ public class MASTAdView extends ViewGroup {
 	 *            Named provider used by the LocationManager to obtain location
 	 *            updates.
 	 */
-	public void enableLocationDetection(long minTime, float minDistance, Criteria criteria, String provider) {
+	public void enableLocationDetection(long minTime, float minDistance,
+			Criteria criteria, String provider) {
 		if ((provider == null) && (criteria == null))
 			throw new IllegalArgumentException("criteria or provider required");
 
-		locationManager = (LocationManager) MASTAdView.this.getContext().getSystemService(Context.LOCATION_SERVICE);
+		locationManager = (LocationManager) MASTAdView.this.getContext()
+				.getSystemService(Context.LOCATION_SERVICE);
 		if (locationManager != null) {
 			try {
 				if (provider == null) {
-					List<String> providers = locationManager.getProviders(criteria, true);
+					List<String> providers = locationManager.getProviders(
+							criteria, true);
 					if ((providers != null) && (providers.size() > 0)) {
 						provider = providers.get(0);
 					}
@@ -805,10 +816,12 @@ public class MASTAdView extends ViewGroup {
 
 				if (provider != null) {
 					locationListener = new LocationListener();
-					locationManager.requestLocationUpdates(provider, minTime, minDistance, locationListener);
+					locationManager.requestLocationUpdates(provider, minTime,
+							minDistance, locationListener);
 				}
 			} catch (Exception ex) {
-				logEvent("Error requesting location updates.  Exception:" + ex, LogLevel.Error);
+				logEvent("Error requesting location updates.  Exception:" + ex,
+						LogLevel.Error);
 
 				locationManager.removeUpdates(locationListener);
 				locationManager = null;
@@ -870,7 +883,8 @@ public class MASTAdView extends ViewGroup {
 			new Thread(new Runnable() {
 				public void run() {
 					try {
-						AdInfo adInfo = AdvertisingIdClient.getAdvertisingIdInfo(getContext());
+						AdInfo adInfo = AdvertisingIdClient
+								.getAdvertisingIdInfo(getContext());
 						androidAid = adInfo.getId();
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -883,7 +897,7 @@ public class MASTAdView extends ViewGroup {
 	public boolean isAndoridAidEnabled() {
 		return isAndroidAidEnabled;
 	}
-	
+
 	/**
 	 * Invokes an update which requests and if received, renders ad content
 	 * replacing any previous ad content. If the force parameter is set to false
@@ -906,13 +920,14 @@ public class MASTAdView extends ViewGroup {
 		}
 
 		if (updateInterval > 0) {
-			adUpdateIntervalFuture = Background.getExecutor().scheduleAtFixedRate(new Runnable() {
-				@Override
-				public void run() {
-					internalUpdate(false);
-				}
+			adUpdateIntervalFuture = Background.getExecutor()
+					.scheduleAtFixedRate(new Runnable() {
+						@Override
+						public void run() {
+							internalUpdate(false);
+						}
 
-			}, 0, updateInterval, TimeUnit.SECONDS);
+					}, 0, updateInterval, TimeUnit.SECONDS);
 		}
 
 		if (force) {
@@ -1046,13 +1061,15 @@ public class MASTAdView extends ViewGroup {
 		int size_x = getWidth();
 		int size_y = getHeight();
 		if (isInterstitial()) {
-			DisplayMetrics displayMetrics = Resources.getSystem().getDisplayMetrics();
+			DisplayMetrics displayMetrics = Resources.getSystem()
+					.getDisplayMetrics();
 			size_x = displayMetrics.widthPixels;
 			size_y = displayMetrics.heightPixels;
 		}
 		boolean isX = false, isY = false;
 		if (adRequestDefaultParameters.size() > 0) {
-			for (Map.Entry<String, String> entry : adRequestDefaultParameters.entrySet()) {
+			for (Map.Entry<String, String> entry : adRequestDefaultParameters
+					.entrySet()) {
 				if (entry.getKey().equals("size_x")) {
 					isX = true;
 				}
@@ -1063,26 +1080,32 @@ public class MASTAdView extends ViewGroup {
 
 			adRequestDefaultParameters.put("size_required", "1");
 			if (isAndoridIdEnabled())
-				adRequestDefaultParameters.put("androidid_sha1", getUdidFromContext(getContext()));
+				adRequestDefaultParameters.put("androidid_sha1",
+						getUdidFromContext(getContext()));
 			if (isAndoridAidEnabled() && !androidAid.isEmpty()) {
-				adRequestDefaultParameters.put("androidaid_sha1", sha1(androidAid));
+				adRequestDefaultParameters.put("androidaid_sha1",
+						sha1(androidAid));
 			}
 			if (!isX)
-				adRequestDefaultParameters.put("size_x", String.valueOf(size_x));
+				adRequestDefaultParameters
+						.put("size_x", String.valueOf(size_x));
 			if (!isY)
-				adRequestDefaultParameters.put("size_y", String.valueOf(size_y));
+				adRequestDefaultParameters
+						.put("size_y", String.valueOf(size_y));
 		} else {
 			adRequestDefaultParameters.put("size_x", String.valueOf(size_x));
 			adRequestDefaultParameters.put("size_y", String.valueOf(size_y));
 		}
 		try {
-			TelephonyManager tm = (TelephonyManager) getContext().getSystemService(Context.TELEPHONY_SERVICE);
+			TelephonyManager tm = (TelephonyManager) getContext()
+					.getSystemService(Context.TELEPHONY_SERVICE);
 			String networkOperator = tm.getNetworkOperator();
 			if ((networkOperator != null) && (networkOperator.length() > 3)) {
 				String mcc = networkOperator.substring(0, 3);
 				String mnc = networkOperator.substring(3);
 				boolean isMCC = false, isMNC = false;
-				for (Map.Entry<String, String> entry : adRequestDefaultParameters.entrySet()) {
+				for (Map.Entry<String, String> entry : adRequestDefaultParameters
+						.entrySet()) {
 					if (entry.getKey().equals("mcc")) {
 						isMCC = true;
 					}
@@ -1096,7 +1119,8 @@ public class MASTAdView extends ViewGroup {
 					adRequestDefaultParameters.put("mnc", String.valueOf(mnc));
 			}
 		} catch (Exception ex) {
-			logEvent("Unable to obtain mcc and mnc. Exception:" + ex, LogLevel.Debug);
+			logEvent("Unable to obtain mcc and mnc. Exception:" + ex,
+					LogLevel.Debug);
 		}
 
 		// Don't allow these to be overridden.
@@ -1121,25 +1145,35 @@ public class MASTAdView extends ViewGroup {
 		 * instead of network id.
 		 */
 		// Clear old params if present.
-		adRequestDefaultParameters.remove(MASTAdViewConstants.DEFAULTED_EXCREATIVES);
-		adRequestDefaultParameters.remove(MASTAdViewConstants.DEFAULTED_PUBMATIC_EXFEEDS);
-		if (mAdDescriptor != null && isLastRequestDafaulted && "thirdparty".equalsIgnoreCase(mAdDescriptor.getType())) {
-			if ("mediation".equals(mAdDescriptor.getMediationData().getMediationSource())) {
+		adRequestDefaultParameters
+				.remove(MASTAdViewConstants.DEFAULTED_EXCREATIVES);
+		adRequestDefaultParameters
+				.remove(MASTAdViewConstants.DEFAULTED_PUBMATIC_EXFEEDS);
+		if (mAdDescriptor != null && isLastRequestDafaulted
+				&& "thirdparty".equalsIgnoreCase(mAdDescriptor.getType())) {
+			if ("mediation".equals(mAdDescriptor.getMediationData()
+					.getMediationSource())) {
 				// For thirdparty mediation, send pubmatic_exfeed
-				adRequestDefaultParameters.put(MASTAdViewConstants.DEFAULTED_PUBMATIC_EXFEEDS,
-						mAdDescriptor.getMediationData().getMediationNetworkId());
+				adRequestDefaultParameters.put(
+						MASTAdViewConstants.DEFAULTED_PUBMATIC_EXFEEDS,
+						mAdDescriptor.getMediationData()
+								.getMediationNetworkId());
 			} else {
 				// For thirdparty direct, send excreatives
-				adRequestDefaultParameters.put(MASTAdViewConstants.DEFAULTED_EXCREATIVES,
+				adRequestDefaultParameters.put(
+						MASTAdViewConstants.DEFAULTED_EXCREATIVES,
 						mAdDescriptor.getAdCreativeId());
 			}
 		}
 
 		addCustomParams(args);
 		List<String> argValueList;
-		for (Map.Entry<String, String> entry : adRequestDefaultParameters.entrySet()) {
+		for (Map.Entry<String, String> entry : adRequestDefaultParameters
+				.entrySet()) {
 
-			Log.d(TAG, "Default params : " + entry.getKey() + " : " + entry.getValue());
+			Log.d(TAG,
+					"Default params : " + entry.getKey() + " : "
+							+ entry.getValue());
 
 			argValueList = args.get(entry.getKey());
 
@@ -1155,12 +1189,13 @@ public class MASTAdView extends ViewGroup {
 		try {
 			if (mAdRequest != null)
 				mAdRequest.cancel();
-			mAdRequest = AdRequest.create(Defaults.NETWORK_TIMEOUT_SECONDS, adNetworkURL, userAgent, args,
-					adRequestHandler);
+			mAdRequest = AdRequest.create(Defaults.NETWORK_TIMEOUT_SECONDS,
+					adNetworkURL, userAgent, args, adRequestHandler);
 			String requestUrl = mAdRequest.getRequestUrl();
 			logEvent("Ad request:" + requestUrl, LogLevel.Debug);
 		} catch (UnsupportedEncodingException e) {
-			logEvent("Exception encountered while generating ad request URL:" + e, LogLevel.Error);
+			logEvent("Exception encountered while generating ad request URL:"
+					+ e, LogLevel.Error);
 			if (requestListener != null) {
 				requestListener.onFailedToReceiveAd(this, e);
 			}
@@ -1214,7 +1249,8 @@ public class MASTAdView extends ViewGroup {
 
 	public void showInterstitialWithDuration(int durationSeconds) {
 		if (isInterstitial() == false)
-			throw new IllegalStateException("showInterstitial requires interstitial instance");
+			throw new IllegalStateException(
+					"showInterstitial requires interstitial instance");
 
 		if (interstitialDelayFuture != null) {
 			interstitialDelayFuture.cancel(true);
@@ -1227,13 +1263,14 @@ public class MASTAdView extends ViewGroup {
 		performAdTracking();
 
 		if (durationSeconds > 0) {
-			interstitialDelayFuture = Background.getExecutor().schedule(new Runnable() {
-				@Override
-				public void run() {
-					closeInterstitial();
-				}
+			interstitialDelayFuture = Background.getExecutor().schedule(
+					new Runnable() {
+						@Override
+						public void run() {
+							closeInterstitial();
+						}
 
-			}, durationSeconds, TimeUnit.SECONDS);
+					}, durationSeconds, TimeUnit.SECONDS);
 		}
 	}
 
@@ -1351,15 +1388,19 @@ public class MASTAdView extends ViewGroup {
 					mMediationData = null;
 					try {
 						if (requestListener != null) {
-							ThirdPartyDescriptor thirdPartyDescriptor = ThirdPartyDescriptor.parseDescriptor(content);
+							ThirdPartyDescriptor thirdPartyDescriptor = ThirdPartyDescriptor
+									.parseDescriptor(content);
 							// Set MediationData as member object
 							mMediationData = adDescriptor.getMediationData();
 							this.mAdDescriptor = adDescriptor;
-							requestListener.onReceivedThirdPartyRequest(this, thirdPartyDescriptor.getProperties(),
+							requestListener.onReceivedThirdPartyRequest(this,
+									thirdPartyDescriptor.getProperties(),
 									thirdPartyDescriptor.getParams());
 						}
 					} catch (Exception ex) {
-						logEvent("Error parsing third party content descriptor.  Exception:" + ex, LogLevel.Error);
+						logEvent(
+								"Error parsing third party content descriptor.  Exception:"
+										+ ex, LogLevel.Error);
 					}
 
 					return;
@@ -1399,7 +1440,8 @@ public class MASTAdView extends ViewGroup {
 		return mMediationData;
 	}
 
-	private boolean verifyThirdPartyRendering(String content, String url, String imgOrText) {
+	private boolean verifyThirdPartyRendering(String content, String url,
+			String imgOrText) {
 		// May as well attempt to render image or text if there's no content to
 		// render.
 		if (TextUtils.isEmpty(content)) {
@@ -1441,7 +1483,8 @@ public class MASTAdView extends ViewGroup {
 			// String url = adDescriptor.getTrack();
 			if (mAdDescriptor.getImpressionTrackers().size() > 0) {
 				for (String urls : mAdDescriptor.getImpressionTrackers()) {
-					AdTracking.invokeTrackingUrl(Defaults.NETWORK_TIMEOUT_SECONDS, urls, userAgent);
+					AdTracking.invokeTrackingUrl(
+							Defaults.NETWORK_TIMEOUT_SECONDS, urls, userAgent);
 				}
 			}
 		}
@@ -1470,10 +1513,13 @@ public class MASTAdView extends ViewGroup {
 	 * party SDK.
 	 */
 	public void sendImpression() {
-		if (!mImpressionTrackerSent && mAdDescriptor != null && "thirdparty".equals(mAdDescriptor.getType())) {
-			if (mAdDescriptor.getImpressionTrackers() != null && mAdDescriptor.getImpressionTrackers().size() > 0) {
+		if (!mImpressionTrackerSent && mAdDescriptor != null
+				&& "thirdparty".equals(mAdDescriptor.getType())) {
+			if (mAdDescriptor.getImpressionTrackers() != null
+					&& mAdDescriptor.getImpressionTrackers().size() > 0) {
 				for (String url : mAdDescriptor.getImpressionTrackers()) {
-					AdTracking.invokeTrackingUrl(Defaults.NETWORK_TIMEOUT_SECONDS, url, userAgent);
+					AdTracking.invokeTrackingUrl(
+							Defaults.NETWORK_TIMEOUT_SECONDS, url, userAgent);
 				}
 			}
 			mImpressionTrackerSent = true;
@@ -1486,10 +1532,13 @@ public class MASTAdView extends ViewGroup {
 	 * received from third party SDK.
 	 */
 	public void sendClickTracker() {
-		if (!mClickTrackerSent && mAdDescriptor != null && "thirdparty".equals(mAdDescriptor.getType())) {
-			if (mAdDescriptor.getClickTrackers() != null && mAdDescriptor.getClickTrackers().size() > 0) {
+		if (!mClickTrackerSent && mAdDescriptor != null
+				&& "thirdparty".equals(mAdDescriptor.getType())) {
+			if (mAdDescriptor.getClickTrackers() != null
+					&& mAdDescriptor.getClickTrackers().size() > 0) {
 				for (String url : mAdDescriptor.getClickTrackers()) {
-					AdTracking.invokeTrackingUrl(Defaults.NETWORK_TIMEOUT_SECONDS, url, userAgent);
+					AdTracking.invokeTrackingUrl(
+							Defaults.NETWORK_TIMEOUT_SECONDS, url, userAgent);
 				}
 			}
 			mClickTrackerSent = true;
@@ -1498,27 +1547,31 @@ public class MASTAdView extends ViewGroup {
 
 	// main/background thread
 	private void fetchImage(final AdDescriptor adDescriptor, final String url) {
-		ImageRequest.create(Defaults.NETWORK_TIMEOUT_SECONDS, url, getUserAgent(), true, new ImageRequest.Handler() {
-			@Override
-			public void imageFailed(ImageRequest request, Exception ex) {
-				logEvent("Image download failure.  Exception:" + ex, LogLevel.Error);
+		ImageRequest.create(Defaults.NETWORK_TIMEOUT_SECONDS, url,
+				getUserAgent(), true, new ImageRequest.Handler() {
+					@Override
+					public void imageFailed(ImageRequest request, Exception ex) {
+						logEvent("Image download failure.  Exception:" + ex,
+								LogLevel.Error);
 
-				if (requestListener != null) {
-					requestListener.onFailedToReceiveAd(MASTAdView.this, ex);
-				}
-			}
+						if (requestListener != null) {
+							requestListener.onFailedToReceiveAd(
+									MASTAdView.this, ex);
+						}
+					}
 
-			@Override
-			public void imageReceived(ImageRequest request, Object imageObject) {
-				final Object finalImaegObject = imageObject;
+					@Override
+					public void imageReceived(ImageRequest request,
+							Object imageObject) {
+						final Object finalImaegObject = imageObject;
 
-				runOnUiThread(new Runnable() {
-					public void run() {
-						renderImage(adDescriptor, finalImaegObject);
+						runOnUiThread(new Runnable() {
+							public void run() {
+								renderImage(adDescriptor, finalImaegObject);
+							}
+						});
 					}
 				});
-			}
-		});
 	}
 
 	// main thread
@@ -1528,7 +1581,8 @@ public class MASTAdView extends ViewGroup {
 
 		getImageView();
 
-		LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+		LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
+				LayoutParams.MATCH_PARENT);
 
 		addContentView(imageView, layoutParams);
 
@@ -1563,7 +1617,8 @@ public class MASTAdView extends ViewGroup {
 
 		getTextView();
 
-		LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+		LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
+				LayoutParams.MATCH_PARENT);
 
 		addContentView(textView, layoutParams);
 
@@ -1589,14 +1644,15 @@ public class MASTAdView extends ViewGroup {
 
 	// main thread
 	private void renderRichMedia(AdDescriptor adDescriptor) {
-		invokeTracking = false;
+		invokeTracking = false; 
 
 		resetImageAd();
 		resetTextAd();
 
 		getWebView().stopLoading();
 
-		LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+		LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
+				LayoutParams.MATCH_PARENT);
 
 		addContentView(webView, layoutParams);
 
@@ -1656,7 +1712,8 @@ public class MASTAdView extends ViewGroup {
 		mraidTwoPartWebView.setHandler(webViewHandler);
 		mraidTwoPartBridgeInit = false;
 		mraidTwoPartBridge = new Bridge(mraidTwoPartWebView, mraidBridgeHandler);
-		mraidTwoPartBridge.setExpandProperties(mraidBridge.getExpandProperties());
+		mraidTwoPartBridge.setExpandProperties(mraidBridge
+				.getExpandProperties());
 
 		mraidTwoPartWebView.loadUrl(url, mraidTwoPartBridge);
 
@@ -1701,6 +1758,9 @@ public class MASTAdView extends ViewGroup {
 				break;
 			}
 		}
+
+		logEvent("Unregistering recevier", LogLevel.Debug);
+		unregisterReceiver();
 
 		super.onDetachedFromWindow();
 	}
@@ -1783,7 +1843,9 @@ public class MASTAdView extends ViewGroup {
 				if (intentAvailable(intent)) {
 					getContext().startActivity(intent);
 				} else {
-					logEvent("Unable to start activity for browsing URL:" + url, LogLevel.Error);
+					logEvent(
+							"Unable to start activity for browsing URL:" + url,
+							LogLevel.Error);
 				}
 			}
 		});
@@ -1792,23 +1854,28 @@ public class MASTAdView extends ViewGroup {
 	// main thread
 	private void openInternalBrowser(String url) {
 		if (browserDialog == null) {
-			browserDialog = new BrowserDialog(getContext(), url, new BrowserDialog.Handler() {
-				@Override
-				public void browserDialogDismissed(BrowserDialog browserDialog) {
-					if (internalBrowserListener != null) {
-						internalBrowserListener.onInternalBrowserDismissed(MASTAdView.this);
-					}
-				}
+			browserDialog = new BrowserDialog(getContext(), url,
+					new BrowserDialog.Handler() {
+						@Override
+						public void browserDialogDismissed(
+								BrowserDialog browserDialog) {
+							if (internalBrowserListener != null) {
+								internalBrowserListener
+										.onInternalBrowserDismissed(MASTAdView.this);
+							}
+						}
 
-				@Override
-				public void browserDialogOpenUrl(BrowserDialog browserDialog, String url, boolean dismiss) {
-					openUrl(url, true);
+						@Override
+						public void browserDialogOpenUrl(
+								BrowserDialog browserDialog, String url,
+								boolean dismiss) {
+							openUrl(url, true);
 
-					if (dismiss) {
-						browserDialog.dismiss();
-					}
-				}
-			});
+							if (dismiss) {
+								browserDialog.dismiss();
+							}
+						}
+					});
 		} else {
 			browserDialog.loadUrl(url);
 		}
@@ -1838,7 +1905,8 @@ public class MASTAdView extends ViewGroup {
 		synchronized (bridge) {
 			if ((bridge == mraidBridge) && (mraidBridgeInit == false)) {
 				return;
-			} else if ((bridge == mraidTwoPartBridge) && (mraidTwoPartBridgeInit == false)) {
+			} else if ((bridge == mraidTwoPartBridge)
+					&& (mraidTwoPartBridgeInit == false)) {
 				return;
 			}
 
@@ -1892,8 +1960,10 @@ public class MASTAdView extends ViewGroup {
 		if (featureSupportHandler != null) {
 			smsSupported = featureSupportHandler.shouldSupportSMS(this);
 			phoneSupported = featureSupportHandler.shouldSupportPhone(this);
-			calendarSupported = featureSupportHandler.shouldSupportCalendar(this);
-			pictureSupported = featureSupportHandler.shouldSupportStorePicture(this);
+			calendarSupported = featureSupportHandler
+					.shouldSupportCalendar(this);
+			pictureSupported = featureSupportHandler
+					.shouldSupportStorePicture(this);
 		}
 
 		if (smsSupported == null) {
@@ -1906,8 +1976,8 @@ public class MASTAdView extends ViewGroup {
 		}
 		if (calendarSupported == null) {
 			calendarSupported = ((getContext().checkCallingOrSelfPermission(
-					android.Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED)
-					&& (getContext().checkCallingOrSelfPermission(
+					android.Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED) && (getContext()
+					.checkCallingOrSelfPermission(
 							android.Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED));
 		}
 		if (pictureSupported == null) {
@@ -1929,7 +1999,8 @@ public class MASTAdView extends ViewGroup {
 
 		boolean viewable = webView.isShown();
 
-		DisplayMetrics displayMetrics = Resources.getSystem().getDisplayMetrics();
+		DisplayMetrics displayMetrics = Resources.getSystem()
+				.getDisplayMetrics();
 		View rootView = getRootView();
 
 		float defaultWidthPx = getWidth();
@@ -1949,7 +2020,8 @@ public class MASTAdView extends ViewGroup {
 
 		int[] webViewScreenLocation = new int[2];
 		if ((state == State.Resized) && (mraidResizeLayout != null)) {
-			RelativeLayout.LayoutParams webViewLayoutParams = (RelativeLayout.LayoutParams) webView.getLayoutParams();
+			RelativeLayout.LayoutParams webViewLayoutParams = (RelativeLayout.LayoutParams) webView
+					.getLayoutParams();
 			webViewScreenLocation[0] = webViewLayoutParams.leftMargin;
 			webViewScreenLocation[1] = webViewLayoutParams.topMargin;
 		} else {
@@ -2000,8 +2072,10 @@ public class MASTAdView extends ViewGroup {
 
 		bridge.setScreenSize(screenWidthDp, screenHeightDp);
 		bridge.setMaxSize(maxWidthDp, maxHeightDp);
-		bridge.setDefaultPosition(containerScreenX, containerScreenY, defaultWidthDp, defaultHeightDp);
-		bridge.setCurrentPosition(webViewScreenX, webViewScreenY, currentWidthDp, currentHeightDp);
+		bridge.setDefaultPosition(containerScreenX, containerScreenY,
+				defaultWidthDp, defaultHeightDp);
+		bridge.setCurrentPosition(webViewScreenX, webViewScreenY,
+				currentWidthDp, currentHeightDp);
 		bridge.setViewable(viewable);
 		registerReceiver();
 	}
@@ -2016,9 +2090,11 @@ public class MASTAdView extends ViewGroup {
 			mraidOriginalOrientation = activity.getRequestedOrientation();
 		}
 
-		OrientationProperties orientationProperties = mraidBridge.getOrientationProperties();
+		OrientationProperties orientationProperties = mraidBridge
+				.getOrientationProperties();
 
-		ForceOrientation forceOrientation = orientationProperties.getForceOrientation();
+		ForceOrientation forceOrientation = orientationProperties
+				.getForceOrientation();
 		switch (forceOrientation) {
 		case Portrait:
 			activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -2034,7 +2110,8 @@ public class MASTAdView extends ViewGroup {
 			activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
 		} else {
 			if (forceOrientation == ForceOrientation.None) {
-				int currentOrientation = activity.getResources().getConfiguration().orientation;
+				int currentOrientation = activity.getResources()
+						.getConfiguration().orientation;
 
 				switch (currentOrientation) {
 				case Configuration.ORIENTATION_PORTRAIT:
@@ -2088,8 +2165,10 @@ public class MASTAdView extends ViewGroup {
 				// When expanded use the built in button or the custom one,
 				// else
 				// nothing else.
-				ExpandProperties expandProperties = mraidBridge.getExpandProperties();
-				if (mraidTwoPartExpand && mraidTwoPartBridgeInit && (mraidTwoPartBridge != null)) {
+				ExpandProperties expandProperties = mraidBridge
+						.getExpandProperties();
+				if (mraidTwoPartExpand && mraidTwoPartBridgeInit
+						&& (mraidTwoPartBridge != null)) {
 					expandProperties = mraidTwoPartBridge.getExpandProperties();
 				}
 
@@ -2132,12 +2211,14 @@ public class MASTAdView extends ViewGroup {
 
 		if (closeButtonDrawable == null) {
 			try {
-				InputStream is = WebView.class.getResourceAsStream("/close_button.png");
+				InputStream is = WebView.class
+						.getResourceAsStream("/close_button.png");
 				closeButtonDrawable = new BitmapDrawable(getResources(), is);
 				// ((BitmapDrawable)
 				// closeButtonDrawable).setGravity(Gravity.CENTER);
 			} catch (Exception ex) {
-				logEvent("Error loading built in close button.  Exception:" + ex, LogLevel.Error);
+				logEvent("Error loading built in close button.  Exception:"
+						+ ex, LogLevel.Error);
 			}
 		}
 
@@ -2168,7 +2249,8 @@ public class MASTAdView extends ViewGroup {
 				if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
 					mraidResizeCloseArea.setBackground(closeButtonDrawable);
 				} else {
-					mraidResizeCloseArea.setBackgroundDrawable(closeButtonDrawable);
+					mraidResizeCloseArea
+							.setBackgroundDrawable(closeButtonDrawable);
 				}
 				return;
 			}
@@ -2192,7 +2274,8 @@ public class MASTAdView extends ViewGroup {
 		public void onClick(View view) {
 			if (((imageView != null) && (imageView.getParent() == view))
 					|| ((textView != null) && (textView.getParent() == view))) {
-				if ((mAdDescriptor != null) && (TextUtils.isEmpty(mAdDescriptor.getURL()) == false)) {
+				if ((mAdDescriptor != null)
+						&& (TextUtils.isEmpty(mAdDescriptor.getURL()) == false)) {
 					openUrl(mAdDescriptor.getURL(), false);
 				}
 			}
@@ -2209,17 +2292,21 @@ public class MASTAdView extends ViewGroup {
 		public void webViewPageFinished(WebView webView) {
 			if ((mraidBridge != null) && (mraidBridge.webView == webView)) {
 				initMRAIDBridge(mraidBridge);
-			} else if ((mraidTwoPartBridge != null) && (mraidTwoPartBridge.webView == webView)) {
+			} else if ((mraidTwoPartBridge != null)
+					&& (mraidTwoPartBridge.webView == webView)) {
 				initMRAIDBridge(mraidTwoPartBridge);
 			}
 		}
 
 		@Override
-		public void webViewReceivedError(WebView webView, int errorCode, String description, String failingUrl) {
+		public void webViewReceivedError(WebView webView, int errorCode,
+				String description, String failingUrl) {
 			resetRichMediaAd();
 
-			logEvent("Error loading rich media ad content.  Error code:" + String.valueOf(errorCode) + " Description:"
-					+ description, LogLevel.Error);
+			logEvent(
+					"Error loading rich media ad content.  Error code:"
+							+ String.valueOf(errorCode) + " Description:"
+							+ description, LogLevel.Error);
 
 			if (requestListener != null) {
 				requestListener.onFailedToReceiveAd(MASTAdView.this, null);
@@ -2289,7 +2376,8 @@ public class MASTAdView extends ViewGroup {
 						mraidResizeLayout = null;
 						mraidResizeCloseArea = null;
 
-						LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
+						LayoutParams layoutParams = new LayoutParams(
+								LayoutParams.MATCH_PARENT,
 								LayoutParams.MATCH_PARENT);
 						addView(webView, layoutParams);
 
@@ -2391,7 +2479,9 @@ public class MASTAdView extends ViewGroup {
 				return;
 
 			if (placementType == PlacementType.Interstitial) {
-				bridge.sendErrorMessage("Can not expand with placementType interstitial.", Consts.CommandExpand);
+				bridge.sendErrorMessage(
+						"Can not expand with placementType interstitial.",
+						Consts.CommandExpand);
 				return;
 			}
 
@@ -2409,7 +2499,9 @@ public class MASTAdView extends ViewGroup {
 					break;
 				}
 
-				bridge.sendErrorMessage("Can not expand while state is loading.", Consts.CommandExpand);
+				bridge.sendErrorMessage(
+						"Can not expand while state is loading.",
+						Consts.CommandExpand);
 				return;
 
 			case Hidden:
@@ -2417,7 +2509,9 @@ public class MASTAdView extends ViewGroup {
 				return;
 
 			case Expanded:
-				bridge.sendErrorMessage("Can not expand while state is expanded.", Consts.CommandExpand);
+				bridge.sendErrorMessage(
+						"Can not expand while state is expanded.",
+						Consts.CommandExpand);
 				return;
 
 			case Default:
@@ -2475,7 +2569,9 @@ public class MASTAdView extends ViewGroup {
 				return;
 
 			if (placementType == PlacementType.Interstitial) {
-				bridge.sendErrorMessage("Can not resize with placementType interstitial.", Consts.CommandResize);
+				bridge.sendErrorMessage(
+						"Can not resize with placementType interstitial.",
+						Consts.CommandResize);
 				return;
 			}
 
@@ -2483,7 +2579,9 @@ public class MASTAdView extends ViewGroup {
 			case Loading:
 			case Hidden:
 			case Expanded:
-				bridge.sendErrorMessage("Can not resize loading, hidden or expanded.", Consts.CommandResize);
+				bridge.sendErrorMessage(
+						"Can not resize loading, hidden or expanded.",
+						Consts.CommandResize);
 				return;
 
 			case Default:
@@ -2492,7 +2590,8 @@ public class MASTAdView extends ViewGroup {
 				break;
 			}
 
-			DisplayMetrics displayMetrics = Resources.getSystem().getDisplayMetrics();
+			DisplayMetrics displayMetrics = Resources.getSystem()
+					.getDisplayMetrics();
 			int screenWidth = pxToDp(displayMetrics.widthPixels);
 			int screenHeight = pxToDp(displayMetrics.heightPixels);
 
@@ -2507,13 +2606,18 @@ public class MASTAdView extends ViewGroup {
 			int y = currentY + resizeProperties.getOffsetY();
 			int width = resizeProperties.getWidth();
 			int height = resizeProperties.getHeight();
-			Consts.CustomClosePosition customClosePosition = resizeProperties.getCustomClosePosition();
+			Consts.CustomClosePosition customClosePosition = resizeProperties
+					.getCustomClosePosition();
 
 			if ((width >= screenWidth) && (height >= screenHeight)) {
-				bridge.sendErrorMessage("Size must be smaller than the max size.", Consts.CommandResize);
+				bridge.sendErrorMessage(
+						"Size must be smaller than the max size.",
+						Consts.CommandResize);
 				return;
 			} else if ((width < CloseAreaSizeDp) || (height < CloseAreaSizeDp)) {
-				bridge.sendErrorMessage("Size must be at least the minimum close area size.", Consts.CommandResize);
+				bridge.sendErrorMessage(
+						"Size must be at least the minimum close area size.",
+						Consts.CommandResize);
 				return;
 			}
 
@@ -2601,12 +2705,18 @@ public class MASTAdView extends ViewGroup {
 
 			int resultingCloseControlX = x + closeControlX;
 			int resultingCloseControlY = y + closeControlY;
-			int resultingCloseControlR = resultingCloseControlX + CloseAreaSizeDp;
-			int resultingCloseControlB = resultingCloseControlY + CloseAreaSizeDp;
+			int resultingCloseControlR = resultingCloseControlX
+					+ CloseAreaSizeDp;
+			int resultingCloseControlB = resultingCloseControlY
+					+ CloseAreaSizeDp;
 
-			if ((resultingCloseControlX < minX) || (resultingCloseControlY < minY)
-					|| (resultingCloseControlR > screenWidth) || (resultingCloseControlB > screenHeight)) {
-				bridge.sendErrorMessage("Resize close control must remain on screen.", Consts.CommandResize);
+			if ((resultingCloseControlX < minX)
+					|| (resultingCloseControlY < minY)
+					|| (resultingCloseControlR > screenWidth)
+					|| (resultingCloseControlB > screenHeight)) {
+				bridge.sendErrorMessage(
+						"Resize close control must remain on screen.",
+						Consts.CommandResize);
 				return;
 			}
 
@@ -2621,45 +2731,55 @@ public class MASTAdView extends ViewGroup {
 			runOnUiThread(new Runnable() {
 				public void run() {
 					Activity activity = getActivity();
-					ViewGroup windowDecorView = (ViewGroup) activity.getWindow().getDecorView();
+					ViewGroup windowDecorView = (ViewGroup) activity
+							.getWindow().getDecorView();
 
-					RelativeLayout.LayoutParams webViewLayoutParams = new RelativeLayout.LayoutParams(widthPx,
-							heightPx);
-					webViewLayoutParams.setMargins(xPx, yPx, Integer.MIN_VALUE, Integer.MIN_VALUE);
+					RelativeLayout.LayoutParams webViewLayoutParams = new RelativeLayout.LayoutParams(
+							widthPx, heightPx);
+					webViewLayoutParams.setMargins(xPx, yPx, Integer.MIN_VALUE,
+							Integer.MIN_VALUE);
 
 					RelativeLayout.LayoutParams closeControlLayoutParams = new RelativeLayout.LayoutParams(
 							dpToPx(CloseAreaSizeDp), dpToPx(CloseAreaSizeDp));
-					closeControlLayoutParams.setMargins(closeXPx, closeYPx, Integer.MIN_VALUE, Integer.MIN_VALUE);
+					closeControlLayoutParams.setMargins(closeXPx, closeYPx,
+							Integer.MIN_VALUE, Integer.MIN_VALUE);
 
 					if (mraidResizeLayout == null) {
-						ViewGroup webViewParent = (ViewGroup) webView.getParent();
+						ViewGroup webViewParent = (ViewGroup) webView
+								.getParent();
 						if (webViewParent != null) {
 							webViewParent.removeView(webView);
 						}
 
 						mraidResizeCloseArea = new View(getContext());
 						mraidResizeCloseArea.setBackgroundColor(0x00000000);
-						mraidResizeCloseArea.setOnClickListener(new OnClickListener() {
-							@Override
-							public void onClick(View v) {
-								if (v != mraidResizeCloseArea)
-									return;
+						mraidResizeCloseArea
+								.setOnClickListener(new OnClickListener() {
+									@Override
+									public void onClick(View v) {
+										if (v != mraidResizeCloseArea)
+											return;
 
-								mraidBridgeHandler.mraidClose(bridge);
-							}
-						});
+										mraidBridgeHandler.mraidClose(bridge);
+									}
+								});
 
 						mraidResizeLayout = new RelativeLayout(getContext());
 						mraidResizeLayout.addView(webView, webViewLayoutParams);
-						mraidResizeLayout.addView(mraidResizeCloseArea, closeControlLayoutParams);
+						mraidResizeLayout.addView(mraidResizeCloseArea,
+								closeControlLayoutParams);
 
-						LayoutParams resizeLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
+						LayoutParams resizeLayoutParams = new LayoutParams(
+								LayoutParams.MATCH_PARENT,
 								LayoutParams.MATCH_PARENT);
-						windowDecorView.addView(mraidResizeLayout, 0, resizeLayoutParams);
+						windowDecorView.addView(mraidResizeLayout, 0,
+								resizeLayoutParams);
 						windowDecorView.bringChildToFront(mraidResizeLayout);
 					} else {
-						mraidResizeLayout.updateViewLayout(webView, webViewLayoutParams);
-						mraidResizeLayout.updateViewLayout(mraidResizeCloseArea, closeControlLayoutParams);
+						mraidResizeLayout.updateViewLayout(webView,
+								webViewLayoutParams);
+						mraidResizeLayout.updateViewLayout(
+								mraidResizeCloseArea, closeControlLayoutParams);
 					}
 
 					updateMRAIDLayoutForState(bridge, State.Resized);
@@ -2668,7 +2788,8 @@ public class MASTAdView extends ViewGroup {
 					// TODO:PrepareCloseButton();
 
 					if (richMediaListener != null) {
-						richMediaListener.onResized(MASTAdView.this, new Rect(xPx, yPx, widthPx, heightPx));
+						richMediaListener.onResized(MASTAdView.this, new Rect(
+								xPx, yPx, widthPx, heightPx));
 					}
 				}
 			});
@@ -2690,19 +2811,23 @@ public class MASTAdView extends ViewGroup {
 
 		@SuppressLint("SimpleDateFormat")
 		@Override
-		public void mraidCreateCalendarEvent(final Bridge bridge, String calendarEvent) {
+		public void mraidCreateCalendarEvent(final Bridge bridge,
+				String calendarEvent) {
 			if ((bridge != mraidBridge) && (bridge != mraidTwoPartBridge))
 				return;
 
 			if (featureSupportHandler != null) {
-				if (featureSupportHandler.shouldAddCalendarEntry(MASTAdView.this, calendarEvent) == false) {
-					bridge.sendErrorMessage("Access denied.", Consts.CommandCreateCalendarEvent);
+				if (featureSupportHandler.shouldAddCalendarEntry(
+						MASTAdView.this, calendarEvent) == false) {
+					bridge.sendErrorMessage("Access denied.",
+							Consts.CommandCreateCalendarEvent);
 					return;
 				}
 			}
 
 			try {
-				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mmZ");
+				DateFormat dateFormat = new SimpleDateFormat(
+						"yyyy-MM-dd'T'HH:mmZ");
 
 				JSONObject jsonEvent = new JSONObject(calendarEvent);
 
@@ -2743,15 +2868,19 @@ public class MASTAdView extends ViewGroup {
 							getContext().startActivity(intent);
 
 							if (activityListener != null) {
-								activityListener.onLeavingApplication(MASTAdView.this);
+								activityListener
+										.onLeavingApplication(MASTAdView.this);
 							}
 						} else {
-							logEvent("Unable to start activity for calendary edit.", LogLevel.Error);
+							logEvent(
+									"Unable to start activity for calendary edit.",
+									LogLevel.Error);
 						}
 					}
 				});
 			} catch (Exception ex) {
-				bridge.sendErrorMessage("Error parsing event data.", Consts.CommandCreateCalendarEvent);
+				bridge.sendErrorMessage("Error parsing event data.",
+						Consts.CommandCreateCalendarEvent);
 			}
 		}
 
@@ -2761,29 +2890,37 @@ public class MASTAdView extends ViewGroup {
 				return;
 
 			if (TextUtils.isEmpty(url)) {
-				bridge.sendErrorMessage("Missing picture url.", Consts.CommandStorePicture);
+				bridge.sendErrorMessage("Missing picture url.",
+						Consts.CommandStorePicture);
 				return;
 			}
 
 			if (featureSupportHandler != null) {
-				if (featureSupportHandler.shouldStorePicture(MASTAdView.this, url) == false) {
-					bridge.sendErrorMessage("Access denied.", Consts.CommandStorePicture);
+				if (featureSupportHandler.shouldStorePicture(MASTAdView.this,
+						url) == false) {
+					bridge.sendErrorMessage("Access denied.",
+							Consts.CommandStorePicture);
 					return;
 				}
 			}
 
-			ImageRequest.create(Defaults.NETWORK_TIMEOUT_SECONDS, url, getUserAgent(), false,
-					new ImageRequest.Handler() {
+			ImageRequest.create(Defaults.NETWORK_TIMEOUT_SECONDS, url,
+					getUserAgent(), false, new ImageRequest.Handler() {
 						@Override
-						public void imageFailed(ImageRequest request, Exception ex) {
-							bridge.sendErrorMessage("Network error connecting to url.", Consts.CommandStorePicture);
+						public void imageFailed(ImageRequest request,
+								Exception ex) {
+							bridge.sendErrorMessage(
+									"Network error connecting to url.",
+									Consts.CommandStorePicture);
 
-							logEvent("Error obtaining photo request to save to camera roll.  Exception:" + ex,
-									LogLevel.Error);
+							logEvent(
+									"Error obtaining photo request to save to camera roll.  Exception:"
+											+ ex, LogLevel.Error);
 						}
 
 						@Override
-						public void imageReceived(ImageRequest request, Object imageObject) {
+						public void imageReceived(ImageRequest request,
+								Object imageObject) {
 							// TODO: android.permission.WRITE_EXTERNAL_STORAGE
 							final Bitmap bitmap = (Bitmap) imageObject;
 
@@ -2793,22 +2930,31 @@ public class MASTAdView extends ViewGroup {
 									String errorMessage = "Error saving picture to device.";
 
 									try {
-										String insertedUrl = MediaStore.Images.Media.insertImage(
-												getContext().getContentResolver(), bitmap, "AdImage",
-												"Image created by rich media ad.");
+										String insertedUrl = MediaStore.Images.Media
+												.insertImage(getContext()
+														.getContentResolver(),
+														bitmap, "AdImage",
+														"Image created by rich media ad.");
 										if (TextUtils.isEmpty(insertedUrl)) {
-											bridge.sendErrorMessage(errorMessage, Consts.CommandStorePicture);
+											bridge.sendErrorMessage(
+													errorMessage,
+													Consts.CommandStorePicture);
 
-											logEvent(errorMessage, LogLevel.Error);
+											logEvent(errorMessage,
+													LogLevel.Error);
 											return;
 										}
 
-										MediaScannerConnection.scanFile(getContext(), new String[] { insertedUrl },
+										MediaScannerConnection.scanFile(
+												getContext(),
+												new String[] { insertedUrl },
 												null, null);
 									} catch (Exception ex) {
-										bridge.sendErrorMessage(errorMessage, Consts.CommandStorePicture);
+										bridge.sendErrorMessage(errorMessage,
+												Consts.CommandStorePicture);
 
-										logEvent(errorMessage + " Exception:" + ex, LogLevel.Error);
+										logEvent(errorMessage + " Exception:"
+												+ ex, LogLevel.Error);
 									}
 								}
 							});
@@ -2858,7 +3004,8 @@ public class MASTAdView extends ViewGroup {
 		 * 
 		 * @deprecated - Do not use this method. It is being used internally.
 		 */
-		public void adRequestError(AdRequest request, String errorCode, String errorMessage) {
+		public void adRequestError(AdRequest request, String errorCode,
+				String errorMessage) {
 			if (request != mAdRequest)
 				return;
 
@@ -2871,8 +3018,8 @@ public class MASTAdView extends ViewGroup {
 				logLevel = LogLevel.Debug;
 			}
 
-			logEvent("Error response from server.  Error code: " + errorCode + ". Error message: " + errorMessage,
-					logLevel);
+			logEvent("Error response from server.  Error code: " + errorCode
+					+ ". Error message: " + errorMessage, logLevel);
 
 			mAdRequest = null;
 		}
@@ -2886,7 +3033,8 @@ public class MASTAdView extends ViewGroup {
 		 * 
 		 * @deprecated - Do not use this method. It is being used internally.
 		 */
-		public void adRequestCompleted(AdRequest request, AdDescriptor adDescriptor) {
+		public void adRequestCompleted(AdRequest request,
+				AdDescriptor adDescriptor) {
 			if (request != mAdRequest)
 				return;
 
@@ -2903,7 +3051,8 @@ public class MASTAdView extends ViewGroup {
 		public ExpandDialog(Context context) {
 			super(context, android.R.style.Theme_NoTitleBar_Fullscreen);
 
-			LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+			LayoutParams layoutParams = new LayoutParams(
+					LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 			container = new RelativeLayout(getContext());
 			container.setBackgroundColor(0xff000000);
 			setContentView(container, layoutParams);
@@ -2913,15 +3062,16 @@ public class MASTAdView extends ViewGroup {
 				public void onClick(View v) {
 					if (((imageView != null) && (imageView.getParent() == container))
 							|| ((textView != null) && (textView.getParent() == container))) {
-						if ((mAdDescriptor != null) && (TextUtils.isEmpty(mAdDescriptor.getURL()) == false)) {
+						if ((mAdDescriptor != null)
+								&& (TextUtils.isEmpty(mAdDescriptor.getURL()) == false)) {
 							openUrl(mAdDescriptor.getURL(), false);
 						}
 					}
 				}
 			});
 
-			RelativeLayout.LayoutParams closeAreaLayoutParams = new RelativeLayout.LayoutParams(dpToPx(CloseAreaSizeDp),
-					dpToPx(CloseAreaSizeDp));
+			RelativeLayout.LayoutParams closeAreaLayoutParams = new RelativeLayout.LayoutParams(
+					dpToPx(CloseAreaSizeDp), dpToPx(CloseAreaSizeDp));
 			closeAreaLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
 			closeAreaLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
 			closeArea = new RelativeLayout(getContext());
@@ -2931,7 +3081,8 @@ public class MASTAdView extends ViewGroup {
 				@Override
 				public void onClick(View v) {
 					if (activityListener != null) {
-						if (activityListener.onCloseButtonClick(MASTAdView.this) == true) {
+						if (activityListener
+								.onCloseButtonClick(MASTAdView.this) == true) {
 							return;
 						}
 					}
@@ -3022,7 +3173,8 @@ public class MASTAdView extends ViewGroup {
 					viewGroup.removeView(view);
 				}
 
-				LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+				LayoutParams layoutParams = new LayoutParams(
+						LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 				container.addView(view, layoutParams);
 			}
 
@@ -3052,16 +3204,19 @@ public class MASTAdView extends ViewGroup {
 
 					if (image != null) {
 						RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
-								LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+								LayoutParams.MATCH_PARENT,
+								LayoutParams.MATCH_PARENT);
 
 						int marginPx = pxToDp(15);
-						layoutParams.setMargins(marginPx, marginPx, marginPx, marginPx);
+						layoutParams.setMargins(marginPx, marginPx, marginPx,
+								marginPx);
 
 						ImageView imageView = new ImageView(getContext());
 						imageView.setBackgroundColor(0x00000000);
 						imageView.setImageDrawable(image);
 
-						((RelativeLayout) closeArea).addView(imageView, layoutParams);
+						((RelativeLayout) closeArea).addView(imageView,
+								layoutParams);
 					}
 				}
 			});
@@ -3077,7 +3232,9 @@ public class MASTAdView extends ViewGroup {
 	private class LocationListener implements android.location.LocationListener {
 		@Override
 		public void onLocationChanged(Location location) {
-			logEvent("LocationListener.onLocationChanged location:" + location.toString(), LogLevel.Debug);
+			logEvent(
+					"LocationListener.onLocationChanged location:"
+							+ location.toString(), LogLevel.Debug);
 
 			String lat = String.valueOf(location.getLatitude());
 			String lng = String.valueOf(location.getLongitude());
@@ -3088,18 +3245,21 @@ public class MASTAdView extends ViewGroup {
 
 		@Override
 		public void onProviderDisabled(String provider) {
-			logEvent("LocationListener.onProviderDisabled provider:" + provider, LogLevel.Debug);
+			logEvent(
+					"LocationListener.onProviderDisabled provider:" + provider,
+					LogLevel.Debug);
 		}
 
 		@Override
 		public void onProviderEnabled(String provider) {
-			logEvent("LocationListener.onProviderEnabled provider:" + provider, LogLevel.Debug);
+			logEvent("LocationListener.onProviderEnabled provider:" + provider,
+					LogLevel.Debug);
 		}
 
 		@Override
 		public void onStatusChanged(String provider, int status, Bundle extras) {
-			logEvent("LocationListener.onStatusChanged provider:" + provider + " status:" + String.valueOf(status),
-					LogLevel.Debug);
+			logEvent("LocationListener.onStatusChanged provider:" + provider
+					+ " status:" + String.valueOf(status), LogLevel.Debug);
 
 			if (status == LocationProvider.AVAILABLE)
 				return;
@@ -3120,7 +3280,16 @@ public class MASTAdView extends ViewGroup {
 			}
 		}
 
-		System.out.println(eventLevel + ":" + event);
+		switch (eventLevel) {
+		case Debug:
+			Log.d(TAG, event);
+			break;
+		case Error:
+			Log.e(TAG, event);
+			break;
+		default: // No Log
+			break;
+		}
 	}
 
 	private final Activity getActivity() {
@@ -3136,8 +3305,9 @@ public class MASTAdView extends ViewGroup {
 
 	private final boolean intentAvailable(Intent intent) {
 		PackageManager packageManager = getContext().getPackageManager();
-		List<ResolveInfo> resolveInfoList = packageManager.queryIntentActivities(intent,
-				PackageManager.MATCH_DEFAULT_ONLY);
+		List<ResolveInfo> resolveInfoList = packageManager
+				.queryIntentActivities(intent,
+						PackageManager.MATCH_DEFAULT_ONLY);
 		if ((resolveInfoList != null) && (resolveInfoList.isEmpty() == false)) {
 			return true;
 		}
@@ -3154,7 +3324,8 @@ public class MASTAdView extends ViewGroup {
 				try {
 					runnable.run();
 				} catch (Exception ex) {
-					logEvent("Exception during runOnUiThread:" + ex, LogLevel.Error);
+					logEvent("Exception during runOnUiThread:" + ex,
+							LogLevel.Error);
 				}
 			}
 		};
@@ -3164,7 +3335,9 @@ public class MASTAdView extends ViewGroup {
 			Activity activity = (Activity) ctx;
 			activity.runOnUiThread(uiRunnable);
 		} else {
-			logEvent("Context not instance of Activity, unable to run on UI thread.", LogLevel.Error);
+			logEvent(
+					"Context not instance of Activity, unable to run on UI thread.",
+					LogLevel.Error);
 		}
 	}
 
@@ -3173,28 +3346,33 @@ public class MASTAdView extends ViewGroup {
 
 		int statusBarHeightDp = 25;
 		if (rootView != null) {
-			int resourceId = rootView.getResources().getIdentifier("status_bar_height", "dimen", "android");
+			int resourceId = rootView.getResources().getIdentifier(
+					"status_bar_height", "dimen", "android");
 			if (resourceId > 0)
-				statusBarHeightDp = pxToDp(rootView.getResources().getDimensionPixelSize(resourceId));
+				statusBarHeightDp = pxToDp(rootView.getResources()
+						.getDimensionPixelSize(resourceId));
 		}
 
 		return statusBarHeightDp;
 	}
 
 	public static int pxToDp(float px) {
-		DisplayMetrics displayMetrics = Resources.getSystem().getDisplayMetrics();
+		DisplayMetrics displayMetrics = Resources.getSystem()
+				.getDisplayMetrics();
 		int dp = (int) (px / displayMetrics.density + .5f);
 		return dp;
 	}
 
 	public static int dpToPx(int dp) {
-		DisplayMetrics displayMetrics = Resources.getSystem().getDisplayMetrics();
+		DisplayMetrics displayMetrics = Resources.getSystem()
+				.getDisplayMetrics();
 		int px = (int) (dp * displayMetrics.density + .5f);
 		return px;
 	}
 
 	private static String getUdidFromContext(Context context) {
-		String deviceId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+		String deviceId = Settings.Secure.getString(
+				context.getContentResolver(), Settings.Secure.ANDROID_ID);
 		deviceId = (deviceId == null) ? "" : sha1(deviceId);
 		return deviceId;
 
@@ -3248,7 +3426,13 @@ public class MASTAdView extends ViewGroup {
 
 	public void unregisterReceiver() {
 		if (mReceiver != null) {
-			getContext().unregisterReceiver(mReceiver);
+			try {
+				getContext().unregisterReceiver(mReceiver);
+			} catch (Exception e) {
+				logEvent(
+						"Error during unregistering receiver. Receiver not registered",
+						LogLevel.Error);
+			}
 		}
 	}
 
