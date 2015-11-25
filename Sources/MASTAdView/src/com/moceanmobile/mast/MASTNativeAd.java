@@ -28,6 +28,7 @@
 package com.moceanmobile.mast;
 
 import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -37,6 +38,7 @@ import java.util.Set;
 
 import org.json.JSONObject;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Criteria;
@@ -45,6 +47,7 @@ import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.view.View;
@@ -52,6 +55,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 
+import com.moceanmobile.mast.AdvertisingIdClient.AdInfo;
 import com.moceanmobile.mast.MASTAdView.LogLevel;
 import com.moceanmobile.mast.MASTBaseAdapter.MediationNetwork;
 import com.moceanmobile.mast.bean.AssetRequest;
@@ -171,6 +175,18 @@ public final class MASTNativeAd implements AdRequest.Handler {
 	// Location support
 	private LocationManager locationManager = null;
 	private LocationListener locationListener = null;
+
+	// androidid
+	private boolean isAndroidIdEnabled;
+
+	// androidAid
+	private boolean isAndroidAidEnabled;
+	private String androidAid = "";
+
+	// Do not track / Opt-Out of interest based ads
+	private int mDoNotTrack = 0;
+	// 0 = User has not opted out (default)
+	// 1= User has opted out (requested do-not-track)
 
 	private AdRequest mAdRequest = null;
 
@@ -560,6 +576,17 @@ public final class MASTNativeAd implements AdRequest.Handler {
 		// Ad type for native.
 		args.put(REQUESTPARAM_TYPE, Defaults.NATIVE_REQUEST_AD_TYPE);
 		args.put(REQUESTPARAM_ZONE, String.valueOf(mZone));
+		
+		if (isAndoridIdEnabled() && mContext != null)
+			args.put(REQUESTPARAM_ANDROID_ID_SHA1, getUdidFromContext(mContext));
+		if (isAndoridAidEnabled() && !androidAid.isEmpty()) {
+			args.put(REQUESTPARAM_ANDROID_ADVT_ID_SHA1, sha1(androidAid));
+		}
+		/*
+		 * Pass dnt=1 if user have enabled Opt-Out of interest based ads in
+		 * Google settings in Android device
+		 */
+		args.put(REQUESTPARAM_DO_NOT_TRACK, (mDoNotTrack == 1 ? "1" : "0"));
 
 		/* Putting optional parameters related to Native Ad */
 
@@ -684,6 +711,45 @@ public final class MASTNativeAd implements AdRequest.Handler {
 	 */
 	public void thirdpartyPartnerDefaulted() {
 		internalUpdate(true);
+	}
+
+	/**
+	 * add androidid as request param.
+	 * 
+	 * @param isAndroidIdEnabled
+	 */
+	public void setAndroidIdEnabled(boolean isAndroidIdEnabled) {
+		this.isAndroidIdEnabled = isAndroidIdEnabled;
+	}
+
+	public boolean isAndoridIdEnabled() {
+		return isAndroidIdEnabled;
+	}
+
+	/**
+	 * add androidaid as request param.
+	 * 
+	 * @param isAndroidaidEnabled
+	 */
+	public void setAndroidAidEnabled(boolean isAndroidAidEnabled) {
+		if (isAndroidAidEnabled && mContext != null) {
+			this.isAndroidAidEnabled = isAndroidAidEnabled;
+			new Thread(new Runnable() {
+				public void run() {
+					try {
+						AdInfo adInfo = AdvertisingIdClient
+								.getAdvertisingIdInfo(mContext);
+						androidAid = adInfo.getId();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}).start();
+		}
+	}
+
+	public boolean isAndoridAidEnabled() {
+		return isAndroidAidEnabled;
 	}
 
 	/**
@@ -1287,6 +1353,34 @@ public final class MASTNativeAd implements AdRequest.Handler {
 
 			mAdRequestParameters.remove(REQUESTPARAM_LATITUDE);
 			mAdRequestParameters.remove(REQUESTPARAM_LONGITUDE);
+		}
+	}
+
+	private static String getUdidFromContext(Context context) {
+		String deviceId = Settings.Secure.getString(
+				context.getContentResolver(), Settings.Secure.ANDROID_ID);
+		deviceId = (deviceId == null) ? "" : sha1(deviceId);
+		return deviceId;
+
+	}
+
+	@SuppressLint("DefaultLocale")
+	public static String sha1(String string) {
+		StringBuilder stringBuilder = new StringBuilder();
+
+		try {
+			MessageDigest digest = MessageDigest.getInstance("SHA-1");
+			byte[] bytes = string.getBytes("UTF-8");
+			digest.update(bytes, 0, bytes.length);
+			bytes = digest.digest();
+
+			for (final byte b : bytes) {
+				stringBuilder.append(String.format("%02X", b));
+			}
+
+			return stringBuilder.toString().toLowerCase();
+		} catch (Exception e) {
+			return "";
 		}
 	}
 }

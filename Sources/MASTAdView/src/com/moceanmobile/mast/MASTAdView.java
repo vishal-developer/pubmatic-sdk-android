@@ -203,6 +203,11 @@ public class MASTAdView extends ViewGroup {
 	private boolean isAndroidAidEnabled;
 	private String androidAid = "";
 
+	// Do not track / Opt-Out of interest based ads
+	private int mDoNotTrack = 0;
+	// 0 = User has not opted out (default)
+	// 1= User has opted out (requested do-not-track)
+
 	// Receiver
 	private BroadcastReceiver mReceiver;
 	private IntentFilter filter;
@@ -259,6 +264,8 @@ public class MASTAdView extends ViewGroup {
 	}
 
 	protected void init(boolean interstitial) {
+		checkDoNotTrack();
+
 		placementType = PlacementType.Inline;
 
 		if (interstitial) {
@@ -292,6 +299,26 @@ public class MASTAdView extends ViewGroup {
 
 			update();
 		}
+	}
+
+	private void checkDoNotTrack() {
+		// Check the LimitAdTracking setting.
+		// If enabled, then pass dnt=1 in request
+		new Thread(new Runnable() {
+			public void run() {
+				try {
+					AdInfo adInfo = AdvertisingIdClient
+							.getAdvertisingIdInfo(getContext());
+					mDoNotTrack = adInfo.isLimitAdTrackingEnabled() ? 1 : 0;
+				} catch (Exception e) {
+					logEvent(
+							"Error during fetching users Do-Not-Track setting preference",
+							LogLevel.Error);
+					e.printStackTrace();
+				}
+			}
+		}).start();
+
 	}
 
 	private void initUserAgent() {
@@ -1086,6 +1113,17 @@ public class MASTAdView extends ViewGroup {
 				adRequestDefaultParameters.put("androidaid_sha1",
 						sha1(androidAid));
 			}
+
+			/*
+			 * Pass dnt=1 if user have enabled Opt-Out of interest based ads in
+			 * Google settings in Android device
+			 */
+			if (mDoNotTrack == 1) {
+				adRequestDefaultParameters.put("dnt", "1");
+			} else {
+				adRequestDefaultParameters.put("dnt", "0");
+			}
+
 			if (!isX)
 				adRequestDefaultParameters
 						.put("size_x", String.valueOf(size_x));
@@ -1644,7 +1682,7 @@ public class MASTAdView extends ViewGroup {
 
 	// main thread
 	private void renderRichMedia(AdDescriptor adDescriptor) {
-		invokeTracking = false; 
+		invokeTracking = false;
 
 		resetImageAd();
 		resetTextAd();
