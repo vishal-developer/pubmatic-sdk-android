@@ -187,6 +187,8 @@ public final class MASTNativeAd implements AdRequest.Handler {
 	private int mDoNotTrack = 0;
 	// 0 = User has not opted out (default)
 	// 1= User has opted out (requested do-not-track)
+	// Dnt check flag
+	private boolean mIsDntSet = false;
 
 	private AdRequest mAdRequest = null;
 
@@ -256,6 +258,7 @@ public final class MASTNativeAd implements AdRequest.Handler {
 	}
 
 	private void checkDoNotTrack() {
+		mIsDntSet = false;
 		// Check the LimitAdTracking setting.
 		// If enabled, then pass dnt=1 in request
 		if (mContext != null) {
@@ -265,6 +268,7 @@ public final class MASTNativeAd implements AdRequest.Handler {
 						AdInfo adInfo = AdvertisingIdClient
 								.getAdvertisingIdInfo(mContext);
 						mDoNotTrack = adInfo.isLimitAdTrackingEnabled() ? 1 : 0;
+						mIsDntSet = true;
 					} catch (Exception e) {
 						logEvent(
 								"Error during fetching users Do-Not-Track setting preference",
@@ -608,7 +612,9 @@ public final class MASTNativeAd implements AdRequest.Handler {
 		 * Pass dnt=1 if user have enabled Opt-Out of interest based ads in
 		 * Google settings in Android device
 		 */
-		args.put(REQUESTPARAM_DO_NOT_TRACK, (mDoNotTrack == 1 ? "1" : "0"));
+		if (mIsDntSet) { // Pass DNT only when value is fetched
+			args.put(REQUESTPARAM_DO_NOT_TRACK, (mDoNotTrack == 1 ? "1" : "0"));
+		}
 
 		/* Putting optional parameters related to Native Ad */
 
