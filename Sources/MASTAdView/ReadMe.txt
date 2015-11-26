@@ -192,6 +192,8 @@ Enabled multi-pixel tracking for SDK.
 - Removed deprecated Apache HTTP Client API use in SDK. Upgraded to HTTPUrlConnection.
 - Upgraded minimum Android SDK support from Android API level 8 to API level 9. 
 - Added functionality to center align html script creatives to avoid left aligned creatives.
+- Added Do-Not-Track feature in SDK.
+- Added feature to fetch device id (AndroidId, Android AdvertisingId) in Native ads.
 
 
 

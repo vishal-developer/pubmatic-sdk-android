@@ -92,7 +92,7 @@ public class NativeActivity extends Activity {
 		ad.setLogListener(new LogEventListner()); // Set LogListener
 		ad.setRequestListener(new AdRequestListener());
 		ad.setZone(179492); // TODO: Add your ZoneId
-
+		
 		// Set custom Base URL for mocean adserver if required
 		// ad.setAdNetworkURL("http://ads.mocean.mobi/ad");
 
@@ -106,10 +106,8 @@ public class NativeActivity extends Activity {
 
 		// Add some custom parameters
 		ad.addCustomParameter("keywords", "NFL,Football,Sports,Games,WordsCup");
-		ad.addCustomParameter("isp", "T-mobile");
 		ad.addCustomParameter("age", "25");
 		ad.addCustomParameter("gender", "m");
-		ad.addCustomParameter("androidid", "testandroidid1234");
 		ad.addCustomParameter("country", "US");
 		ad.addCustomParameter("city", "New York, NY");
 

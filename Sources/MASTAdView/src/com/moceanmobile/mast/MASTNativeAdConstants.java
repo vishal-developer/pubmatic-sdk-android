@@ -45,6 +45,9 @@ public interface MASTNativeAdConstants {
     public static final String REQUESTPARAM_TEST = "test";
     public static final String REQUESTPARAM_LATITUDE = "lat";
     public static final String REQUESTPARAM_LONGITUDE = "long";
+    public static final String REQUESTPARAM_ANDROID_ID_SHA1 = "androidid_sha1";
+    public static final String REQUESTPARAM_ANDROID_ADVT_ID_SHA1 = "androidaid_sha1";
+    public static final String REQUESTPARAM_DO_NOT_TRACK = "dnt";
     public static final String REQUEST_HEADER_USER_AGENT = "User-Agent";
     public static final String REQUEST_HEADER_CONNECTION = "Connection";
     public static final String REQUEST_HEADER_CONNECTION_VALUE_CLOSE = "close";
