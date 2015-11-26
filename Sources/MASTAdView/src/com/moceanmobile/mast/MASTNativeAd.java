@@ -197,6 +197,7 @@ public final class MASTNativeAd implements AdRequest.Handler {
 		mContext = context;
 		mAdRequestParameters = new HashMap<String, String>();
 		mRequestedNativeAssets = new ArrayList<AssetRequest>();
+		checkDoNotTrack();
 	}
 
 	/**
@@ -251,6 +252,27 @@ public final class MASTNativeAd implements AdRequest.Handler {
 							+ " Implement NativeRequestListener in your activity instead of RequestListener. ");
 		} else {
 			mListener = requestListener;
+		}
+	}
+
+	private void checkDoNotTrack() {
+		// Check the LimitAdTracking setting.
+		// If enabled, then pass dnt=1 in request
+		if (mContext != null) {
+			new Thread(new Runnable() {
+				public void run() {
+					try {
+						AdInfo adInfo = AdvertisingIdClient
+								.getAdvertisingIdInfo(mContext);
+						mDoNotTrack = adInfo.isLimitAdTrackingEnabled() ? 1 : 0;
+					} catch (Exception e) {
+						logEvent(
+								"Error during fetching users Do-Not-Track setting preference",
+								LogLevel.Error);
+						e.printStackTrace();
+					}
+				}
+			}).start();
 		}
 	}
 
@@ -576,7 +598,7 @@ public final class MASTNativeAd implements AdRequest.Handler {
 		// Ad type for native.
 		args.put(REQUESTPARAM_TYPE, Defaults.NATIVE_REQUEST_AD_TYPE);
 		args.put(REQUESTPARAM_ZONE, String.valueOf(mZone));
-		
+
 		if (isAndoridIdEnabled() && mContext != null)
 			args.put(REQUESTPARAM_ANDROID_ID_SHA1, getUdidFromContext(mContext));
 		if (isAndoridAidEnabled() && !androidAid.isEmpty()) {
