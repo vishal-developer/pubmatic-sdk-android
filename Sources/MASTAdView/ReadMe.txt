@@ -182,3 +182,16 @@ Enabled multi-pixel tracking for SDK.
 ------
 
 - Fixes to support AndroidAID & 3rd party pixel crash issues.
+
+
+------
+ 4.3.5
+------
+
+- Adding support for latest Android 6.0 - Android-M (API level 23)
+- Removed deprecated Apache HTTP Client API use in SDK. Upgraded to HTTPUrlConnection.
+- Upgraded minimum Android SDK support from Android API level 8 to API level 9. 
+- Added functionality to center align html script creatives to avoid left aligned creatives.
+
+
+
