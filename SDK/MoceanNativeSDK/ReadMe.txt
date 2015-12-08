@@ -168,4 +168,14 @@ Enabled multi-pixel tracking for SDK.
 - Added Mocean Native Adapter for MoPub SDK
 - Code optimization
 
+-------
+ 4.3.3
+-------
+
+Note: MoPub SDK has an click related issue until SDK 3.9.0. And it was fixed in MoPub SDK 4.0.0.
+Hence our bug fix will work only on MoPub SDK version 4.0.0 and later.
+
+Changes:
+Removed method in PubMatic SDK that was disabling click listeners for all sub views in native ad.
+Added optional setter method if publisher explicitly wants to disable these click listeners on sub views.
 
