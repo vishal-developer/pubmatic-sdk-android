@@ -55,7 +55,11 @@ public class Defaults {
 
 	public static final String DEFAULTED_EXCREATIVES = "excreatives";
 	public static final String DEFAULTED_PUBMATIC_EXFEEDS = "pubmatic_exfeeds";
-	
+	public static final String HTTP_METHOD_GET = "GET";
+	public static final String HTTP_METHOD_POST = "POST";
+	public static final String HTTP_REQ_HEADER_USER_AGENT = "User-Agent";
+	public static final String HTTP_REQ_HEADER_CONNECTION = "Connection";
+	public static final String HTTP_REQ_HEADER_CONNECTION_CLOSE = "close";
 	/**
 	 * Enum to define the supported Mediation network.
 	 */

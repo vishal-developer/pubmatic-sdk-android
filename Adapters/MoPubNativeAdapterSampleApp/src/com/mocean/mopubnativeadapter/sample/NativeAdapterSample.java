@@ -17,6 +17,7 @@ import com.mopub.common.MoPub;
 import com.mopub.nativeads.MoPubAdAdapter;
 import com.mopub.nativeads.MoPubNativeAdLoadedListener;
 import com.mopub.nativeads.MoPubNativeAdPositioning;
+import com.mopub.nativeads.MoPubNativeAdRenderer;
 import com.mopub.nativeads.RequestParameters;
 import com.mopub.nativeads.RequestParameters.Builder;
 import com.mopub.nativeads.RequestParameters.NativeAdAsset;
@@ -24,7 +25,7 @@ import com.mopub.nativeads.ViewBinder;
 
 public class NativeAdapterSample extends Activity {
 
-	private static final String MOPUB_AD_UNIT_ID = "xxxxxxxx"; // TODO: Add MoPub AdUnitId here
+	private static final String MOPUB_AD_UNIT_ID = "7fde290feefe477795b4ef58c1a99887"; // TODO: Add MoPub AdUnitId here
 
 	private Context mContext = this;
 	private ListView mListView;
@@ -44,7 +45,6 @@ public class NativeAdapterSample extends Activity {
 		ViewBinder viewBinder = new ViewBinder.Builder(R.layout.list_item)
 				.mainImageId(R.id.mainImage).iconImageId(R.id.logoImage)
 				.callToActionId(R.id.ctaButton).titleId(R.id.titleTextView)
-				.daaIconImageId(R.id.native_ad_daa_icon_image)
 				.textId(R.id.descriptionTextView).build();
 
 		// Set up the positioning behavior your ads should have.
@@ -54,7 +54,10 @@ public class NativeAdapterSample extends Activity {
 		// Set up the MoPubAdAdapter
 		mAdAdapter = new MoPubAdAdapter(this, new CustomAdapter(mContext,
 				listItemPlaceholders), adPositioning);
-		mAdAdapter.registerViewBinder(viewBinder);
+		
+		MoPubNativeAdRenderer adRenderer = new MoPubNativeAdRenderer(viewBinder);
+		mAdAdapter.registerAdRenderer(adRenderer);
+		
 		// Enable Location awareness
 		MoPub.setLocationAwareness(MoPub.LocationAwareness.NORMAL);
 

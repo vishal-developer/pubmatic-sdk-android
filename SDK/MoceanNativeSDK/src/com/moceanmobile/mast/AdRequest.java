@@ -35,11 +35,8 @@ import static com.moceanmobile.mast.MASTNativeAdConstants.NATIVE_IMAGE_H;
 import static com.moceanmobile.mast.MASTNativeAdConstants.NATIVE_IMAGE_W;
 import static com.moceanmobile.mast.MASTNativeAdConstants.QUESTIONMARK;
 import static com.moceanmobile.mast.MASTNativeAdConstants.REQUEST_DATA;
-import static com.moceanmobile.mast.MASTNativeAdConstants.REQUEST_HEADER_CONNECTION;
-import static com.moceanmobile.mast.MASTNativeAdConstants.REQUEST_HEADER_CONNECTION_VALUE_CLOSE;
 import static com.moceanmobile.mast.MASTNativeAdConstants.REQUEST_HEADER_CONTENT_TYPE;
 import static com.moceanmobile.mast.MASTNativeAdConstants.REQUEST_HEADER_CONTENT_TYPE_VALUE;
-import static com.moceanmobile.mast.MASTNativeAdConstants.REQUEST_HEADER_USER_AGENT;
 import static com.moceanmobile.mast.MASTNativeAdConstants.REQUEST_IMG;
 import static com.moceanmobile.mast.MASTNativeAdConstants.REQUEST_LEN;
 import static com.moceanmobile.mast.MASTNativeAdConstants.REQUEST_NATIVE_EQ_WRAPPER;
@@ -50,24 +47,16 @@ import static com.moceanmobile.mast.MASTNativeAdConstants.REQUEST_VER;
 import static com.moceanmobile.mast.MASTNativeAdConstants.REQUEST_VER_VALUE_1;
 import static com.moceanmobile.mast.MASTNativeAdConstants.RESPONSE_HEADER_CONTENT_TYPE_JSON;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -164,59 +153,52 @@ public class AdRequest {
 	private class RequestProcessor implements Runnable {
 		@Override
 		public void run() {
+			HttpURLConnection httpURLConnection = null;
 			InputStream inputStream = null;
-			Header header = null;
 			String contentType = null;
+			int responseCode = 0;
 
 			try {
-				HttpParams httpParams = new BasicHttpParams();
-				HttpConnectionParams.setConnectionTimeout(httpParams,
-						timeout * 1000);
+				httpURLConnection = (HttpURLConnection) new URL(requestUrl).openConnection();
 
-				HttpClient httpClient = new DefaultHttpClient(httpParams);
-
-				Log.d("AdRequest", "Request Url is : " + requestUrl);
-
-				HttpResponse httpResponse = null;
+				httpURLConnection.setRequestProperty(MASTNativeAdConstants.REQUEST_HEADER_CONNECTION, MASTNativeAdConstants.REQUEST_HEADER_CONNECTION_VALUE_CLOSE);
+				httpURLConnection.setRequestProperty(MASTNativeAdConstants.REQUEST_HEADER_USER_AGENT, userAgent);
+				httpURLConnection.setConnectTimeout(timeout * 1000);
+				
 				if (!isNative) {
-					HttpGet httpGet = new HttpGet(requestUrl);
-					httpGet.setHeader(REQUEST_HEADER_USER_AGENT, userAgent);
-					httpGet.setHeader(REQUEST_HEADER_CONNECTION,
-							REQUEST_HEADER_CONNECTION_VALUE_CLOSE);
-
-					httpResponse = httpClient.execute(httpGet);
+					httpURLConnection.setRequestMethod(Defaults.HTTP_METHOD_GET);
 				} else {
-					Log.d("AdRequest", "Making POST request");
-					HttpPost httpPost = new HttpPost(requestUrl);
-					httpPost.setHeader(REQUEST_HEADER_USER_AGENT, userAgent);
-					httpPost.setHeader(REQUEST_HEADER_CONNECTION,
-							REQUEST_HEADER_CONNECTION_VALUE_CLOSE);
-					httpPost.setHeader(REQUEST_HEADER_CONTENT_TYPE,
-							REQUEST_HEADER_CONTENT_TYPE_VALUE);
 
-					// Add post request data
-					StringEntity entity = new StringEntity(
-							generateNativeAssetRequestJson());
-					httpPost.setEntity(entity);
-					httpResponse = httpClient.execute(httpPost);
-				}
+					httpURLConnection.setRequestMethod(Defaults.HTTP_METHOD_POST);
+					httpURLConnection.setRequestProperty(REQUEST_HEADER_CONTENT_TYPE, REQUEST_HEADER_CONTENT_TYPE_VALUE);
+					
+					// Set the length of the data
+					String jsonBody = generateNativeAssetRequestJson();
+					httpURLConnection
+							.setFixedLengthStreamingMode(jsonBody.getBytes().length);
 
-				if (httpResponse != null) {
-					if (httpResponse.getStatusLine().getStatusCode() != 200) {
-						if (handler != null) {
-							handler.adRequestFailed(AdRequest.this, null);
-						}
-						return;
-					}
-
-					inputStream = httpResponse.getEntity().getContent();
-					HttpEntity entity = httpResponse.getEntity();
-					if (entity != null) {
-						header = entity.getContentType();
-						contentType = header.getValue();
+					DataOutputStream dataOutputStream = new DataOutputStream(
+							httpURLConnection.getOutputStream());
+					if (dataOutputStream != null) {
+						// Write the content
+						dataOutputStream.writeBytes(jsonBody);
+						dataOutputStream.flush();
+						dataOutputStream.close();
 					}
 				}
-
+				responseCode = httpURLConnection.getResponseCode();
+				if (responseCode != HttpURLConnection.HTTP_OK) {
+					if (handler != null) {
+						handler.adRequestFailed(AdRequest.this, null);
+					}
+					return;
+				}
+				contentType = httpURLConnection.getHeaderField("Content-Type");
+				inputStream = httpURLConnection.getInputStream();
+				if(inputStream!=null && contentType!=null) {
+					
+				}
+				
 				Log.d("AdRequest", "Response Content-Type = " + contentType);
 
 				// If this is the native ad request then parse the native
