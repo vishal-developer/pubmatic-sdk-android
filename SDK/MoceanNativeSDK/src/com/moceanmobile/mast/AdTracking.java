@@ -27,13 +27,8 @@
 
 package com.moceanmobile.mast;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 import android.util.Log;
 
@@ -43,28 +38,41 @@ public class AdTracking {
     public static void invokeTrackingUrl(final int timeout, final String url, final String userAgent) {
         new Thread(new Runnable() {
             // Thread to stop network calls on the UI thread
-            @Override
+        	@Override
             public void run() {
-                try {
-                    HttpParams httpParams = new BasicHttpParams();
-                    HttpConnectionParams.setConnectionTimeout(httpParams, timeout * 1000);
+            	
+        		HttpURLConnection httpUrlConnection = null;
+    			int responseCode = 0;
+    			
+            	try {
+        			httpUrlConnection = (HttpURLConnection) new URL(url).openConnection();
+        			if (httpUrlConnection != null) {
 
-                    HttpClient httpClient = new DefaultHttpClient(httpParams);
-
-                    HttpGet httpGet = new HttpGet(url);
-                    httpGet.setHeader(MASTNativeAdConstants.REQUEST_HEADER_USER_AGENT, userAgent);
-                    httpGet.setHeader(MASTNativeAdConstants.REQUEST_HEADER_CONNECTION,
-                            MASTNativeAdConstants.REQUEST_HEADER_CONNECTION_VALUE_CLOSE);
-
-                    HttpResponse httpResponse = httpClient.execute(httpGet);
-                    httpResponse.getStatusLine();
-                } catch (Exception ex) {
-                    Log.w(LOGTAG, "Error while invoking tracking URL : " + url);
-                    Log.w(LOGTAG, ex.getMessage());
-                }
+        				httpUrlConnection.setRequestMethod(Defaults.HTTP_METHOD_GET);
+        				httpUrlConnection.setRequestProperty(MASTNativeAdConstants.REQUEST_HEADER_CONNECTION, MASTNativeAdConstants.REQUEST_HEADER_CONNECTION_VALUE_CLOSE);
+        				httpUrlConnection.setRequestProperty(MASTNativeAdConstants.REQUEST_HEADER_USER_AGENT, userAgent);
+        				httpUrlConnection.setConnectTimeout(timeout * 1000);
+        				
+        				responseCode = httpUrlConnection.getResponseCode();
+        				
+        				if (responseCode != HttpURLConnection.HTTP_OK)
+        				{
+        					Log.w(LOGTAG, "Error while invoking tracking URL : " + url + "HttpResponse:"+responseCode);
+        					return;
+        				}else{
+        					Log.i(LOGTAG, "Ad Tracker fired successfully");
+        				}
+        			}
+        		} catch (Exception ex) {
+        			Log.w(LOGTAG, "Error while invoking tracking URL : " + url);
+        		} finally {
+        			if(httpUrlConnection !=null) {
+        				httpUrlConnection.disconnect();
+        				httpUrlConnection= null;
+        			}
+        		}
             }
         }).start();
-
     }
 
     /**

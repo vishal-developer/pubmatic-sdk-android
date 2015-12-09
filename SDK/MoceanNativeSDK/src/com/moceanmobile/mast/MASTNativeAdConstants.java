@@ -50,6 +50,7 @@ public interface MASTNativeAdConstants {
     public static final String REQUEST_HEADER_CONNECTION_VALUE_CLOSE = "close";
     public static final String REQUEST_HEADER_CONTENT_TYPE = "Content-Type";
     public static final String REQUEST_HEADER_CONTENT_TYPE_VALUE = "application/x-www-form-urlencoded;charset=UTF-8";
+    public static final String REQUESTPARAM_ANDROID_ID_SHA1 = "androidid_sha1";
 
     public static final String REQUEST_NATIVE_EQ_WRAPPER = "native=";
     public static final String REQUEST_VER = "ver";
