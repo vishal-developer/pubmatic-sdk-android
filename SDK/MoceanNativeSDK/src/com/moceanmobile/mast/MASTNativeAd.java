@@ -625,7 +625,7 @@ public final class MASTNativeAd implements AdRequest.Handler {
 		}
 	}
 	
-	private boolean mDisableSubViewClickListener = false;
+	private boolean mIsSubViewsClickable = true;
 
 	/**
 	 * Call this method whenever your view is ready to display. Calling this
@@ -640,9 +640,9 @@ public final class MASTNativeAd implements AdRequest.Handler {
 	public void trackViewForInteractions(View view) {
 		if (view != null) {
 			
-			// Reset click listeners on subviews. Publisher need to set this 
-			// flag as true if they are using FAN as mediation partner
-			if(mDisableSubViewClickListener)
+			// If flag is true then Publisher will get the click event on sub views
+			// Else SDK will reset click listeners on sub views
+			if(!mIsSubViewsClickable)
 				removeListenerFromChildViews(view);
 			view.setClickable(true); // Set only parent view clickable
 			/*
@@ -1365,17 +1365,17 @@ public final class MASTNativeAd implements AdRequest.Handler {
 	 * Returns the state of Click listener on sub views. Default value is false.
 	 * @return
 	 */
-	public boolean isDisableSubViewClickListener() {
-		return mDisableSubViewClickListener;
+	public boolean isSubViewsClickable() {
+		return mIsSubViewsClickable;
 	}
 
 	/**
-	 * Reset click listeners on subviews of Native ad. Publisher needs to set this 
-	 * flag as true if they are using FAN or other mediation partner who overrides
-	 * the click listeners on all sub views of Native ad.
-	 * @param mDisableSubViewClickListener
+	 * If flag is true then Publisher will get the click event on sub views
+ 	 * Else SDK will reset click listeners on sub views of Native ad.
+ 	 * Default value is true.
+	 * @param state set false to remove the click listeners from sub views of Native ad. 
 	 */
-	public void setDisableSubViewClickListener(boolean disableSubViewClickListener) {
-		this.mDisableSubViewClickListener = disableSubViewClickListener;
+	public void setSubViewsClickable(boolean state) {
+		this.mIsSubViewsClickable = state;
 	}
 }
