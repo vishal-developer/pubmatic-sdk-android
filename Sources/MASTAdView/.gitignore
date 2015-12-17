@@ -1,1 +1,7 @@
-/bin
+
+# Ignore generated files
+gen/
+bin/*
+# Do not ignore generated jar file
+!bin/mastadview.jar
+
