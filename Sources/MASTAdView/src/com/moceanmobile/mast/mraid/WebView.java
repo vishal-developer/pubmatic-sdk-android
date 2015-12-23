@@ -71,7 +71,8 @@ public class WebView extends android.webkit.WebView {
 		super.loadUrl(url);
 	}
 
-	public void loadFragment(String fragment, Bridge bridge) {
+	public void loadFragment(String fragment, Bridge bridge,
+			String adNetworkBaseUrl) {
 		addJavascriptInterface(bridge, MRAID_JAVASCRIPT_INTERFACE_NAME);
 
 		String content = null;
@@ -81,8 +82,8 @@ public class WebView extends android.webkit.WebView {
 				fragment);
 		content = formatter.toString();
 		formatter.close();
-
-		loadDataWithBaseURL("mast://ad/", content, "text/html", "UTF-8", null);
+		loadDataWithBaseURL(adNetworkBaseUrl, content, "text/html",
+				"UTF-8", null);
 	}
 
 	public void injectJavascript(String script) {
@@ -192,13 +193,14 @@ public class WebView extends android.webkit.WebView {
 		public boolean shouldOverrideUrlLoading(android.webkit.WebView view,
 				String url) {
 			boolean override = false;
-
+			
 			if (handler != null)
 				override = handler.webViewshouldOverrideUrlLoading(
 						(WebView) view, url);
 
 			return override;
 		}
+
 	}
 
 	private class ChromeClient extends WebChromeClient {

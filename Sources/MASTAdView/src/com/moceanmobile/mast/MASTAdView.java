@@ -1698,7 +1698,7 @@ public class MASTAdView extends ViewGroup {
 		mraidBridge = new Bridge(webView, mraidBridgeHandler);
 
 		String fragment = adDescriptor.getContent();
-		webView.loadFragment(fragment, mraidBridge);
+		webView.loadFragment(fragment, mraidBridge, this.getAdNetworkURL());
 
 		this.mAdDescriptor = adDescriptor;
 
@@ -1856,6 +1856,7 @@ public class MASTAdView extends ViewGroup {
 				return;
 			}
 		}
+		
 
 		runOnUiThread(new Runnable() {
 			public void run() {
