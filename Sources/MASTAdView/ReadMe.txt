@@ -196,4 +196,10 @@ Enabled multi-pixel tracking for SDK.
 - Added feature to fetch device id (AndroidId, Android AdvertisingId) in Native ads.
 
 
+-------
+ 4.3.6
+-------
+
+- Added a fix for protocol independent ad creatives.
+- Protocol independent creatives url's will now use the same protocol that of ad server base url (i.e. http:// or https://). 
 
