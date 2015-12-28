@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/PubMatic-Android-SDK.iml" filepath="$PROJECT_DIR$/PubMatic-Android-SDK.iml" />
+      <module fileurl="file://$PROJECT_DIR$/banner-sdk/banner-sdk.iml" filepath="$PROJECT_DIR$/banner-sdk/banner-sdk.iml" />
+      <module fileurl="file://$PROJECT_DIR$/common-sdk/common-sdk.iml" filepath="$PROJECT_DIR$/common-sdk/common-sdk.iml" />
+      <module fileurl="file://$PROJECT_DIR$/native-sdk/native-sdk.iml" filepath="$PROJECT_DIR$/native-sdk/native-sdk.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sdk-sample-app/sdk-sample-app.iml" filepath="$PROJECT_DIR$/sdk-sample-app/sdk-sample-app.iml" />
+    </modules>
+  </component>
+</project>
