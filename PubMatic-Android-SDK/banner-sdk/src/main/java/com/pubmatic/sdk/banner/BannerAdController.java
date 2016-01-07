@@ -15,7 +15,7 @@ public class BannerAdController implements AdController {
 
 	protected CHANNEL			mChannel;
 	protected Context 			mContext 		= null;
-	protected BannerAdRequest 	mAdRequest 		= null;
+	protected AdRequest 		mAdRequest 		= null;
 	protected RRFormatter 		mRRFormatter 	= null;
 	
 	
@@ -37,27 +37,32 @@ public class BannerAdController implements AdController {
 		Method m			 = null;
 		try {
 
-
 			switch (mChannel) {
 				case MOCEAN:
 					adRequestName = "com.pubmatic.sdk.banner.mocean.MoceanBannerAdRequest";
 					className = Class.forName(adRequestName);
 					m = className.getMethod("createMoceanBannerAdRequest", Context.class, String.class);
-					mAdRequest = (BannerAdRequest)m.invoke(null, mContext, null);
+					mAdRequest = (AdRequest)m.invoke(null, mContext, null);
+					//Call setAttributes()
+					m = className.getMethod("setAttributes", AttributeSet.class);
+					m.invoke(mAdRequest, attr);
+
 					break;
 				case PUBMATIC:
 					adRequestName = "com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest";
 					className = Class.forName(adRequestName);
 					m = className.getMethod("createPubMaticBannerAdRequest",
 											Context.class, String.class, String.class, String.class);
-					mAdRequest = (BannerAdRequest)m.invoke(null, mContext, null, null, null);
+					mAdRequest = (AdRequest)m.invoke(null, mContext, null, null, null);
+					//Call setAttributes()
+					m = className.getMethod("setAttributes", AttributeSet.class);
+					m.invoke(mAdRequest, attr);
 					break;
 
 				default:
 					break;
 			}
 
-			mAdRequest.setAttributes(attr);
 			createRRFormatter();
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
@@ -78,13 +83,7 @@ public class BannerAdController implements AdController {
 		if (adRequest == null)
 			throw new IllegalArgumentException("AdRequest object is null");
 
-		if (adRequest instanceof BannerAdRequest) {
-			((BannerAdRequest)adRequest).copyRequestParams(mAdRequest);
-			mAdRequest = (BannerAdRequest)adRequest;
-		} else
-			throw new IllegalStateException(
-					"AdRequest and channel type do not match.");
-
+		mAdRequest = adRequest;
 		//Create RRFormater
 		createRRFormatter();
 	}

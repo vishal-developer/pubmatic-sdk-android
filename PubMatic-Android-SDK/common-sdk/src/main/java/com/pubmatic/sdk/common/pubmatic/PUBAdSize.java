@@ -29,7 +29,7 @@
  * TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.                
 
  */
-package com.pubmatic.sdk.banner.pubmatic;
+package com.pubmatic.sdk.common.pubmatic;
 
 /**
  * Class provides the different Ad sizes for Banner Ads.

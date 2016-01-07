@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.pubmatic.sdk.banner.pubmatic;
+package com.pubmatic.sdk.common.pubmatic;
 
 import java.security.MessageDigest;
 

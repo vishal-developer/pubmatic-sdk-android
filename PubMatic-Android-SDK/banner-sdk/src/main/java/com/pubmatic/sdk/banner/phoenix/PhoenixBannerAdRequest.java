@@ -71,8 +71,7 @@ public class PhoenixBannerAdRequest extends BannerAdRequest {
 	public String getFormatter() {
 		return "com.pubmatic.sdk.banner.phoenix.PhoenixBannerRRFormatter";
 	}
-	
-	@Override
+
 	public void setAttributes(AttributeSet attr) {
 
 	}

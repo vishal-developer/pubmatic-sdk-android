@@ -10,7 +10,7 @@ import android.widget.RelativeLayout.LayoutParams;
 
 import com.pubmatic.sampleapp.R;
 import com.pubmatic.sdk.banner.PMBannerAdView;
-import com.pubmatic.sdk.banner.pubmatic.PUBAdSize;
+import com.pubmatic.sdk.common.pubmatic.PUBAdSize;
 import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest;
 import com.pubmatic.sdk.common.CommonDelegate;
 

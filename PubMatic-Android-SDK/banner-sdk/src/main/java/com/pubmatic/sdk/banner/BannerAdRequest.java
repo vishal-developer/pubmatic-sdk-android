@@ -71,8 +71,6 @@ public abstract class BannerAdRequest extends AdRequest {
         this.timeout = timeout;
     }
 
-    public abstract void setAttributes(AttributeSet attr);
-
     public abstract void copyRequestParams(BannerAdRequest adRequest);
 
     public abstract String getFormatter();

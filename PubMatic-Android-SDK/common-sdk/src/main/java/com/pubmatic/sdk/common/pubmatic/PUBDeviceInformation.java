@@ -29,7 +29,7 @@
  * TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.                
 
  */
-package com.pubmatic.sdk.banner.pubmatic;
+package com.pubmatic.sdk.common.pubmatic;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -39,10 +39,8 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
-import android.location.LocationManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
@@ -57,9 +55,7 @@ import android.webkit.WebView;
 public final class PUBDeviceInformation implements LocationListener {
 
 	private static Context mApplicationContext = null;
-	private static LocationManager mLocationManager = null;
 
-	public String mDeviceIdentifier = null;
 	public String mDeviceMake = null;
 	public String mDeviceModel = null;
 	public String mDeviceOSName = null;
@@ -67,6 +63,7 @@ public final class PUBDeviceInformation implements LocationListener {
 
 	public String mApplicationName = null;
 	public String mApplicationVersion = null;
+	public String mPackageName = null;
 
 	public String mPageURL = null;
 
@@ -96,7 +93,6 @@ public final class PUBDeviceInformation implements LocationListener {
 		mApplicationContext = context;
 
 		// Get the device ODIN number
-		mDeviceIdentifier = ODIN.getODIN1(mApplicationContext);
 		mDeviceMake = Build.MANUFACTURER;
 		mDeviceModel = Build.MODEL;
 		mDeviceOSName = DeviceConstants.mDeviceOsName;
@@ -142,7 +138,8 @@ public final class PUBDeviceInformation implements LocationListener {
 		try {
 			info = manager.getPackageInfo(mApplicationContext.getPackageName(),
 					0);
-			mApplicationName = info.packageName;
+			mApplicationName = info.applicationInfo.loadLabel(manager).toString();
+			mPackageName = mApplicationContext.getPackageName();
 			mApplicationVersion = info.versionName;
 			mPageURL = mApplicationName + "_" + mApplicationVersion;
 		} catch (Exception e) {
@@ -153,14 +150,6 @@ public final class PUBDeviceInformation implements LocationListener {
 		}
 
 		mDeviceIpAddress = getDeviceIpAddress();
-		try {
-			mLocationManager = (LocationManager) mApplicationContext
-					.getSystemService(Context.LOCATION_SERVICE);
-			startLocationManager();
-		} catch (Exception e) {
-			mLocationManager = null;
-			e.printStackTrace();
-		}
 	}
 
 	// Return the same instance
@@ -169,27 +158,6 @@ public final class PUBDeviceInformation implements LocationListener {
 			instance = new PUBDeviceInformation(context);
 		}
 		return instance;
-	}
-
-	// This will start the mLocationManager, since we need the location update
-	public void startLocationManager() {
-		Criteria criteria = new Criteria();
-		String bestProvider = mLocationManager.getBestProvider(criteria, false);
-		Location location = mLocationManager.getLastKnownLocation(bestProvider);
-		if (location != null)
-			mDeviceLocation = location.getLatitude() + ","
-					+ location.getLongitude();
-		mLocationManager.requestLocationUpdates(bestProvider, 60000L, 500.0f,
-				this);
-
-		criteria = null;
-		location = null;
-	}
-
-	// This method will stop the location manager, since we no longer
-	// need the location update, we need to stop it.
-	public void stopLocationManager() {
-		mLocationManager.removeUpdates(this);
 	}
 
 	// Returns the current system time

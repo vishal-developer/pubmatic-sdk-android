@@ -6,9 +6,11 @@ import android.util.AttributeSet;
 import java.util.Map;
 
 /**
- * Created by shrawangupta on 24/12/15.
+ * It loads the interstitial ad.
+ * In order to show the Interstitial ad, Publisher should call the
+ * showInterstitial() or showInterstitialWithDuration()
  */
-public class PMInterstitialAdView extends PMBannerAdView implements PMBannerAdView.BannerAdViewDelegate.RequestListener
+public class PMInterstitialAdView extends PMBannerAdView
 {
     public PMInterstitialAdView(Context context)
     {
@@ -34,33 +36,6 @@ public class PMInterstitialAdView extends PMBannerAdView implements PMBannerAdVi
     protected void init(boolean interstitial)
     {
         super.init(interstitial);
-
-        setRequestListener(this);
     }
 
-    @Override
-    public void onFailedToReceiveAd(PMBannerAdView adView, Exception ex)
-    {
-
-    }
-
-    @Override
-    public void onReceivedAd(PMBannerAdView adView)
-    {
-        runOnUiThread(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                showInterstitial();
-            }
-        });
-    }
-
-    @Override
-    public void onReceivedThirdPartyRequest(PMBannerAdView adView,
-                                            Map<String, String> properties, Map<String, String> parameters)
-    {
-
-    }
 }

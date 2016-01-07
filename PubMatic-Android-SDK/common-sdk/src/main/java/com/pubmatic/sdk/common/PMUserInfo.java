@@ -42,29 +42,101 @@ import java.util.ArrayList;
  */
 public class PMUserInfo {
 
+
+	public enum OVER_18 {
+		DENY, //0 or 1
+		ONLY_OVER_18, // 2
+		ALLOW_ALL // 3
+	}
+
 	public static final String GENDER_MALE = "M";
 	public static final String GENDER_FEMALE = "F";
 	public static final String GENDER_OTHER = "O";
 
-	private Location mLocation = null;
-	private String mYearOfBirth = null;
+	//Mocean USer info params
+	private String mAge = null;
 	private String mGender = null;
-	private String mZip = null;
 	private String mAreaCode = null;
+	private OVER_18 mOver18 = OVER_18.DENY;
+
+	//Common for Mocean & PubMatic User info params
+
+	//PubMatic User info
+	private String mCountry = null;
+	private String mState = null;
+	private String mCity = null;
+	private String mZip = null;
+	private String mDMA = null;
+	private String mYearOfBirth = null;
 	private String mIncome = null;
 	private String mEthnicity = null;
 	private ArrayList<String> mKeywordsList = null;
 
-	/**
-	 * Set the location of the user.
-	 * 
-	 * @param location
-	 *            - Location of the user
-	 */
-	public void setLocation(final Location location) {
-		mLocation = location;
+
+
+	public String getDMA() {
+		return mDMA;
 	}
 
+	public void setDMA(String mDMA) {
+		this.mDMA = mDMA;
+	}
+
+	public String getAge() {
+		return mAge;
+	}
+
+	public void setAge(String mAge) {
+		this.mAge = mAge;
+	}
+
+	public String getCountry() {
+		return mCountry;
+	}
+
+	public void setCountry(String mCountry) {
+		this.mCountry = mCountry;
+	}
+
+	public OVER_18 getOver18() {
+		return mOver18;
+	}
+
+	public void setOver18(OVER_18 mOver18) {
+		this.mOver18 = mOver18;
+	}
+
+	/**
+	 *
+	 * @return
+     */
+	public String getState() {
+		return mState;
+	}
+
+	/**
+	 *
+	 * @param state
+     */
+	public void setState(String state) {
+		this.mState = state;
+	}
+
+	/**
+	 *
+	 * @return
+     */
+	public String getCity() {
+		return mCity;
+	}
+
+	/**
+	 *
+	 * @param city
+     */
+	public void setCity(String city) {
+		this.mCity = city;
+	}
 	/**
 	 * Set the year of birth of the user.
 	 * 
@@ -152,15 +224,6 @@ public class PMUserInfo {
 		}
 
 		mKeywordsList.add(keyword);
-	}
-
-	/**
-	 * Return the location of the user.
-	 * 
-	 * @return the user location
-	 */
-	public Location getLocation() {
-		return mLocation;
 	}
 
 	/**

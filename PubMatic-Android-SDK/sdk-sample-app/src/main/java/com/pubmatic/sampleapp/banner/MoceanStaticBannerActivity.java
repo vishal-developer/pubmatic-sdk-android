@@ -21,6 +21,7 @@ public class MoceanStaticBannerActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.mocean_activity_static_banner);
+		loadInterstitial();
 	}
 
 	@Override
@@ -44,6 +45,12 @@ public class MoceanStaticBannerActivity extends Activity {
 
 	public void showInterstitial(View view) {
 
+		if(banner!=null)
+			banner.showInterstitial();
+	}
+
+	public void loadInterstitial() {
+
 		if(banner==null) {
 			banner = new PMInterstitialAdView(this);
 
@@ -62,7 +69,6 @@ public class MoceanStaticBannerActivity extends Activity {
 
 		MoceanBannerAdRequest adRequest = MoceanBannerAdRequest
 				.createMoceanBannerAdRequest(this, "88269");//279722 88269 156037
-
 		banner.execute(adRequest);
 	}
 }

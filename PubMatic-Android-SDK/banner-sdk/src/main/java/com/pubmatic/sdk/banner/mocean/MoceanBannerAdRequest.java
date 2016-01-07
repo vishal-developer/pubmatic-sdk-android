@@ -143,7 +143,6 @@ public class MoceanBannerAdRequest extends BannerAdRequest {
 		return "com.pubmatic.sdk.banner.mocean.MoceanBannerRRFormatter";
 	}
 
-	@Override
 	public void setAttributes(AttributeSet attr) {
 		try{
 			zoneId = attr.getAttributeValue(null,

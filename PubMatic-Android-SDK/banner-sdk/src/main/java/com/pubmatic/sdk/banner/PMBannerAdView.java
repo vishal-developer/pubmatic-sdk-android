@@ -35,6 +35,8 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -77,7 +79,6 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.pubmatic.sdk.banner.AdvertisingIdClient.AdInfo;
 import com.pubmatic.sdk.banner.mraid.Bridge;
 import com.pubmatic.sdk.banner.mraid.Consts;
 import com.pubmatic.sdk.banner.mraid.Consts.Feature;
@@ -88,9 +89,11 @@ import com.pubmatic.sdk.banner.mraid.ExpandProperties;
 import com.pubmatic.sdk.banner.mraid.OrientationProperties;
 import com.pubmatic.sdk.banner.mraid.ResizeProperties;
 import com.pubmatic.sdk.banner.mraid.WebView;
+import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.AdResponse;
 import com.pubmatic.sdk.common.CommonDelegate.LogLevel;
 import com.pubmatic.sdk.common.CommonDelegate.LogListener;
+import com.pubmatic.sdk.common.LocationDetector;
 import com.pubmatic.sdk.common.Renderable;
 import com.pubmatic.sdk.common.network.HttpHandler;
 import com.pubmatic.sdk.common.network.HttpHandler.HttpRequestListener;
@@ -404,7 +407,7 @@ public class PMBannerAdView extends ViewGroup {
 
     private CHANNEL mChannel;
 
-    private void setAdrequest(BannerAdRequest adRequest) {
+    private void setAdrequest(AdRequest adRequest) {
         if (adRequest == null) {
             throw new IllegalArgumentException("AdRequest object is null");
         }
@@ -416,9 +419,13 @@ public class PMBannerAdView extends ViewGroup {
         setChannel(adRequest.getChannel());
         mAdController.setAdRequest(adRequest);
 
+        //Start the location update if Publisher does not provides the location
+        if(adRequest.getLocation() == null) {
+            setLocationDetectionEnabled(true);
+        }
     }
 
-    public BannerAdRequest getAdRequest() {
+    public AdRequest getAdRequest() {
         return mAdController != null ? mAdController.mAdRequest : null;
     }
 
@@ -526,8 +533,8 @@ public class PMBannerAdView extends ViewGroup {
         initController(channel);
 
         mChannel = channel;
-        if (checkForMandatoryParams()) {
 
+        if (checkForMandatoryParams()) {
             //If case - XML inflated view
             if (mAttributes != null) {
                 updateOnLayout = true;
@@ -903,7 +910,9 @@ public class PMBannerAdView extends ViewGroup {
             throw new IllegalArgumentException("criteria or provider required");
         }
 
-        locationManager = (LocationManager) PMBannerAdView.this.getContext().getSystemService(
+        LocationDetector.getInstance(getContext()).addObserver(locationObserver);
+
+        /*locationManager = (LocationManager) PMBannerAdView.this.getContext().getSystemService(
                 Context.LOCATION_SERVICE);
         if (locationManager != null) {
             try {
@@ -938,8 +947,18 @@ public class PMBannerAdView extends ViewGroup {
                 }
 
             }
-        }
+        }*/
     }
+
+    private Observer locationObserver = new Observer() {
+        @Override
+        public void update(Observable observable, Object data) {
+
+            if(data instanceof Location) {
+                location = (Location) data;
+            }
+        }
+    };
 
     /**
      * Sets the log level of the instance. Logging is done through console logging.
@@ -979,35 +998,12 @@ public class PMBannerAdView extends ViewGroup {
         return isAndroidIdEnabled;
     }
 
-    /**
-     * add androidaid as request param.
-     *
-     * @param isAndroidAidEnabled
-     */
-    public void setAndroidAidEnabled(boolean isAndroidAidEnabled) {
-        this.isAndroidAidEnabled = isAndroidAidEnabled;
-        if (isAndroidAidEnabled) {
-            new Thread(new Runnable() {
-                public void run() {
-                    try {
-                        AdInfo adInfo = AdvertisingIdClient.getAdvertisingIdInfo(getContext());
-                        androidAid = adInfo.getId();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }).start();
-        }
-    }
 
-    public boolean isAndoridAidEnabled() {
-        return isAndroidAidEnabled;
-    }
 
     /**
      * @param adrequest
      */
-    public void execute(BannerAdRequest adrequest) {
+    public void execute(AdRequest adrequest) {
         setAdrequest(adrequest);
         update();
     }
@@ -1168,7 +1164,7 @@ public class PMBannerAdView extends ViewGroup {
         }
 
         // Make a fresh adRequest
-        BannerAdRequest adRequest = (BannerAdRequest) mAdController.getAdRequest();
+        AdRequest adRequest = (AdRequest) mAdController.getAdRequest();
         adRequest.setUserAgent(getUserAgent());
 
         // Set common width/height param to all platforms.
@@ -1192,6 +1188,14 @@ public class PMBannerAdView extends ViewGroup {
         //TODO :: Integrate the MultiValueMap implementation.
         adRequest.createRequest(getContext());
 
+        // Insert the location parameter in ad request,
+        // if publisher does not provided
+        if(adRequest.getLocation() == null)
+            adRequest.setLocation(location);
+        if(!TextUtils.isEmpty(androidAid)) {
+            //adRequest
+        }
+
         HttpRequest httpRequest = mAdController.getRRFormatter().formatRequest(adRequest);
 
         logEvent("Ad request:" + httpRequest.getRequestUrl(), Debug);
@@ -1207,7 +1211,7 @@ public class PMBannerAdView extends ViewGroup {
         public void onRequestComplete(HttpResponse response, String requestURL) {
 
             if (response != null) {
-                BannerAdRequest adRequest = (BannerAdRequest) mAdController.getAdRequest();
+                AdRequest adRequest = (AdRequest) mAdController.getAdRequest();
 
                 AdResponse adData = mAdController.getRRFormatter().formatResponse(response);
                 if (adData.getRequest() != adRequest) {
@@ -3130,6 +3134,7 @@ public class PMBannerAdView extends ViewGroup {
 
             adRequestDefaultParameters.put("lat", lat);
             adRequestDefaultParameters.put("long", lng);
+            adRequestDefaultParameters.put("provider", location.getProvider());
 
            PMBannerAdView.this.location = location;
 
