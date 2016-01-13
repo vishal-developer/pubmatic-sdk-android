@@ -8,23 +8,22 @@ import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 
-import com.pubmatic.sdk.banner.BannerAdRequest;
-import com.pubmatic.sdk.common.utils.CommonConstants;
-import com.pubmatic.sdk.common.utils.CommonConstants.CHANNEL;
+import com.pubmatic.sdk.common.AdRequest;
+import com.pubmatic.sdk.common.mocean.MoceanAdRequest;
+import com.pubmatic.sdk.common.CommonConstants;
 
-public class MoceanBannerAdRequest extends BannerAdRequest {
+public class MoceanBannerAdRequest extends MoceanAdRequest {
 
-	private String zoneId;
 	private boolean test = false;
 
-	private MoceanBannerAdRequest() {
-		super(CHANNEL.MOCEAN);
+	private MoceanBannerAdRequest(Context context) {
+		super(context);
 	}
 
 	public static MoceanBannerAdRequest createMoceanBannerAdRequest(
 			Context context, String zone) {
-		MoceanBannerAdRequest bannerAdRequest = new MoceanBannerAdRequest();
-		bannerAdRequest.setMoceanZoneId(zone);
+		MoceanBannerAdRequest bannerAdRequest = new MoceanBannerAdRequest(context);
+		bannerAdRequest.setZoneId(zone);
 		return bannerAdRequest;
 	}
 
@@ -65,14 +64,6 @@ public class MoceanBannerAdRequest extends BannerAdRequest {
 		}
 	}
 
-	public String getMoceanZoneId() {
-		return zoneId;
-	}
-
-	public void setMoceanZoneId(String zone) {
-		this.zoneId = zone;
-	}
-
 	public void setWidth(int width) {
 		super.setWidth(width);
 	}
@@ -81,16 +72,11 @@ public class MoceanBannerAdRequest extends BannerAdRequest {
 		super.setHeight(height);
 	}
 
-	public void setUserAgent(String userAgent) {
-		super.setUserAgent(userAgent);
-	}
-
 	@Override
 	public boolean checkMandatoryParams() {
-		return !TextUtils.isEmpty(zoneId);
+		return !TextUtils.isEmpty(mZoneId);
 	}
 
-	@Override
 	public void setCustomParams(Map<String, List<String>> customParams) {
 		mCustomParams = customParams;
 	}
@@ -121,21 +107,11 @@ public class MoceanBannerAdRequest extends BannerAdRequest {
 	@Override
 	protected void setupPostData() {
 
-		putPostData(CommonConstants.ZONE_ID_PARAM, String.valueOf(this.zoneId));
+		super.setupPostData();
 		if(getWidth()>0)
 			putPostData(CommonConstants.SIZE_X_PARAM, String.valueOf(getWidth()));
 		if(getHeight()>0)
 			putPostData(CommonConstants.SIZE_Y_PARAM, String.valueOf(getHeight()));
-	}
-
-	/**
-	 *
-	 */
-	public void copyRequestParams(BannerAdRequest adRequest) {
-		if(adRequest!=null && adRequest instanceof MoceanBannerAdRequest &&
-				(zoneId==null || TextUtils.isEmpty(zoneId))) {
-			this.zoneId = ((MoceanBannerAdRequest)adRequest).zoneId;
-		}
 	}
 
 	@Override
@@ -145,8 +121,8 @@ public class MoceanBannerAdRequest extends BannerAdRequest {
 
 	public void setAttributes(AttributeSet attr) {
 		try{
-			zoneId = attr.getAttributeValue(null,
-					CommonConstants.ZONE_ID_PARAM);
+			mZoneId = attr.getAttributeValue(null,
+					CommonConstants.REQUESTPARAM_ZONE);
 		} catch(Exception ex) {
 
 		}

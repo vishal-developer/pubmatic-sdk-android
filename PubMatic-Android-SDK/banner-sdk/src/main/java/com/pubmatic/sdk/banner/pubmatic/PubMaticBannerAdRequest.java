@@ -10,14 +10,14 @@ import android.util.AttributeSet;
 import android.view.Surface;
 
 import com.pubmatic.sdk.common.AdRequest;
-import com.pubmatic.sdk.common.PMUserInfo;
 import com.pubmatic.sdk.common.pubmatic.PUBAdSize;
 import com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest;
-import com.pubmatic.sdk.common.utils.CommonConstants;
+import com.pubmatic.sdk.common.CommonConstants;
+import com.pubmatic.sdk.common.pubmatic.PubMaticConstants;
 
 public class PubMaticBannerAdRequest extends PubMaticAdRequest {
 
-	private PUBAdSize mPubAdSize 		 = null;
+	private PUBAdSize 	mPubAdSize 		 = null;
 	private int 		mTimeoutInterval = CommonConstants.INVALID_INT;
 
 	//Should not exposed to Publisher, Handled by SDK.
@@ -63,11 +63,11 @@ public class PubMaticBannerAdRequest extends PubMaticAdRequest {
 
 		// Set the Ad size
 		if (mPubAdSize != null) {//Need to confirm AD_HEIGHT_PARAM or SIZE_Y_PARAM
-			putPostData(CommonConstants.AD_HEIGHT_PARAM, String.valueOf(mPubAdSize.getAdHeight()));
-			putPostData(CommonConstants.AD_WIDTH_PARAM, String.valueOf(mPubAdSize.getAdWidth()));
+			putPostData(PubMaticConstants.AD_HEIGHT_PARAM, String.valueOf(mPubAdSize.getAdHeight()));
+			putPostData(PubMaticConstants.AD_WIDTH_PARAM, String.valueOf(mPubAdSize.getAdWidth()));
 		} else {
-			putPostData(CommonConstants.AD_WIDTH_PARAM, String.valueOf(getWidth()));
-			putPostData(CommonConstants.AD_HEIGHT_PARAM, String.valueOf(getHeight()));
+			putPostData(PubMaticConstants.AD_WIDTH_PARAM, String.valueOf(getWidth()));
+			putPostData(PubMaticConstants.AD_HEIGHT_PARAM, String.valueOf(getHeight()));
 		}
 	}
 
@@ -94,18 +94,6 @@ public class PubMaticBannerAdRequest extends PubMaticAdRequest {
 		setPubAdSize(pubAdSize);
 	}
 
-
-	/**
-	 * This is an optional API's to set for application user Information to
-	 * target specific audience. You can set the user information with
-	 * PMUserInfo
-	 *
-	 * @param userInfo
-	 */
-	public void setUserInformation(PMUserInfo userInfo) {
-		setPubUserInformation(userInfo);
-	}
-
 	public int getDefaultedAdNetworkId() {
 		return mDefaultedAdNetworkId;
 	}
@@ -128,25 +116,8 @@ public class PubMaticBannerAdRequest extends PubMaticAdRequest {
 		return !TextUtils.isEmpty(mAdId) && !TextUtils.isEmpty(mSiteId) && !TextUtils.isEmpty(mPubId);
 	}
 
-	@Override
 	public void setCustomParams(Map<String, List<String>> customParams) {
 		mCustomParams = customParams;
-	}
-
-	@Override
-	public void copyRequestParams(AdRequest adRequest) {
-		if (adRequest != null && adRequest instanceof PubMaticBannerAdRequest) {
-			if (TextUtils.isEmpty(mAdId))
-				this.mAdId = ((PubMaticBannerAdRequest) adRequest).mAdId;
-			if (TextUtils.isEmpty(mPubId))
-				this.mPubId = ((PubMaticBannerAdRequest) adRequest).mPubId;
-			if (TextUtils.isEmpty(mSiteId))
-				this.mSiteId = ((PubMaticBannerAdRequest) adRequest).mSiteId;
-			if (getWidth() <= 0)
-				setWidth(adRequest.getWidth());
-			if (getHeight() <= 0)
-				setHeight(adRequest.getHeight());
-		}
 	}
 
 	@Override
@@ -159,13 +130,13 @@ public class PubMaticBannerAdRequest extends PubMaticAdRequest {
 			return;
 		try {
 			mPubId = attr.getAttributeValue(null,
-					CommonConstants.PUB_ID_PARAM);
+					PubMaticConstants.PUB_ID_PARAM);
 
 			mSiteId = attr.getAttributeValue(null,
-					CommonConstants.SITE_ID_PARAM);
+					PubMaticConstants.SITE_ID_PARAM);
 
 			mAdId = attr.getAttributeValue(null,
-					CommonConstants.AD_ID_PARAM);
+					PubMaticConstants.AD_ID_PARAM);
 
 			String width = attr.getAttributeValue(null,
 					CommonConstants.AD_WIDTH);
@@ -186,27 +157,6 @@ public class PubMaticBannerAdRequest extends PubMaticAdRequest {
 	}
 
 	/**
-	 * @return the mAdRefreshRate
-	 */
-	public int getAdRefreshRate() {
-		return mAdRefreshRate;
-	}
-
-	/**
-	 * @return the mPMUserInfo
-	 */
-	public PMUserInfo getUserInfo() {
-		return mPMUserInfo;
-	}
-
-	/**
-	 * @param mPMUserInfo the mPMUserInfo to set
-	 */
-	public void setPubUserInformation(PMUserInfo mPMUserInfo) {
-		this.mPMUserInfo = mPMUserInfo;
-	}
-
-	/**
 	 * @return the mPubAdSize
 	 */
 	public PUBAdSize getPubAdSize() {
@@ -218,39 +168,6 @@ public class PubMaticBannerAdRequest extends PubMaticAdRequest {
 	 */
 	public void setPubAdSize(PUBAdSize mPubAdSize) {
 		this.mPubAdSize = mPubAdSize;
-	}
-
-	/**
-	 * @return the mNetworkType
-	 */
-	public String getNetworkType() {
-		return mNetworkType;
-	}
-
-	/**
-	 * @param mNetworkType the mNetworkType to set
-	 */
-	public void setNetworkType(String mNetworkType) {
-		this.mNetworkType = mNetworkType;
-	}
-
-	/**
-	 * @return the mDeviceOrientation
-	 */
-	public int getDeviceOrientation(Context context) {
-		int rotation = ((Activity) context).getWindowManager().getDefaultDisplay().getRotation();
-		if (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180)
-			mDeviceOrientation = 0;
-		else if (rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270)
-			mDeviceOrientation = 1;
-		return mDeviceOrientation;
-	}
-
-	/**
-	 * @param mDeviceOrientation the mDeviceOrientation to set
-	 */
-	public void setDeviceOrientation(int mDeviceOrientation) {
-		this.mDeviceOrientation = mDeviceOrientation;
 	}
 
 	/**

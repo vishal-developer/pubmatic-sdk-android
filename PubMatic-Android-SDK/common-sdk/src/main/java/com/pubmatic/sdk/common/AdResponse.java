@@ -4,8 +4,12 @@ import com.pubmatic.sdk.common.AdRequest;
 
 public class AdResponse {
 
+	public interface Renderable {
+
+		Object getRenderable();
+	}
+
 	private AdRequest mRequest;
-	//private Map<String, String> mHeaderList;
 	private int mStatusCode;
 	private String errorCode;
 	private String errorMessage;
@@ -19,14 +23,6 @@ public class AdResponse {
 	public void setRequest(AdRequest mRequest) {
 		this.mRequest = mRequest;
 	}
-//
-//	public Map<String, String> getHeaderList() {
-//		return mHeaderList;
-//	}
-//
-//	public void setHeaderList(Map<String, String> mHeaderList) {
-//		this.mHeaderList = mHeaderList;
-//	}
 
 	public int getStatusCode() {
 		return mStatusCode;
@@ -51,7 +47,7 @@ public class AdResponse {
 	public void setErrorCode(String errorcode) {
 		this.errorCode = errorcode;
 	}
-	
+
 	public String getErrorMessage() {
 		return errorMessage;
 	}

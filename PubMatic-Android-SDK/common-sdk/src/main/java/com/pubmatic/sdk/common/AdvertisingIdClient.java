@@ -44,10 +44,8 @@ public static AdInfo getAdvertisingIdInfo(Context context) throws Exception {
     intent.setPackage("com.google.android.gms");
     if(context.bindService(intent, connection, Context.BIND_AUTO_CREATE)) {
         try {
-            System.out.println("=========== Ad Id ===========");
             AdvertisingInterface adInterface = new AdvertisingInterface(connection.getBinder());
             AdInfo adInfo = new AdInfo(adInterface.getId(), adInterface.isLimitAdTrackingEnabled(true));
-            System.out.println("=========== Ad Id fetched =========== "+adInfo.getId()+" :: "+adInfo.advertisingId);
             return adInfo;
         } catch (Exception exception) {
             throw exception;

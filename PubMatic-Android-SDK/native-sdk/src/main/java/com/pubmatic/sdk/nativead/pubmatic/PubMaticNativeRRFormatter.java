@@ -1,23 +1,23 @@
 package com.pubmatic.sdk.nativead.pubmatic;
 
-import static com.pubmatic.sdk.common.utils.CommonConstants.ID_STRING;
-import static com.pubmatic.sdk.common.utils.CommonConstants.NATIVE_ASSETS_STRING;
-import static com.pubmatic.sdk.common.utils.CommonConstants.RESPONSE_CLICKTRACKERS;
-import static com.pubmatic.sdk.common.utils.CommonConstants.RESPONSE_DATA;
-import static com.pubmatic.sdk.common.utils.CommonConstants.RESPONSE_ERROR;
-import static com.pubmatic.sdk.common.utils.CommonConstants.RESPONSE_FALLBACK;
-import static com.pubmatic.sdk.common.utils.CommonConstants.RESPONSE_IMG;
-import static com.pubmatic.sdk.common.utils.CommonConstants.RESPONSE_IMPTRACKERS;
-import static com.pubmatic.sdk.common.utils.CommonConstants.RESPONSE_JSTRACKER;
-import static com.pubmatic.sdk.common.utils.CommonConstants.RESPONSE_LINK;
-import static com.pubmatic.sdk.common.utils.CommonConstants.RESPONSE_MEDIATION;
-import static com.pubmatic.sdk.common.utils.CommonConstants.RESPONSE_NATIVE_STRING;
-import static com.pubmatic.sdk.common.utils.CommonConstants.RESPONSE_TEXT;
-import static com.pubmatic.sdk.common.utils.CommonConstants.RESPONSE_THIRDPARTY_STRING;
-import static com.pubmatic.sdk.common.utils.CommonConstants.RESPONSE_TITLE;
-import static com.pubmatic.sdk.common.utils.CommonConstants.RESPONSE_URL;
-import static com.pubmatic.sdk.common.utils.CommonConstants.RESPONSE_VALUE;
-import static com.pubmatic.sdk.common.utils.CommonConstants.RESPONSE_VER;
+import static com.pubmatic.sdk.common.CommonConstants.ID_STRING;
+import static com.pubmatic.sdk.common.CommonConstants.NATIVE_ASSETS_STRING;
+import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_CLICKTRACKERS;
+import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_DATA;
+import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_ERROR;
+import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_FALLBACK;
+import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_IMG;
+import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_IMPTRACKERS;
+import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_JSTRACKER;
+import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_LINK;
+import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_MEDIATION;
+import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_NATIVE_STRING;
+import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_TEXT;
+import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_THIRDPARTY_STRING;
+import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_TITLE;
+import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_URL;
+import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_VALUE;
+import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_VER;
 
 import java.util.ArrayList;
 
@@ -29,12 +29,12 @@ import android.text.TextUtils;
 
 import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.AdResponse;
+import com.pubmatic.sdk.common.CommonConstants;
 import com.pubmatic.sdk.common.RRFormatter;
 import com.pubmatic.sdk.common.network.HttpRequest;
 import com.pubmatic.sdk.common.network.HttpResponse;
-import com.pubmatic.sdk.common.network.ProtocolConstants;
-import com.pubmatic.sdk.common.utils.CommonConstants.AD_REQUEST_TYPE;
-import com.pubmatic.sdk.common.utils.CommonConstants.CONTENT_TYPE;
+import com.pubmatic.sdk.common.CommonConstants.AD_REQUEST_TYPE;
+import com.pubmatic.sdk.common.CommonConstants.CONTENT_TYPE;
 import com.pubmatic.sdk.nativead.NativeAdDescriptor;
 import com.pubmatic.sdk.nativead.PMNativeAd.Image;
 import com.pubmatic.sdk.nativead.bean.PMAssetResponse;
@@ -60,7 +60,7 @@ public class PubMaticNativeRRFormatter implements RRFormatter {
 		httpRequest.setConnection("close");
 		httpRequest.setRequestUrl(request.getAdServerURL());
 		httpRequest.setRequestType(AD_REQUEST_TYPE.PUB_NATIVE);
-		httpRequest.setRequestMethod(ProtocolConstants.HTTPMETHODPOST);
+		httpRequest.setRequestMethod(CommonConstants.HTTPMETHODPOST);
 		httpRequest.setPostData(adRequest.getPostData());
 		return httpRequest;
 	}

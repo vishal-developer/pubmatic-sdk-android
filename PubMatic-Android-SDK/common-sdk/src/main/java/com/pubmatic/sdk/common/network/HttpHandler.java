@@ -2,8 +2,8 @@ package com.pubmatic.sdk.common.network;
 
 import java.util.ArrayList;
 
+import com.pubmatic.sdk.common.CommonConstants.PubError;
 import com.pubmatic.sdk.common.network.HttpWorker.HttpRedirectListener;
-import com.pubmatic.sdk.common.utils.PubError;
 
 public class HttpHandler implements Runnable, HttpRedirectListener {
 

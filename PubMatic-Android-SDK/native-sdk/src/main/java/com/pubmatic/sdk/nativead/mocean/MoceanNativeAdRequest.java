@@ -1,18 +1,18 @@
 package com.pubmatic.sdk.nativead.mocean;
 
-import static com.pubmatic.sdk.common.utils.CommonConstants.ID_STRING;
-import static com.pubmatic.sdk.common.utils.CommonConstants.NATIVE_ASSETS_STRING;
-import static com.pubmatic.sdk.common.utils.CommonConstants.NATIVE_IMAGE_H;
-import static com.pubmatic.sdk.common.utils.CommonConstants.NATIVE_IMAGE_W;
-import static com.pubmatic.sdk.common.utils.CommonConstants.REQUEST_DATA;
-import static com.pubmatic.sdk.common.utils.CommonConstants.REQUEST_IMG;
-import static com.pubmatic.sdk.common.utils.CommonConstants.REQUEST_LEN;
-import static com.pubmatic.sdk.common.utils.CommonConstants.REQUEST_NATIVE_EQ_WRAPPER;
-import static com.pubmatic.sdk.common.utils.CommonConstants.REQUEST_REQUIRED;
-import static com.pubmatic.sdk.common.utils.CommonConstants.REQUEST_TITLE;
-import static com.pubmatic.sdk.common.utils.CommonConstants.REQUEST_TYPE;
-import static com.pubmatic.sdk.common.utils.CommonConstants.REQUEST_VER;
-import static com.pubmatic.sdk.common.utils.CommonConstants.REQUEST_VER_VALUE_1;
+import static com.pubmatic.sdk.common.CommonConstants.ID_STRING;
+import static com.pubmatic.sdk.common.CommonConstants.NATIVE_ASSETS_STRING;
+import static com.pubmatic.sdk.common.CommonConstants.NATIVE_IMAGE_H;
+import static com.pubmatic.sdk.common.CommonConstants.NATIVE_IMAGE_W;
+import static com.pubmatic.sdk.common.CommonConstants.REQUEST_DATA;
+import static com.pubmatic.sdk.common.CommonConstants.REQUEST_IMG;
+import static com.pubmatic.sdk.common.CommonConstants.REQUEST_LEN;
+import static com.pubmatic.sdk.common.CommonConstants.REQUEST_NATIVE_EQ_WRAPPER;
+import static com.pubmatic.sdk.common.CommonConstants.REQUEST_REQUIRED;
+import static com.pubmatic.sdk.common.CommonConstants.REQUEST_TITLE;
+import static com.pubmatic.sdk.common.CommonConstants.REQUEST_TYPE;
+import static com.pubmatic.sdk.common.CommonConstants.REQUEST_VER;
+import static com.pubmatic.sdk.common.CommonConstants.REQUEST_VER_VALUE_1;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -31,20 +31,19 @@ import android.util.Log;
 import android.webkit.WebView;
 
 import com.pubmatic.sdk.common.AdRequest;
-import com.pubmatic.sdk.common.utils.CommonConstants;
-import com.pubmatic.sdk.common.utils.CommonConstants.CHANNEL;
-import com.pubmatic.sdk.nativead.NativeAdRequest;
-import com.pubmatic.sdk.nativead.NativeConstants;
+import com.pubmatic.sdk.common.CommonConstants;
+import com.pubmatic.sdk.common.CommonConstants.CHANNEL;
+import com.pubmatic.sdk.common.mocean.MoceanAdRequest;
 import com.pubmatic.sdk.nativead.PMNativeAd;
 import com.pubmatic.sdk.nativead.bean.PMAssetRequest;
 import com.pubmatic.sdk.nativead.bean.PMDataAssetRequest;
 import com.pubmatic.sdk.nativead.bean.PMImageAssetRequest;
 import com.pubmatic.sdk.nativead.bean.PMTitleAssetRequest;
 
-public class MoceanNativeAdRequest extends NativeAdRequest {
+public class MoceanNativeAdRequest extends MoceanAdRequest {
 
 	private List<PMAssetRequest> requestedAssetsList = null;
-	
+
 	private String zoneId;
 	private boolean test = false;
 	private final String requestUrl;
@@ -56,27 +55,23 @@ public class MoceanNativeAdRequest extends NativeAdRequest {
 	/**
 	 * This method will create and object of {@link AdRequest}. It is used for
 	 * the implementations of {@link PMNativeAd}
-	 * 
+	 *
 	 */
 	public static MoceanNativeAdRequest createMoceanNativeAdRequest(Context context, String zone, List<PMAssetRequest> requestedAssets){
 
 		WebView webView = new WebView(context);
 		String userAgent = webView.getSettings().getUserAgentString();
 
-		MoceanNativeAdRequest adRequest = new MoceanNativeAdRequest(NativeConstants.NETWORK_TIMEOUT_SECONDS,
+		MoceanNativeAdRequest adRequest = new MoceanNativeAdRequest(context, CommonConstants.NETWORK_TIMEOUT_SECONDS,
 				CommonConstants.MOCEAN_AD_NETWORK_URL, userAgent, null, requestedAssets);
 		adRequest.setMoceanZoneId(zone);
 		return adRequest;
 	}
 
-	private MoceanNativeAdRequest() {
-		super(CHANNEL.MOCEAN);
-		this.requestUrl = null;
-	}
-	
-	private MoceanNativeAdRequest(int timeout, String adServerUrl, String userAgent,
-			Map<String, String> parameters, List<PMAssetRequest> requestedAssets) {
-		super(CHANNEL.MOCEAN);
+
+	private MoceanNativeAdRequest(Context context, int timeout, String adServerUrl, String userAgent,
+								  Map<String, String> parameters, List<PMAssetRequest> requestedAssets) {
+		super(context);
 		this.requestedAssetsList = requestedAssets;
 
 		StringBuilder sb = new StringBuilder();
@@ -101,7 +96,7 @@ public class MoceanNativeAdRequest extends NativeAdRequest {
 					}
 				}
 			} catch(UnsupportedEncodingException e) {
-				
+
 			}
 		}
 		sb.setLength(sb.length() - 1);
@@ -178,7 +173,7 @@ public class MoceanNativeAdRequest extends NativeAdRequest {
 	}
 
 	@Override
-	public void setCustomParams(Map<String, List<String>> customParams) {
+	public void addCustomParams(Map<String, List<String>> customParams) {
 		mCustomParams = customParams;
 	}
 
@@ -187,7 +182,7 @@ public class MoceanNativeAdRequest extends NativeAdRequest {
 	 * request test ads for the configured zone.
 	 * <p>
 	 * Warning: This should never be enabled for application releases.
-	 * 
+	 *
 	 * @param test
 	 *            true to set test mode, false to disable test mode.
 	 */
@@ -197,7 +192,7 @@ public class MoceanNativeAdRequest extends NativeAdRequest {
 
 	/**
 	 * Access for test mode state of the instance.
-	 * 
+	 *
 	 * @return true if the instance is set to test mode, false if test mode is
 	 *         disabled.
 	 */
@@ -209,7 +204,8 @@ public class MoceanNativeAdRequest extends NativeAdRequest {
 	@Override
 	protected void setupPostData() {
 
-		putPostData(CommonConstants.ZONE_ID_PARAM, String.valueOf(this.zoneId));
+		super.setupPostData();
+		putPostData(CommonConstants.REQUESTPARAM_ZONE, String.valueOf(this.zoneId));
 		if(getWidth()>0)
 			putPostData(CommonConstants.SIZE_X_PARAM, String.valueOf(getWidth()));
 		if(getHeight()>0)
@@ -218,29 +214,19 @@ public class MoceanNativeAdRequest extends NativeAdRequest {
 		//attach the Native asset request data
 		setupAssetData();
 	}
-	
-	/**
-	 * 
-	 */
-	public void copyRequestParams(NativeAdRequest adRequest) {
-		if(adRequest!=null && adRequest instanceof MoceanNativeAdRequest && 
-				(zoneId==null || TextUtils.isEmpty(zoneId))) {
-			this.zoneId = ((MoceanNativeAdRequest)adRequest).zoneId;
-		}
-	}
 
 	@Override
 	public String getFormatter() {
 		return "com.pubmatic.sdk.nativead.mocean.MoceanNativeRRFormatter";
 	}
-	
+
 	@Override
 	public void setAttributes(AttributeSet attr) {
 		try{
 			zoneId = attr.getAttributeValue(null,
-					CommonConstants.ZONE_ID_PARAM);
+					CommonConstants.REQUESTPARAM_ZONE);
 		} catch(Exception ex) {
-			
+
 		}
 	}
 	private void setupAssetData() {
@@ -292,7 +278,7 @@ public class MoceanNativeAdRequest extends NativeAdRequest {
 							dataObj.put(REQUEST_TYPE,
 									((PMDataAssetRequest) assetRequest).dataAssetType
 											.getTypeId());
-	
+
 							if (((PMDataAssetRequest) assetRequest).length > 0) {
 								dataObj.put(REQUEST_LEN,
 										((PMDataAssetRequest) assetRequest).length);

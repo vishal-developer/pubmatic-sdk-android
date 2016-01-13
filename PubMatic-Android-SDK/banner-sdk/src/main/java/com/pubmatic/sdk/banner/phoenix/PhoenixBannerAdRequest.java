@@ -6,11 +6,10 @@ import java.util.Map;
 import android.content.Context;
 import android.util.AttributeSet;
 
-import com.pubmatic.sdk.banner.BannerAdRequest;
-import com.pubmatic.sdk.common.utils.CommonConstants;
-import com.pubmatic.sdk.common.utils.CommonConstants.CHANNEL;
+import com.pubmatic.sdk.common.AdRequest;
+import com.pubmatic.sdk.common.CommonConstants.CHANNEL;
 
-public class PhoenixBannerAdRequest extends BannerAdRequest {
+public class PhoenixBannerAdRequest extends AdRequest {
 
 	private String 			mPHAdId;
 
@@ -50,21 +49,23 @@ public class PhoenixBannerAdRequest extends BannerAdRequest {
 	}
 
 	@Override
+	public void addCustomParams(Map<String, List<String>> customParams) {
+
+	}
+
+	@Override
+	public void createRequest(Context context) {
+
+	}
+
+	@Override
 	protected void setupPostData() {
 
 	}
 
 	@Override
-	public void setCustomParams(Map<String, List<String>> customParams) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void copyRequestParams(AdRequest adRequestParams) {
 
-	@Override
-	public void copyRequestParams(BannerAdRequest adRequest) {
-		if(adRequest!=null && adRequest instanceof PhoenixBannerAdRequest) {
-
-		}
 	}
 
 	@Override

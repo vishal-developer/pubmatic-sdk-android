@@ -11,7 +11,8 @@ import android.widget.RelativeLayout;
 import com.pubmatic.sampleapp.R;
 import com.pubmatic.sdk.banner.PMInterstitialAdView;
 import com.pubmatic.sdk.banner.mocean.MoceanBannerAdRequest;
-import com.pubmatic.sdk.common.CommonDelegate;
+import com.pubmatic.sdk.common.CommonConstants;
+import com.pubmatic.sdk.common.PMLogger;
 
 public class MoceanStaticBannerActivity extends Activity {
 
@@ -51,6 +52,8 @@ public class MoceanStaticBannerActivity extends Activity {
 
 	public void loadInterstitial() {
 
+		PMLogger.setLogLevel(PMLogger.LogLevel.Debug);
+
 		if(banner==null) {
 			banner = new PMInterstitialAdView(this);
 
@@ -64,7 +67,6 @@ public class MoceanStaticBannerActivity extends Activity {
 
 
 			banner.setUseInternalBrowser(true);
-			banner.setLogLevel(CommonDelegate.LogLevel.Debug);
 		}
 
 		MoceanBannerAdRequest adRequest = MoceanBannerAdRequest

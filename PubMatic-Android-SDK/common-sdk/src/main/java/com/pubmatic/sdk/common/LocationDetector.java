@@ -13,8 +13,6 @@ import android.location.LocationProvider;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.pubmatic.sdk.common.utils.CommonConstants;
-
 public class LocationDetector extends Observable {
 
 	// Location support
@@ -120,7 +118,6 @@ public class LocationDetector extends Observable {
 	 *
 	 * @param locationDetectionEnabled
 	 */
-	@SuppressWarnings("ResourceType")
 	public void setLocationDetectionEnabled(boolean locationDetectionEnabled) {
 		if (locationDetectionEnabled == false) {
 			if (locationManager != null && locationListener != null) {
@@ -160,7 +157,6 @@ public class LocationDetector extends Observable {
 	 *            Named provider used by the LocationManager to obtain location
 	 *            updates.
 	 */
-	@SuppressWarnings("ResourceType")
 	public void enableLocationDetection(long minTime, float minDistance,
 										Criteria criteria, String provider) {
 		if ((provider == null) && (criteria == null))

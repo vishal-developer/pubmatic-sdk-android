@@ -10,15 +10,7 @@ import android.content.Context;
 import android.location.Location;
 import android.text.TextUtils;
 
-import com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest;
-import com.pubmatic.sdk.common.utils.CommonConstants;
-
 public abstract class AdRequest {
-
-	/**
-	 *
-	 */
-	public enum VIDEO_PROTOCOL { VAST2, VAST3 }
 
 	/**
 	 * This parameter will be used to save the base URL
@@ -52,13 +44,9 @@ public abstract class AdRequest {
 	/**
 	 *
 	 */
-	protected PMUserInfo      			mPMUserInfo;
-	/**
-	 *
-	 */
 	protected CommonConstants.CHANNEL 	mChannel = CommonConstants.CHANNEL.MOCEAN;
 
-	protected static String 					mUDID;
+	protected static String 			mUDID;
 
 	/**
 	 * Publisher can set his own custom defined Ad request parameters via Map
@@ -91,6 +79,11 @@ public abstract class AdRequest {
 
 	/**
 	 *
+	 * @param adRequestParams
+     */
+	public abstract void copyRequestParams(AdRequest adRequestParams);
+	/**
+	 *
 	 * @param context
      */
 	protected abstract void initializeDefaultParams(Context context);
@@ -99,7 +92,7 @@ public abstract class AdRequest {
 	 *
 	 * @param customParams
      */
-	public abstract void setCustomParams(Map<String, List<String>> customParams);
+	public abstract void addCustomParams(Map<String, List<String>> customParams);
 
 	/**
 	 *
@@ -139,15 +132,6 @@ public abstract class AdRequest {
 			}
 		}).start();
 
-	}
-
-
-	public PMUserInfo getUserInfo() {
-		return mPMUserInfo;
-	}
-
-	public void setUserInfo(PMUserInfo mUserInfo) {
-		this.mPMUserInfo = mUserInfo;
 	}
 
 	public int getWidth() {

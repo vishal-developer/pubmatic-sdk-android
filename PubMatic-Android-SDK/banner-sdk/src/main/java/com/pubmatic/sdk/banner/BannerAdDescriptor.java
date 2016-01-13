@@ -30,7 +30,8 @@ package com.pubmatic.sdk.banner;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.pubmatic.sdk.common.Renderable;
+
+import com.pubmatic.sdk.common.AdResponse;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -43,7 +44,7 @@ import java.util.Map;
 /**
  * This class is used for parsing ad response JSON/XML from Mocean ad server.
  */
-public class BannerAdDescriptor implements Renderable {
+public class BannerAdDescriptor implements AdResponse.Renderable {
 
 
     /***

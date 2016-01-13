@@ -1,18 +1,18 @@
 package com.pubmatic.sdk.nativead.pubmatic;
 
-import static com.pubmatic.sdk.common.utils.CommonConstants.ID_STRING;
-import static com.pubmatic.sdk.common.utils.CommonConstants.NATIVE_ASSETS_STRING;
-import static com.pubmatic.sdk.common.utils.CommonConstants.NATIVE_IMAGE_H;
-import static com.pubmatic.sdk.common.utils.CommonConstants.NATIVE_IMAGE_W;
-import static com.pubmatic.sdk.common.utils.CommonConstants.REQUEST_DATA;
-import static com.pubmatic.sdk.common.utils.CommonConstants.REQUEST_IMG;
-import static com.pubmatic.sdk.common.utils.CommonConstants.REQUEST_LEN;
-import static com.pubmatic.sdk.common.utils.CommonConstants.REQUEST_NATIVE_EQ_WRAPPER;
-import static com.pubmatic.sdk.common.utils.CommonConstants.REQUEST_REQUIRED;
-import static com.pubmatic.sdk.common.utils.CommonConstants.REQUEST_TITLE;
-import static com.pubmatic.sdk.common.utils.CommonConstants.REQUEST_TYPE;
-import static com.pubmatic.sdk.common.utils.CommonConstants.REQUEST_VER;
-import static com.pubmatic.sdk.common.utils.CommonConstants.REQUEST_VER_VALUE_1;
+import static com.pubmatic.sdk.common.CommonConstants.ID_STRING;
+import static com.pubmatic.sdk.common.CommonConstants.NATIVE_ASSETS_STRING;
+import static com.pubmatic.sdk.common.CommonConstants.NATIVE_IMAGE_H;
+import static com.pubmatic.sdk.common.CommonConstants.NATIVE_IMAGE_W;
+import static com.pubmatic.sdk.common.CommonConstants.REQUEST_DATA;
+import static com.pubmatic.sdk.common.CommonConstants.REQUEST_IMG;
+import static com.pubmatic.sdk.common.CommonConstants.REQUEST_LEN;
+import static com.pubmatic.sdk.common.CommonConstants.REQUEST_NATIVE_EQ_WRAPPER;
+import static com.pubmatic.sdk.common.CommonConstants.REQUEST_REQUIRED;
+import static com.pubmatic.sdk.common.CommonConstants.REQUEST_TITLE;
+import static com.pubmatic.sdk.common.CommonConstants.REQUEST_TYPE;
+import static com.pubmatic.sdk.common.CommonConstants.REQUEST_VER;
+import static com.pubmatic.sdk.common.CommonConstants.REQUEST_VER_VALUE_1;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -31,17 +31,16 @@ import android.util.Log;
 import android.webkit.WebView;
 
 import com.pubmatic.sdk.common.AdRequest;
-import com.pubmatic.sdk.common.utils.CommonConstants;
-import com.pubmatic.sdk.common.utils.CommonConstants.CHANNEL;
-import com.pubmatic.sdk.nativead.NativeAdRequest;
-import com.pubmatic.sdk.nativead.NativeConstants;
+import com.pubmatic.sdk.common.CommonConstants;
+import com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest;
+import com.pubmatic.sdk.common.pubmatic.PubMaticConstants;
 import com.pubmatic.sdk.nativead.PMNativeAd;
 import com.pubmatic.sdk.nativead.bean.PMAssetRequest;
 import com.pubmatic.sdk.nativead.bean.PMDataAssetRequest;
 import com.pubmatic.sdk.nativead.bean.PMImageAssetRequest;
 import com.pubmatic.sdk.nativead.bean.PMTitleAssetRequest;
 
-public class PubMaticNativeAdRequest  extends NativeAdRequest {
+public class PubMaticNativeAdRequest  extends PubMaticAdRequest {
 
 	private final int timeout;
 	private final String userAgent;
@@ -71,7 +70,7 @@ public class PubMaticNativeAdRequest  extends NativeAdRequest {
 		WebView webView = new WebView(context);
 		String userAgent = webView.getSettings().getUserAgentString();
 
-		PubMaticNativeAdRequest adRequest = new PubMaticNativeAdRequest(context, NativeConstants.NETWORK_TIMEOUT_SECONDS,
+		PubMaticNativeAdRequest adRequest = new PubMaticNativeAdRequest(context, CommonConstants.NETWORK_TIMEOUT_SECONDS,
 				CommonConstants.PUBMATIC_NATIVE_TEST_NETWORK_URL, userAgent, null, requestedAssets);
 		adRequest.setPubId(pubId);
 		adRequest.setSiteId(siteId);
@@ -80,7 +79,7 @@ public class PubMaticNativeAdRequest  extends NativeAdRequest {
 	}
 
 	private PubMaticNativeAdRequest(Context context) {
-		super(CHANNEL.PUBMATIC);
+		super(context);
 		this.context = context;
 		this.timeout = 0;
 		this.userAgent = null;
@@ -89,7 +88,7 @@ public class PubMaticNativeAdRequest  extends NativeAdRequest {
 
 	private PubMaticNativeAdRequest(Context context, int timeout, String adServerUrl, String userAgent,
 			Map<String, String> parameters, List<PMAssetRequest> requestedAssets) {
-		super(CHANNEL.PUBMATIC);
+		super(context);
 		this.context = context;
 		this.timeout = timeout;
 		this.userAgent = userAgent;
@@ -187,7 +186,6 @@ public class PubMaticNativeAdRequest  extends NativeAdRequest {
 		return !TextUtils.isEmpty(pubId) && !TextUtils.isEmpty(siteId) && !TextUtils.isEmpty(adId);
 	}
 
-	@Override
 	public void setCustomParams(Map<String, List<String>> customParams) {
 		mCustomParams = customParams;
 	}
@@ -219,9 +217,9 @@ public class PubMaticNativeAdRequest  extends NativeAdRequest {
 	protected void setupPostData() {
 
 
-		putPostData(CommonConstants.PUB_ID_PARAM, String.valueOf(this.pubId));
-		putPostData(CommonConstants.SITE_ID_PARAM, String.valueOf(this.siteId));
-		putPostData(CommonConstants.AD_ID_PARAM, String.valueOf(this.adId));
+		putPostData(PubMaticConstants.PUB_ID_PARAM, String.valueOf(this.pubId));
+		putPostData(PubMaticConstants.SITE_ID_PARAM, String.valueOf(this.siteId));
+		putPostData(PubMaticConstants.AD_ID_PARAM, String.valueOf(this.adId));
 		if(getWidth()>0)
 			putPostData(CommonConstants.SIZE_X_PARAM, String.valueOf(getWidth()));
 		if(getHeight()>0)
@@ -254,20 +252,6 @@ public class PubMaticNativeAdRequest  extends NativeAdRequest {
 		//attach the Native asset request data
 		setupAssetData();
 
-	}
-
-	/**
-	 *
-	 */
-	public void copyRequestParams(NativeAdRequest adRequest) {
-		if(adRequest!=null && adRequest instanceof PubMaticNativeAdRequest) {
-			if (pubId==null || TextUtils.isEmpty(pubId))
-				this.pubId = ((PubMaticNativeAdRequest)adRequest).pubId;
-			if (siteId==null || TextUtils.isEmpty(siteId))
-				this.siteId = ((PubMaticNativeAdRequest)adRequest).siteId;
-			if (pubId==null || TextUtils.isEmpty(pubId))
-				this.adId = ((PubMaticNativeAdRequest)adRequest).adId;
-		}
 	}
 
 	@Override

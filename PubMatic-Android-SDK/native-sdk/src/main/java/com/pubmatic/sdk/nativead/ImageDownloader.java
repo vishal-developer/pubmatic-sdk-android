@@ -25,7 +25,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 
-import com.pubmatic.sdk.common.utils.CommonConstants;
+import com.pubmatic.sdk.common.CommonConstants;
 
 public final class ImageDownloader extends AsyncTask<String, Void, Bitmap> {
 	private interface ImageDownloaderListener {

@@ -12,7 +12,8 @@ import android.widget.RelativeLayout.LayoutParams;
 import com.pubmatic.sampleapp.R;
 import com.pubmatic.sdk.banner.PMBannerAdView;
 import com.pubmatic.sdk.banner.mocean.MoceanBannerAdRequest;
-import com.pubmatic.sdk.common.CommonDelegate;
+import com.pubmatic.sdk.common.CommonConstants;
+import com.pubmatic.sdk.common.PMLogger;
 
 
 public class MoceanRuntimeBannerActivity extends Activity {
@@ -32,11 +33,11 @@ public class MoceanRuntimeBannerActivity extends Activity {
                 LayoutParams.WRAP_CONTENT);
         params.setLayoutDirection(RelativeLayout.ALIGN_PARENT_TOP);
         layout.addView(banner, params);
+        PMLogger.setLogLevel(PMLogger.LogLevel.Debug);
 
         MoceanBannerAdRequest adRequest = MoceanBannerAdRequest
                 .createMoceanBannerAdRequest(this, "88269");//279722 88269 156037
         banner.setUseInternalBrowser(true);
-        banner.setLogLevel(CommonDelegate.LogLevel.Debug);
         banner.execute(adRequest);
 
     }

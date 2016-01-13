@@ -19,7 +19,7 @@ package com.pubmatic.sdk.banner;
 
 import android.util.Log;
 
-import com.pubmatic.sdk.common.utils.CommonConstants;
+import com.pubmatic.sdk.common.CommonConstants;
 
 import java.net.HttpURLConnection;
 import java.net.URL;

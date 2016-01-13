@@ -27,36 +27,55 @@
 
 package com.pubmatic.sdk.nativead;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 import android.util.Log;
+
+import com.pubmatic.sdk.common.CommonConstants;
 
 public class AdTracking {
     private static final String LOGTAG = AdTracking.class.getSimpleName();
 
-    public static void invokeTrackingUrl(final int timeout, final String url, final String userAgent) {
+    public static void invokeTrackingUrl(final int timeout, final String url,
+            final String userAgent) {
         new Thread(new Runnable() {
             // Thread to stop network calls on the UI thread
             @Override
             public void run() {
-                /*try {
-                    HttpParams httpParams = new BasicHttpParams();
-                    HttpConnectionParams.setConnectionTimeout(httpParams, timeout * 1000);
 
-                    HttpClient httpClient = new DefaultHttpClient(httpParams);
+                HttpURLConnection httpUrlConnection = null;
+                int responseCode = 0;
 
-                    HttpGet httpGet = new HttpGet(url);
-                    httpGet.setHeader(MASTNativeAdConstants.REQUEST_HEADER_USER_AGENT, userAgent);
-                    httpGet.setHeader(MASTNativeAdConstants.REQUEST_HEADER_CONNECTION,
-                            MASTNativeAdConstants.REQUEST_HEADER_CONNECTION_VALUE_CLOSE);
+                try {
+                    httpUrlConnection = (HttpURLConnection) new URL(url).openConnection();
+                    if (httpUrlConnection != null) {
 
-                    HttpResponse httpResponse = httpClient.execute(httpGet);
-                    httpResponse.getStatusLine();
+                        httpUrlConnection.setRequestMethod(CommonConstants.HTTPMETHODGET);
+                        httpUrlConnection.setRequestProperty(CommonConstants.REQUEST_HEADER_CONNECTION, CommonConstants.REQUEST_HEADER_CONNECTION_VALUE_CLOSE);
+                        httpUrlConnection.setRequestProperty(CommonConstants.REQUEST_HEADER_USER_AGENT, userAgent);
+                        httpUrlConnection.setConnectTimeout(timeout * 1000);
+
+                        responseCode = httpUrlConnection.getResponseCode();
+
+                        if (responseCode != HttpURLConnection.HTTP_OK)
+                        {
+                            Log.w(LOGTAG, "Error while invoking tracking URL : " + url + "HttpResponse:"+responseCode);
+                            return;
+                        }else{
+                            Log.i(LOGTAG, "Ad Tracker fired successfully");
+                        }
+                    }
                 } catch (Exception ex) {
                     Log.w(LOGTAG, "Error while invoking tracking URL : " + url);
-                    Log.w(LOGTAG, ex.getMessage());
-                }*/
+                } finally {
+                    if(httpUrlConnection !=null) {
+                        httpUrlConnection.disconnect();
+                        httpUrlConnection= null;
+                    }
+                }
             }
         }).start();
-
     }
 
     /**

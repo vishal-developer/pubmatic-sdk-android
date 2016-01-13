@@ -1,11 +1,24 @@
 
 package com.pubmatic.sdk.common.network;
 
-import com.pubmatic.sdk.common.utils.CommonConstants.AD_REQUEST_TYPE;
-import com.pubmatic.sdk.common.utils.CommonConstants.CONTENT_TYPE;
+import com.pubmatic.sdk.common.CommonConstants;
+import com.pubmatic.sdk.common.CommonConstants.AD_REQUEST_TYPE;
+import com.pubmatic.sdk.common.CommonConstants.CHANNEL;
+import com.pubmatic.sdk.common.CommonConstants.CONTENT_TYPE;
 
 public class HttpRequest {
 
+
+    public static HttpRequest getTrackingRequest(final String requestUrl,
+            final CommonConstants.CHANNEL channel) {
+
+        HttpRequest request = new HttpRequest();
+        request.setRequestUrl(requestUrl);
+        request.setRequestType(channel == CHANNEL.PUBMATIC ? AD_REQUEST_TYPE.PUB_TRACKER : channel == CHANNEL.MOCEAN ? AD_REQUEST_TYPE.MOCEAN_TRACKER : AD_REQUEST_TYPE.PHOENIX_TRACKER);
+        request.setRequestMethod(CommonConstants.HTTPMETHODGET);
+        return request;
+    }
+    
 	private AD_REQUEST_TYPE mRequestType= null;
 	private String 			mRequestUrl = null;
 	private String			mPostData	= null;

@@ -9,12 +9,11 @@ import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 
-import android.os.Build;
 import android.util.Log;
 
-import com.pubmatic.sdk.common.utils.CommonConstants;
-import com.pubmatic.sdk.common.utils.CommonConstants.CONTENT_TYPE;
-import com.pubmatic.sdk.common.utils.PubError;
+import com.pubmatic.sdk.common.CommonConstants;
+import com.pubmatic.sdk.common.CommonConstants.CONTENT_TYPE;
+import com.pubmatic.sdk.common.CommonConstants.PubError;
 
 public class HttpWorker {
 
@@ -136,8 +135,8 @@ public class HttpWorker {
 	
 	}
 
-	private HttpResponse sendAdRequestAboveGB(HttpRequest httpRequest, HttpRedirectListener redirectListener) {
-
+	public HttpResponse execute(HttpRequest httpRequest, HttpRedirectListener redirectListener) {
+		
 		InputStreamReader inputStreamReader = null;
 		InputStream 	  inputStream 		= null;
 		BufferedReader    reader 			= null;
@@ -327,9 +326,6 @@ public class HttpWorker {
 	
 	}
 	
-	public HttpResponse execute(HttpRequest param, HttpRedirectListener redirect) {
-		return (Build.VERSION.SDK_INT >= 9) ? sendAdRequestAboveGB(param, redirect) : null;
-	}
 
 	public void cancelRequest() {
 		mIsCancelled = true;

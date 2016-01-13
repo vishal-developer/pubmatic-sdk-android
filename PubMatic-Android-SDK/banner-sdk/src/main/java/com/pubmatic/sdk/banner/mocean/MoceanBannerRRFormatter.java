@@ -12,8 +12,8 @@ import com.pubmatic.sdk.common.AdResponse;
 import com.pubmatic.sdk.common.RRFormatter;
 import com.pubmatic.sdk.common.network.HttpRequest;
 import com.pubmatic.sdk.common.network.HttpResponse;
-import com.pubmatic.sdk.common.utils.CommonConstants;
-import com.pubmatic.sdk.common.utils.CommonConstants.CONTENT_TYPE;
+import com.pubmatic.sdk.common.CommonConstants;
+import com.pubmatic.sdk.common.CommonConstants.CONTENT_TYPE;
 
 public class MoceanBannerRRFormatter implements RRFormatter {
 

@@ -1,7 +1,7 @@
 package com.pubmatic.sdk.common.network;
 
-import com.pubmatic.sdk.common.utils.CommonConstants.CONTENT_TYPE;
-import com.pubmatic.sdk.common.utils.PubError;
+import com.pubmatic.sdk.common.CommonConstants.CONTENT_TYPE;
+import com.pubmatic.sdk.common.CommonConstants.PubError;
 
 public class HttpResponse {
 

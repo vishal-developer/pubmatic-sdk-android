@@ -48,7 +48,7 @@ package com.pubmatic.sdk.nativead;
 import java.util.Arrays;
 import java.util.List;
 
-import com.pubmatic.sdk.common.Renderable;
+import com.pubmatic.sdk.common.AdResponse.Renderable;
 import com.pubmatic.sdk.nativead.bean.PMAssetResponse;
 
 public final class NativeAdDescriptor extends AdDescriptor implements Renderable {

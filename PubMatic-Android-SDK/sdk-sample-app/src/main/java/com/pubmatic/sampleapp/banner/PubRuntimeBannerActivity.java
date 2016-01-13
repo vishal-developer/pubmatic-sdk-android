@@ -10,9 +10,10 @@ import android.widget.RelativeLayout.LayoutParams;
 
 import com.pubmatic.sampleapp.R;
 import com.pubmatic.sdk.banner.PMBannerAdView;
+import com.pubmatic.sdk.common.CommonConstants;
+import com.pubmatic.sdk.common.PMLogger;
 import com.pubmatic.sdk.common.pubmatic.PUBAdSize;
 import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest;
-import com.pubmatic.sdk.common.CommonDelegate;
 
 public class PubRuntimeBannerActivity extends Activity {
 
@@ -32,6 +33,8 @@ public class PubRuntimeBannerActivity extends Activity {
 		params.setLayoutDirection(RelativeLayout.ALIGN_PARENT_TOP);
 		layout.addView(banner, params);
 
+		PMLogger.setLogLevel(PMLogger.LogLevel.Debug);
+
 		PubMaticBannerAdRequest adRequest = PubMaticBannerAdRequest
 				.createPubMaticBannerAdRequest(PubRuntimeBannerActivity.this,
 											   "31400",
@@ -39,7 +42,6 @@ public class PubRuntimeBannerActivity extends Activity {
 											   "439662");
 		adRequest.setAdSize(PUBAdSize.PUBBANNER_SIZE_320x50);
 		banner.setUseInternalBrowser(true);
-		banner.setLogLevel(CommonDelegate.LogLevel.Debug);
 		banner.execute(adRequest);
 
 	}

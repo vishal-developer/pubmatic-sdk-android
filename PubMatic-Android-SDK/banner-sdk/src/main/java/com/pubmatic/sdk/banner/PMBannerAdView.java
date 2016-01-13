@@ -27,6 +27,8 @@
 package com.pubmatic.sdk.banner;
 
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.MessageDigest;
@@ -89,24 +91,23 @@ import com.pubmatic.sdk.banner.mraid.ExpandProperties;
 import com.pubmatic.sdk.banner.mraid.OrientationProperties;
 import com.pubmatic.sdk.banner.mraid.ResizeProperties;
 import com.pubmatic.sdk.banner.mraid.WebView;
+import com.pubmatic.sdk.banner.ui.ImageView;
 import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.AdResponse;
-import com.pubmatic.sdk.common.CommonDelegate.LogLevel;
-import com.pubmatic.sdk.common.CommonDelegate.LogListener;
+import com.pubmatic.sdk.common.CommonConstants;
+import com.pubmatic.sdk.common.PMLogger.LogLevel;
 import com.pubmatic.sdk.common.LocationDetector;
-import com.pubmatic.sdk.common.Renderable;
+import com.pubmatic.sdk.common.PMLogger;
+import com.pubmatic.sdk.common.RRFormatter;
 import com.pubmatic.sdk.common.network.HttpHandler;
 import com.pubmatic.sdk.common.network.HttpHandler.HttpRequestListener;
 import com.pubmatic.sdk.common.network.HttpRequest;
 import com.pubmatic.sdk.common.network.HttpResponse;
+import com.pubmatic.sdk.common.pubmatic.PubMaticConstants;
 import com.pubmatic.sdk.common.ui.BrowserDialog;
+import com.pubmatic.sdk.common.CommonConstants.CHANNEL;
 import com.pubmatic.sdk.common.ui.GifDecoder;
-import com.pubmatic.sdk.common.ui.ImageView;
-import com.pubmatic.sdk.common.utils.CommonConstants;
-import com.pubmatic.sdk.common.utils.CommonConstants.CHANNEL;
-import com.pubmatic.sdk.common.utils.PubUtils;
 
-import static com.pubmatic.sdk.common.CommonDelegate.LogLevel.*;
 
 @SuppressLint("NewApi")
 public class PMBannerAdView extends ViewGroup {
@@ -317,7 +318,6 @@ public class PMBannerAdView extends ViewGroup {
 
     private static final String TAG = PMBannerAdView.class.getSimpleName();
 
-    //private BannerAdRequest mAdRequest;
     private BannerAdController mAdController;
 
     final private int CloseAreaSizeDp = 50;
@@ -326,13 +326,13 @@ public class PMBannerAdView extends ViewGroup {
     // User agent used for all requests
     private String userAgent = null;
 
+    //No need to have location here. Can get directly from singleton.
     private Location location;
     // Configuration
     private int updateInterval = 0;
     private Map<String, String> adRequestDefaultParameters = new HashMap<String, String>();
 
     private boolean useInternalBrowser = false;
-    private LogLevel logLevel = Error;
     private PlacementType placementType = PlacementType.Inline;
 
     // Ad containers (render ad content)
@@ -376,6 +376,7 @@ public class PMBannerAdView extends ViewGroup {
     private boolean invokeTracking = false;
     private boolean mImpressionTrackerSent = false;
     private boolean mClickTrackerSent = false;
+    private boolean mRetrieveLocationInfo = true;
 
     // Internal browser
     private BrowserDialog browserDialog = null;
@@ -388,7 +389,6 @@ public class PMBannerAdView extends ViewGroup {
     private BannerAdViewDelegate.ActivityListener activityListener;
     private BannerAdViewDelegate.FeatureSupportHandler featureSupportHandler;
     private BannerAdViewDelegate.InternalBrowserListener internalBrowserListener;
-    private LogListener logListener;
     private BannerAdViewDelegate.RequestListener requestListener;
     private BannerAdViewDelegate.RichMediaListener richMediaListener;
 
@@ -420,8 +420,8 @@ public class PMBannerAdView extends ViewGroup {
         mAdController.setAdRequest(adRequest);
 
         //Start the location update if Publisher does not provides the location
-        if(adRequest.getLocation() == null) {
-            setLocationDetectionEnabled(true);
+        if(adRequest.getLocation() == null && mRetrieveLocationInfo) {
+            findLocation(true);
         }
     }
 
@@ -482,9 +482,6 @@ public class PMBannerAdView extends ViewGroup {
 
         String strValue = attrs.getAttributeValue(null,
                                                   CommonConstants.xml_layout_attribute_logLevel);
-        if (!TextUtils.isEmpty(strValue)) {
-            setLogLevel(valueOf(strValue));
-        }
 
         mAttributes = attrs;
         String channel = attrs.getAttributeValue(null,
@@ -565,7 +562,7 @@ public class PMBannerAdView extends ViewGroup {
             userAgent = getWebView().getSettings().getUserAgentString();
 
             if (TextUtils.isEmpty(userAgent)) {
-                userAgent = CommonConstants.USER_AGENT_VALUE;
+                userAgent = PubMaticConstants.USER_AGENT_VALUE;
             }
         }
     }
@@ -850,17 +847,7 @@ public class PMBannerAdView extends ViewGroup {
         return location;
     }
 
-    /**
-     * Enables or disable SDK location detection. If enabled with this method the most battery
-     * optimized settings are used. For more fine tuned control over location detection settings use
-     * enableLocationDetection(). This method is used to disable location detection for either
-     * method of enabling location detection.
-     * <p/>
-     * Permissions for coarse or fine location detection may be required.
-     *
-     * @param locationDetectionEnabled
-     */
-    public void setLocationDetectionEnabled(boolean locationDetectionEnabled) {
+    private void findLocation(boolean locationDetectionEnabled) {
         if (!locationDetectionEnabled) {
             if (locationManager != null && locationListener != null) {
                 try {
@@ -884,10 +871,23 @@ public class PMBannerAdView extends ViewGroup {
         criteria.setAltitudeRequired(false);
         criteria.setAccuracy(Criteria.ACCURACY_COARSE);
 
-        enableLocationDetection(BannerConstants.LOCATION_DETECTION_MINTIME,
-                                BannerConstants.LOCATION_DETECTION_MINDISTANCE,
+        enableLocationDetection(CommonConstants.LOCATION_DETECTION_MINTIME,
+                CommonConstants.LOCATION_DETECTION_MINDISTANCE,
                                 criteria,
                                 null);
+    }
+
+    /**
+     * Enables or disable SDK location detection. If enabled with this method the most battery
+     * optimized settings are used. This method is used to disable location detection for either
+     * method of enabling location detection.
+     * <p/>
+     * Permissions for coarse or fine location detection may be required.
+     *
+     * @param locationDetectionEnabled
+     */
+    public void setLocationDetectionEnabled(boolean locationDetectionEnabled) {
+        mRetrieveLocationInfo = locationDetectionEnabled;
     }
 
     /**
@@ -911,43 +911,6 @@ public class PMBannerAdView extends ViewGroup {
         }
 
         LocationDetector.getInstance(getContext()).addObserver(locationObserver);
-
-        /*locationManager = (LocationManager) PMBannerAdView.this.getContext().getSystemService(
-                Context.LOCATION_SERVICE);
-        if (locationManager != null) {
-            try {
-                if (provider == null) {
-                    List<String> providers = locationManager.getProviders(criteria, true);
-                    if ((providers != null) && (providers.size() > 0)) {
-                        provider = providers.get(0);
-                    }
-                }
-
-                if (provider != null) {
-                    locationListener = new LocationListener();
-                    locationManager.requestLocationUpdates(provider,
-                                                           minTime,
-                                                           minDistance,
-                                                           locationListener);
-                }
-            } catch (SecurityException ex) {
-                logEvent("Error requesting location updates.  Location permission is missing. Exception:" + ex, Error);
-            } catch (Exception ex) {
-                logEvent("Error requesting location updates.  Exception:" + ex, Error);
-            } finally {
-                try {
-                    if (locationManager != null && locationListener != null) {
-                        locationManager.removeUpdates(locationListener);
-                    }
-                }catch (SecurityException ex){
-                    // NOOP
-                }finally {
-                    locationManager = null;
-                    locationListener = null;
-                }
-
-            }
-        }*/
     }
 
     private Observer locationObserver = new Observer() {
@@ -960,23 +923,6 @@ public class PMBannerAdView extends ViewGroup {
         }
     };
 
-    /**
-     * Sets the log level of the instance. Logging is done through console logging.
-     *
-     * @param logLevel LogLevel
-     */
-    public void setLogLevel(LogLevel logLevel) {
-        this.logLevel = logLevel;
-    }
-
-    /**
-     * Returns the currently configured log level.
-     *
-     * @return currently configured LogLevel
-     */
-    public LogLevel getLogLevel() {
-        return logLevel;
-    }
 
     /**
      * Executes the Banner ad request.
@@ -1100,7 +1046,7 @@ public class PMBannerAdView extends ViewGroup {
         closeInternalBrowser();
         browserDialog = null;
 
-        setLocationDetectionEnabled(false);
+        findLocation(false);
         unregisterReceiver();
     }
 
@@ -1198,7 +1144,7 @@ public class PMBannerAdView extends ViewGroup {
 
         HttpRequest httpRequest = mAdController.getRRFormatter().formatRequest(adRequest);
 
-        logEvent("Ad request:" + httpRequest.getRequestUrl(), Debug);
+        PMLogger.logEvent("Ad request:" + httpRequest.getRequestUrl(), LogLevel.Debug);
 
         HttpHandler requestProcessor = new HttpHandler(networkListener, httpRequest);
         Background.getExecutor().execute(requestProcessor);
@@ -1226,14 +1172,14 @@ public class PMBannerAdView extends ViewGroup {
                     String errorMessage = adData.getErrorMessage();
 
                     if (exception != null) {
-                        logEvent("Ad request failed: " + exception, Error);
+                        PMLogger.logEvent("Ad request failed: " + exception, LogLevel.Error);
 
                     } else {
                         if (String.valueOf(404).equals(errorCode)) {
-                            logLevel = Debug;
+                            PMLogger.logEvent("Error response from server.  Error code: " + errorCode + ". Error message: " + errorMessage,
+                                    LogLevel.Error);
                         }
-                        logEvent("Error response from server.  Error code: " + errorCode + ". Error message: " + errorMessage,
-                                 Error);
+
                     }
 
                     if (requestListener != null) {
@@ -1352,7 +1298,7 @@ public class PMBannerAdView extends ViewGroup {
     }
 
     // background/main thread
-    private void renderAdDescriptor(final Renderable renderable) {
+    private void renderAdDescriptor(final AdResponse.Renderable renderable) {
         if (renderable == null) {
             throw new IllegalArgumentException("renderable is null");
         }
@@ -1419,8 +1365,8 @@ public class PMBannerAdView extends ViewGroup {
                                                                         thirdPartyDescriptor.getParams());
                         }
                     } catch (Exception ex) {
-                        logEvent("Error parsing third party content descriptor.  Exception:" + ex,
-                                 Error);
+                        PMLogger.logEvent("Error parsing third party content descriptor.  Exception:" + ex,
+                                LogLevel.Error);
                     }
 
                     return;
@@ -1429,7 +1375,7 @@ public class PMBannerAdView extends ViewGroup {
         }
 
         if (TextUtils.isEmpty(content)) {
-            logEvent("Ad descriptor missing ad content", Error);
+            PMLogger.logEvent("Ad descriptor missing ad content", LogLevel.Error);
 
             if (requestListener != null) {
                 requestListener.onFailedToReceiveAd(this, null);
@@ -1558,8 +1504,8 @@ public class PMBannerAdView extends ViewGroup {
                             new ImageRequest.Handler() {
                                 @Override
                                 public void imageFailed(ImageRequest request, Exception ex) {
-                                    logEvent("Image download failure.  Exception:" + ex,
-                                             Error);
+                                    PMLogger.logEvent("Image download failure.  Exception:" + ex,
+                                            LogLevel.Error);
 
                                     if (requestListener != null) {
                                         requestListener.onFailedToReceiveAd(PMBannerAdView.this,
@@ -1851,7 +1797,7 @@ public class PMBannerAdView extends ViewGroup {
                 if (intentAvailable(intent)) {
                     getContext().startActivity(intent);
                 } else {
-                    logEvent("Unable to start activity for browsing URL:" + url, Error);
+                    PMLogger.logEvent("Unable to start activity for browsing URL:" + url, LogLevel.Error);
                 }
             }
         });
@@ -2003,18 +1949,18 @@ public class PMBannerAdView extends ViewGroup {
 
         float defaultWidthPx = getWidth();
         float defaultHeightPx = getHeight();
-        int defaultWidthDp = PubUtils.pxToDp(defaultWidthPx);
-        int defaultHeightDp = PubUtils.pxToDp(defaultHeightPx);
+        int defaultWidthDp = BannerUtils.pxToDp(defaultWidthPx);
+        int defaultHeightDp = BannerUtils.pxToDp(defaultHeightPx);
 
         float currentWidthPx = webView.getWidth();
         float currentHeightPx = webView.getHeight();
-        int currentWidthDp = PubUtils.pxToDp(currentWidthPx);
-        int currentHeightDp = PubUtils.pxToDp(currentHeightPx);
+        int currentWidthDp = BannerUtils.pxToDp(currentWidthPx);
+        int currentHeightDp = BannerUtils.pxToDp(currentHeightPx);
 
         int[] containerScreenLocation = new int[2];
         getLocationOnScreen(containerScreenLocation);
-        int containerScreenX = PubUtils.pxToDp(containerScreenLocation[0]);
-        int containerScreenY = PubUtils.pxToDp(containerScreenLocation[1]);
+        int containerScreenX = BannerUtils.pxToDp(containerScreenLocation[0]);
+        int containerScreenY = BannerUtils.pxToDp(containerScreenLocation[1]);
 
         int[] webViewScreenLocation = new int[2];
         if ((state == State.Resized) && (mraidResizeLayout != null)) {
@@ -2024,13 +1970,13 @@ public class PMBannerAdView extends ViewGroup {
         } else {
             webView.getLocationOnScreen(webViewScreenLocation);
         }
-        int webViewScreenX = PubUtils.pxToDp(webViewScreenLocation[0]);
-        int webViewScreenY = PubUtils.pxToDp(webViewScreenLocation[1]);
+        int webViewScreenX = BannerUtils.pxToDp(webViewScreenLocation[0]);
+        int webViewScreenY = BannerUtils.pxToDp(webViewScreenLocation[1]);
 
-        int screenWidthDp = PubUtils.pxToDp(displayMetrics.widthPixels);
-        int screenHeightDp = PubUtils.pxToDp(displayMetrics.heightPixels);
-        int maxWidthDp = PubUtils.pxToDp(rootView.getWidth());
-        int maxHeightDp = PubUtils.pxToDp(rootView.getHeight());
+        int screenWidthDp = BannerUtils.pxToDp(displayMetrics.widthPixels);
+        int screenHeightDp = BannerUtils.pxToDp(displayMetrics.heightPixels);
+        int maxWidthDp = BannerUtils.pxToDp(rootView.getWidth());
+        int maxHeightDp = BannerUtils.pxToDp(rootView.getHeight());
 
         // Android fails at notifying on post-presentation so we'll use
         // the crystal ball and foresee what it should do.
@@ -2211,7 +2157,7 @@ public class PMBannerAdView extends ViewGroup {
                 // ((BitmapDrawable)
                 // closeButtonDrawable).setGravity(Gravity.CENTER);
             } catch (Exception ex) {
-                logEvent("Error loading built in close button.  Exception:" + ex, Error);
+                PMLogger.logEvent("Error loading built in close button.  Exception:" + ex, LogLevel.Error);
             }
         }
 
@@ -2295,8 +2241,8 @@ public class PMBannerAdView extends ViewGroup {
                 String failingUrl) {
             resetRichMediaAd();
 
-            logEvent("Error loading rich media ad content.  Error code:" + String.valueOf(errorCode) + " Description:" + description,
-                     Error);
+            PMLogger.logEvent("Error loading rich media ad content.  Error code:" + String.valueOf(errorCode) + " Description:" + description,
+                    LogLevel.Error);
 
             if (requestListener != null) {
                 requestListener.onFailedToReceiveAd(PMBannerAdView.this, null);
@@ -2587,13 +2533,13 @@ public class PMBannerAdView extends ViewGroup {
             }
 
             DisplayMetrics displayMetrics = Resources.getSystem().getDisplayMetrics();
-            int screenWidth = PubUtils.pxToDp(displayMetrics.widthPixels);
-            int screenHeight = PubUtils.pxToDp(displayMetrics.heightPixels);
+            int screenWidth = BannerUtils.pxToDp(displayMetrics.widthPixels);
+            int screenHeight = BannerUtils.pxToDp(displayMetrics.heightPixels);
 
             int[] currentScreenLocation = new int[2];
             getLocationOnScreen(currentScreenLocation);
-            int currentX = PubUtils.pxToDp(currentScreenLocation[0]);
-            int currentY = PubUtils.pxToDp(currentScreenLocation[1]);
+            int currentX = BannerUtils.pxToDp(currentScreenLocation[0]);
+            int currentY = BannerUtils.pxToDp(currentScreenLocation[1]);
 
             ResizeProperties resizeProperties = bridge.getResizeProperties();
             boolean allowOffscreen = resizeProperties.getAllowOffscreen();
@@ -2709,12 +2655,12 @@ public class PMBannerAdView extends ViewGroup {
             }
 
             // Convert to pixel values.
-            final int xPx = PubUtils.dpToPx(x);
-            final int yPx = PubUtils.dpToPx(y);
-            final int widthPx = PubUtils.dpToPx(width);
-            final int heightPx = PubUtils.dpToPx(height);
-            final int closeXPx = PubUtils.dpToPx(resultingCloseControlX);
-            final int closeYPx = PubUtils.dpToPx(resultingCloseControlY);
+            final int xPx = BannerUtils.dpToPx(x);
+            final int yPx = BannerUtils.dpToPx(y);
+            final int widthPx = BannerUtils.dpToPx(width);
+            final int heightPx = BannerUtils.dpToPx(height);
+            final int closeXPx = BannerUtils.dpToPx(resultingCloseControlX);
+            final int closeYPx = BannerUtils.dpToPx(resultingCloseControlY);
 
             runOnUiThread(new Runnable() {
                 public void run() {
@@ -2727,8 +2673,8 @@ public class PMBannerAdView extends ViewGroup {
                     webViewLayoutParams.setMargins(xPx, yPx, Integer.MIN_VALUE, Integer.MIN_VALUE);
 
                     RelativeLayout.LayoutParams closeControlLayoutParams = new RelativeLayout.LayoutParams(
-                            PubUtils.dpToPx(CloseAreaSizeDp),
-                            PubUtils.dpToPx(CloseAreaSizeDp));
+                            BannerUtils.dpToPx(CloseAreaSizeDp),
+                            BannerUtils.dpToPx(CloseAreaSizeDp));
                     closeControlLayoutParams.setMargins(closeXPx,
                                                         closeYPx,
                                                         Integer.MIN_VALUE,
@@ -2856,8 +2802,8 @@ public class PMBannerAdView extends ViewGroup {
                                 activityListener.onLeavingApplication(PMBannerAdView.this);
                             }
                         } else {
-                            logEvent("Unable to start activity for calendary edit.",
-                                     Error);
+                            PMLogger.logEvent("Unable to start activity for calendary edit.",
+                                    LogLevel.Error);
                         }
                     }
                 });
@@ -2895,9 +2841,9 @@ public class PMBannerAdView extends ViewGroup {
                                         bridge.sendErrorMessage("Network error connecting to url.",
                                                                 Consts.CommandStorePicture);
 
-                                        logEvent(
+                                        PMLogger.logEvent(
                                                 "Error obtaining photo request to save to camera roll.  Exception:" + ex,
-                                                Error);
+                                                LogLevel.Error);
                                     }
 
                                     @Override
@@ -2921,7 +2867,7 @@ public class PMBannerAdView extends ViewGroup {
                                                         bridge.sendErrorMessage(errorMessage,
                                                                                 Consts.CommandStorePicture);
 
-                                                        logEvent(errorMessage, Error);
+                                                        PMLogger.logEvent(errorMessage, LogLevel.Error);
                                                         return;
                                                     }
 
@@ -2934,8 +2880,8 @@ public class PMBannerAdView extends ViewGroup {
                                                     bridge.sendErrorMessage(errorMessage,
                                                                             Consts.CommandStorePicture);
 
-                                                    logEvent(errorMessage + " Exception:" + ex,
-                                                             Error);
+                                                    PMLogger.logEvent(errorMessage + " Exception:" + ex,
+                                                            LogLevel.Error);
                                                 }
                                             }
                                         });
@@ -2970,8 +2916,8 @@ public class PMBannerAdView extends ViewGroup {
             });
 
             RelativeLayout.LayoutParams closeAreaLayoutParams = new RelativeLayout.LayoutParams(
-                    PubUtils.dpToPx(CloseAreaSizeDp),
-                    PubUtils.dpToPx(CloseAreaSizeDp));
+                    BannerUtils.dpToPx(CloseAreaSizeDp),
+                    BannerUtils.dpToPx(CloseAreaSizeDp));
             closeAreaLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
             closeAreaLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
             closeArea = new RelativeLayout(getContext());
@@ -3102,7 +3048,7 @@ public class PMBannerAdView extends ViewGroup {
                         LayoutParams.MATCH_PARENT,
                         LayoutParams.MATCH_PARENT);
 
-                int marginPx = PubUtils.pxToDp(15);
+                int marginPx = BannerUtils.pxToDp(15);
                 layoutParams.setMargins(marginPx, marginPx, marginPx, marginPx);
 
                 ImageView imageView = new ImageView(getContext());
@@ -3126,8 +3072,8 @@ public class PMBannerAdView extends ViewGroup {
 
         @Override
         public void onLocationChanged(Location location) {
-            logEvent("LocationListener.onLocationChanged location:" + location.toString(),
-                     Debug);
+            PMLogger.logEvent("LocationListener.onLocationChanged location:" + location.toString(),
+                    PMLogger.LogLevel.Debug);
 
             String lat = String.valueOf(location.getLatitude());
             String lng = String.valueOf(location.getLongitude());
@@ -3142,18 +3088,18 @@ public class PMBannerAdView extends ViewGroup {
 
         @Override
         public void onProviderDisabled(String provider) {
-            logEvent("LocationListener.onProviderDisabled provider:" + provider, Debug);
+            PMLogger.logEvent("LocationListener.onProviderDisabled provider:" + provider, LogLevel.Debug);
         }
 
         @Override
         public void onProviderEnabled(String provider) {
-            logEvent("LocationListener.onProviderEnabled provider:" + provider, Debug);
+            PMLogger.logEvent("LocationListener.onProviderEnabled provider:" + provider, LogLevel.Debug);
         }
 
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras) {
-            logEvent("LocationListener.onStatusChanged provider:" + provider + " status:" + String.valueOf(
-                    status), Debug);
+            PMLogger.logEvent("LocationListener.onStatusChanged provider:" + provider + " status:" + String.valueOf(
+                    status), LogLevel.Debug);
 
             if (status == LocationProvider.AVAILABLE) {
                 return;
@@ -3165,13 +3111,6 @@ public class PMBannerAdView extends ViewGroup {
         }
     }
 
-    private void logEvent(String event, LogLevel eventLevel) {
-        if (eventLevel.ordinal() > logLevel.ordinal()) {
-            return;
-        }
-
-        System.out.println(eventLevel + ":" + event);
-    }
 
     private final Activity getActivity() {
         Activity activity = null;
@@ -3205,7 +3144,7 @@ public class PMBannerAdView extends ViewGroup {
                 try {
                     runnable.run();
                 } catch (Exception ex) {
-                    logEvent("Exception during runOnUiThread:" + ex, Error);
+                    PMLogger.logEvent("Exception during runOnUiThread:" + ex, LogLevel.Error);
                 }
             }
         };
@@ -3215,8 +3154,8 @@ public class PMBannerAdView extends ViewGroup {
             Activity activity = (Activity) ctx;
             activity.runOnUiThread(uiRunnable);
         } else {
-            logEvent("Context not instance of Activity, unable to run on UI thread.",
-                     Error);
+            PMLogger.logEvent("Context not instance of Activity, unable to run on UI thread.",
+                    LogLevel.Error);
         }
     }
 
@@ -3229,7 +3168,7 @@ public class PMBannerAdView extends ViewGroup {
                                                                    "dimen",
                                                                    "android");
             if (resourceId > 0) {
-                statusBarHeightDp = PubUtils.pxToDp(rootView.getResources()
+                statusBarHeightDp = BannerUtils.pxToDp(rootView.getResources()
                                                    .getDimensionPixelSize(resourceId));
             }
         }
@@ -3303,4 +3242,97 @@ public class PMBannerAdView extends ViewGroup {
             mraidBridge.setViewable(isViewable);
         }
     }
+    
+    //Ad Controller related
+    protected AdRequest 		mAdRequest 		= null;
+    protected RRFormatter mRRFormatter 	= null;
+
+
+    //TODO :: Need to verify this method
+    private void createDefaultAdRequest(AttributeSet attr) {
+
+        String adRequestName = null;
+        Class  className     = null;
+        Method m			 = null;
+        try {
+
+            switch (mChannel) {
+                case MOCEAN:
+                    adRequestName = "com.pubmatic.sdk.banner.mocean.MoceanBannerAdRequest";
+                    className = Class.forName(adRequestName);
+                    m = className.getMethod("createMoceanBannerAdRequest", Context.class, String.class);
+                    mAdRequest = (AdRequest)m.invoke(null, getContext(), null);
+                    //Call setAttributes()
+                    m = className.getMethod("setAttributes", AttributeSet.class);
+                    m.invoke(mAdRequest, attr);
+
+                    break;
+                case PUBMATIC:
+                    adRequestName = "com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest";
+                    className = Class.forName(adRequestName);
+                    m = className.getMethod("createPubMaticBannerAdRequest",
+                            Context.class, String.class, String.class, String.class);
+                    mAdRequest = (AdRequest)m.invoke(null, getContext(), null, null, null);
+                    //Call setAttributes()
+                    m = className.getMethod("setAttributes", AttributeSet.class);
+                    m.invoke(mAdRequest, attr);
+                    break;
+
+                default:
+                    break;
+            }
+
+            createRRFormatter();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (ClassCastException ex) {
+
+        }
+    }
+
+    public void setAdRequest(AdRequest adRequest) {
+
+        if (adRequest == null)
+            throw new IllegalArgumentException("AdRequest object is null");
+
+        mAdRequest = adRequest;
+        //Create RRFormater
+        createRRFormatter();
+    }
+
+    private void createRRFormatter() {
+        if(mAdRequest != null)
+        {
+            //Create RRFormater
+            String rrFormaterName = mAdRequest.getFormatter();
+
+            try {
+                Class className = Class.forName(rrFormaterName);
+                mRRFormatter = (RRFormatter) className.newInstance();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (ClassCastException ex) {
+
+            }
+        }
+    }
+
+    public RRFormatter getRRFormatter() {
+        return mRRFormatter;
+    }
+
+    public boolean checkMandatoryParams() {
+        return mAdRequest==null ? false : mAdRequest.checkMandatoryParams();
+    }
+
 }

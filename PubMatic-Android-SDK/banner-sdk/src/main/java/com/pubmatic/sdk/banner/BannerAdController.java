@@ -3,15 +3,14 @@ package com.pubmatic.sdk.banner;
 import android.content.Context;
 import android.util.AttributeSet;
 
-import com.pubmatic.sdk.common.AdController;
 import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.RRFormatter;
-import com.pubmatic.sdk.common.utils.CommonConstants.CHANNEL;
+import com.pubmatic.sdk.common.CommonConstants.CHANNEL;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class BannerAdController implements AdController {
+public class BannerAdController {
 
 	protected CHANNEL			mChannel;
 	protected Context 			mContext 		= null;
@@ -24,7 +23,6 @@ public class BannerAdController implements AdController {
 		mContext = cnt;
 		createDefaultAdRequest(attr);
 	}
-	@Override
 	public AdRequest getAdRequest() {
 		return mAdRequest;
 	}
@@ -77,7 +75,6 @@ public class BannerAdController implements AdController {
 		}
 	}
 
-	@Override
 	public void setAdRequest(AdRequest adRequest) {
 
 		if (adRequest == null)
@@ -109,17 +106,14 @@ public class BannerAdController implements AdController {
 		}
 	}
 
-	@Override
 	public RRFormatter getRRFormatter() {
 		return mRRFormatter;
 	}
 
-	@Override
 	public boolean checkMandatoryParams() {
 		return mAdRequest==null ? false : mAdRequest.checkMandatoryParams();
 	}
 
-	@Override
 	public void applyAttributeSet(AttributeSet attrs) {
 		// TODO Auto-generated method stub
 		

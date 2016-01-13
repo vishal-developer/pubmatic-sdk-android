@@ -27,15 +27,38 @@
 
 package com.pubmatic.sdk.nativead;
 
+import static com.pubmatic.sdk.common.CommonConstants.DEFAULTED_EXCREATIVES;
+import static com.pubmatic.sdk.common.CommonConstants.DEFAULTED_PUBMATIC_EXFEEDS;
+import static com.pubmatic.sdk.common.CommonConstants.NATIVE_IMAGE_H;
+import static com.pubmatic.sdk.common.CommonConstants.NATIVE_IMAGE_W;
+import static com.pubmatic.sdk.common.CommonConstants.REQUESTPARAM_ANDROID_ID_SHA1;
+import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_DIRECT_STRING;
+import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_MEDIATION;
+import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_URL;
+import static com.pubmatic.sdk.common.CommonConstants.TELEPHONY_MCC;
+import static com.pubmatic.sdk.common.CommonConstants.TELEPHONY_MNC;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.security.MessageDigest;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Set;
+
+import org.json.JSONObject;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
-import android.location.LocationProvider;
 import android.net.Uri;
-import android.os.Bundle;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
@@ -46,44 +69,25 @@ import android.webkit.WebView;
 
 import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.AdResponse;
-import com.pubmatic.sdk.common.CommonDelegate.LogLevel;
-import com.pubmatic.sdk.common.CommonDelegate.LogListener;
-import com.pubmatic.sdk.common.Renderable;
+import com.pubmatic.sdk.common.AdResponse.Renderable;
+import com.pubmatic.sdk.common.CommonConstants;
+import com.pubmatic.sdk.common.CommonConstants.CHANNEL;
+import com.pubmatic.sdk.common.PMLogger;
+import com.pubmatic.sdk.common.PMLogger.LogLevel;
+import com.pubmatic.sdk.common.PMLogger.LogListener;
+import com.pubmatic.sdk.common.CommonConstants.MediationNetwork;
+import com.pubmatic.sdk.common.LocationDetector;
+import com.pubmatic.sdk.common.RRFormatter;
 import com.pubmatic.sdk.common.network.HttpHandler;
 import com.pubmatic.sdk.common.network.HttpHandler.HttpRequestListener;
 import com.pubmatic.sdk.common.network.HttpRequest;
 import com.pubmatic.sdk.common.network.HttpResponse;
 import com.pubmatic.sdk.common.ui.BrowserDialog;
-import com.pubmatic.sdk.common.utils.CommonConstants.CHANNEL;
-import com.pubmatic.sdk.nativead.NativeConstants.MediationNetwork;
 import com.pubmatic.sdk.nativead.bean.PMAssetRequest;
 import com.pubmatic.sdk.nativead.bean.PMAssetResponse;
 import com.pubmatic.sdk.nativead.bean.PMDataAssetRequest;
 import com.pubmatic.sdk.nativead.bean.PMImageAssetRequest;
 import com.pubmatic.sdk.nativead.bean.PMTitleAssetRequest;
-
-import org.json.JSONObject;
-
-import java.security.MessageDigest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static com.pubmatic.sdk.nativead.NativeConstants.DEFAULTED_EXCREATIVES;
-import static com.pubmatic.sdk.nativead.NativeConstants.DEFAULTED_PUBMATIC_EXFEEDS;
-import static com.pubmatic.sdk.common.utils.CommonConstants.NATIVE_IMAGE_H;
-import static com.pubmatic.sdk.common.utils.CommonConstants.NATIVE_IMAGE_W;
-import static com.pubmatic.sdk.common.utils.CommonConstants.REQUESTPARAM_ANDROID_ID_SHA1;
-import static com.pubmatic.sdk.common.utils.CommonConstants.REQUESTPARAM_LATITUDE;
-import static com.pubmatic.sdk.common.utils.CommonConstants.REQUESTPARAM_LONGITUDE;
-import static com.pubmatic.sdk.common.utils.CommonConstants.RESPONSE_DIRECT_STRING;
-import static com.pubmatic.sdk.common.utils.CommonConstants.RESPONSE_MEDIATION;
-import static com.pubmatic.sdk.common.utils.CommonConstants.RESPONSE_URL;
-import static com.pubmatic.sdk.common.utils.CommonConstants.TELEPHONY_MCC;
-import static com.pubmatic.sdk.common.utils.CommonConstants.TELEPHONY_MNC;
 
 /**
  * Main class used for requesting native ads. <br> Refer Sample application for example of
@@ -144,8 +148,6 @@ public final class PMNativeAd {
     private boolean mClickTrackerSent = false;
     private NativeRequestListener mListener = null;
     private String mUserAgent = null;
-    private LogListener mLogListener = null;
-    private LogLevel mLogLevel = LogLevel.None;
     private boolean test = false;
     private final HashMap<String, String> mAdRequestParameters;
     private List<PMAssetRequest> mRequestedNativeAssets;
@@ -156,6 +158,10 @@ public final class PMNativeAd {
     // Android Device ID androidaid
     private boolean isAndroidaidEnabled;
 
+    //Controller related objects
+	protected AdRequest 	mAdRequest 		= null;
+	protected RRFormatter 		mRRFormatter 	= null;
+	
     /**
      * If false, denotes that SDK should handle the third party request with the help of adapter. If
      * true, SDK should give the control back to publisher to handle third party request.
@@ -163,14 +169,13 @@ public final class PMNativeAd {
     private boolean mOverrideAdapter = true;
 
     // Location support
-    private LocationManager locationManager = null;
-    private LocationListener locationListener = null;
+    private Location location;
+    private boolean mRetrieveLocationInfo = true;
 
-    private AdRequest mAdRequest = null;
-    private NativeAdController mAdController;
+    //private NativeAdController mAdController;
     private CHANNEL mChannel;
 
-    public void setAdrequest(NativeAdRequest adRequest) {
+    public void setAdrequest(AdRequest adRequest) {
         if (adRequest == null) {
             throw new IllegalArgumentException("AdRequest object is null");
         }
@@ -180,8 +185,12 @@ public final class PMNativeAd {
         // and hence the controller. No need for null check.
         // mAdRequest = adRequest;
         setChannel(adRequest.getChannel());
-        mAdController.setAdRequest(adRequest);
-        TextUtils.isEmpty("");
+        setAdRequest(adRequest);
+        
+        //Start the location update if Publisher does not provides the location
+        if(adRequest.getLocation() == null && mRetrieveLocationInfo) {
+            findLocation(true);
+        }
 
     }
 
@@ -204,13 +213,13 @@ public final class PMNativeAd {
     }
 
     protected void initController(CHANNEL channel) {
-        if (mAdController == null) {
-            mAdController = new NativeAdController(channel, mContext);
-        }
+    	mChannel = channel;
+		createDefaultAdRequest();
     }
 
     private boolean checkForMandatoryParams() {
-        return mAdController.checkMandatoryParams();
+    	return (mAdRequest!=null) ?
+         mAdRequest.checkMandatoryParams() : false;
     }
 
     /**
@@ -422,7 +431,7 @@ public final class PMNativeAd {
     /**
      * @param adrequest
      */
-    public void execute(NativeAdRequest adrequest) {
+    public void execute(AdRequest adrequest) {
         setAdrequest(adrequest);
         update();
     }
@@ -440,7 +449,7 @@ public final class PMNativeAd {
 			 * validateAssetRequest().
 			 */
             ex.printStackTrace();
-            logEvent("ERROR: Native asset validation failed. Ad requested interrupted.",
+            PMLogger.logEvent("ERROR: Native asset validation failed. Ad requested interrupted.",
                      LogLevel.Error);
         }
 
@@ -505,7 +514,7 @@ public final class PMNativeAd {
                 args.put(TELEPHONY_MNC, String.valueOf(mnc));
             }
         } catch (Exception ex) {
-            logEvent("Unable to obtain mcc and mnc. Exception:" + ex, LogLevel.Debug);
+            PMLogger.logEvent("Unable to obtain mcc and mnc. Exception:" + ex, LogLevel.Debug);
         }
         // Add Device ID
         if (isAndoridaidEnabled()) {
@@ -513,14 +522,13 @@ public final class PMNativeAd {
         }
 
         // Make a fresh adRequest
-        NativeAdRequest adRequest = (NativeAdRequest) mAdController.getAdRequest();
-        adRequest.setUserAgent(getUserAgent());
+        mAdRequest.setUserAgent(getUserAgent());
 
-        adRequest.createRequest(mContext);
+        mAdRequest.createRequest(mContext);
 
-        HttpRequest httpRequest = mAdController.getRRFormatter().formatRequest(adRequest);
+        HttpRequest httpRequest = mRRFormatter.formatRequest(mAdRequest);
 
-        logEvent("Ad request:" + httpRequest.getRequestUrl(), LogLevel.Debug);
+        PMLogger.logEvent("Ad request:" + httpRequest.getRequestUrl(), LogLevel.Debug);
 
         HttpHandler requestProcessor = new HttpHandler(networkListener, httpRequest);
         Background.getExecutor().execute(requestProcessor);
@@ -599,24 +607,24 @@ public final class PMNativeAd {
                             mMediationData.setMediationAdId(mNativeAdDescriptor.getAdUnitId());
                         }
 
-                        fireCallback(CallbackType.ThirdPartyReceived, null, thirdPartyDescriptor);
+                        fireCallback(THIRDPARTY_RECEIVED, null, thirdPartyDescriptor);
                     } else {
-                        logEvent(
+                        PMLogger.logEvent(
                                 "Error parsing third party content descriptor. No Inbuilt adapter available.",
                                 LogLevel.Error);
                     }
                 } catch (Exception ex) {
                     ex.printStackTrace();
-                    logEvent("Error parsing third party content descriptor.  Exception:" + ex,
+                    PMLogger.logEvent("Error parsing third party content descriptor.  Exception:" + ex,
                              LogLevel.Error);
                 }
             } else {
                 // If it is the native response, then pass the native response
                 // Set all the properties for native ad
-                fireCallback(CallbackType.NativeReceived, null, null);
+                fireCallback(NATIVEAD_RECEIVED, null, null);
             } // if (mNativeAdDescriptor.isTypeMediation()) ends
         } else {
-            fireCallback(CallbackType.NativeFailed,
+            fireCallback(NATIVEAD_FAILED,
                          new Exception("Incorrect response received"),
                          null);
         }
@@ -628,10 +636,9 @@ public final class PMNativeAd {
         public void onRequestComplete(HttpResponse response, String requestURL) {
 
             if (response != null) {
-                NativeAdRequest adRequest = (NativeAdRequest) mAdController.getAdRequest();
 
-                AdResponse adData = mAdController.getRRFormatter().formatResponse(response);
-                if (adData.getRequest() != adRequest) {
+                AdResponse adData = mRRFormatter.formatResponse(response);
+                if (adData.getRequest() != mAdRequest) {
                     return;
                 }
 
@@ -643,14 +650,14 @@ public final class PMNativeAd {
                     String errorMessage = adData.getErrorMessage();
 
                     if (exception != null) {
-                        logEvent("Ad request failed: " + exception, LogLevel.Error);
+                        PMLogger.logEvent("Ad request failed: " + exception, LogLevel.Error);
 
                     } else {
                         if (String.valueOf(404).equals(errorCode)) {
-                            mLogLevel = LogLevel.Debug;
+
+                            PMLogger.logEvent("Error response from server.  Error code: " + errorCode + ". Error message: " + errorMessage,
+                                    LogLevel.Error);
                         }
-                        logEvent("Error response from server.  Error code: " + errorCode + ". Error message: " + errorMessage,
-                                 LogLevel.Error);
                     }
 
                     if (mListener != null) {
@@ -671,7 +678,7 @@ public final class PMNativeAd {
                 return;
             }
 
-            fireCallback(CallbackType.NativeFailed,
+            fireCallback(NATIVEAD_FAILED,
                          new Exception(errorType + ", " + errorCode),
                          null);
 
@@ -680,7 +687,7 @@ public final class PMNativeAd {
                 logLevel = LogLevel.Debug;
             }
 
-            logEvent("Error response from server.  Error code: " + errorCode + ". Error type: " + errorType,
+            PMLogger.logEvent("Error response from server.  Error code: " + errorCode + ". Error type: " + errorType,
                      logLevel);
         }
 
@@ -721,7 +728,7 @@ public final class PMNativeAd {
 			 * tracker.
 			 */
             if (!mImpressionTrackerSent) {
-                sendImpressions(TrackerType.IMPRESSION_TRACKER);
+                sendImpressions(IMPRESSION_TRACKER);
                 mImpressionTrackerSent = true;
             }
 
@@ -743,7 +750,7 @@ public final class PMNativeAd {
                         adClicked();
                         openClickUrlInBrowser();
 
-                        fireCallback(CallbackType.NativeAdClicked, null, null);
+                        fireCallback(NATIVEAD_CLICKED, null, null);
                     }
                 });
             }
@@ -801,48 +808,11 @@ public final class PMNativeAd {
         internalUpdate(true);
     }
 
-    /**
-     * Determines if location detection is enabled. If enabled, the SDK will use the location
-     * services of the device to determine the device's location ad add ad request parameters
-     * (lat/long) to the ad request. Location detection can be enabled with
-     * setLocationDetectionEnabled() or enableLocationDetection().
-     *
-     * @return true if location detection is enabled, false if not
-     */
-    public boolean isLocationDetectionEnabled() {
-        if (locationManager != null) {
-            return true;
-        }
-
-        return false;
+    public Location getLocation() {
+        return location;
     }
 
-    /**
-     * Enables or disable SDK location detection. If enabled with this method the most battery
-     * optimized settings are used. For more fine tuned control over location detection settings use
-     * enableLocationDetection(). This method is used to disable location detection for either
-     * method of enabling location detection.
-     * <p/>
-     * Permissions for coarse or fine location detection may be required.
-     *
-     * @param locationDetectionEnabled
-     */
-    public void setLocationDetectionEnabled(boolean locationDetectionEnabled) {
-        if (!locationDetectionEnabled) {
-            if (locationManager != null) {
-                try {
-                    locationManager.removeUpdates(locationListener);
-                } catch (SecurityException ex) {
-                    // NOOP
-                } finally {
-                    locationManager = null;
-                    locationListener = null;
-                }
-
-            }
-
-            return;
-        }
+    private void findLocation(boolean locationDetectionEnabled) {
 
         Criteria criteria = new Criteria();
         criteria.setCostAllowed(false);
@@ -853,10 +823,23 @@ public final class PMNativeAd {
         criteria.setAltitudeRequired(false);
         criteria.setAccuracy(Criteria.ACCURACY_COARSE);
 
-        enableLocationDetection(NativeConstants.LOCATION_DETECTION_MINTIME,
-                                NativeConstants.LOCATION_DETECTION_MINDISTANCE,
+        enableLocationDetection(CommonConstants.LOCATION_DETECTION_MINTIME,
+        		CommonConstants.LOCATION_DETECTION_MINDISTANCE,
                                 criteria,
                                 null);
+    }
+
+    /**
+     * Enables or disable SDK location detection. If enabled with this method the most battery
+     * optimized settings are used. This method is used to disable location detection for either
+     * method of enabling location detection.
+     * <p/>
+     * Permissions for coarse or fine location detection may be required.
+     *
+     * @param locationDetectionEnabled
+     */
+    public void setLocationDetectionEnabled(boolean locationDetectionEnabled) {
+        mRetrieveLocationInfo = locationDetectionEnabled;
     }
 
     /**
@@ -875,47 +858,23 @@ public final class PMNativeAd {
             float minDistance,
             Criteria criteria,
             String provider) {
-        if ((provider == null) && (criteria == null)) {
-            throw new IllegalArgumentException("Criteria or Provider required");
-        }
+    	 if ((provider == null) && (criteria == null)) {
+             throw new IllegalArgumentException("criteria or provider required");
+         }
 
-        locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
-        if (locationManager != null) {
-            try {
-                if (provider == null) {
-                    List<String> providers = locationManager.getProviders(criteria, true);
-                    if ((providers != null) && (providers.size() > 0)) {
-                        provider = providers.get(0);
-                    }
-                }
+         LocationDetector.getInstance(mContext).addObserver(locationObserver);
 
-                if (provider != null) {
-                    locationListener = new LocationListener();
-                    locationManager.requestLocationUpdates(provider,
-                                                           minTime,
-                                                           minDistance,
-                                                           locationListener);
-                }
-            } catch (SecurityException ex) {
-                logEvent(
-                        "Error requesting location updates.  Location permission missing. Exception:" + ex,
-                        LogLevel.Error);
-            } catch (Exception ex) {
-                logEvent("Error requesting location updates.  Exception:" + ex, LogLevel.Error);
-            } finally {
-                try {
-                    if (locationManager != null && locationListener != null) {
-                        locationManager.removeUpdates(locationListener);
-                    }
-                } catch (SecurityException ex) {
-                    // NOOP
-                }
-                locationManager = null;
-                locationListener = null;
-            }
-        }
     }
 
+    private Observer locationObserver = new Observer() {
+        @Override
+        public void update(Observable observable, Object data) {
+
+            if(data instanceof Location) {
+                location = (Location) data;
+            }
+        }
+    };
     public void reset() {
 
         mNativeAdDescriptor = null;
@@ -1020,7 +979,7 @@ public final class PMNativeAd {
             mUserAgent = webView.getSettings().getUserAgentString();
 
             if (TextUtils.isEmpty(mUserAgent)) {
-                mUserAgent = NativeConstants.USER_AGENT;
+                mUserAgent = CommonConstants.DEFAULT_USER_AGENT;
             }
 
             webView = null;
@@ -1036,17 +995,6 @@ public final class PMNativeAd {
         return mUserAgent;
     }
 
-    private void logEvent(String event, LogLevel eventLevel) {
-        if (eventLevel.ordinal() > mLogLevel.ordinal()) {
-            return;
-        }
-
-        if (mLogListener != null) {
-            if (mLogListener.onLogEvent(null, event, eventLevel)) {
-                return;
-            }
-        }
-    }
 
     /**
      * Call this method whenever a client side thirdparty response is received and user have
@@ -1055,7 +1003,7 @@ public final class PMNativeAd {
      */
     public void sendImpression() {
         if (!mThirdPartyImpTrackerSent && mNativeAdDescriptor != null && mNativeAdDescriptor.isTypeMediation()) {
-            sendImpressions(TrackerType.IMPRESSION_TRACKER);
+            sendImpressions(IMPRESSION_TRACKER);
             mThirdPartyImpTrackerSent = true;
         }
     }
@@ -1066,21 +1014,21 @@ public final class PMNativeAd {
      */
     public void sendClickTracker() {
         if (!mThirdPartyClickTrackerSent && mNativeAdDescriptor != null && mNativeAdDescriptor.isTypeMediation()) {
-            sendImpressions(TrackerType.CLICK_TRACKER);
+            sendImpressions(CLICK_TRACKER);
             mThirdPartyClickTrackerSent = true;
         }
     }
 
-    private void sendImpressions(TrackerType trackerType) {
+    private void sendImpressions(final int trackerType) {
         if (mNativeAdDescriptor != null) {
             switch (trackerType) {
                 case IMPRESSION_TRACKER:
-                    AdTracking.invokeTrackingUrl(NativeConstants.NETWORK_TIMEOUT_SECONDS,
+                    AdTracking.invokeTrackingUrl(CommonConstants.NETWORK_TIMEOUT_SECONDS,
                                                  mNativeAdDescriptor.getNativeAdImpressionTrackers(),
                                                  mUserAgent);
                     break;
                 case CLICK_TRACKER:
-                    AdTracking.invokeTrackingUrl(NativeConstants.NETWORK_TIMEOUT_SECONDS,
+                    AdTracking.invokeTrackingUrl(CommonConstants.NETWORK_TIMEOUT_SECONDS,
                                                  mNativeAdDescriptor.getNativeAdClickTrackers(),
                                                  mUserAgent);
                     break;
@@ -1090,7 +1038,7 @@ public final class PMNativeAd {
 
     private void adClicked() {
         if (!mClickTrackerSent) {
-            sendImpressions(TrackerType.CLICK_TRACKER);
+            sendImpressions(CLICK_TRACKER);
 
             mClickTrackerSent = true;
         }
@@ -1165,45 +1113,47 @@ public final class PMNativeAd {
         }
     }
 
-    private void fireCallback(CallbackType callbackType,
+    private void fireCallback(int callbackType,
             Exception ex,
             ThirdPartyDescriptor thirdPartyDescriptor) {
         // Check if listener is set.
         if (mListener != null) {
 
             switch (callbackType) {
-                case NativeReceived:
+                case NATIVEAD_RECEIVED:
                     mListener.onNativeAdReceived(this);
                     break;
-                case NativeFailed:
+                case NATIVEAD_FAILED:
                     mListener.onNativeAdFailed(this, ex);
                     break;
-                case ThirdPartyReceived:
+                case THIRDPARTY_RECEIVED:
                     if (thirdPartyDescriptor != null) {
                         mListener.onReceivedThirdPartyRequest(this,
                                                               thirdPartyDescriptor.getProperties(),
                                                               thirdPartyDescriptor.getParams());
                     } else {
-                        fireCallback(CallbackType.NativeFailed, new Exception(
+                        fireCallback(NATIVEAD_FAILED, new Exception(
                                 "Third party response is invalid"), thirdPartyDescriptor);
                     }
                     break;
-                case NativeAdClicked:
+                case NATIVEAD_CLICKED:
                     mListener.onNativeAdClicked(this);
                     break;
             }
         }
     }
 
-    private enum CallbackType {
-        NativeReceived, NativeFailed, ThirdPartyReceived, NativeAdClicked;
-    }
-
-    // constants and listeners
-    private enum TrackerType {
-        IMPRESSION_TRACKER, CLICK_TRACKER;
-    }
-
+//    private enum CallbackType {
+//        NativeReceived, NativeFailed, ThirdPartyReceived, NativeAdClicked;
+//    }
+//  private enum TrackerType {
+//  //IMPRESSION_TRACKER, CLICK_TRACKER;
+//	}
+ // constants and listeners
+    private final int  NATIVEAD_RECEIVED = 10001, NATIVEAD_FAILED = 10002, THIRDPARTY_RECEIVED = 10003, NATIVEAD_CLICKED = 10004;
+    
+    private final int  IMPRESSION_TRACKER = 20001, CLICK_TRACKER = 2002;
+    
     public static class Image {
 
         public Image(String url) {
@@ -1253,44 +1203,8 @@ public final class PMNativeAd {
         }
     }
 
-    private class LocationListener implements android.location.LocationListener {
-        @Override
-        public void onLocationChanged(Location location) {
-            logEvent("LocationListener.onLocationChanged location:" + location.toString(),
-                     LogLevel.Debug);
 
-            String lat = String.valueOf(location.getLatitude());
-            String lng = String.valueOf(location.getLongitude());
-
-            mAdRequestParameters.put(REQUESTPARAM_LATITUDE, lat);
-            mAdRequestParameters.put(REQUESTPARAM_LONGITUDE, lng);
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-            logEvent("LocationListener.onProviderDisabled provider:" + provider, LogLevel.Debug);
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-            logEvent("LocationListener.onProviderEnabled provider:" + provider, LogLevel.Debug);
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-            logEvent("LocationListener.onStatusChanged provider:" + provider + " status:" + String.valueOf(
-                    status), LogLevel.Debug);
-
-            if (status == LocationProvider.AVAILABLE) {
-                return;
-            }
-
-            mAdRequestParameters.remove(REQUESTPARAM_LATITUDE);
-            mAdRequestParameters.remove(REQUESTPARAM_LONGITUDE);
-        }
-    }
-
-    private static String getUdidFromContext(Context context) {
+    private String getUdidFromContext(Context context) {
         String deviceId = Settings.Secure.getString(context.getContentResolver(),
                                                     Settings.Secure.ANDROID_ID);
         deviceId = (deviceId == null) ? "" : sha1(deviceId);
@@ -1299,7 +1213,7 @@ public final class PMNativeAd {
     }
 
     @SuppressLint("DefaultLocale")
-    public static String sha1(String string) {
+    private String sha1(String string) {
         StringBuilder stringBuilder = new StringBuilder();
 
         try {
@@ -1317,4 +1231,94 @@ public final class PMNativeAd {
             return "";
         }
     }
+    
+    //------------ Controller related code --------------
+
+	//TODO :: Need to verify this method
+	private void createDefaultAdRequest() {
+
+		String adRequestName = null;
+		Class<?>  className     = null;
+		Method m			 = null;
+		try {
+			
+
+			switch (mChannel) {
+				case MOCEAN:
+					adRequestName = "com.pubmatic.sdk.nativead.mocean.MoceanNativeAdRequest";
+					className = Class.forName(adRequestName);
+					m = className.getMethod("createMoceanNativeAdRequest", Context.class, String.class);
+					mAdRequest = (AdRequest)m.invoke(null, mContext, null);
+					break;
+				case PUBMATIC:
+					adRequestName = "com.pubmatic.sdk.nativead.pubmatic.PubMaticNativeAdRequest";
+					className = Class.forName(adRequestName);
+					m = className.getMethod("createPubMaticNativeAdRequest", 
+							Context.class, String.class, String.class, String.class);
+					mAdRequest = (AdRequest)m.invoke(null, mContext, null, null, null);
+					break;
+		
+				default:
+					break;
+			}
+			
+			createRRFormatter();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (ClassCastException ex) {
+			
+		}
+	}
+	
+	public void setAdRequest(AdRequest adRequest) {
+		
+		if (adRequest == null)
+			throw new IllegalArgumentException("AdRequest object is null");
+
+        adRequest.copyRequestParams(mAdRequest);
+        mAdRequest = adRequest;
+
+        //Need to call copy parameters
+        //if(mAdRequest!=null)
+        //   mAdRequest.copyRequestParams();
+
+        /*
+		if (adRequest instanceof NativeAdRequest) {
+			((NativeAdRequest)adRequest).copyRequestParams(mAdRequest);
+			mAdRequest = (NativeAdRequest)adRequest;
+		} else
+			throw new IllegalStateException(
+					"AdRequest and channel type do not match.");
+		*/
+		//Create RRFormater
+		createRRFormatter();
+	}
+
+	private void createRRFormatter() {
+		if(mAdRequest != null)
+		{
+			//Create RRFormater
+			String rrFormaterName = mAdRequest.getFormatter();
+			
+			try {
+				Class<?> className = Class.forName(rrFormaterName);
+				mRRFormatter = (RRFormatter) className.newInstance();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (ClassCastException ex) {
+				
+			}
+		}
+	}
+    //---------------------------------------------------
 }

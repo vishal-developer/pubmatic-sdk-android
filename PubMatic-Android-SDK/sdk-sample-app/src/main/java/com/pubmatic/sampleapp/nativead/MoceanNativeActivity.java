@@ -11,7 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.pubmatic.sampleapp.R;
-import com.pubmatic.sdk.common.CommonDelegate;
+import com.pubmatic.sdk.common.PMLogger;
 import com.pubmatic.sdk.nativead.MediationData;
 import com.pubmatic.sdk.nativead.PMNativeAd;
 import com.pubmatic.sdk.nativead.bean.PMAssetRequest;
@@ -313,11 +313,11 @@ public class MoceanNativeActivity extends Activity {
 		}
 	}
 
-	private class LogEventListner implements CommonDelegate.LogListener {
+	private class LogEventListner implements PMLogger.LogListener {
 
 		@Override
 		public boolean onLogEvent(View nativeAd, String eventMessage,
-				CommonDelegate.LogLevel logLevel) {
+				PMLogger.LogLevel logLevel) {
 			Log.i(LOG_TAG, eventMessage);
 			return false;
 		}

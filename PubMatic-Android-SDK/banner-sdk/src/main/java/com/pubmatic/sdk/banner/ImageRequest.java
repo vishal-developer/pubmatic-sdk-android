@@ -26,7 +26,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import com.pubmatic.sdk.common.ui.GifDecoder;
-import com.pubmatic.sdk.common.utils.CommonConstants;
+import com.pubmatic.sdk.common.CommonConstants;
 
 public class ImageRequest {
 	public static ImageRequest create(int timeout, String url,

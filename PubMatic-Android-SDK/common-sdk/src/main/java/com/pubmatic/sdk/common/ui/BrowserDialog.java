@@ -27,7 +27,11 @@
 
 package com.pubmatic.sdk.common.ui;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -35,6 +39,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.http.SslError;
+import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -44,13 +49,11 @@ import android.webkit.SslErrorHandler;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-
-import java.net.URI;
-import java.net.URISyntaxException;
 
 public class BrowserDialog extends Dialog {
     static private final int ActionBarHeightDp = 40;
@@ -62,7 +65,8 @@ public class BrowserDialog extends Dialog {
     private android.webkit.WebView webView = null;
     RelativeLayout mContentView;
 
-    @SuppressWarnings("ResourceType")
+    @SuppressWarnings("deprecation")
+	@TargetApi(23) 
     @SuppressLint("ClickableViewAccessibility")
     public BrowserDialog(Context context, String url, Handler handler) {
         super(context, android.R.style.Theme_Black_NoTitleBar);
@@ -103,8 +107,13 @@ public class BrowserDialog extends Dialog {
         imageButton.setImageDrawable(new BitmapDrawable(resources,
                                                         BrowserDialog.class.getResourceAsStream(
                                                                 "/ic_action_cancel.png")));
-        imageButton.setBackgroundColor(getContext().getResources()
+        if(Build.VERSION.SDK_INT >= 23)
+        	imageButton.setBackgroundColor(getContext().getResources()
+                    .getColor(android.R.color.background_dark, getContext().getTheme()));
+        else
+        	imageButton.setBackgroundColor(getContext().getResources()
                                                    .getColor(android.R.color.background_dark));
+        
         imageButton.setOnTouchListener(mButtonTouchListener);
         imageButton.setOnClickListener(new Button.OnClickListener() {
             @Override
@@ -210,6 +219,7 @@ public class BrowserDialog extends Dialog {
                 case MotionEvent.ACTION_DOWN:
                     v.setBackgroundColor(getContext().getResources()
                                                      .getColor(android.R.color.background_light));
+                    
                     break;
                 default:
                     v.setBackgroundColor(getContext().getResources()
