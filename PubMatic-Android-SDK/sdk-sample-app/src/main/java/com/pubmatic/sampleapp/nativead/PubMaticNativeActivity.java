@@ -316,11 +316,10 @@ public class PubMaticNativeActivity extends Activity {
 
 	private class LogEventListner implements PMLogger.LogListener {
 
+
 		@Override
-		public boolean onLogEvent(View nativeAd, String eventMessage,
-				PMLogger.LogLevel logLevel) {
-			Log.i(LOG_TAG, eventMessage);
-			return false;
+		public void onLogEvent(String event, PMLogger.LogLevel logLevel) {
+			Log.i(LOG_TAG, event);
 		}
 	}
 }

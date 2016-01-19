@@ -116,10 +116,6 @@ public class PubMaticBannerAdRequest extends PubMaticAdRequest {
 		return !TextUtils.isEmpty(mAdId) && !TextUtils.isEmpty(mSiteId) && !TextUtils.isEmpty(mPubId);
 	}
 
-	public void setCustomParams(Map<String, List<String>> customParams) {
-		mCustomParams = customParams;
-	}
-
 	@Override
 	public String getFormatter() {
 		return "com.pubmatic.sdk.banner.pubmatic.PubMaticBannerRRFormatter";

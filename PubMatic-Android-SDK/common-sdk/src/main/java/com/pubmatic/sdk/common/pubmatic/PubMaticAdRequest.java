@@ -64,6 +64,7 @@ public abstract class PubMaticAdRequest extends AdRequest {
     @Override
     protected void setupPostData() {
 
+        super.setupPostData();
         putPostData(PubMaticConstants.PUB_ID_PARAM, mPubId);
         putPostData(PubMaticConstants.SITE_ID_PARAM, String.valueOf(this.mSiteId));
         putPostData(PubMaticConstants.AD_ID_PARAM, String.valueOf(this.mAdId));
@@ -285,11 +286,6 @@ public abstract class PubMaticAdRequest extends AdRequest {
         } catch (Exception e) {
 
         }
-    }
-
-    @Override
-    public void addCustomParams(Map<String, List<String>> customParams) {
-
     }
 
     @Override

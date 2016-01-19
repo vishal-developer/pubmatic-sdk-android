@@ -79,6 +79,19 @@ public class MoceanNativeActivity extends Activity {
 		MoceanNativeAdRequest adRequest = MoceanNativeAdRequest
 				.createMoceanNativeAdRequest(this, ZONE_ID, getAssetRequests());
 		adRequest.setAdServerURL("http://ads.test.mocean.mobi/ad");
+		adRequest.addCustomParam("Test1", "Value11");
+		adRequest.addCustomParam("Test1", "Value21");
+
+
+		adRequest.addCustomParam("Test2", "Value21");
+
+		List<String> list = new ArrayList<String >();
+		list.add("list1");
+		list.add("list2");
+		list.add("list3");
+		adRequest.addCustomParam("Test3", list);
+
+		adRequest.addCustomParam("Test2", list);
 		// Request for ads
 		ad.execute(adRequest);
 	}
@@ -316,10 +329,9 @@ public class MoceanNativeActivity extends Activity {
 	private class LogEventListner implements PMLogger.LogListener {
 
 		@Override
-		public boolean onLogEvent(View nativeAd, String eventMessage,
+		public void onLogEvent(String eventMessage,
 				PMLogger.LogLevel logLevel) {
 			Log.i(LOG_TAG, eventMessage);
-			return false;
 		}
 
 	}

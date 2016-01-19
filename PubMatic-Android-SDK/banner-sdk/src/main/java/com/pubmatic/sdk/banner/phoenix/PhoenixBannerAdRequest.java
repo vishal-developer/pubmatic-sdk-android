@@ -18,13 +18,13 @@ public class PhoenixBannerAdRequest extends AdRequest {
 		return null;
 	}
 
-	private PhoenixBannerAdRequest() {
-		super(CHANNEL.PHOENIX);
+	private PhoenixBannerAdRequest(Context context) {
+		super(CHANNEL.PHOENIX, context);
 	}
 	
-	public static PhoenixBannerAdRequest createPhoenixBannerAdRequest(String adId) {
+	public static PhoenixBannerAdRequest createPhoenixBannerAdRequest(Context context, String adId) {
 
-		PhoenixBannerAdRequest bannerAdRequest = new PhoenixBannerAdRequest();
+		PhoenixBannerAdRequest bannerAdRequest = new PhoenixBannerAdRequest(context);
 		bannerAdRequest.setPHAdId(adId);
 		return bannerAdRequest;
 	}
@@ -45,11 +45,6 @@ public class PhoenixBannerAdRequest extends AdRequest {
 
 	@Override
 	protected void initializeDefaultParams(Context context) {
-
-	}
-
-	@Override
-	public void addCustomParams(Map<String, List<String>> customParams) {
 
 	}
 

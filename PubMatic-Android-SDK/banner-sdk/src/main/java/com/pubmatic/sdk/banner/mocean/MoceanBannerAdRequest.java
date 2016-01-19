@@ -77,10 +77,6 @@ public class MoceanBannerAdRequest extends MoceanAdRequest {
 		return !TextUtils.isEmpty(mZoneId);
 	}
 
-	public void setCustomParams(Map<String, List<String>> customParams) {
-		mCustomParams = customParams;
-	}
-
 	/**
 	 * Sets the instance test mode. If set to test mode the instance will
 	 * request test ads for the configured zone.

@@ -172,11 +172,6 @@ public class MoceanNativeAdRequest extends MoceanAdRequest {
 		return !TextUtils.isEmpty(zoneId);
 	}
 
-	@Override
-	public void addCustomParams(Map<String, List<String>> customParams) {
-		mCustomParams = customParams;
-	}
-
 	/**
 	 * Sets the instance test mode. If set to test mode the instance will
 	 * request test ads for the configured zone.
@@ -229,6 +224,7 @@ public class MoceanNativeAdRequest extends MoceanAdRequest {
 
 		}
 	}
+
 	private void setupAssetData() {
 		try {
 			JSONObject nativeObj = new JSONObject();

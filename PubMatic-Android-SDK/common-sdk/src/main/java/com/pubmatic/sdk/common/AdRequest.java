@@ -2,9 +2,12 @@ package com.pubmatic.sdk.common;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import android.content.Context;
 import android.location.Location;
@@ -75,6 +78,19 @@ public abstract class AdRequest {
 	 */
 	protected void setupPostData() {
 
+		if(mCustomParams!=null && !mCustomParams.isEmpty()) {
+			Set<String> set = mCustomParams.keySet();
+			Iterator<String> iterator = set.iterator();
+			while(iterator.hasNext()) {
+				String key = iterator.next();
+				List<String> valueList = mCustomParams.get(key);
+				for(String s : valueList) {
+					putPostData(key,s);
+				}
+
+			}
+		}
+
 	}
 
 	/**
@@ -92,28 +108,59 @@ public abstract class AdRequest {
 	 *
 	 * @param customParams
      */
-	public abstract void addCustomParams(Map<String, List<String>> customParams);
+	public void setCustomParams(Map<String, List<String>> customParams) {
+		mCustomParams = customParams;
+	}
+
+	/**
+	 * It sets the list of multiple values for same key. Set values will be send
+	 * with comma separation in post body data like: interest=cricket,football,tennis
+	 * @param key
+	 * @param value
+	 */
+	public void addCustomParam(String key, List<String> value) {
+		if(mCustomParams==null)
+			mCustomParams = new HashMap<String, List<String>>();
+
+		List<String> list =null;
+		if(mCustomParams.containsKey(key)) {
+			list = mCustomParams.get(key);
+			list.addAll(value);
+		} else
+			mCustomParams.put(key, value);
+	}
+
+	/**
+	 *
+	 * @param key
+	 * @param value
+	 *
+	 */
+	public void addCustomParam(String key, String value) {
+		if(mCustomParams==null)
+			mCustomParams = new HashMap<String, List<String>>();
+
+		List<String> list =null;
+		if(mCustomParams.containsKey(key)) {
+			list = mCustomParams.get(key);
+			list.add(value);
+		} else {
+			list = new ArrayList<String>();
+			list.add(value);
+			mCustomParams.put(key, list);
+		}
+	}
 
 	/**
 	 *
 	 */
 	public abstract void createRequest(Context context);
-	/**
-	 *
-	 * @param channel
-     */
-	protected AdRequest(CommonConstants.CHANNEL channel) {
-		this();
-		mChannel = channel;
-	}
+
 	protected AdRequest(CommonConstants.CHANNEL channel, Context context) {
-		this();
 		mChannel = channel;
 		retrieveAndroidAid(context);
 	}
-	protected AdRequest() {
-		mCustomParams = new HashMap<String, List<String>>();
-	}
+
 	/**
 	 * add androidaid as request param.
 	 *
@@ -172,7 +219,6 @@ public abstract class AdRequest {
 				this.mBaseUrl = "http://"+baseUrl;
 		}
 	}
-
 
 	public String getPostData() {
 		return mPostData!=null ? mPostData.toString() : null;

@@ -24,14 +24,13 @@ public class PMLogger {
          * Will not be invoked if the adView instance's logLevel is set lower
          * than the event.
          *
-         * @param adView
          * @param event
          *            String representing the event to be logged.
          * @param logLevel
          *            LogLevel of the event.
          * @return
          */
-        public boolean onLogEvent(View adView, String event, LogLevel logLevel);
+        public void onLogEvent(String event, LogLevel logLevel);
     }
 
     private static LogLevel logLevel = LogLevel.Error;
@@ -53,6 +52,8 @@ public class PMLogger {
     public LogLevel getLogLevel() {
         return logLevel;
     }
+
+
 
     public static void logEvent(String event, LogLevel eventLevel) {
         if (eventLevel.ordinal() > logLevel.ordinal()) {

@@ -160,11 +160,6 @@ public abstract class MoceanAdRequest extends AdRequest {
 	}
 
 	@Override
-	public void addCustomParams(Map<String, List<String>> customParams) {
-
-	}
-
-	@Override
 	public void createRequest(Context context) {
 		mPostData = null;
 		initializeDefaultParams(context);
