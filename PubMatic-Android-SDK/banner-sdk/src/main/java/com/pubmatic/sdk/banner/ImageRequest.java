@@ -25,7 +25,7 @@ import java.net.URL;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-import com.pubmatic.sdk.common.ui.GifDecoder;
+import com.pubmatic.sdk.banner.ui.GifDecoder;
 import com.pubmatic.sdk.common.CommonConstants;
 
 public class ImageRequest {

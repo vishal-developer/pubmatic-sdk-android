@@ -37,7 +37,9 @@ public class MoceanRuntimeBannerActivity extends Activity {
 
         MoceanBannerAdRequest adRequest = MoceanBannerAdRequest
                 .createMoceanBannerAdRequest(this, "88269");//279722 88269 156037
+
         banner.setUseInternalBrowser(true);
+
         banner.execute(adRequest);
 
     }

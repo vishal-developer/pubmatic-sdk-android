@@ -1,7 +1,5 @@
 package com.pubmatic.sdk.common;
 
-import com.pubmatic.sdk.common.AdRequest;
-
 public class AdResponse {
 
 	public interface Renderable {

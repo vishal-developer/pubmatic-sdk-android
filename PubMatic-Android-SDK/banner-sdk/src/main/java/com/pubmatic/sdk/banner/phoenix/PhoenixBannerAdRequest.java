@@ -1,8 +1,5 @@
 package com.pubmatic.sdk.banner.phoenix;
 
-import java.util.List;
-import java.util.Map;
-
 import android.content.Context;
 import android.util.AttributeSet;
 

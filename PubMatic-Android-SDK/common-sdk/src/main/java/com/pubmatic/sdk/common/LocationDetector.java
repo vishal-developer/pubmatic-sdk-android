@@ -121,7 +121,12 @@ public class LocationDetector extends Observable {
 	public void setLocationDetectionEnabled(boolean locationDetectionEnabled) {
 		if (locationDetectionEnabled == false) {
 			if (locationManager != null && locationListener != null) {
-				locationManager.removeUpdates(locationListener);
+                try{
+				    locationManager.removeUpdates(locationListener);
+                }
+                catch (SecurityException se){
+
+                }
 				locationManager = null;
 				locationListener = null;
 			}
@@ -197,8 +202,8 @@ public class LocationDetector extends Observable {
 
 		@Override
 		public void onLocationChanged(Location loc) {
-			Log.d(TAG, "LocationListener.onLocationChanged location:"
-							+ loc.toString());
+            PMLogger.logEvent("LocationListener.onLocationChanged location:" + loc.toString(),
+                              PMLogger.LogLevel.Debug);
 
 			location = loc;
 			changed	 =true;
@@ -207,19 +212,20 @@ public class LocationDetector extends Observable {
 
 		@Override
 		public void onProviderDisabled(String provider) {
-			Log.d(TAG,
-					"LocationListener.onProviderDisabled provider:" + provider);
+            PMLogger.logEvent("LocationListener.onProviderDisabled provider:" + provider,
+                              PMLogger.LogLevel.Debug);
 		}
 
 		@Override
 		public void onProviderEnabled(String provider) {
-			Log.d(TAG, "LocationListener.onProviderEnabled provider:" + provider);
+            PMLogger.logEvent("LocationListener.onProviderEnabled provider:" + provider,
+                              PMLogger.LogLevel.Debug);
 		}
 
 		@Override
 		public void onStatusChanged(String provider, int status, Bundle extras) {
-			Log.d(TAG, "LocationListener.onStatusChanged provider:" + provider
-					+ " status:" + String.valueOf(status));
+            PMLogger.logEvent("LocationListener.onStatusChanged provider:" + provider + " status:" + String
+                    .valueOf(status), PMLogger.LogLevel.Debug);
 
 			if (status == LocationProvider.AVAILABLE)
 				return;

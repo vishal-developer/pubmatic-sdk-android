@@ -3,8 +3,6 @@ package com.pubmatic.sdk.common.pubmatic;
 import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.Surface;
@@ -14,12 +12,7 @@ import com.pubmatic.sdk.common.CommonConstants;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
-/**
- * Created by shrawangupta on 29/12/15.
- */
 public abstract class PubMaticAdRequest extends AdRequest {
 
     public abstract void setAttributes(AttributeSet attr);
@@ -255,10 +248,10 @@ public abstract class PubMaticAdRequest extends AdRequest {
             }
 
             putPostData(PubMaticConstants.AD_TYPE_PARAM, String.valueOf(11));//For Text and Image and Rich Media ads
-            putPostData(PubMaticConstants.DNT_PARAM, String.valueOf(mDoNotTrack==true ? 1 : 0));
-            putPostData(PubMaticConstants.COPPA_PARAM, String.valueOf(mCoppa==true ? 1 : 0));
+            putPostData(PubMaticConstants.DNT_PARAM, String.valueOf(mDoNotTrack ? 1 : 0));
+            putPostData(PubMaticConstants.COPPA_PARAM, String.valueOf(mCoppa ? 1 : 0));
             putPostData(PubMaticConstants.STORE_URL_PARAM, mStoreURL);
-            putPostData(PubMaticConstants.PAID_PARAM, String.valueOf(mPaid==true ? 1 : 0));
+            putPostData(PubMaticConstants.PAID_PARAM, String.valueOf(mPaid ? 1 : 0));
             putPostData(PubMaticConstants.APP_DOMAIN_PARAM, mAppDomain);
 
             //Set the awt parameter

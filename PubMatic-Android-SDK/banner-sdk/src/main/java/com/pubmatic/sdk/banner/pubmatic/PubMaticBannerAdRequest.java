@@ -1,15 +1,10 @@
 package com.pubmatic.sdk.banner.pubmatic;
 
-import java.util.List;
-import java.util.Map;
 
-import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.view.Surface;
 
-import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.pubmatic.PUBAdSize;
 import com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest;
 import com.pubmatic.sdk.common.CommonConstants;

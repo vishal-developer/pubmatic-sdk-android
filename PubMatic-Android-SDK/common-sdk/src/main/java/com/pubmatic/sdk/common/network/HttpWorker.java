@@ -9,11 +9,10 @@ import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 
-import android.util.Log;
-
 import com.pubmatic.sdk.common.CommonConstants;
 import com.pubmatic.sdk.common.CommonConstants.CONTENT_TYPE;
 import com.pubmatic.sdk.common.CommonConstants.PubError;
+import com.pubmatic.sdk.common.PMLogger;
 
 public class HttpWorker {
 
@@ -156,9 +155,10 @@ public class HttpWorker {
 				httpResponse.errorType = PubError.REQUEST_ERROR;
 				return httpResponse;
 			}
-			
-			Log.d(TAG, "Http request  = "+httpRequest.getRequestUrl());
-			
+
+            PMLogger.logEvent(TAG + ": Http request  = " + httpRequest.getRequestUrl(),
+                              PMLogger.LogLevel.Debug);
+
 			// Get connection object
 			url = new URL(httpRequest.getRequestUrl());
 			httpUrlConnection = (HttpURLConnection) url.openConnection();
@@ -193,7 +193,8 @@ public class HttpWorker {
 						dataOutputStream.flush();
 						dataOutputStream.close();
 
-						Log.d(TAG, "Http request body = "+postData.toString());
+                        PMLogger.logEvent(TAG + ": Http request body = " + postData.toString(),
+                                          PMLogger.LogLevel.Debug);
 					}
 				}
 				
@@ -228,7 +229,9 @@ public class HttpWorker {
 						
 						if(httpResponse!=null)
 						{
-							Log.d(TAG, "Http redirect response  = "+httpResponse.getResponseData());
+                            PMLogger.logEvent(TAG + ": Http redirect response  = " + httpResponse
+                                                                      .getResponseData(),
+                                              PMLogger.LogLevel.Debug);
 						}
 						return httpResponse;
 						
@@ -283,7 +286,8 @@ public class HttpWorker {
 				return httpResponse;
 			}
 			if(httpResponse!=null)
-				Log.d(TAG, "Http response  = "+httpResponse.getResponseData());
+                PMLogger.logEvent(TAG + ": Http response  = " + httpResponse.getResponseData(),
+                                  PMLogger.LogLevel.Debug);
 			return httpResponse;
 		} catch (SocketTimeoutException e) {
 			//e.printStackTrace();

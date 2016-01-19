@@ -2,8 +2,6 @@ package com.pubmatic.sdk.common.mocean;
 
 import java.net.URLEncoder;
 import java.security.MessageDigest;
-import java.util.List;
-import java.util.Map;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -13,10 +11,8 @@ import android.util.AttributeSet;
 
 import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.CommonConstants;
+import com.pubmatic.sdk.common.PMLogger;
 
-/**
- * Created by shrawangupta on 07/01/16.
- */
 public abstract class MoceanAdRequest extends AdRequest {
 
 	public abstract void setAttributes(AttributeSet attr);
@@ -73,7 +69,7 @@ public abstract class MoceanAdRequest extends AdRequest {
 				putPostData(CommonConstants.GENDER_PARAM, URLEncoder.encode(
 						mGender, CommonConstants.URL_ENCODING));
 
-			// Setting the user entnicity
+			// Setting the user ethnicity
 			if (!TextUtils.isEmpty(mEthnicity)) {
 				putPostData(CommonConstants.USER_ETHNICITY, URLEncoder.encode(
 						mEthnicity, CommonConstants.URL_ENCODING));
@@ -155,8 +151,9 @@ public abstract class MoceanAdRequest extends AdRequest {
 						String.valueOf(mLocation.getLongitude()));
 			}
 		} catch (Exception e) {
-
-		}
+            PMLogger.logEvent("MoceanAdRequest: Error while setting request post data."+(e==null?"":e.getMessage()),
+                              PMLogger.LogLevel.Error);
+        }
 	}
 
 	@Override

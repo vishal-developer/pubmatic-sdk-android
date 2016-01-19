@@ -8,9 +8,6 @@ import android.provider.Settings;
 
 import java.security.MessageDigest;
 
-/**
- * Created by shrawangupta on 13/01/16.
- */
 public class PubMaticUtils {
 
     public static String getNetworkType(Context context){

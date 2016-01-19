@@ -58,7 +58,7 @@ public class MoceanStaticBannerActivity extends Activity {
 			banner = new PMInterstitialAdView(this);
 
 			RelativeLayout layout = (RelativeLayout) findViewById(R.id.parent);
-			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
+			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
 					RelativeLayout.LayoutParams.WRAP_CONTENT);
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
 				params.setLayoutDirection(RelativeLayout.ALIGN_PARENT_TOP);

@@ -15,17 +15,15 @@
  * TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.
  */
 
-package com.pubmatic.sdk.banner;
-
-import android.util.Log;
+package com.pubmatic.sdk.common.network;
 
 import com.pubmatic.sdk.common.CommonConstants;
+import com.pubmatic.sdk.common.PMLogger;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class AdTracking {
-    private static final String LOGTAG = AdTracking.class.getSimpleName();
 
     public static void invokeTrackingUrl(final int timeout, final String url,
             final String userAgent) {
@@ -50,14 +48,17 @@ public class AdTracking {
 
                         if (responseCode != HttpURLConnection.HTTP_OK)
                         {
-                            Log.w(LOGTAG, "Error while invoking tracking URL : " + url + "HttpResponse:"+responseCode);
+                            PMLogger.logEvent("PM-TrackerEvent : Error while invoking tracking URL : " + url + "HttpResponse:"+responseCode,
+                                              PMLogger.LogLevel.Error);
                             return;
                         }else{
-                            Log.i(LOGTAG, "Ad Tracker fired successfully");
+                            PMLogger.logEvent("PM-TrackerEvent : Ad Tracker fired successfully",
+                                              PMLogger.LogLevel.Debug);
                         }
                     }
                 } catch (Exception ex) {
-                    Log.w(LOGTAG, "Error while invoking tracking URL : " + url);
+                    PMLogger.logEvent("PM-TrackerEvent : Error while invoking tracking URL : " + url,
+                                      PMLogger.LogLevel.Error);
                 } finally {
                     if(httpUrlConnection !=null) {
                         httpUrlConnection.disconnect();
@@ -82,7 +83,6 @@ public class AdTracking {
 
         if (urls != null) {
             for (String url : urls) {
-                Log.d(LOGTAG, "Sending tracker : " + url);
                 invokeTrackingUrl(timeout, url, userAgent);
             }
         }

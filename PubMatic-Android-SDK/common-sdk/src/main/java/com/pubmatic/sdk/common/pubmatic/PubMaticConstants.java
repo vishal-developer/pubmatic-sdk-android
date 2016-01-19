@@ -1,8 +1,5 @@
 package com.pubmatic.sdk.common.pubmatic;
 
-/**
- * Created by shrawangupta on 11/01/16.
- */
 public class PubMaticConstants {
 
     public enum CONTENT_TYPE{

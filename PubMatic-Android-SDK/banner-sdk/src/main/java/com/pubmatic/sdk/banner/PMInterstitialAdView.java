@@ -3,8 +3,6 @@ package com.pubmatic.sdk.banner;
 import android.content.Context;
 import android.util.AttributeSet;
 
-import java.util.Map;
-
 /**
  * It loads the interstitial ad.
  * In order to show the Interstitial ad, Publisher should call the

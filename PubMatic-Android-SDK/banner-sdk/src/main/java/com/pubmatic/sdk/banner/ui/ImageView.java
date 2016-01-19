@@ -24,9 +24,7 @@ import android.graphics.Bitmap.Config;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
-import com.pubmatic.sdk.common.ui.GifDecoder;
-
-public class ImageView extends android.widget.ImageView 
+public class ImageView extends android.widget.ImageView
 {
 	private GifDecoder gifDecoder = null;
 	private Worker gifWorker = null;

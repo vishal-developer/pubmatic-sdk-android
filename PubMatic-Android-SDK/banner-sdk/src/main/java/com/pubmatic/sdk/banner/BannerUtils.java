@@ -6,9 +6,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.DisplayMetrics;
 
-/**
- * Created by shrawangupta on 12/01/16.
- */
 public class BannerUtils {
 
     public static String getUseragent() {

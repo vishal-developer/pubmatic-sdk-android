@@ -28,7 +28,6 @@
 package com.pubmatic.sdk.banner;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 
 import com.pubmatic.sdk.common.AdResponse;
@@ -91,11 +90,9 @@ public class BannerAdDescriptor implements AdResponse.Renderable {
                     adInfo.put(name + "Type", subType);
                 }
                 if (TextUtils.isEmpty(width) == false && width != null) {
-                    Log.d("Test", "Image in view widht" + width);
                     adInfo.put("width", width);
                 }
                 if (TextUtils.isEmpty(height) == false && height != null) {
-                    Log.d("Test", "Image in view height" + height);
                     adInfo.put("height", height);
                 }
 
@@ -354,7 +351,6 @@ public class BannerAdDescriptor implements AdResponse.Renderable {
 
     @Override
     public Object getRenderable() {
-        // TODO Auto-generated method stub
         return null;
     }
 }

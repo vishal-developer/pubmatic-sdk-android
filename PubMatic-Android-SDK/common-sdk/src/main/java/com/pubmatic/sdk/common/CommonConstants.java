@@ -1,10 +1,10 @@
 package com.pubmatic.sdk.common;
 
-import android.view.View;
-
 public class CommonConstants {
 
+    // TODO: Check and Update the SDK version before production release
 	public static final String SDK_VERSION = "5.0.0.1";
+    public static final String SDK_VERSION_ID = "1";
 
 	public enum CONTENT_TYPE {
 		JSON, XML, URL_ENCODED, INVALID
@@ -156,6 +156,7 @@ public class CommonConstants {
 	public static final String MOCEAN_AD_NETWORK_URL = "http://ads.moceanads.com/ad";
 	public static final String PHOENIX_AD_NETWORK_URL = "http://ads.phoenix.com/ad";
 	public static final String PUBMATIC_AD_NETWORK_URL = "http://showads.pubmatic.com/AdServer/AdServerServlet";
+    // TODO: Remove test network url in prod
 	public static final String PUBMATIC_NATIVE_TEST_NETWORK_URL = "http://showads1065.pubmatic.com/AdServer/AdServerServlet";
 
 	public static final int INVALID_INT = -999;

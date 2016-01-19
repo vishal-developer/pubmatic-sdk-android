@@ -17,6 +17,8 @@
 
 package com.pubmatic.sdk.banner.mraid;
 
+import com.pubmatic.sdk.common.PMLogger;
+
 import java.util.Formatter;
 import java.util.Locale;
 import java.util.Map;
@@ -35,7 +37,7 @@ public class ExpandProperties
 		}
 		catch (Exception ex)
 		{
-			// TODO: Error handling?
+            PMLogger.logEvent("Error setting MRAID expand properties", PMLogger.LogLevel.Error);
 		}
 		
 		return properties;

@@ -19,38 +19,38 @@ package com.pubmatic.sdk.banner.mraid;
 
 public interface Consts
 {
-    public enum State
+    enum State
     {
         Loading,
         Default,
         Expanded,
         Resized,
         Hidden,
-    };
+    }
     
-    public enum PlacementType
+    enum PlacementType
     {
         Inline,
         Interstitial,
-    };
+    }
 
-    public enum Feature
+    enum Feature
     {
         SMS,
         Tel,
         Calendar,
         StorePicture,
         InlineVideo,
-    };
+    }
 
-    public enum ForceOrientation
+    enum ForceOrientation
     {
         Portrait,
         Landscape,
         None,
-    };
+    }
 
-    public enum CustomClosePosition
+    enum CustomClosePosition
     {
         TopLeft,
         TopCenter,
@@ -59,66 +59,66 @@ public interface Consts
         BottomLeft,
         BottomCenter,
         BottomRight,
-    };
+    }
     
-	public static final String StateLoading = "loading";
-    public static final String StateDefault = "default";
-    public static final String StateExpanded = "expanded";
-    public static final String StateResized = "resized";
-    public static final String StateHidden = "hidden";
+	String StateLoading = "loading";
+    String StateDefault = "default";
+    String StateExpanded = "expanded";
+    String StateResized = "resized";
+    String StateHidden = "hidden";
 
-    public static final String PlacementTypeInline = "inline";
-    public static final String PlacementTypeInterstitial = "interstitial";
+    String PlacementTypeInline = "inline";
+    String PlacementTypeInterstitial = "interstitial";
 
-	public static final String FeatureSMS = "sms";
-	public static final String FeatureTel = "tel";
-	public static final String FeatureCalendar = "calendar";
-	public static final String FeatureStorePicture = "storePicture";
-	public static final String FeatureInlineVideo = "inlineVideo";
+	String FeatureSMS = "sms";
+	String FeatureTel = "tel";
+	String FeatureCalendar = "calendar";
+	String FeatureStorePicture = "storePicture";
+	String FeatureInlineVideo = "inlineVideo";
 
-	public static final String EventReady = "ready";
+	String EventReady = "ready";
 
-	public static final String True = "true";
-	public static final String False = "false";
+	String True = "true";
+	String False = "false";
 
-	public static final String Scheme = "mraid";
-	public static final String CommandInit = "init";
-	public static final String CommandClose = "close";
-	public static final String CommandOpen = "open";
-	public static final String CommandUpdateCurrentPosition = "updatecurrentposition";
-	public static final String CommandExpand = "expand";
-	public static final String CommandSetExpandProperties = "setexpandproperties";
-	public static final String CommandResize = "resize";
-	public static final String CommandSetResizeProperties = "setresizeproperties";
-	public static final String CommandSetOrientationProperties = "setorientationproperties";
-	public static final String CommandPlayVideo = "playvideo";
-	public static final String CommandCreateCalendarEvent = "createcalendarevent";
-	public static final String CommandStorePicture = "storepicture";
+	String Scheme = "mraid";
+	String CommandInit = "init";
+	String CommandClose = "close";
+	String CommandOpen = "open";
+	String CommandUpdateCurrentPosition = "updatecurrentposition";
+	String CommandExpand = "expand";
+	String CommandSetExpandProperties = "setexpandproperties";
+	String CommandResize = "resize";
+	String CommandSetResizeProperties = "setresizeproperties";
+	String CommandSetOrientationProperties = "setorientationproperties";
+	String CommandPlayVideo = "playvideo";
+	String CommandCreateCalendarEvent = "createcalendarevent";
+	String CommandStorePicture = "storepicture";
 
-	public static final String CommandArgUrl = "url";
-	public static final String CommandArgEvent = "event";
+	String CommandArgUrl = "url";
+	String CommandArgEvent = "event";
 
-	public static final String PropertiesWidth = "width";
-	public static final String PropertiesHeight = "height";
+	String PropertiesWidth = "width";
+	String PropertiesHeight = "height";
 
-	public static final String ExpandPropertiesUseCustomClose = "useCustomClose";
+	String ExpandPropertiesUseCustomClose = "useCustomClose";
 
-	public static final String ResizePropertiesCustomClosePosition = "customClosePosition";
-	public static final String ResizePropertiesOffsetX = "offsetX";
-	public static final String ResizePropertiesOffsetY = "offsetY";
-	public static final String ResizePropertiesAllowOffscreen = "allowOffscreen";
+	String ResizePropertiesCustomClosePosition = "customClosePosition";
+	String ResizePropertiesOffsetX = "offsetX";
+	String ResizePropertiesOffsetY = "offsetY";
+	String ResizePropertiesAllowOffscreen = "allowOffscreen";
 
-	public static final String ResizePropertiesCCPositionTopLeft = "top-left";
-	public static final String ResizePropertiesCCPositionTopCenter = "top-center";
-	public static final String ResizePropertiesCCPositionTopRight = "top-right";
-	public static final String ResizePropertiesCCPositionCenter = "center";
-	public static final String ResizePropertiesCCPositionBottomLeft = "bottom-left";
-	public static final String ResizePropertiesCCPositionBottomCenter = "bottom-center";
-	public static final String ResizePropertiesCCPositionBottomRight = "bottom-right";
+	String ResizePropertiesCCPositionTopLeft = "top-left";
+	String ResizePropertiesCCPositionTopCenter = "top-center";
+	String ResizePropertiesCCPositionTopRight = "top-right";
+	String ResizePropertiesCCPositionCenter = "center";
+	String ResizePropertiesCCPositionBottomLeft = "bottom-left";
+	String ResizePropertiesCCPositionBottomCenter = "bottom-center";
+	String ResizePropertiesCCPositionBottomRight = "bottom-right";
 
-	public static final String OrientationPpropertiesAllowOrientationChange = "allowOrientationChange";
-	public static final String OrientationPpropertiesForceOrientation = "forceOrientation";
-	public static final String OrientationPropertiesForceOrientationNone = "none";
-	public static final String OrientationPropertiesForceOrientationPortrait = "portrait";
-	public static final String OrientationPropertiesForceOrientationLandscape = "landscape";
+	String OrientationPpropertiesAllowOrientationChange = "allowOrientationChange";
+	String OrientationPpropertiesForceOrientation = "forceOrientation";
+	String OrientationPropertiesForceOrientationNone = "none";
+	String OrientationPropertiesForceOrientationPortrait = "portrait";
+	String OrientationPropertiesForceOrientationLandscape = "landscape";
 }

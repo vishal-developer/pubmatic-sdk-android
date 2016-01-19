@@ -29,7 +29,7 @@ public class OrientationProperties
 		
 		try
 		{
-			properties.setAllowOrientationChange(Consts.False.equals(args.get(Consts.OrientationPpropertiesAllowOrientationChange)) == false);
+			properties.setAllowOrientationChange(!Consts.False.equals(args.get(Consts.OrientationPpropertiesAllowOrientationChange)));
 			
 			String forceOrientationString = args.get(Consts.OrientationPpropertiesForceOrientation);
 			if (Consts.OrientationPropertiesForceOrientationNone.equals(forceOrientationString))

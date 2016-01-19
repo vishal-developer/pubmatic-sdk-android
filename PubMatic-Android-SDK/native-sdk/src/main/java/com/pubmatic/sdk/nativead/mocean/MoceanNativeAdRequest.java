@@ -27,12 +27,11 @@ import android.content.Context;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.webkit.WebView;
 
 import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.CommonConstants;
-import com.pubmatic.sdk.common.CommonConstants.CHANNEL;
+import com.pubmatic.sdk.common.PMLogger;
 import com.pubmatic.sdk.common.mocean.MoceanAdRequest;
 import com.pubmatic.sdk.nativead.PMNativeAd;
 import com.pubmatic.sdk.nativead.bean.PMAssetRequest;
@@ -249,8 +248,8 @@ public class MoceanNativeAdRequest extends MoceanAdRequest {
 							assetObj.putOpt(REQUEST_TITLE, titleObj);
 						} else {
 							assetObj = null;
-							Log.w("AdRequest",
-									"'length' parameter is mandatory for title asset");
+                            PMLogger.logEvent("PM-NativeAdRequest: 'length' parameter is mandatory for title asset",
+                                              PMLogger.LogLevel.Debug);
 						}
 					} else if (assetRequest instanceof PMImageAssetRequest) {
 						imageObj = new JSONObject();
@@ -282,8 +281,8 @@ public class MoceanNativeAdRequest extends MoceanAdRequest {
 							assetObj.putOpt(REQUEST_DATA, dataObj);
 						} else {
 							assetObj = null;
-							Log.w("AdRequest",
-									"'type' parameter is mandatory for data asset");
+                            PMLogger.logEvent("PM-NativeAdRequest: 'type' parameter is mandatory for data asset",
+                                              PMLogger.LogLevel.Debug);
 						}
 					}
 					if (assetObj != null) {

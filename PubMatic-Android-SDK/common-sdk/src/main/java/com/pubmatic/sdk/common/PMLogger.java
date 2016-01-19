@@ -1,11 +1,7 @@
 package com.pubmatic.sdk.common;
 
-import android.view.View;
+import android.util.Log;
 
-
-/**
- * Created by shrawangupta on 13/01/16.
- */
 public class PMLogger {
 
     public enum LogLevel {
@@ -60,6 +56,15 @@ public class PMLogger {
             return;
         }
 
-        System.out.println(eventLevel + ":" + event);
+        switch (eventLevel){
+            case Debug:
+                Log.d("PubMatic SDK", event);
+                break;
+            case Error:
+                Log.e("PubMatic SDK", event);
+                break;
+            default:
+                // Don't Log
+        }
     }
 }

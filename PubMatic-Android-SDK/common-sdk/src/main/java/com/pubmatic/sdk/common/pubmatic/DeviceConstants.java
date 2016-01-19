@@ -37,15 +37,13 @@ package com.pubmatic.sdk.common.pubmatic;
  */
 interface DeviceConstants {
 	
-	public static final int mPubClientVersion = 1;
-	public static final int mAdVisibility = 1;
+	int mPubClientVersion = 1;
+	int mAdVisibility = 1;
 
-	public static final int mPubDeviceJavaScriptSupport = 1;
-	public static final int mInIframe = 0;
+	int mPubDeviceJavaScriptSupport = 1;
+	int mInIframe = 0;
 
-	public static final String mAdPosition = "-1x-1";
-	public static final String msdkVersion = "1.0";
-	public static final String msdkId = "1";
-	public static final String mDeviceOsName = "Android";
-	public static final String mDateTimeFormat = "yyyy-MM-dd HH:mm:ss";
+	String mAdPosition = "-1x-1";
+	String mDeviceOsName = "Android";
+	String mDateTimeFormat = "yyyy-MM-dd HH:mm:ss";
 }

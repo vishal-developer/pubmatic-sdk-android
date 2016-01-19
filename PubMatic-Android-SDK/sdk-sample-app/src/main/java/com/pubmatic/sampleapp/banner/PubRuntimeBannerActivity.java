@@ -33,7 +33,7 @@ public class PubRuntimeBannerActivity extends Activity {
 		params.setLayoutDirection(RelativeLayout.ALIGN_PARENT_TOP);
 		layout.addView(banner, params);
 
-		PMLogger.setLogLevel(PMLogger.LogLevel.Debug);
+//		PMLogger.setLogLevel(PMLogger.LogLevel.Debug);
 
 		PubMaticBannerAdRequest adRequest = PubMaticBannerAdRequest
 				.createPubMaticBannerAdRequest(PubRuntimeBannerActivity.this,

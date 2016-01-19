@@ -27,14 +27,15 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.webkit.ConsoleMessage;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebViewClient;
 
 import com.pubmatic.sdk.banner.BannerConstants;
+import com.pubmatic.sdk.common.PMLogger;
 
 public class WebView extends android.webkit.WebView {
     private static String MRAID_JAVASCRIPT_INTERFACE_NAME = "MASTMRAIDWebView";
@@ -148,9 +149,8 @@ public class WebView extends android.webkit.WebView {
                     }
                     mraidBridgeJavascript = sb.toString();
                 } catch (Exception ex) {
-                    Log.e("MASTAdView.WebView",
-                          "Error during injecting mraid script in creative. "
-                                  + ex.getMessage());
+                    PMLogger.logEvent("PM-WebView : Error during injecting mraid script in creative. "
+                                              + ex.getMessage(), PMLogger.LogLevel.Error);
                 }
             }
         }
@@ -194,25 +194,28 @@ public class WebView extends android.webkit.WebView {
             boolean override = false;
 
             if (handler != null)
-                override = handler.webViewshouldOverrideUrlLoading(
-                        (WebView) view, url);
+                override = handler.webViewShouldOverrideUrlLoading((WebView) view, url);
 
             return override;
         }
     }
 
     private class ChromeClient extends WebChromeClient {
-
+        @Override
+        public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
+            PMLogger.logEvent("PMSDK WebView : Console Log : "+consoleMessage.message(), PMLogger.LogLevel.Debug);
+            return true;
+        }
     }
 
     public interface Handler {
-        public void webViewPageStarted(WebView webView);
+        void webViewPageStarted(WebView webView);
 
-        public void webViewPageFinished(WebView webView);
+        void webViewPageFinished(WebView webView);
 
-        public void webViewReceivedError(WebView webView, int errorCode,
+        void webViewReceivedError(WebView webView, int errorCode,
                 String description, String failingUrl);
 
-        public boolean webViewshouldOverrideUrlLoading(WebView view, String url);
+        boolean webViewShouldOverrideUrlLoading(WebView view, String url);
     }
 }

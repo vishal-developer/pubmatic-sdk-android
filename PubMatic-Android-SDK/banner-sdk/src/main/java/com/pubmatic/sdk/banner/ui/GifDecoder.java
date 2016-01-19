@@ -15,7 +15,7 @@
  * TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.                
  */
 
-package com.pubmatic.sdk.common.ui;
+package com.pubmatic.sdk.banner.ui;
 //package jp.tomorrowkey.android.gifplayer;
 
 import java.io.InputStream;

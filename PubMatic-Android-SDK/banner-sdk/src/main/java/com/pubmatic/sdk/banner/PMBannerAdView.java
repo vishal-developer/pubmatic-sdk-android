@@ -74,7 +74,6 @@ import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -91,6 +90,7 @@ import com.pubmatic.sdk.banner.mraid.ExpandProperties;
 import com.pubmatic.sdk.banner.mraid.OrientationProperties;
 import com.pubmatic.sdk.banner.mraid.ResizeProperties;
 import com.pubmatic.sdk.banner.mraid.WebView;
+import com.pubmatic.sdk.banner.ui.GifDecoder;
 import com.pubmatic.sdk.banner.ui.ImageView;
 import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.AdResponse;
@@ -99,14 +99,11 @@ import com.pubmatic.sdk.common.PMLogger.LogLevel;
 import com.pubmatic.sdk.common.LocationDetector;
 import com.pubmatic.sdk.common.PMLogger;
 import com.pubmatic.sdk.common.RRFormatter;
-import com.pubmatic.sdk.common.network.HttpHandler;
+import com.pubmatic.sdk.common.network.*;
 import com.pubmatic.sdk.common.network.HttpHandler.HttpRequestListener;
-import com.pubmatic.sdk.common.network.HttpRequest;
-import com.pubmatic.sdk.common.network.HttpResponse;
 import com.pubmatic.sdk.common.pubmatic.PubMaticConstants;
 import com.pubmatic.sdk.common.ui.BrowserDialog;
 import com.pubmatic.sdk.common.CommonConstants.CHANNEL;
-import com.pubmatic.sdk.common.ui.GifDecoder;
 
 
 @SuppressLint("NewApi")
@@ -1435,8 +1432,8 @@ public class PMBannerAdView extends ViewGroup {
             if (mAdDescriptor.getImpressionTrackers().size() > 0) {
                 for (String urls : mAdDescriptor.getImpressionTrackers()) {
                     AdTracking.invokeTrackingUrl(CommonConstants.NETWORK_TIMEOUT_SECONDS,
-                                                 urls,
-                                                 userAgent);
+                                                                                 urls,
+                                                                                 userAgent);
                 }
             }
         }
@@ -1469,8 +1466,8 @@ public class PMBannerAdView extends ViewGroup {
                                                                               .size() > 0) {
                 for (String url : mAdDescriptor.getImpressionTrackers()) {
                     AdTracking.invokeTrackingUrl(CommonConstants.NETWORK_TIMEOUT_SECONDS,
-                                                 url,
-                                                 userAgent);
+                                                                                 url,
+                                                                                 userAgent);
                 }
             }
             mImpressionTrackerSent = true;
@@ -1487,8 +1484,8 @@ public class PMBannerAdView extends ViewGroup {
                                                                          .size() > 0) {
                 for (String url : mAdDescriptor.getClickTrackers()) {
                     AdTracking.invokeTrackingUrl(CommonConstants.NETWORK_TIMEOUT_SECONDS,
-                                                 url,
-                                                 userAgent);
+                                                                                 url,
+                                                                                 userAgent);
                 }
             }
             mClickTrackerSent = true;
@@ -2252,7 +2249,7 @@ public class PMBannerAdView extends ViewGroup {
         }
 
         @Override
-        public boolean webViewshouldOverrideUrlLoading(WebView view, String url) {
+        public boolean webViewShouldOverrideUrlLoading(WebView view, String url) {
             openUrl(url, false);
             return true;
         }
@@ -3238,7 +3235,6 @@ public class PMBannerAdView extends ViewGroup {
 
     public void setMraidViewable(boolean isViewable) {
         if (mraidBridge != null) {
-            Log.d("Test", "On set maraid " + isViewable);
             mraidBridge.setViewable(isViewable);
         }
     }

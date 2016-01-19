@@ -74,10 +74,10 @@ import com.pubmatic.sdk.common.CommonConstants;
 import com.pubmatic.sdk.common.CommonConstants.CHANNEL;
 import com.pubmatic.sdk.common.PMLogger;
 import com.pubmatic.sdk.common.PMLogger.LogLevel;
-import com.pubmatic.sdk.common.PMLogger.LogListener;
 import com.pubmatic.sdk.common.CommonConstants.MediationNetwork;
 import com.pubmatic.sdk.common.LocationDetector;
 import com.pubmatic.sdk.common.RRFormatter;
+import com.pubmatic.sdk.common.network.AdTracking;
 import com.pubmatic.sdk.common.network.HttpHandler;
 import com.pubmatic.sdk.common.network.HttpHandler.HttpRequestListener;
 import com.pubmatic.sdk.common.network.HttpRequest;
@@ -532,43 +532,7 @@ public final class PMNativeAd {
 
         HttpHandler requestProcessor = new HttpHandler(networkListener, httpRequest);
         Background.getExecutor().execute(requestProcessor);
-				
-		/*
-		// Put all the user sent parameters in the request
-		args.putAll(mAdRequestParameters);
 
-		// Don't allow these to be overridden.
-		args.put(REQUESTPARAM_UA, mUserAgent);
-		args.put(REQUESTPARAM_SDK_VERSION, Defaults.SDK_VERSION);
-		args.put(REQUESTPARAM_COUNT, Defaults.NATIVE_REQUEST_COUNT);
-		// Response type for Generic Json
-		args.put(REQUESTPARAM_KEY, Defaults.NATIVE_REQUEST_KEY);
-		// Ad type for native.
-		args.put(REQUESTPARAM_TYPE, Defaults.NATIVE_REQUEST_AD_TYPE);
-		args.put(REQUESTPARAM_ZONE, String.valueOf(mZone));
-
-		// Putting optional parameters related to Native Ad 
-
-		if (this.test) {
-			args.put(REQUESTPARAM_TEST, Defaults.NATIVE_REQUEST_TEST_TRUE);
-		}
-
-		try {
-			if (mAdRequest != null)
-				mAdRequest.cancel();
-
-			mAdRequest = AdRequest.create(Defaults.NETWORK_TIMEOUT_SECONDS,
-					mNetworkUrl, mUserAgent, args, mRequestedNativeAssets,
-					this, true);
-
-			String requestUrl = mAdRequest.getRequestUrl();
-			logEvent("Ad request:" + requestUrl, LogLevel.Debug);
-		} catch (UnsupportedEncodingException e) {
-			logEvent("Exception encountered while generating ad request URL:"
-					+ e, LogLevel.Error);
-
-			fireCallback(CallbackType.NativeFailed, e, null);
-		}*/
     }
 
     private void renderAdDescriptor(final Renderable renderable) {
@@ -1023,9 +987,9 @@ public final class PMNativeAd {
         if (mNativeAdDescriptor != null) {
             switch (trackerType) {
                 case IMPRESSION_TRACKER:
-                    AdTracking.invokeTrackingUrl(CommonConstants.NETWORK_TIMEOUT_SECONDS,
-                                                 mNativeAdDescriptor.getNativeAdImpressionTrackers(),
-                                                 mUserAgent);
+                     AdTracking.invokeTrackingUrl(CommonConstants.NETWORK_TIMEOUT_SECONDS,
+                                                  mNativeAdDescriptor.getNativeAdImpressionTrackers(),
+                                                  mUserAgent);
                     break;
                 case CLICK_TRACKER:
                     AdTracking.invokeTrackingUrl(CommonConstants.NETWORK_TIMEOUT_SECONDS,
