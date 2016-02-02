@@ -2,8 +2,7 @@ package com.pubmatic.sdk.common;
 
 public class CommonConstants {
 
-    // TODO: Check and Update the SDK version before production release
-	public static final String SDK_VERSION = "5.0.0.1";
+	public static final String SDK_VERSION = "5.0.0";
     public static final String SDK_VERSION_ID = "1";
 
 	public enum CONTENT_TYPE {

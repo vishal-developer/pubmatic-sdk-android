@@ -33,7 +33,7 @@ import java.util.Map;
 
 public class MoceanNativeActivity extends Activity {
 
-	private static final String ZONE_ID = "277298"; // TODO : Add your Mocean zone id
+	private static final String ZONE_ID = "179492"; // TODO : Add your Mocean zone id
 
 	private static final String LOG_TAG = MoceanNativeActivity.class.getSimpleName();
 	private PMNativeAd ad = null;
@@ -78,7 +78,6 @@ public class MoceanNativeActivity extends Activity {
 
 		MoceanNativeAdRequest adRequest = MoceanNativeAdRequest
 				.createMoceanNativeAdRequest(this, ZONE_ID, getAssetRequests());
-		adRequest.setAdServerURL("http://ads.test.mocean.mobi/ad");
 		adRequest.addCustomParam("Test1", "Value11");
 		adRequest.addCustomParam("Test1", "Value21");
 

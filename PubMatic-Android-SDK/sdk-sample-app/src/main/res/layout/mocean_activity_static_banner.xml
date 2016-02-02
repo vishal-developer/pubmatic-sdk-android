@@ -9,54 +9,12 @@
                 android:paddingTop="@dimen/activity_vertical_margin"
                 tools:context="com.pubmatic.sampleapp.banner.MoceanStaticBannerActivity">
 
-    <TextView
-        android:id="@+id/banner_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:text="Banner Ad:"
-        android:textColor="@android:color/black"
-        android:textStyle="bold"/>
-
     <com.pubmatic.sdk.banner.PMBannerAdView
         channel="mocean"
         zone="88269"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_below="@+id/banner_text"/>
+        />
 
-    <com.pubmatic.sdk.banner.PMBannerAdView
-        android:id="@+id/mraid_ad"
-        channel="mocean"
-        zone="156037"
-        android:background="#DDDDDD"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_alignParentBottom="true"/>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/mraid_ad"
-        android:layout_marginBottom="20dp"
-        android:text="Rich Media Ad:"
-        android:textColor="@android:color/black"
-        android:textStyle="bold"/>
-
-    <Button
-        android:id="@+id/interstitialButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:onClick="showInterstitial"
-        android:text="Click to see Interstitial Ad"/>
-
-    <RelativeLayout
-        android:id="@+id/parent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/mraid_ad">
-        <!-- Container for Interstitial ad view-->
-    </RelativeLayout>
 </RelativeLayout>

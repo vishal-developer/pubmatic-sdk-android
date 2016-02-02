@@ -33,6 +33,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.pubmatic.sampleapp.banner.BannerSamplesListActivity;
+import com.pubmatic.sampleapp.interstitial.InterstitialSamplesListActivity;
 import com.pubmatic.sampleapp.nativead.NativeSamplesListActivity;
 
 public class SamplesListActivity extends ListActivity {
@@ -50,6 +51,7 @@ public class SamplesListActivity extends ListActivity {
 
 		// @formatter:off
 		samplesListAdapter.addItem(new SamplesItem("Banner Demo", BannerSamplesListActivity.class));
+        samplesListAdapter.addItem(new SamplesItem("Interstitial Demo", InterstitialSamplesListActivity.class));
 		samplesListAdapter.addItem(new SamplesItem("Native Demo", NativeSamplesListActivity.class));
 
 		super.setListAdapter(samplesListAdapter);
