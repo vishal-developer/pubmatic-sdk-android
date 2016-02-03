@@ -34,8 +34,6 @@ import com.pubmatic.sdk.nativead.pubmatic.PubMaticNativeAdRequest;
 
 public class PubMaticNativeActivity extends Activity {
 
-	private static final String ZONE_ID = "277298"; // TODO : Add your Mocean zone id
-
 	private static final String LOG_TAG = MoceanNativeActivity.class.getSimpleName();
 	private PMNativeAd ad = null;
 	private ImageView imgLogo = null;
@@ -78,6 +76,7 @@ public class PubMaticNativeActivity extends Activity {
 
 		PubMaticNativeAdRequest adRequest = PubMaticNativeAdRequest
 				.createPubMaticNativeAdRequest(this, "31400", "52368", "383372", getAssetRequests());
+        adRequest.setAdServerURL("http://showads1065.pubmatic.com/AdServer/AdServerServlet");
 		// Request for ads
 		ad.execute(adRequest);
 	}

@@ -155,8 +155,6 @@ public class CommonConstants {
 	public static final String MOCEAN_AD_NETWORK_URL = "http://ads.moceanads.com/ad";
 	public static final String PHOENIX_AD_NETWORK_URL = "http://ads.phoenix.com/ad";
 	public static final String PUBMATIC_AD_NETWORK_URL = "http://showads.pubmatic.com/AdServer/AdServerServlet";
-    // TODO: Remove test network url in prod
-	public static final String PUBMATIC_NATIVE_TEST_NETWORK_URL = "http://showads1065.pubmatic.com/AdServer/AdServerServlet";
 
 	public static final int INVALID_INT = -999;
 	public static final int AD_TAG_TYPE_VALUE = 13;

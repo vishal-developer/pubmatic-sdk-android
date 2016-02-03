@@ -90,8 +90,6 @@ public class PubMaticBannerRRFormatter implements RRFormatter {
 
                 adInfo.put("content", object.getString(kcreative_tag));
                 impressionTrackers.add(object.getString(ktracking_url));
-                //adInfo.put("url", "http://searchbusinessanalytics.techtarget.com/definition/big-data-analytics");
-                //clickTrackers.add("http://www.google.com");
 
                 // Setting ecpm if not null
                 if (!object.isNull(kecpm)) {

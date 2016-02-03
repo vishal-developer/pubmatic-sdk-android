@@ -1128,7 +1128,6 @@ public class PMBannerAdView extends ViewGroup {
             }
         }
 
-        //TODO :: Integrate the MultiValueMap implementation.
         adRequest.createRequest(getContext());
 
         // Insert the location parameter in ad request,
@@ -1428,7 +1427,6 @@ public class PMBannerAdView extends ViewGroup {
         if (invokeTracking && (mAdDescriptor != null)) {
             invokeTracking = false;
 
-            // String url = adDescriptor.getTrack();
             if (mAdDescriptor.getImpressionTrackers().size() > 0) {
                 for (String urls : mAdDescriptor.getImpressionTrackers()) {
                     AdTracking.invokeTrackingUrl(CommonConstants.NETWORK_TIMEOUT_SECONDS,
@@ -1486,6 +1484,20 @@ public class PMBannerAdView extends ViewGroup {
                     AdTracking.invokeTrackingUrl(CommonConstants.NETWORK_TIMEOUT_SECONDS,
                                                                                  url,
                                                                                  userAgent);
+                }
+            }
+            mClickTrackerSent = true;
+        }
+    }
+
+    private void performClickTracking(){
+        if (!mClickTrackerSent && mAdDescriptor != null) {
+            if (mAdDescriptor.getClickTrackers() != null && mAdDescriptor.getClickTrackers()
+                                                                         .size() > 0) {
+                for (String url : mAdDescriptor.getClickTrackers()) {
+                    AdTracking.invokeTrackingUrl(CommonConstants.NETWORK_TIMEOUT_SECONDS,
+                                                 url,
+                                                 userAgent);
                 }
             }
             mClickTrackerSent = true;
@@ -1594,7 +1606,7 @@ public class PMBannerAdView extends ViewGroup {
 
     // main thread
     private void renderRichMedia(BannerAdDescriptor adDescriptor) {
-        invokeTracking = false;
+        //invokeTracking = true;
 
         resetImageAd();
         resetTextAd();
@@ -1613,6 +1625,7 @@ public class PMBannerAdView extends ViewGroup {
         webView.loadFragment(fragment, mraidBridge, getAdRequest().getAdServerURL());
 
         this.mAdDescriptor = adDescriptor;
+        performAdTracking();
 
         if (requestListener != null) {
             requestListener.onReceivedAd(PMBannerAdView.this);
@@ -1798,6 +1811,7 @@ public class PMBannerAdView extends ViewGroup {
                 }
             }
         });
+        performClickTracking();
     }
 
     // main thread
@@ -3095,8 +3109,8 @@ public class PMBannerAdView extends ViewGroup {
 
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras) {
-            PMLogger.logEvent("LocationListener.onStatusChanged provider:" + provider + " status:" + String.valueOf(
-                    status), LogLevel.Debug);
+            PMLogger.logEvent("LocationListener.onStatusChanged provider:" + provider + " status:" + String
+                    .valueOf(status), LogLevel.Debug);
 
             if (status == LocationProvider.AVAILABLE) {
                 return;

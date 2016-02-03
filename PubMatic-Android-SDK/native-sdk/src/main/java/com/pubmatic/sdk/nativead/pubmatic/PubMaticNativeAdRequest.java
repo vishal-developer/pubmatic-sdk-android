@@ -71,7 +71,7 @@ public class PubMaticNativeAdRequest  extends PubMaticAdRequest {
 		String userAgent = webView.getSettings().getUserAgentString();
 
 		PubMaticNativeAdRequest adRequest = new PubMaticNativeAdRequest(context, CommonConstants.NETWORK_TIMEOUT_SECONDS,
-				CommonConstants.PUBMATIC_NATIVE_TEST_NETWORK_URL, userAgent, null, requestedAssets);
+				CommonConstants.PUBMATIC_AD_NETWORK_URL, userAgent, null, requestedAssets);
 		adRequest.setPubId(pubId);
 		adRequest.setSiteId(siteId);
 		adRequest.setAdId(adId);
@@ -134,7 +134,7 @@ public class PubMaticNativeAdRequest  extends PubMaticAdRequest {
 	 */
 	public String getAdServerURL()
 	{
-		return TextUtils.isEmpty(mBaseUrl) ? CommonConstants.PUBMATIC_NATIVE_TEST_NETWORK_URL : mBaseUrl;
+		return TextUtils.isEmpty(mBaseUrl) ? CommonConstants.PUBMATIC_AD_NETWORK_URL : mBaseUrl;
 	}
 
 	/**
