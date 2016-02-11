@@ -1006,7 +1006,7 @@ public class PMBannerAdView extends ViewGroup {
      *
      * @param force true to force an update regardless of ad state, false to defer update if needed
      */
-    public void update(boolean force) {
+    private void update(boolean force) {
 
         // This will be the case if Publisher added the view in xml & sets the
         // values from java file
@@ -1021,13 +1021,6 @@ public class PMBannerAdView extends ViewGroup {
         }
 
         if (updateInterval > 0) {
-            /*adUpdateIntervalFuture = Background.getExecutor().scheduleAtFixedRate(new Runnable() {
-                @Override
-                public void run() {
-                    internalUpdate();
-                }
-
-            }, updateInterval, updateInterval, TimeUnit.SECONDS);*/
             startUpdateTimer(updateInterval);
         }
 
@@ -1056,19 +1049,18 @@ public class PMBannerAdView extends ViewGroup {
 
     private synchronized void startUpdateTimer(long delay) {
 
-            if(adUpdateIntervalFuture==null) {
-                adUpdateIntervalFuture = Background.getExecutor()
-                                                   .scheduleAtFixedRate(new Runnable() {
-                                                                            @Override
-                                                                            public void run() {
-                                                                                internalUpdate();
-                                                                            }
+        if (adUpdateIntervalFuture == null && !isInterstitial()) {
+            adUpdateIntervalFuture = Background.getExecutor().scheduleAtFixedRate(new Runnable() {
+                                                                                      @Override
+                                                                                      public void run() {
+                                                                                          internalUpdate();
+                                                                                      }
 
-                                                                        },
-                                                                        delay,
-                                                                        updateInterval,
-                                                                        TimeUnit.SECONDS);
-            }
+                                                                                  },
+                                                                                  delay,
+                                                                                  updateInterval,
+                                                                                  TimeUnit.SECONDS);
+        }
     }
 
 
