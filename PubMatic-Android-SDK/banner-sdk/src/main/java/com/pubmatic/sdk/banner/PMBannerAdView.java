@@ -106,6 +106,7 @@ import com.pubmatic.sdk.common.ui.BrowserDialog;
 import com.pubmatic.sdk.common.CommonConstants.CHANNEL;
 
 
+@SuppressWarnings("unused")
 @SuppressLint("NewApi")
 public class PMBannerAdView extends ViewGroup {
 
@@ -368,6 +369,7 @@ public class PMBannerAdView extends ViewGroup {
     private boolean deferredUpdate = false;
     private BannerAdDescriptor mAdDescriptor = null;
     private ScheduledFuture<?> adUpdateIntervalFuture = null;
+    private long remainingDelay = 0;
 
     // Tracking
     private boolean invokeTracking = false;
@@ -477,18 +479,40 @@ public class PMBannerAdView extends ViewGroup {
 
     protected void applyAttributeSet(AttributeSet attrs) {
 
-        String strValue = attrs.getAttributeValue(null,
-                                                  CommonConstants.xml_layout_attribute_logLevel);
-
         mAttributes = attrs;
+        String logLevelStr = attrs.getAttributeValue(null,
+                                                  CommonConstants.xml_layout_attribute_logLevel);
+        if(!TextUtils.isEmpty(logLevelStr)){
+            if("error".equalsIgnoreCase(logLevelStr)){
+                PMLogger.setLogLevel(LogLevel.Error);
+            }else if("debug".equalsIgnoreCase(logLevelStr)){
+                PMLogger.setLogLevel(LogLevel.Error);
+            }else{
+                PMLogger.setLogLevel(LogLevel.None);
+            }
+        }
+
+        String updateIntStr = attrs.getAttributeValue(null,
+                                                      CommonConstants.xml_layout_attribute_update_interval);
+        if (!TextUtils.isEmpty(updateIntStr)) {
+            try {
+                int updateInt = Integer.parseInt(updateIntStr);
+                setUpdateInterval(updateInt);
+            } catch (NumberFormatException ne) {
+                PMLogger.logEvent(
+                        "Invalid value of updateInterval set in XML. Valid range is 12 to 120 seconds. Eg: updateInterval=\"12\"",
+                        LogLevel.Error);
+            }
+        }
+
         String channel = attrs.getAttributeValue(null,
                                                  CommonConstants.xml_layout_attribute_channel);
-
         if ("pubmatic".equalsIgnoreCase(channel)) {
             setChannel(CHANNEL.PUBMATIC);
         } else if ("phoenix".equalsIgnoreCase(channel)) {
             setChannel(CHANNEL.PHOENIX);
-        } else { //MOCEAN will be used as default channel, if not mentioned in xml
+        } else {
+            //MOCEAN will be used as default channel, if not mentioned in xml
             setChannel(CHANNEL.MOCEAN);
         }
     }
@@ -707,14 +731,30 @@ public class PMBannerAdView extends ViewGroup {
     }
 
     /**
-     * Sets the interval between updates.
+     * Sets the interval between updates. Set update interval to auto load ads after specified
+     * update interval. <p/> Valid values for update interval are between 12 to 120 seconds.
      * <p/>
-     * Invoke update() after setting for changes to apply immediately.
+     * Note: Make sure to set update interval before calling execute() method.
      *
-     * @param updateInterval Time interval in seconds between ad requests.
+     * @param updateInterval Time interval in seconds between ad requests. Valid values are between
+     * 12 to 120 (both inclusive).
      */
     public void setUpdateInterval(int updateInterval) {
-        this.updateInterval = updateInterval;
+        if (updateInterval > 0 && updateInterval <= 12) {
+            this.updateInterval = 12;
+            PMLogger.logEvent(
+                    "Valid update interval time is between 12 to 120 sec. Setting update interval to minimum 12 seconds",
+                    LogLevel.Debug);
+        } else if (updateInterval > 12 && updateInterval <= 120) {
+            this.updateInterval = updateInterval;
+            PMLogger.logEvent("Ad Update interval set to " + updateInterval + " seconds.",
+                              LogLevel.Debug);
+        } else if (updateInterval > 120) {
+            this.updateInterval = 120;
+            PMLogger.logEvent(
+                    "Valid update interval time is between 12 to 120 sec. Setting update interval to maximum 120 seconds",
+                    LogLevel.Debug);
+        }
     }
 
     /**
@@ -734,9 +774,6 @@ public class PMBannerAdView extends ViewGroup {
      */
     public void setShowCloseButton(boolean showCloseButton) {
         this.showCloseButton = showCloseButton;
-
-        // TODO: Make this apply immediately after the fact, vs on
-        // showInterstitial.
     }
 
     /**
@@ -984,13 +1021,14 @@ public class PMBannerAdView extends ViewGroup {
         }
 
         if (updateInterval > 0) {
-            adUpdateIntervalFuture = Background.getExecutor().scheduleAtFixedRate(new Runnable() {
+            /*adUpdateIntervalFuture = Background.getExecutor().scheduleAtFixedRate(new Runnable() {
                 @Override
                 public void run() {
                     internalUpdate();
                 }
 
-            }, 0, updateInterval, TimeUnit.SECONDS);
+            }, updateInterval, updateInterval, TimeUnit.SECONDS);*/
+            startUpdateTimer(updateInterval);
         }
 
         if (force) {
@@ -1015,6 +1053,24 @@ public class PMBannerAdView extends ViewGroup {
 
         internalUpdate();
     }
+
+    private synchronized void startUpdateTimer(long delay) {
+
+            if(adUpdateIntervalFuture==null) {
+                adUpdateIntervalFuture = Background.getExecutor()
+                                                   .scheduleAtFixedRate(new Runnable() {
+                                                                            @Override
+                                                                            public void run() {
+                                                                                internalUpdate();
+                                                                            }
+
+                                                                        },
+                                                                        delay,
+                                                                        updateInterval,
+                                                                        TimeUnit.SECONDS);
+            }
+    }
+
 
     /**
      * Resets instance state to it's default (doesn't reset configured parameters). Stops update
@@ -1693,8 +1749,23 @@ public class PMBannerAdView extends ViewGroup {
 
     @Override
     protected void onVisibilityChanged(View changedView, int visibility) {
+        super.onVisibilityChanged(changedView, visibility);
+
         if (visibility == View.VISIBLE) {
             performAdTracking();
+        }
+
+        //If Publisher enabled the update interval timer feature
+        if(updateInterval>0) {
+
+            if(visibility==View.VISIBLE) {
+                startUpdateTimer(remainingDelay);
+            }
+            else if(adUpdateIntervalFuture!=null) {
+                remainingDelay = adUpdateIntervalFuture.getDelay(TimeUnit.SECONDS);
+                adUpdateIntervalFuture.cancel(true);
+                adUpdateIntervalFuture = null;
+            }
         }
     }
 
@@ -2207,10 +2278,9 @@ public class PMBannerAdView extends ViewGroup {
 
         switch (placementType) {
             case Inline: {
-                // TODO: Support inline close button?
+                // No close button on inline
                 break;
             }
-
             case Interstitial: {
                 interstitialDialog.setCloseImage(closeButtonDrawable);
                 break;
@@ -2354,13 +2424,10 @@ public class PMBannerAdView extends ViewGroup {
                     mraidExpandDialog.dismiss();
                     runOnUiThread(new Runnable() {
                         public void run() {
-                            // TODO: Race condition... if the creative calls
-                            // close
-                            // this will invoke dismiss but the dismiss handler
-                            // will
-                            // also turn around and call close. One of them is
-                            // triggering
-                            // an NPE.
+                             /* TODO: Race condition...
+                             if the creative calls close this will invoke dismiss
+                             but the dismiss handler will also turn around and call close.
+                             One of them is triggering an NPE. */
                             if (mraidTwoPartExpand == false) {
                                 mraidExpandDialog.removeView(webView);
                                 addView(webView);
@@ -3078,7 +3145,6 @@ public class PMBannerAdView extends ViewGroup {
 
     private class LocationListener implements android.location.LocationListener {
         public LocationListener() {
-            // TODO Auto-generated constructor stub
         }
 
         @Override

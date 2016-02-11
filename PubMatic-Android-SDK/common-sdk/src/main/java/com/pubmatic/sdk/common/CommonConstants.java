@@ -1,20 +1,21 @@
 package com.pubmatic.sdk.common;
 
+@SuppressWarnings("unused")
 public class CommonConstants {
 
-	public static final String SDK_VERSION = "5.0.0";
-    public static final String SDK_VERSION_ID = "1";
+	public static final String SDK_VERSION = "5.0.1";
+    public static final String SDK_VERSION_ID = "2";
 
 	public enum CONTENT_TYPE {
 		JSON, XML, URL_ENCODED, INVALID
 	}
 
-	public static enum Method {
+	public enum Method {
 		GET, POST
-	};
+	}
 
 	// All type of network request
-	public static enum AD_REQUEST_TYPE {
+	public enum AD_REQUEST_TYPE {
 
 
 		 PUB_BANNER, PUB_NATIVE, PUB_INTERSTITIAL, PUB_RICH_MEDIA,
@@ -44,6 +45,7 @@ public class CommonConstants {
 	// Common parameters for all platforms
 	public static final String xml_layout_attribute_logLevel = "logLevel";
 	public static final String xml_layout_attribute_channel = "channel";
+    public static final String xml_layout_attribute_update_interval = "updateInterval";
 
 	// Mocean specific common parameters
 	public static final String REQUESTPARAM_AGE = "age";
@@ -181,9 +183,9 @@ public class CommonConstants {
 	/**
 	 * Enum to define the supported Mediation network.
 	 */
-	public static enum MediationNetwork {
+	public enum MediationNetwork {
 		FACEBOOK_AUDIENCE_NETWORK, MOPUB
-	};
+	}
 
 	public class PubError {
 

@@ -8,36 +8,48 @@ import android.widget.RelativeLayout.LayoutParams;
 
 import com.pubmatic.sampleapp.R;
 import com.pubmatic.sdk.banner.PMBannerAdView;
-import com.pubmatic.sdk.common.pubmatic.PUBAdSize;
 import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest;
+import com.pubmatic.sdk.common.PMLogger;
+import com.pubmatic.sdk.common.pubmatic.PUBAdSize;
 
 public class PubRuntimeBannerActivity extends Activity {
 
-	PMBannerAdView banner;
+    PMBannerAdView banner;
 
-	@SuppressLint("NewApi")
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.pubmatic_activity_runtime_banner);
+    @SuppressLint("NewApi")
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.pubmatic_activity_runtime_banner);
 
-		banner = new PMBannerAdView(this);
+        banner = new PMBannerAdView(this);
 
-		RelativeLayout layout = (RelativeLayout) findViewById(R.id.parent);
-		LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT,
-				LayoutParams.WRAP_CONTENT);
-		params.setLayoutDirection(RelativeLayout.ALIGN_PARENT_TOP);
-		layout.addView(banner, params);
+        RelativeLayout layout = (RelativeLayout) findViewById(R.id.parent);
+        LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT,
+                                               LayoutParams.WRAP_CONTENT);
+        params.setLayoutDirection(RelativeLayout.ALIGN_PARENT_TOP);
+        layout.addView(banner, params);
+        PMLogger.setLogLevel(PMLogger.LogLevel.Debug);
 
-		PubMaticBannerAdRequest adRequest = PubMaticBannerAdRequest
-				.createPubMaticBannerAdRequest(PubRuntimeBannerActivity.this,
-											   "31400",
-											   "32504",
-											   "439662");
-		adRequest.setAdSize(PUBAdSize.PUBBANNER_SIZE_320x50);
-		banner.setUseInternalBrowser(true);
-		banner.execute(adRequest);
+        PubMaticBannerAdRequest adRequest = PubMaticBannerAdRequest.createPubMaticBannerAdRequest(
+                PubRuntimeBannerActivity.this,
+                "31400",
+                "32504",
+                "439662");
+        adRequest.setAdSize(PUBAdSize.PUBBANNER_SIZE_320x50);
+        banner.setUseInternalBrowser(true);
+        banner.setUpdateInterval(15);
+        banner.execute(adRequest);
 
-	}
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (banner != null) {
+            // Note: It is mandatory to call reset() method before activity gets destroyed
+            banner.reset();
+        }
+    }
 
 }

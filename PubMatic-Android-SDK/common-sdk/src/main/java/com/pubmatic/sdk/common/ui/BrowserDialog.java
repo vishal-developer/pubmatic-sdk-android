@@ -65,7 +65,7 @@ public class BrowserDialog extends Dialog {
     private android.webkit.WebView webView = null;
     RelativeLayout mContentView;
 
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings({"deprecation", "ResourceType"})
 	@TargetApi(23) 
     @SuppressLint("ClickableViewAccessibility")
     public BrowserDialog(Context context, String url, Handler handler) {
