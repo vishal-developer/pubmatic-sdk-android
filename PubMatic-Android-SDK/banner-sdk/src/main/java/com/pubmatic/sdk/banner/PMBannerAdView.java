@@ -328,6 +328,7 @@ public class PMBannerAdView extends ViewGroup {
     private Location location;
     // Configuration
     private int updateInterval = 0;
+    private int viewVisibility = View.INVISIBLE;
     private Map<String, String> adRequestDefaultParameters = new HashMap<String, String>();
 
     private boolean useInternalBrowser = false;
@@ -1740,12 +1741,39 @@ public class PMBannerAdView extends ViewGroup {
     }
 
     @Override
+    public void onWindowFocusChanged(boolean hasWindowFocus) {
+        super.onWindowFocusChanged(hasWindowFocus);
+
+        if (hasWindowFocus) {
+            PMLogger.logEvent("Window focus gain ad is VISIBLE", LogLevel.Debug);
+            setViewVisibility(View.VISIBLE);
+        } else {
+            PMLogger.logEvent("Window focus lost ad is INVISIBLE", LogLevel.Debug);
+            setViewVisibility(View.INVISIBLE);
+        }
+
+    }
+
+    @Override
     protected void onVisibilityChanged(View changedView, int visibility) {
         super.onVisibilityChanged(changedView, visibility);
 
         if (visibility == View.VISIBLE) {
+            PMLogger.logEvent("Ad view is VISIBLE", LogLevel.Debug);
             performAdTracking();
-        }
+        } else
+            PMLogger.logEvent("Ad view is INVISIBLE", LogLevel.Debug);
+
+        //If Publisher enabled the update interval timer feature
+        setViewVisibility(visibility);
+    }
+
+    private void setViewVisibility(int visibility) {
+
+        if(viewVisibility==visibility)
+            return;
+
+        viewVisibility = visibility;
 
         //If Publisher enabled the update interval timer feature
         if(updateInterval>0) {
