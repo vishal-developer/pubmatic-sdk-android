@@ -91,23 +91,22 @@ public class AdDescriptor {
 	 * In case of receiving ad : { "type": "thirdparty", "subtype": "native",
 	 * "creativeid": 1, "feedid": 1115, "native": { "ver": 1, "link": { "url":
 	 * "http:\/\/ads.moceanads.com\/1\/redir\/9bde02d0-6017-11e4-9df7-005056967c
-	 * 3 5 \ / 0 \ / 1
-	 * " , "fallback": "http:\/\/example.com\/fallback", "clicktrackers": [
+	 * 3 5 \ / 0 \ / 1 " , "fallback": "http:\/\/example.com\/fallback", "
+	 * clicktrackers": [
 	 * "http:\/\/clicktracker.com\/main\/9bde02d0-6017-11e4-9df7-005056967c35" ]
 	 * }, "assets": [ { "id": 2, "img": { "url": "http:\/\/example_320x50.png",
 	 * "w": 320, "h": 50 }, "link": { "url":
 	 * "http:\/\/ads.moceanads.com\/1\/redir\/9bde02d0-6017-11e4-9df7-005056967c
-	 * 3 5 \ / 1 \ / 1
-	 * " , "fallback": "http:\/\/example.com\/custom_fallback", "clicktrackers
-	 * ": [
+	 * 3 5 \ / 1 \ / 1 " , "fallback": "http:\/\/example.com\/custom_fallback
+	 * ", "clicktrackers ": [
 	 * "http:\/\/clicktracker.com\/custom\/9bde02d0-6017-11e4-9df7-005056967c35"
 	 * ] } }, { "id": 3, "title": { "text": "Native title" }, "link": { "url":
 	 * "http:\/\/ads.moceanads.com\/1\/redir\/9bde02d0-6017-11e4-9df7-005056967c
-	 * 3 5 \ / 2 \ / 1 " } }, { "id": 4, "data": { "value": "Native
-	 * description" }, "link": { "url":
+	 * 3 5 \ / 2 \ / 1 " } }, { "id": 4, "data": { "value": "Native description
+	 * " }, "link": { "url":
 	 * "http:\/\/ads.moceanads.com\/1\/redir\/9bde02d0-6017-11e4-9df7-005056967c
-	 * 3 5 \ / 3 \ / 1
-	 * " } }, { "id": 6, "data": { "value": "5" }, "link": { "url":
+	 * 3 5 \ / 3 \ / 1 " } }, { "id": 6, "data": { "value": "5" }, "link": { "
+	 * url":
 	 * "http:\/\/ads.moceanads.com\/1\/redir\/9bde02d0-6017-11e4-9df7-005056967c
 	 * 3 5 \ / 4 \ / 1 " } } ], "imptrackers": [
 	 * "http:\/\/ads.moceanads.com\/1\/img\/9bde02d0-6017-11e4-9df7-005056967c35
@@ -173,8 +172,7 @@ public class AdDescriptor {
 				JSONObject responseObj = new JSONObject(response);
 				JSONArray ads = responseObj.getJSONArray(RESPONSE_ADS);
 
-				if (ads != null && (ad = ads.optJSONObject(0)) != null
-						&& ad.has(RESPONSE_ERROR)) {
+				if (ads != null && (ad = ads.optJSONObject(0)) != null && ad.has(RESPONSE_ERROR)) {
 					// Check whether there is an error. If the error format is:
 					/* {"ads":[{ "error": "<error message>"}]} */
 					// @formatter:on
@@ -203,34 +201,26 @@ public class AdDescriptor {
 					// Parse third-party response
 					mediationObj = ad.optJSONObject(RESPONSE_MEDIATION);
 					if (mediationObj != null) {
-						mediationPartnerName = mediationObj
-								.optString(RESPONSE_MEDIATION_NAME);
-						mediationSource = mediationObj
-								.optString(RESPONSE_MEDIATION_SOURCE);
+						mediationPartnerName = mediationObj.optString(RESPONSE_MEDIATION_NAME);
+						mediationSource = mediationObj.optString(RESPONSE_MEDIATION_SOURCE);
 
 						// Parse id for third party mediation
-						int mediationNetworkId = mediationObj.optInt(ID_STRING,
-								-1);
+						int mediationNetworkId = mediationObj.optInt(ID_STRING, -1);
 						if (mediationNetworkId != -1) {
 							mediationId = String.valueOf(mediationNetworkId);
 						}
-						mediationData = mediationObj
-								.optJSONObject(RESPONSE_MEDIATION_DATA);
+						mediationData = mediationObj.optJSONObject(RESPONSE_MEDIATION_DATA);
 						if (mediationData != null) {
-							adUnitId = mediationData
-									.optString(RESPONSE_MEDIATION_ADID);
+							adUnitId = mediationData.optString(RESPONSE_MEDIATION_ADID);
 						}
 
 						/* Parse impression trackers : for mediation response */
-						JSONArray imptracker = mediationObj
-								.optJSONArray(RESPONSE_IMPTRACKERS);
+						JSONArray imptracker = mediationObj.optJSONArray(RESPONSE_IMPTRACKERS);
 						mediationObj.remove(RESPONSE_IMPTRACKERS);
-						for (int i = 0; imptracker != null
-								&& i < imptracker.length(); i++) {
+						for (int i = 0; imptracker != null && i < imptracker.length(); i++) {
 							String url = imptracker.optString(i);
 							if (impressionTrackerStringArray == null) {
-								impressionTrackerStringArray = new String[imptracker
-										.length()];
+								impressionTrackerStringArray = new String[imptracker.length()];
 							}
 
 							if (url != null) {
@@ -240,19 +230,15 @@ public class AdDescriptor {
 						/* Parse impression trackers Ends */
 
 						// Parse jsTracker
-						jsTrackerString = mediationObj
-								.optString(RESPONSE_JSTRACKER);
+						jsTrackerString = mediationObj.optString(RESPONSE_JSTRACKER);
 
 						/* Parse click trackers : for mediation response */
-						JSONArray clktrackerArray = mediationObj
-								.optJSONArray(RESPONSE_CLICKTRACKERS);
+						JSONArray clktrackerArray = mediationObj.optJSONArray(RESPONSE_CLICKTRACKERS);
 						mediationObj.remove(RESPONSE_CLICKTRACKERS);
-						for (int i = 0; clktrackerArray != null
-								&& i < clktrackerArray.length(); i++) {
+						for (int i = 0; clktrackerArray != null && i < clktrackerArray.length(); i++) {
 							String url = clktrackerArray.optString(i);
 							if (clickTrackersStringArray == null) {
-								clickTrackersStringArray = new String[clktrackerArray
-										.length()];
+								clickTrackersStringArray = new String[clktrackerArray.length()];
 							}
 
 							if (url != null) {
@@ -268,9 +254,8 @@ public class AdDescriptor {
 					 * "type=native" OR "type=thirdparty && subtype=native".
 					 */
 					if ((TextUtils.equals(RESPONSE_NATIVE_STRING, type))
-							|| ((TextUtils.equals(RESPONSE_THIRDPARTY_STRING,
-									type)) && (TextUtils.equals(
-									RESPONSE_NATIVE_STRING, subType)))) {
+							|| ((TextUtils.equals(RESPONSE_THIRDPARTY_STRING, type))
+									&& (TextUtils.equals(RESPONSE_NATIVE_STRING, subType)))) {
 						/* Get the native object */
 						nativeObj = ad.getJSONObject(RESPONSE_NATIVE_STRING);
 
@@ -278,15 +263,12 @@ public class AdDescriptor {
 							nativeVersion = nativeObj.optInt(RESPONSE_VER);
 
 							/* Parse impression trackers starts */
-							JSONArray imptracker = nativeObj
-									.optJSONArray(RESPONSE_IMPTRACKERS);
+							JSONArray imptracker = nativeObj.optJSONArray(RESPONSE_IMPTRACKERS);
 							nativeObj.remove(RESPONSE_IMPTRACKERS);
-							for (int i = 0; imptracker != null
-									&& i < imptracker.length(); i++) {
+							for (int i = 0; imptracker != null && i < imptracker.length(); i++) {
 								String url = imptracker.optString(i);
 								if (impressionTrackerStringArray == null) {
-									impressionTrackerStringArray = new String[imptracker
-											.length()];
+									impressionTrackerStringArray = new String[imptracker.length()];
 								}
 
 								if (url != null) {
@@ -296,28 +278,21 @@ public class AdDescriptor {
 							/* Parse impression trackers Ends */
 
 							// Parse jsTracker
-							jsTrackerString = nativeObj
-									.optString(RESPONSE_JSTRACKER);
+							jsTrackerString = nativeObj.optString(RESPONSE_JSTRACKER);
 
 							/* Parse link object and contents */
-							JSONObject linkObj = nativeObj
-									.optJSONObject(RESPONSE_LINK);
+							JSONObject linkObj = nativeObj.optJSONObject(RESPONSE_LINK);
 							if (linkObj != null) {
 								clickUrl = linkObj.optString(RESPONSE_URL);
-								fallbackUrl = linkObj
-										.optString(RESPONSE_FALLBACK);
+								fallbackUrl = linkObj.optString(RESPONSE_FALLBACK);
 
 								/* Parse click trackers */
-								JSONArray clktrackerArray = linkObj
-										.optJSONArray(RESPONSE_CLICKTRACKERS);
+								JSONArray clktrackerArray = linkObj.optJSONArray(RESPONSE_CLICKTRACKERS);
 								linkObj.remove(RESPONSE_CLICKTRACKERS);
-								for (int i = 0; clktrackerArray != null
-										&& i < clktrackerArray.length(); i++) {
-									String clickTrackUrl = clktrackerArray
-											.optString(i);
+								for (int i = 0; clktrackerArray != null && i < clktrackerArray.length(); i++) {
+									String clickTrackUrl = clktrackerArray.optString(i);
 									if (clickTrackersStringArray == null) {
-										clickTrackersStringArray = new String[clktrackerArray
-												.length()];
+										clickTrackersStringArray = new String[clktrackerArray.length()];
 									}
 
 									if (clickTrackUrl != null) {
@@ -328,8 +303,7 @@ public class AdDescriptor {
 							}
 
 							// Parse assets.
-							JSONArray assets = nativeObj
-									.optJSONArray(NATIVE_ASSETS_STRING);
+							JSONArray assets = nativeObj.optJSONArray(NATIVE_ASSETS_STRING);
 							if (assets != null && assets.length() > 0) {
 								JSONObject asset = null;
 								int assetId = -1;
@@ -338,36 +312,28 @@ public class AdDescriptor {
 									assetId = asset.optInt(ID_STRING, -1);
 
 									if (!asset.isNull(RESPONSE_IMG)) {
-										JSONObject imageAssetObj = asset
-												.optJSONObject(RESPONSE_IMG);
+										JSONObject imageAssetObj = asset.optJSONObject(RESPONSE_IMG);
 										ImageAssetResponse imageAsset = new ImageAssetResponse();
 										imageAsset.assetId = assetId;
-										imageAsset.setImage(Image
-												.getImage(imageAssetObj));
-										if (!TextUtils.isEmpty(imageAsset
-												.getImage().url)) {
+										imageAsset.setImage(Image.getImage(imageAssetObj));
+										if (!TextUtils.isEmpty(imageAsset.getImage().url)) {
 											nativeAssetList.add(imageAsset);
 										}
 										continue;
 									} else if (!asset.isNull(RESPONSE_TITLE)) {
-										JSONObject titleAssetObj = asset
-												.optJSONObject(RESPONSE_TITLE);
+										JSONObject titleAssetObj = asset.optJSONObject(RESPONSE_TITLE);
 										TitleAssetResponse titleAsset = new TitleAssetResponse();
 										titleAsset.assetId = assetId;
-										titleAsset.titleText = titleAssetObj
-												.optString(RESPONSE_TEXT);
-										if (!TextUtils
-												.isEmpty(titleAsset.titleText)) {
+										titleAsset.titleText = titleAssetObj.optString(RESPONSE_TEXT);
+										if (!TextUtils.isEmpty(titleAsset.titleText)) {
 											nativeAssetList.add(titleAsset);
 										}
 										continue;
 									} else if (!asset.isNull(RESPONSE_DATA)) {
-										JSONObject dataAssetObj = asset
-												.optJSONObject(RESPONSE_DATA);
+										JSONObject dataAssetObj = asset.optJSONObject(RESPONSE_DATA);
 										DataAssetResponse dataAsset = new DataAssetResponse();
 										dataAsset.assetId = assetId;
-										dataAsset.value = dataAssetObj
-												.optString(RESPONSE_VALUE);
+										dataAsset.value = dataAssetObj.optString(RESPONSE_VALUE);
 										if (!TextUtils.isEmpty(dataAsset.value)) {
 											nativeAssetList.add(dataAsset);
 										}
@@ -385,31 +351,21 @@ public class AdDescriptor {
 				 * impression and click trackers.
 				 */
 				// @formatter:off
-				if ((TextUtils.equals(RESPONSE_NATIVE_STRING, type) || (TextUtils
-						.equals(RESPONSE_THIRDPARTY_STRING, type) && TextUtils
-						.equals(RESPONSE_NATIVE_STRING, subType)))
-						&& !TextUtils.isEmpty(clickUrl)
-						&& nativeAssetList != null
-						&& nativeAssetList.size() > 0) {
-					nativeAdDescriptor = new NativeAdDescriptor(type,
-							nativeVersion, clickUrl, fallbackUrl,
-							impressionTrackerStringArray,
-							clickTrackersStringArray, jsTrackerString,
-							nativeAssetList);
+				if ((TextUtils.equals(RESPONSE_NATIVE_STRING, type)
+						|| (TextUtils.equals(RESPONSE_THIRDPARTY_STRING, type)
+								&& TextUtils.equals(RESPONSE_NATIVE_STRING, subType)))
+						&& !TextUtils.isEmpty(clickUrl) && nativeAssetList != null && nativeAssetList.size() > 0) {
+					nativeAdDescriptor = new NativeAdDescriptor(type, nativeVersion, clickUrl, fallbackUrl,
+							impressionTrackerStringArray, clickTrackersStringArray, jsTrackerString, nativeAssetList);
 
 					nativeAdDescriptor.setNativeAdJSON(response);
-				} else if ((TextUtils.equals(RESPONSE_THIRDPARTY_STRING, type) && TextUtils
-						.equals(RESPONSE_MEDIATION, subType))
-						&& !TextUtils.isEmpty(mediationPartnerName)
-						&& (!TextUtils.isEmpty(mediationId) || !TextUtils
-								.isEmpty(creativeId))
-						&& !TextUtils.isEmpty(adUnitId)
-						&& !TextUtils.isEmpty(mediationSource)) {
-					nativeAdDescriptor = new NativeAdDescriptor(type,
-							creativeId, mediationPartnerName, mediationId,
-							adUnitId, mediationSource,
-							impressionTrackerStringArray,
-							clickTrackersStringArray, jsTrackerString, feedId);
+				} else if ((TextUtils.equals(RESPONSE_THIRDPARTY_STRING, type)
+						&& TextUtils.equals(RESPONSE_MEDIATION, subType)) && !TextUtils.isEmpty(mediationPartnerName)
+						&& (!TextUtils.isEmpty(mediationId) || !TextUtils.isEmpty(creativeId))
+						&& !TextUtils.isEmpty(adUnitId) && !TextUtils.isEmpty(mediationSource)) {
+					nativeAdDescriptor = new NativeAdDescriptor(type, creativeId, mediationPartnerName, mediationId,
+							adUnitId, mediationSource, impressionTrackerStringArray, clickTrackersStringArray,
+							jsTrackerString, feedId);
 					nativeAdDescriptor.setNativeAdJSON(response);
 				}
 				// @formatter:on
@@ -457,8 +413,7 @@ public class AdDescriptor {
 	 * @throws IOException
 	 * @throws XmlPullParserException
 	 */
-	public static AdDescriptor parseDescriptor(XmlPullParser parser)
-			throws XmlPullParserException, IOException {
+	public static AdDescriptor parseDescriptor(XmlPullParser parser) throws XmlPullParserException, IOException {
 		Map<String, String> adInfo = new HashMap<String, String>();
 		ArrayList<String> impressionTrackers = new ArrayList<String>();
 		ArrayList<String> clickTrackers = new ArrayList<String>();
@@ -469,6 +424,10 @@ public class AdDescriptor {
 
 		String subAdType = parser.getAttributeValue(null, "subtype");
 		adInfo.put("subtype", subAdType);
+
+		String width = parser.getAttributeValue(null, "width");
+		String height = parser.getAttributeValue(null, "height");
+		setImageWidthAndHeight(adInfo, width, height);
 
 		// read past start tag
 		parser.next();
@@ -484,20 +443,14 @@ public class AdDescriptor {
 				break;
 			} else if (eventType == XmlPullParser.START_TAG) {
 				String subType = parser.getAttributeValue(null, "type");
-				String width = parser.getAttributeValue(null, "width");
-				String height = parser.getAttributeValue(null, "height");
 				if (TextUtils.isEmpty(subType) == false) {
 					adInfo.put(name + "Type", subType);
 				}
-				if (TextUtils.isEmpty(width) == false && width != null) {
-					Log.d("Test", "Image in view widht" + width);
-					adInfo.put("width", width);
+				if (name.equalsIgnoreCase("img") && (adInfo.get("width") == null || adInfo.get("height") == null)) {
+					String imageWidth = parser.getAttributeValue(null, "width");
+					String imageHeight = parser.getAttributeValue(null, "height");
+					setImageWidthAndHeight(adInfo, imageWidth, imageHeight);
 				}
-				if (TextUtils.isEmpty(height) == false && height != null) {
-					Log.d("Test", "Image in view height" + height);
-					adInfo.put("height", height);
-				}
-
 				parser.next();
 				XmlPullParser mParser = parser;
 				int newEventType = mParser.getEventType();
@@ -507,8 +460,7 @@ public class AdDescriptor {
 						while (newEventType != XmlPullParser.END_DOCUMENT) {
 							String valueIT = "";
 							String newName = mParser.getName();
-							if (newEventType == XmlPullParser.END_TAG
-									&& "impressiontrackers".equals(newName)) {
+							if (newEventType == XmlPullParser.END_TAG && "impressiontrackers".equals(newName)) {
 								break;
 							} else if (eventType == XmlPullParser.START_TAG) {
 								if (mParser.getEventType() == XmlPullParser.TEXT) {
@@ -529,8 +481,7 @@ public class AdDescriptor {
 						while (newEventType != XmlPullParser.END_DOCUMENT) {
 							String valueCT = "";
 							String newName = parser.getName();
-							if (newEventType == XmlPullParser.END_TAG
-									&& "clicktrackers".equals(newName)) {
+							if (newEventType == XmlPullParser.END_TAG && "clicktrackers".equals(newName)) {
 								break;
 							} else if (eventType == XmlPullParser.START_TAG) {
 								if (mParser.getEventType() == XmlPullParser.TEXT) {
@@ -569,8 +520,18 @@ public class AdDescriptor {
 		return adDescriptor;
 	}
 
-	private static MediationData parseMediation(XmlPullParser mParser)
-			throws XmlPullParserException, IOException {
+	private static void setImageWidthAndHeight(Map<String, String> adInfo, String imageWidth, String imageHeight) {
+		if (TextUtils.isEmpty(imageWidth) == false && imageWidth != null) {
+			Log.d("Test", "Image in view widht" + imageWidth);
+			adInfo.put("width", imageWidth);
+		}
+		if (TextUtils.isEmpty(imageHeight) == false && imageHeight != null) {
+			Log.d("Test", "Image in view height" + imageHeight);
+			adInfo.put("height", imageHeight);
+		}
+	}
+
+	private static MediationData parseMediation(XmlPullParser mParser) throws XmlPullParserException, IOException {
 
 		MediationData mediationData = new MediationData();
 		int eventType = mParser.getEventType();
@@ -594,11 +555,9 @@ public class AdDescriptor {
 						if (mParser.getEventType() == XmlPullParser.START_TAG) {
 							String id = mParser.getName();
 							if ("adid".equals(id)) {
-								mediationData
-										.setMediationAdId(getXmlValue(mParser));
+								mediationData.setMediationAdId(getXmlValue(mParser));
 							}
-						} else if (mParser.getEventType() == XmlPullParser.END_TAG
-								&& "adid".equals(fieldName)) {
+						} else if (mParser.getEventType() == XmlPullParser.END_TAG && "adid".equals(fieldName)) {
 							break;
 						}
 					}
@@ -606,8 +565,7 @@ public class AdDescriptor {
 				} else {
 					seekToCurrentEndTag(mParser);
 				}
-			} else if (mParser.getEventType() == XmlPullParser.END_TAG
-					&& "mediation".equals(fieldName)) {
+			} else if (mParser.getEventType() == XmlPullParser.END_TAG && "mediation".equals(fieldName)) {
 				break;
 			}
 
@@ -625,8 +583,7 @@ public class AdDescriptor {
 	 * @throws IOException
 	 * @throws XmlPullParserException
 	 */
-	private static String getXmlValue(XmlPullParser parser) throws IOException,
-			XmlPullParserException {
+	private static String getXmlValue(XmlPullParser parser) throws IOException, XmlPullParserException {
 		if (parser.next() == XmlPullParser.TEXT) {
 			String result = parser.getText();
 			parser.nextTag();
@@ -644,12 +601,10 @@ public class AdDescriptor {
 	 * @throws XmlPullParserException
 	 * @throws IOException
 	 */
-	private static void seekToCurrentEndTag(XmlPullParser parser)
-			throws XmlPullParserException, IOException {
+	private static void seekToCurrentEndTag(XmlPullParser parser) throws XmlPullParserException, IOException {
 
 		if (parser.getEventType() != XmlPullParser.START_TAG) {
-			throw new IllegalStateException(
-					"Current event of parser is not pointing to XmlPullParser.START_TAG");
+			throw new IllegalStateException("Current event of parser is not pointing to XmlPullParser.START_TAG");
 		}
 		int remainingTag = 1;
 		while (remainingTag != 0) {

@@ -203,3 +203,8 @@ Enabled multi-pixel tracking for SDK.
 - Added a fix for protocol independent ad creatives.
 - Protocol independent creatives url's will now use the same protocol that of ad server base url (i.e. http:// or https://). 
 
+-------
+4.3.7
+-------
+
+- Added functionality for dynamic ad slot based on image size for banner ads, richmedia ads & third party ad feeds.
