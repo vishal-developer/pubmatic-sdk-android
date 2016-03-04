@@ -78,19 +78,6 @@ public abstract class AdRequest {
 	 */
 	protected void setupPostData() {
 
-		if(mCustomParams!=null && !mCustomParams.isEmpty()) {
-			Set<String> set = mCustomParams.keySet();
-			Iterator<String> iterator = set.iterator();
-			while(iterator.hasNext()) {
-				String key = iterator.next();
-				List<String> valueList = mCustomParams.get(key);
-				for(String s : valueList) {
-					putPostData(key,s);
-				}
-
-			}
-		}
-
 	}
 
 	/**

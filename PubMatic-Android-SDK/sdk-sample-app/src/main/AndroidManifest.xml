@@ -28,6 +28,14 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".banner.PhoenixStaticBannerActivity"
+            android:label="@string/banner_ad_demo">
+        </activity>
+        <activity
+            android:name=".banner.PhoenixRuntimeBannerActivity"
+            android:label="@string/banner_ad_demo">
+        </activity>
+        <activity
             android:name=".banner.PubStaticBannerActivity"
             android:label="@string/banner_ad_demo">
         </activity>

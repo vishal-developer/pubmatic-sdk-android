@@ -6,18 +6,17 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.pubmatic.sampleapp.banner.PubStaticBannerActivity"
+    tools:context="com.pubmatic.sampleapp.banner.PhoenixStaticBannerActivity"
     android:background="#FFF" >
 
     <com.pubmatic.sdk.banner.PMBannerAdView
         android:layout_width="match_parent"
-        android:layout_height="250dp"
-        channel="pubmatic"
-        pubId="31400"
-        siteId="32504"
-        adId="439662"
-        adWidth="320"
-        adHeight="50"
+        android:layout_height="wrap_content"
+        channel="phoenix"
+        adUnitId="555:fe29119e-894e-4122-8dcd-b5cb7350352a"
+        impressionId="DIV1"
+        adWidth="970"
+        adHeight="250"
         android:layout_alignParentTop="true" />
 
 </RelativeLayout>

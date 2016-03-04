@@ -43,9 +43,16 @@ public class CommonConstants {
 	public static final String AD_HEIGHT = "adHeight";
 
 	// Common parameters for all platforms
-	public static final String xml_layout_attribute_logLevel = "logLevel";
-	public static final String xml_layout_attribute_channel = "channel";
+	public static final String xml_layout_attribute_logLevel 		= "logLevel";
+	public static final String xml_layout_attribute_channel 		= "channel";
     public static final String xml_layout_attribute_update_interval = "updateInterval";
+
+	// Phoenix specific parameters
+	public static final String REQUESTPARAM_AD_UNIT_ID 		= "adUnitId";
+	public static final String REQUESTPARAM_IMPRESSION_ID 	= "impressionId";
+	public static final String REQUESTPARAM_AD_SIZE 		= "adSize";
+	public static final String REQUESTPARAM_AD_WIDTH 		= "adWidth";
+	public static final String REQUESTPARAM_AD_HEIGHT 		= "adHeight";
 
 	// Mocean specific common parameters
 	public static final String REQUESTPARAM_AGE = "age";
@@ -61,6 +68,7 @@ public class CommonConstants {
 	public static final String REQUESTPARAM_KEY = "key";
 	public static final String REQUESTPARAM_TYPE = "type";
 	public static final String REQUESTPARAM_ZONE = "zone";
+	public static final String REQUESTPARAM_IP = "ip";
 	public static final String REQUESTPARAM_TEST = "test";
 	public static final String REQUESTPARAM_LATITUDE = "lat";
 	public static final String REQUESTPARAM_LONGITUDE = "long";
@@ -155,7 +163,7 @@ public class CommonConstants {
 	public static final String REQUEST_CONTENT_LANG_EN = "en";
 
 	public static final String MOCEAN_AD_NETWORK_URL = "http://ads.moceanads.com/ad";
-	public static final String PHOENIX_AD_NETWORK_URL = "http://ads.phoenix.com/ad";
+	public static final String PHOENIX_AD_NETWORK_URL = "http://192.82.243.86:8090/ad";//http://ae.pubmatic.com/ad";
 	public static final String PUBMATIC_AD_NETWORK_URL = "http://showads.pubmatic.com/AdServer/AdServerServlet";
 
 	public static final int INVALID_INT = -999;

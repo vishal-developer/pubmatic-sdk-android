@@ -1190,6 +1190,7 @@ public class PMBannerAdView extends ViewGroup {
         HttpRequest httpRequest = mAdController.getRRFormatter().formatRequest(adRequest);
 
         PMLogger.logEvent("Ad request:" + httpRequest.getRequestUrl(), LogLevel.Debug);
+        PMLogger.logEvent("Ad request body:" + httpRequest.getPostData(), LogLevel.Debug);
 
         HttpHandler requestProcessor = new HttpHandler(networkListener, httpRequest);
         Background.getExecutor().execute(requestProcessor);

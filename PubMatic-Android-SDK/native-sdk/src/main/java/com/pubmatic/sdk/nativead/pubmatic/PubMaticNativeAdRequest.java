@@ -14,8 +14,6 @@ import static com.pubmatic.sdk.common.CommonConstants.REQUEST_TYPE;
 import static com.pubmatic.sdk.common.CommonConstants.REQUEST_VER;
 import static com.pubmatic.sdk.common.CommonConstants.REQUEST_VER_VALUE_1;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 
@@ -42,16 +40,10 @@ import com.pubmatic.sdk.nativead.bean.PMTitleAssetRequest;
 
 public class PubMaticNativeAdRequest  extends PubMaticAdRequest {
 
-	private final int timeout;
-	private final String userAgent;
 	private List<PMAssetRequest> requestedAssetsList = null;
 
-	private String pubId;
-	private String siteId;
-	private String adId;
 	private Context context;
 	private boolean test = false;
-	private final String requestUrl;
 
 
 	public static PubMaticNativeAdRequest createPubMaticNativeAdRequest(
@@ -70,28 +62,18 @@ public class PubMaticNativeAdRequest  extends PubMaticAdRequest {
 		WebView webView = new WebView(context);
 		String userAgent = webView.getSettings().getUserAgentString();
 
-		PubMaticNativeAdRequest adRequest = new PubMaticNativeAdRequest(context, CommonConstants.NETWORK_TIMEOUT_SECONDS,
-				CommonConstants.PUBMATIC_AD_NETWORK_URL, userAgent, null, requestedAssets);
+		PubMaticNativeAdRequest adRequest = new PubMaticNativeAdRequest(context,
+				CommonConstants.PUBMATIC_AD_NETWORK_URL, requestedAssets);
 		adRequest.setPubId(pubId);
 		adRequest.setSiteId(siteId);
 		adRequest.setAdId(adId);
 		return adRequest;
 	}
 
-	private PubMaticNativeAdRequest(Context context) {
+	private PubMaticNativeAdRequest(Context context, String adServerUrl,
+									List<PMAssetRequest> requestedAssets) {
 		super(context);
 		this.context = context;
-		this.timeout = 0;
-		this.userAgent = null;
-		this.requestUrl = null;
-	}
-
-	private PubMaticNativeAdRequest(Context context, int timeout, String adServerUrl, String userAgent,
-			Map<String, String> parameters, List<PMAssetRequest> requestedAssets) {
-		super(context);
-		this.context = context;
-		this.timeout = timeout;
-		this.userAgent = userAgent;
 		this.requestedAssetsList = requestedAssets;
 
 		StringBuilder sb = new StringBuilder();
@@ -101,31 +83,6 @@ public class PubMaticNativeAdRequest  extends PubMaticAdRequest {
 		} else {
 			sb.append(CommonConstants.QUESTIONMARK);
 		}
-		if(parameters!=null) {
-			try {
-				for (Map.Entry<String, String> entry : parameters.entrySet()) {
-					if (entry != null && !TextUtils.isEmpty(entry.getKey())) {
-						sb.append(URLEncoder.encode(entry.getKey(),
-								CommonConstants.ENCODING_UTF_8));
-						sb.append(CommonConstants.EQUAL);
-						if (!TextUtils.isEmpty(entry.getValue())) {
-							sb.append(URLEncoder.encode(entry.getValue(),
-									CommonConstants.ENCODING_UTF_8));
-						}
-						sb.append(CommonConstants.AMPERSAND);
-					}
-				}
-			} catch(UnsupportedEncodingException e) {
-                // NOOP
-			}
-		}
-		sb.setLength(sb.length() - 1);
-
-		requestUrl = sb.toString();
-	}
-
-	public String getRequestUrl() {
-		return requestUrl;
 	}
 
 	/**
@@ -145,30 +102,6 @@ public class PubMaticNativeAdRequest  extends PubMaticAdRequest {
 
 	}
 
-	public String getPubId() {
-		return pubId;
-	}
-
-	public void setPubId(String id) {
-		this.pubId = id;
-	}
-
-	public String getSiteId() {
-		return siteId;
-	}
-
-	public void setSiteId(String id) {
-		this.siteId = id;
-	}
-
-	public String getAdId() {
-		return adId;
-	}
-
-	public void setAdId(String id) {
-		this.adId = id;
-	}
-
 	public void setWidth(int width) {
 		super.setWidth(width);
 	}
@@ -183,7 +116,7 @@ public class PubMaticNativeAdRequest  extends PubMaticAdRequest {
 
 	@Override
 	public boolean checkMandatoryParams() {
-		return !TextUtils.isEmpty(pubId) && !TextUtils.isEmpty(siteId) && !TextUtils.isEmpty(adId);
+		return !TextUtils.isEmpty(mPubId) && !TextUtils.isEmpty(mSiteId) && !TextUtils.isEmpty(mAdId);
 	}
 
 	public void setCustomParams(Map<String, List<String>> customParams) {
@@ -216,10 +149,7 @@ public class PubMaticNativeAdRequest  extends PubMaticAdRequest {
 	@Override
 	protected void setupPostData() {
 
-
-		putPostData(PubMaticConstants.PUB_ID_PARAM, String.valueOf(this.pubId));
-		putPostData(PubMaticConstants.SITE_ID_PARAM, String.valueOf(this.siteId));
-		putPostData(PubMaticConstants.AD_ID_PARAM, String.valueOf(this.adId));
+		super.setupPostData();
 		if(getWidth()>0)
 			putPostData(CommonConstants.SIZE_X_PARAM, String.valueOf(getWidth()));
 		if(getHeight()>0)

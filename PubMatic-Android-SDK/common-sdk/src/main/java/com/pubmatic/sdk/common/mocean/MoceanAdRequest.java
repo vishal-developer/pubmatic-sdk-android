@@ -2,6 +2,9 @@ package com.pubmatic.sdk.common.mocean;
 
 import java.net.URLEncoder;
 import java.security.MessageDigest;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -29,25 +32,20 @@ public abstract class MoceanAdRequest extends AdRequest {
 				: mBaseUrl;
 	}
 
-	@Override
-	public boolean checkMandatoryParams() {
-		return false;
-	}
-
-	@Override
-	protected void initializeDefaultParams(Context context) {
-
-	}
-
 	/**
 	 *
 	 * @param adRequest
      */
 	@Override
 	public void copyRequestParams(AdRequest adRequest) {
-		if(adRequest!=null && adRequest instanceof MoceanAdRequest &&
-				TextUtils.isEmpty(mZoneId)) {
-			this.mZoneId = ((MoceanAdRequest)adRequest).mZoneId;
+		if(adRequest!=null && adRequest instanceof MoceanAdRequest) {
+
+			if (TextUtils.isEmpty(mZoneId))
+				this.mZoneId = ((MoceanAdRequest)adRequest).mZoneId;
+			if (TextUtils.isEmpty(mIp))
+				this.mIp = ((MoceanAdRequest)adRequest).mIp;
+			if (TextUtils.isEmpty(mUserAgent))
+				this.mUserAgent = ((MoceanAdRequest)adRequest).mUserAgent;
 		}
 	}
 
@@ -55,14 +53,33 @@ public abstract class MoceanAdRequest extends AdRequest {
 	protected void setupPostData() {
 
 		super.setupPostData();
-		putPostData(CommonConstants.REQUESTPARAM_ZONE, mZoneId);
-
-		// Set user-agent
-		if (!TextUtils.isEmpty(mUserAgent))
-			putPostData(CommonConstants.REQUESTPARAM_UA, mUserAgent);
 
 		try {
-			// Setting user specific information
+
+			putPostData(CommonConstants.REQUESTPARAM_ZONE, mZoneId);
+
+			// Set IP address
+			if(!TextUtils.isEmpty(mIp))
+				putPostData(CommonConstants.REQUESTPARAM_IP, mIp);
+
+			// Set user-agent
+			if (!TextUtils.isEmpty(mUserAgent))
+				putPostData(CommonConstants.REQUESTPARAM_UA, mUserAgent);
+
+			//Append custom parameters
+			if(mCustomParams!=null && !mCustomParams.isEmpty()) {
+				Set<String> set = mCustomParams.keySet();
+				Iterator<String> iterator = set.iterator();
+				while(iterator.hasNext()) {
+					String key = iterator.next();
+					List<String> valueList = mCustomParams.get(key);
+					for(String s : valueList) {
+						putPostData(key,s);
+					}
+
+				}
+			}
+			//======== Setting user specific information ========
 
 			// Setting Gender of user
 			if (!TextUtils.isEmpty(mGender))
@@ -183,6 +200,7 @@ public abstract class MoceanAdRequest extends AdRequest {
 
 	protected Context mContext;
 	protected String mZoneId;
+	protected String mIp;
 
 	public enum OVER_18 {
 		NA, DENY, // 0 or 1
@@ -214,6 +232,14 @@ public abstract class MoceanAdRequest extends AdRequest {
 	 * String mYearOfBirth = null; private String mIncome = null; private
 	 * ArrayList<String> mKeywordsList = null;
 	 */
+
+	public String getIp() {
+		return mIp;
+	}
+
+	public void setIp(String mIp) {
+		this.mIp = mIp;
+	}
 
 	public String getIsoRegion() {
 		return mIsoRegion;

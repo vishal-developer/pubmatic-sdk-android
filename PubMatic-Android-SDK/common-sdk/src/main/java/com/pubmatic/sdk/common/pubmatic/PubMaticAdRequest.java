@@ -12,6 +12,9 @@ import com.pubmatic.sdk.common.CommonConstants;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 public abstract class PubMaticAdRequest extends AdRequest {
 
@@ -58,9 +61,25 @@ public abstract class PubMaticAdRequest extends AdRequest {
     protected void setupPostData() {
 
         super.setupPostData();
+
+        //Append the basic & mandatory parameters
         putPostData(PubMaticConstants.PUB_ID_PARAM, mPubId);
         putPostData(PubMaticConstants.SITE_ID_PARAM, String.valueOf(this.mSiteId));
         putPostData(PubMaticConstants.AD_ID_PARAM, String.valueOf(this.mAdId));
+
+        //Append custom parameters
+        if(mCustomParams!=null && !mCustomParams.isEmpty()) {
+            Set<String> set = mCustomParams.keySet();
+            Iterator<String> iterator = set.iterator();
+            while(iterator.hasNext()) {
+                String key = iterator.next();
+                List<String> valueList = mCustomParams.get(key);
+                for(String s : valueList) {
+                    putPostData(key,s);
+                }
+
+            }
+        }
 
         PUBDeviceInformation pubDeviceInformation = PUBDeviceInformation
                 .getInstance(mContext);
@@ -169,57 +188,57 @@ public abstract class PubMaticAdRequest extends AdRequest {
 
             // Setting user specific information
 
-                // Setting year of birth
-                if (!TextUtils.isEmpty(mYearOfBirth)) {
-                    putPostData(PubMaticConstants.YOB_PARAM, URLEncoder.encode(
-                            mYearOfBirth,
-                            PubMaticConstants.URL_ENCODING));
-                }
+            // Setting year of birth
+            if (!TextUtils.isEmpty(mYearOfBirth)) {
+                putPostData(PubMaticConstants.YOB_PARAM, URLEncoder.encode(
+                        mYearOfBirth,
+                        PubMaticConstants.URL_ENCODING));
+            }
 
-                // Setting Gender of user
-                putPostData(PubMaticConstants.GENDER_PARAM, URLEncoder.encode(
-                        mGender, PubMaticConstants.URL_ENCODING));
+            // Setting Gender of user
+            putPostData(PubMaticConstants.GENDER_PARAM, URLEncoder.encode(
+                    mGender, PubMaticConstants.URL_ENCODING));
 
                 // Setting zip code of user
             if (!TextUtils.isEmpty(mZip)) {
-                    putPostData(PubMaticConstants.ZIP_PARAM, URLEncoder.encode(
-                            mZip, PubMaticConstants.URL_ENCODING));
-                }
+                putPostData(PubMaticConstants.ZIP_PARAM, URLEncoder.encode(
+                        mZip, PubMaticConstants.URL_ENCODING));
+            }
 
                 // Setting the income
             if (!TextUtils.isEmpty(mIncome)) {
-                    putPostData(PubMaticConstants.USER_INCOME, URLEncoder.encode(
-                            mIncome,
-                            PubMaticConstants.URL_ENCODING));
-                }
+                putPostData(PubMaticConstants.USER_INCOME, URLEncoder.encode(
+                        mIncome,
+                        PubMaticConstants.URL_ENCODING));
+            }
 
                 // Setting the user entnicity
             if (!TextUtils.isEmpty(mEthnicity)) {
-                    putPostData(PubMaticConstants.USER_ETHNICITY, URLEncoder.encode(
-                            mEthnicity,
-                            PubMaticConstants.URL_ENCODING));
-                }
+                putPostData(PubMaticConstants.USER_ETHNICITY, URLEncoder.encode(
+                        mEthnicity,
+                        PubMaticConstants.URL_ENCODING));
+            }
 
-                if (mKeywordsList!=null) {
-                    putPostData(PubMaticConstants.KEYWORDS_PARAM, URLEncoder.encode(
-                            getKeywordString(),
-                            PubMaticConstants.URL_ENCODING));
-                }
+            if (mKeywordsList!=null) {
+                putPostData(PubMaticConstants.KEYWORDS_PARAM, URLEncoder.encode(
+                        getKeywordString(),
+                        PubMaticConstants.URL_ENCODING));
+            }
 
 
-                // Setting user city
-                if (!TextUtils.isEmpty(mCity)) {
-                    putPostData(PubMaticConstants.USER_CITY, URLEncoder.encode(
-                            mCity,
-                            PubMaticConstants.URL_ENCODING));
-                }
+            // Setting user city
+            if (!TextUtils.isEmpty(mCity)) {
+                putPostData(PubMaticConstants.USER_CITY, URLEncoder.encode(
+                        mCity,
+                        PubMaticConstants.URL_ENCODING));
+            }
 
-                // Setting the state
-                if (!TextUtils.isEmpty(mState)) {
-                    putPostData(PubMaticConstants.USER_STATE, URLEncoder.encode(
-                            mState,
-                            PubMaticConstants.URL_ENCODING));
-                }
+            // Setting the state
+            if (!TextUtils.isEmpty(mState)) {
+                putPostData(PubMaticConstants.USER_STATE, URLEncoder.encode(
+                        mState,
+                        PubMaticConstants.URL_ENCODING));
+            }
 
 
             // Setting adOrientation
@@ -227,7 +246,7 @@ public abstract class PubMaticAdRequest extends AdRequest {
              putPostData(PubMaticConstants.AD_ORIENTATION_PARAM, mAdOrientation);
 
             // Setting deviceOrientation
-            putPostData(PubMaticConstants.DEVICE_ORIENTATION_PARAM, String.valueOf(mDeviceOrientation));
+            putPostData(PubMaticConstants.DEVICE_ORIENTATION_PARAM, String.valueOf(getDeviceOrientation(mContext)));
 
             // Setting adRefreshRate
             putPostData(PubMaticConstants.AD_REFRESH_RATE_PARAM, String.valueOf(mAdRefreshRate));
@@ -330,7 +349,6 @@ public abstract class PubMaticAdRequest extends AdRequest {
     protected int             mAdRefreshRate;
     protected int             mOrmmaComplianceLevel;
     protected String          mAdOrientation;
-    protected int             mDeviceOrientation;
     protected String          mLanguage;
     protected String 		  mNetworkType;
     private boolean			  mDoNotTrack;
@@ -720,14 +738,8 @@ public abstract class PubMaticAdRequest extends AdRequest {
     public int getDeviceOrientation(Context context) {
         int rotation = ((Activity) context).getWindowManager().getDefaultDisplay().getRotation();
         if (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180)
-            mDeviceOrientation = 0;
-        else if (rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270)
-            mDeviceOrientation = 1;
-        return mDeviceOrientation;
-    }
-
-    public void setDeviceOrientation(int mDeviceOrientation) {
-        this.mDeviceOrientation = mDeviceOrientation;
+            return 0;
+        return 1;
     }
 
     public Location getLocation() {

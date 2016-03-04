@@ -56,6 +56,16 @@ public class BannerAdController {
 					m = className.getMethod("setAttributes", AttributeSet.class);
 					m.invoke(mAdRequest, attr);
 					break;
+				case PHOENIX:
+					adRequestName = "com.pubmatic.sdk.banner.phoenix.PhoenixBannerAdRequest";
+					className = Class.forName(adRequestName);
+					m = className.getMethod("createPhoenixBannerAdRequest", Context.class, String.class, String.class);
+					mAdRequest = (AdRequest)m.invoke(null, mContext, null, null);
+					//Call setAttributes()
+					m = className.getMethod("setAttributes", AttributeSet.class);
+					m.invoke(mAdRequest, attr);
+
+					break;
 
 				default:
 					break;

@@ -43,9 +43,7 @@ public class MoceanNativeAdRequest extends MoceanAdRequest {
 
 	private List<PMAssetRequest> requestedAssetsList = null;
 
-	private String zoneId;
 	private boolean test = false;
-	private final String requestUrl;
 
 	public static MoceanNativeAdRequest createMoceanNativeAdRequest(
 			Context context, String zone) {
@@ -62,14 +60,13 @@ public class MoceanNativeAdRequest extends MoceanAdRequest {
 		String userAgent = webView.getSettings().getUserAgentString();
 
 		MoceanNativeAdRequest adRequest = new MoceanNativeAdRequest(context, CommonConstants.NETWORK_TIMEOUT_SECONDS,
-				CommonConstants.MOCEAN_AD_NETWORK_URL, userAgent, null, requestedAssets);
-		adRequest.setMoceanZoneId(zone);
+				CommonConstants.MOCEAN_AD_NETWORK_URL, userAgent, requestedAssets);
+		adRequest.setZoneId(zone);
 		return adRequest;
 	}
 
 
-	private MoceanNativeAdRequest(Context context, int timeout, String adServerUrl, String userAgent,
-								  Map<String, String> parameters, List<PMAssetRequest> requestedAssets) {
+	private MoceanNativeAdRequest(Context context, int timeout, String adServerUrl, String userAgent, List<PMAssetRequest> requestedAssets) {
 		super(context);
 		this.requestedAssetsList = requestedAssets;
 
@@ -80,40 +77,6 @@ public class MoceanNativeAdRequest extends MoceanAdRequest {
 		} else {
 			sb.append(CommonConstants.QUESTIONMARK);
 		}
-		if(parameters!=null) {
-			try {
-				for (Map.Entry<String, String> entry : parameters.entrySet()) {
-					if (entry != null && !TextUtils.isEmpty(entry.getKey())) {
-						sb.append(URLEncoder.encode(entry.getKey(),
-								CommonConstants.ENCODING_UTF_8));
-						sb.append(CommonConstants.EQUAL);
-						if (!TextUtils.isEmpty(entry.getValue())) {
-							sb.append(URLEncoder.encode(entry.getValue(),
-									CommonConstants.ENCODING_UTF_8));
-						}
-						sb.append(CommonConstants.AMPERSAND);
-					}
-				}
-			} catch(UnsupportedEncodingException e) {
-
-			}
-		}
-		sb.setLength(sb.length() - 1);
-
-		requestUrl = sb.toString();
-	}
-
-	public String getRequestUrl() {
-		return requestUrl;
-	}
-
-	/**
-	 * Returns the base/host name URL
-	 * @return
-	 */
-	public String getAdServerURL()
-	{
-		return TextUtils.isEmpty(mBaseUrl) ? CommonConstants.MOCEAN_AD_NETWORK_URL : mBaseUrl;
 	}
 
 	/**
@@ -146,14 +109,6 @@ public class MoceanNativeAdRequest extends MoceanAdRequest {
 		}
 	}
 
-	public String getMoceanZoneId() {
-		return zoneId;
-	}
-
-	public void setMoceanZoneId(String zone) {
-		this.zoneId = zone;
-	}
-
 	public void setWidth(int width) {
 		super.setWidth(width);
 	}
@@ -168,7 +123,7 @@ public class MoceanNativeAdRequest extends MoceanAdRequest {
 
 	@Override
 	public boolean checkMandatoryParams() {
-		return !TextUtils.isEmpty(zoneId);
+		return !TextUtils.isEmpty(mZoneId);
 	}
 
 	/**
@@ -199,7 +154,7 @@ public class MoceanNativeAdRequest extends MoceanAdRequest {
 	protected void setupPostData() {
 
 		super.setupPostData();
-		putPostData(CommonConstants.REQUESTPARAM_ZONE, String.valueOf(this.zoneId));
+		putPostData(CommonConstants.REQUESTPARAM_ZONE, String.valueOf(this.mZoneId));
 		if(getWidth()>0)
 			putPostData(CommonConstants.SIZE_X_PARAM, String.valueOf(getWidth()));
 		if(getHeight()>0)
@@ -217,7 +172,7 @@ public class MoceanNativeAdRequest extends MoceanAdRequest {
 	@Override
 	public void setAttributes(AttributeSet attr) {
 		try{
-			zoneId = attr.getAttributeValue(null,
+			mZoneId = attr.getAttributeValue(null,
 					CommonConstants.REQUESTPARAM_ZONE);
 		} catch(Exception ex) {
 

@@ -33,6 +33,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.pubmatic.sampleapp.R;
+import com.pubmatic.sdk.common.PMLogger;
 
 public class BannerSamplesListActivity extends ListActivity {
 	SamplesListAdapter samplesListAdapter = null;
@@ -53,8 +54,11 @@ public class BannerSamplesListActivity extends ListActivity {
 
 		samplesListAdapter.addItem(new SamplesItem("PubMatic Banner", "XML rendering", PubStaticBannerActivity.class));
 		samplesListAdapter.addItem(new SamplesItem("Java rendering", PubRuntimeBannerActivity.class));
-		// @formatter:on
 
+		samplesListAdapter.addItem(new SamplesItem("Phoenix Banner", "XML rendering", PhoenixStaticBannerActivity.class));
+		samplesListAdapter.addItem(new SamplesItem("Java rendering", PhoenixRuntimeBannerActivity.class));
+		// @formatter:on
+		PMLogger.setLogLevel(PMLogger.LogLevel.Debug);
 		super.setListAdapter(samplesListAdapter);
 	}
 

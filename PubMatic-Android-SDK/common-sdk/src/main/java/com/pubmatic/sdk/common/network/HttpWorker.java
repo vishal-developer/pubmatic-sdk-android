@@ -1,5 +1,7 @@
 package com.pubmatic.sdk.common.network;
 
+import android.text.TextUtils;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -156,11 +158,32 @@ public class HttpWorker {
 				return httpResponse;
 			}
 
-            PMLogger.logEvent(TAG + ": Http request  = " + httpRequest.getRequestUrl(),
-                              PMLogger.LogLevel.Debug);
+			String requestMethod = httpRequest.getRequestMethod();
+
+			if(TextUtils.isEmpty(requestMethod)) {
+				httpResponse.errorType = PubError.REQUEST_ERROR;
+				return httpResponse;
+			}
+
+			// Create url for GET/POST method
+			if(requestMethod.equalsIgnoreCase(CommonConstants.HTTPMETHODGET) && httpRequest.getPostData() != null) {
+				StringBuffer getUrl = new StringBuffer(httpRequest.getRequestUrl());
+				if(!getUrl.toString().endsWith("?"))
+					getUrl.append("?");
+				getUrl.append(httpRequest.getPostData());
+				url = new URL(getUrl.toString());
+
+				PMLogger.logEvent(TAG + ": Http GET request  = " + getUrl.toString(),
+						PMLogger.LogLevel.Debug);
+				getUrl = null;
+			} else {
+				url = new URL(httpRequest.getRequestUrl());
+
+				PMLogger.logEvent(TAG + ": Http request  = " + httpRequest.getRequestUrl(),
+						PMLogger.LogLevel.Debug);
+			}
 
 			// Get connection object
-			url = new URL(httpRequest.getRequestUrl());
 			httpUrlConnection = (HttpURLConnection) url.openConnection();
 
 			if (httpUrlConnection != null) {
@@ -174,11 +197,9 @@ public class HttpWorker {
 				httpUrlConnection.setRequestProperty("User-Agent", httpRequest.getUserAgent());
 				httpUrlConnection.setRequestProperty("Accept", "text/plain,text/html,application/xhtml+xml,application/xml;*/*");
 				httpUrlConnection.setConnectTimeout(CommonConstants.MAX_SOCKET_TIME);
-				if(httpRequest.getRequestMethod()!=null)
-					httpUrlConnection.setRequestMethod(httpRequest.getRequestMethod());
 
 				// Uploading the body of POST request
-				if(httpRequest.getPostData() != null) {
+				if(requestMethod.equalsIgnoreCase(CommonConstants.HTTPMETHODPOST) && httpRequest.getPostData() != null) {
 					String postData = httpRequest.getPostData();
 					httpUrlConnection
 							.setFixedLengthStreamingMode(postData.toString()
