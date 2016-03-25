@@ -264,7 +264,7 @@ public class MASTAdView extends ViewGroup {
 	}
 
 	protected void init(boolean interstitial) {
-		checkDoNotTrack();
+		//checkDoNotTrack();
 
 		placementType = PlacementType.Inline;
 
@@ -298,27 +298,7 @@ public class MASTAdView extends ViewGroup {
 			updateOnLayout = false;
 
 			update();
-		}
-	}
-
-	private void checkDoNotTrack() {
-		// Check the LimitAdTracking setting.
-		// If enabled, then pass dnt=1 in request
-		new Thread(new Runnable() {
-			public void run() {
-				try {
-					AdInfo adInfo = AdvertisingIdClient
-							.getAdvertisingIdInfo(getContext());
-					mDoNotTrack = adInfo.isLimitAdTrackingEnabled() ? 1 : 0;
-				} catch (Exception e) {
-					logEvent(
-							"Error during fetching users Do-Not-Track setting preference",
-							LogLevel.Error);
-					e.printStackTrace();
-				}
-			}
-		}).start();
-
+		}ter
 	}
 
 	private void initUserAgent() {
@@ -906,19 +886,6 @@ public class MASTAdView extends ViewGroup {
 	 */
 	public void setAndroidAidEnabled(boolean isAndroidAidEnabled) {
 		this.isAndroidAidEnabled = isAndroidAidEnabled;
-		if (isAndroidAidEnabled) {
-			new Thread(new Runnable() {
-				public void run() {
-					try {
-						AdInfo adInfo = AdvertisingIdClient
-								.getAdvertisingIdInfo(getContext());
-						androidAid = adInfo.getId();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			}).start();
-		}
 	}
 
 	public boolean isAndoridAidEnabled() {
@@ -1109,20 +1076,23 @@ public class MASTAdView extends ViewGroup {
 			if (isAndoridIdEnabled())
 				adRequestDefaultParameters.put("androidid_sha1",
 						getUdidFromContext(getContext()));
-			if (isAndoridAidEnabled() && !androidAid.isEmpty()) {
-				adRequestDefaultParameters.put("androidaid_sha1",
-						sha1(androidAid));
-			}
+			
+			AdInfo adInfo = AdvertisingIdClient.refreshAdvertisingInfo(getContext());
+			
+			if(adInfo!=null) {
 
-			/*
-			 * Pass dnt=1 if user have enabled Opt-Out of interest based ads in
-			 * Google settings in Android device
-			 */
-			if (mDoNotTrack == 1) {
-				adRequestDefaultParameters.put("dnt", "1");
-			} else {
-				adRequestDefaultParameters.put("dnt", "0");
+				if (isAndoridAidEnabled() && !TextUtils.isEmpty(adInfo.getId())) {
+					adRequestDefaultParameters.put("androidaid_sha1",
+							sha1(adInfo.getId()));
+				}
+
+				/*
+				 * Pass dnt=1 if user have enabled Opt-Out of interest based ads in
+				 * Google settings in Android device
+				 */
+				adRequestDefaultParameters.put("dnt", String.valueOf(adInfo.isLimitAdTrackingEnabled() == true ? 1 : 0));
 			}
+			
 
 			if (!isX)
 				adRequestDefaultParameters
@@ -1134,6 +1104,8 @@ public class MASTAdView extends ViewGroup {
 			adRequestDefaultParameters.put("size_x", String.valueOf(size_x));
 			adRequestDefaultParameters.put("size_y", String.valueOf(size_y));
 		}
+		
+		System.out.println("Ad Params = "+adRequestDefaultParameters.toString());
 		try {
 			TelephonyManager tm = (TelephonyManager) getContext()
 					.getSystemService(Context.TELEPHONY_SERVICE);
@@ -1643,6 +1615,7 @@ public class MASTAdView extends ViewGroup {
 	private void resetImageAd() {
 		if (imageView != null) {
 			imageView.setImageBitmap(null);
+			imageView = null;
 		}
 
 		mAdDescriptor = null;
