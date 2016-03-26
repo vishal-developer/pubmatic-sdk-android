@@ -208,3 +208,10 @@ Enabled multi-pixel tracking for SDK.
 -------
 
 - Added functionality for dynamic ad slot based on image size for banner ads, richmedia ads & third party ad feeds.
+
+
+-------
+4.3.8
+-------
+
+- Fixed issue: android_aid value is not sent on most of the ad request.
