@@ -264,8 +264,7 @@ public class MASTAdView extends ViewGroup {
 	}
 
 	protected void init(boolean interstitial) {
-		//checkDoNotTrack();
-
+		
 		placementType = PlacementType.Inline;
 
 		if (interstitial) {
@@ -298,7 +297,7 @@ public class MASTAdView extends ViewGroup {
 			updateOnLayout = false;
 
 			update();
-		}ter
+		}
 	}
 
 	private void initUserAgent() {

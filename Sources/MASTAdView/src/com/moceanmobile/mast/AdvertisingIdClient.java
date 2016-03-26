@@ -40,7 +40,11 @@ public static final class AdInfo {
     }
 }
 
-
+/**
+ * Refresh the advertising info saved in local storage asynchronously.
+ * @param context
+ * @return Returns the advertising info saved in local storage before refresh.
+ */
 public static AdInfo refreshAdvertisingInfo(final Context context) {
 	
 	new Thread(new Runnable() {
