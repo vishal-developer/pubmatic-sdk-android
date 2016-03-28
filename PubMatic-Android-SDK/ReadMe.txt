@@ -220,3 +220,9 @@ Enabled multi-pixel tracking for SDK.
 
 - Users can now set update interval for auto reloading banner ads in SDK by using setUpdateInterval() method.
 
+
+-------
+ 5.0.2
+-------
+
+- PubMatic Android SDK supports the banner ad via new platform "Phoenix" developed by PubMatic.
