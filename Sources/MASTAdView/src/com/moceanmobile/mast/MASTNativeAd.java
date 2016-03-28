@@ -629,6 +629,7 @@ public final class MASTNativeAd implements AdRequest.Handler {
 			args.put(REQUESTPARAM_TEST, Defaults.NATIVE_REQUEST_TEST_TRUE);
 		}
 
+		System.out.println("Native Ad Params = "+args.toString());
 		try {
 			if (mAdRequest != null)
 				mAdRequest.cancel();

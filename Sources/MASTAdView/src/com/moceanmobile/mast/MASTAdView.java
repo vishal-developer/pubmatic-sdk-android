@@ -1075,23 +1075,6 @@ public class MASTAdView extends ViewGroup {
 			if (isAndoridIdEnabled())
 				adRequestDefaultParameters.put("androidid_sha1",
 						getUdidFromContext(getContext()));
-			
-			AdInfo adInfo = AdvertisingIdClient.refreshAdvertisingInfo(getContext());
-			
-			if(adInfo!=null) {
-
-				if (isAndoridAidEnabled() && !TextUtils.isEmpty(adInfo.getId())) {
-					adRequestDefaultParameters.put("androidaid_sha1",
-							sha1(adInfo.getId()));
-				}
-
-				/*
-				 * Pass dnt=1 if user have enabled Opt-Out of interest based ads in
-				 * Google settings in Android device
-				 */
-				adRequestDefaultParameters.put("dnt", String.valueOf(adInfo.isLimitAdTrackingEnabled() == true ? 1 : 0));
-			}
-			
 
 			if (!isX)
 				adRequestDefaultParameters
@@ -1102,6 +1085,22 @@ public class MASTAdView extends ViewGroup {
 		} else {
 			adRequestDefaultParameters.put("size_x", String.valueOf(size_x));
 			adRequestDefaultParameters.put("size_y", String.valueOf(size_y));
+		}
+
+		AdInfo adInfo = AdvertisingIdClient.refreshAdvertisingInfo(getContext());
+		
+		if(adInfo!=null) {
+
+			if (isAndoridAidEnabled() && !TextUtils.isEmpty(adInfo.getId())) {
+				adRequestDefaultParameters.put("androidaid_sha1",
+						sha1(adInfo.getId()));
+			}
+
+			/*
+			 * Pass dnt=1 if user have enabled Opt-Out of interest based ads in
+			 * Google settings in Android device
+			 */
+			adRequestDefaultParameters.put("dnt", String.valueOf(adInfo.isLimitAdTrackingEnabled() == true ? 1 : 0));
 		}
 		
 		System.out.println("Ad Params = "+adRequestDefaultParameters.toString());
