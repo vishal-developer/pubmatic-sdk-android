@@ -605,23 +605,31 @@ public final class MASTNativeAd implements AdRequest.Handler {
 
 		if (isAndoridIdEnabled() && mContext != null)
 			args.put(REQUESTPARAM_ANDROID_ID_SHA1, getUdidFromContext(mContext));
-		if (isAndoridAidEnabled() && !androidAid.isEmpty()) {
-			args.put(REQUESTPARAM_ANDROID_ADVT_ID_SHA1, sha1(androidAid));
-		}
-		/*
-		 * Pass dnt=1 if user have enabled Opt-Out of interest based ads in
-		 * Google settings in Android device
-		 */
-		if (mIsDntSet) { // Pass DNT only when value is fetched
-			args.put(REQUESTPARAM_DO_NOT_TRACK, (mDoNotTrack == 1 ? "1" : "0"));
-		}
+		
 
+		AdInfo adInfo = AdvertisingIdClient.refreshAdvertisingInfo(mContext);
+		
+		if(adInfo!=null) {
+
+			if (isAndoridAidEnabled() && !TextUtils.isEmpty(adInfo.getId())) {
+				args.put(REQUESTPARAM_ANDROID_ADVT_ID_SHA1,
+						sha1(adInfo.getId()));
+			}
+
+			/*
+			 * Pass dnt=1 if user have enabled Opt-Out of interest based ads in
+			 * Google settings in Android device
+			 */
+			args.put(REQUESTPARAM_DO_NOT_TRACK, String.valueOf(adInfo.isLimitAdTrackingEnabled() ? 1 : 0));
+		}
+		
 		/* Putting optional parameters related to Native Ad */
 
 		if (this.test) {
 			args.put(REQUESTPARAM_TEST, Defaults.NATIVE_REQUEST_TEST_TRUE);
 		}
 
+		System.out.println("Native Ad Params = "+args.toString());
 		try {
 			if (mAdRequest != null)
 				mAdRequest.cancel();
@@ -760,20 +768,7 @@ public final class MASTNativeAd implements AdRequest.Handler {
 	 * @param isAndroidaidEnabled
 	 */
 	public void setAndroidAidEnabled(boolean isAndroidAidEnabled) {
-		if (isAndroidAidEnabled && mContext != null) {
-			this.isAndroidAidEnabled = isAndroidAidEnabled;
-			new Thread(new Runnable() {
-				public void run() {
-					try {
-						AdInfo adInfo = AdvertisingIdClient
-								.getAdvertisingIdInfo(mContext);
-						androidAid = adInfo.getId();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			}).start();
-		}
+		this.isAndroidAidEnabled = isAndroidAidEnabled;
 	}
 
 	public boolean isAndoridAidEnabled() {
