@@ -3,6 +3,7 @@ package com.pubmatic.sdk.common.phoenix;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;
@@ -27,6 +28,7 @@ public class PhoenixDeviceInformation {
     public String mPackageName                          = null;
     public String mPageURL                              = null;
     public String mDeviceScreenResolution               = null;
+    public String mCarrierName = null;
 
     //Constant values for SDK
     public static int mInIframe                         = 0;
@@ -58,6 +60,11 @@ public class PhoenixDeviceInformation {
             display.getMetrics(metrics);
             mDeviceScreenResolution = metrics.widthPixels + "x"
                     + metrics.heightPixels;
+
+            // Get the carrier name
+            TelephonyManager telephonyManager = ((TelephonyManager) context
+                    .getSystemService(Context.TELEPHONY_SERVICE));
+            mCarrierName = telephonyManager.getNetworkOperatorName();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -102,7 +109,12 @@ public class PhoenixDeviceInformation {
             Date currentLocalTime = calendar.getTime();
             SimpleDateFormat date = new SimpleDateFormat("Z");
             localTime = date.format(currentLocalTime);
-            return localTime.substring(0, 3) + "."+ localTime.substring(3, 5);
+
+            double minute = Double.valueOf(localTime.substring(3, 5));
+            String decimal = String.valueOf(minute/60);
+            decimal = decimal.substring(decimal.indexOf("."));
+
+            return localTime.substring(0, 3) + decimal;//"."+ localTime.substring(3, 5);
         } catch (Exception e) {
 
         }

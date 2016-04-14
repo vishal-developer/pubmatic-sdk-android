@@ -11,6 +11,7 @@ import com.pubmatic.sdk.banner.PMBannerAdView;
 import com.pubmatic.sdk.banner.phoenix.PhoenixBannerAdRequest;
 import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest;
 import com.pubmatic.sdk.common.PMLogger;
+import com.pubmatic.sdk.common.phoenix.PhoenixAdRequest;
 import com.pubmatic.sdk.common.pubmatic.PUBAdSize;
 
 public class PhoenixRuntimeBannerActivity extends Activity {
@@ -38,6 +39,17 @@ public class PhoenixRuntimeBannerActivity extends Activity {
                 "DIV1");
         adRequest.setAdWidth(970);
         adRequest.setAdHeight(250);
+        adRequest.setAndroidAidEnabled(true);
+        //SSP parameters
+        adRequest.setAdFloor("AF");
+        adRequest.setAdPosition(PhoenixAdRequest.PM_AD_POSITION.ABOVE_FOLD);
+        adRequest.setAdTruth("AT");
+        adRequest.setAid("aid_123");
+        adRequest.setAppCategory("Ac_1");
+        adRequest.setAppDomain("ad_test");
+        adRequest.setAWT(PhoenixAdRequest.AWT_OPTION.WRAPPED_IN_JS);
+        adRequest.setBlockAdDomain("block_domain_test");
+
         banner.setUseInternalBrowser(true);
         banner.setUpdateInterval(15);
         banner.execute(adRequest);

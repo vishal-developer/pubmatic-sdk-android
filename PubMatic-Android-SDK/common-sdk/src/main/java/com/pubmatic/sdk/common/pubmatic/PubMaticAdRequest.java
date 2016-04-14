@@ -8,6 +8,7 @@ import android.util.AttributeSet;
 import android.view.Surface;
 
 import com.pubmatic.sdk.common.AdRequest;
+import com.pubmatic.sdk.common.AdvertisingIdClient;
 import com.pubmatic.sdk.common.CommonConstants;
 
 import java.net.URLEncoder;
@@ -168,17 +169,26 @@ public abstract class PubMaticAdRequest extends AdRequest {
             putPostData(PubMaticConstants.NETWORK_TYPE_PARAM, PubMaticUtils.getNetworkType(mContext));
 
             //Send Advertisement ID
-            if(!TextUtils.isEmpty(mUDID)) {
-                putPostData(PubMaticConstants.UDID_PARAM, mUDID);
-                putPostData(PubMaticConstants.UDID_TYPE_PARAM, String.valueOf(9));//9 - Android Advertising ID
-                putPostData(PubMaticConstants.UDID_HASH_PARAM, String.valueOf(0));//0 - raw udid
+            AdvertisingIdClient.AdInfo adInfo = AdvertisingIdClient.refreshAdvertisingInfo(mContext);
+            if(adInfo!=null) {
+
+                if (isAndoridAidEnabled() && !TextUtils.isEmpty(adInfo.getId())) {
+                    putPostData(PubMaticConstants.UDID_PARAM, PubMaticUtils.sha1(adInfo.getId()));
+                    putPostData(PubMaticConstants.UDID_TYPE_PARAM, String.valueOf(9));//9 - Android Advertising ID
+                    putPostData(PubMaticConstants.UDID_HASH_PARAM, String.valueOf(0));//0 - raw udid
+                }
+			/*
+			 * Pass dnt=1 if user have enabled Opt-Out of interest based ads in
+			 * Google settings in Android device
+			 */
+                putPostData(PubMaticConstants.DNT_PARAM, String.valueOf(adInfo.isLimitAdTrackingEnabled() == true ? 1 : 0));
             } else if(mContext!=null){
                 //Send Android ID
                 putPostData(PubMaticConstants.UDID_PARAM, PubMaticUtils.getUdidFromContext(mContext));
                 putPostData(PubMaticConstants.UDID_TYPE_PARAM, String.valueOf(3));//9 - Android ID
                 putPostData(PubMaticConstants.UDID_HASH_PARAM, String.valueOf(2));//0 - SHA1
-            } else {
             }
+
             // Setting ver
             if (pubDeviceInformation.mApplicationVersion != null) {
                 putPostData(PubMaticConstants.VER_PARAM, URLEncoder.encode(

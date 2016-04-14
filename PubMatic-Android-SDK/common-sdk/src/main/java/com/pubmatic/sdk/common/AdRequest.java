@@ -148,6 +148,22 @@ public abstract class AdRequest {
 		retrieveAndroidAid(context);
 	}
 
+	// androidAid
+	private boolean isAndroidAidEnabled;
+
+	/**
+	 * add androidaid as request param.
+	 *
+	 * @param isAndroidAidEnabled
+	 */
+	public void setAndroidAidEnabled(boolean isAndroidAidEnabled) {
+		this.isAndroidAidEnabled = isAndroidAidEnabled;
+	}
+
+	public boolean isAndoridAidEnabled() {
+		return isAndroidAidEnabled;
+	}
+
 	/**
 	 * add androidaid as request param.
 	 *

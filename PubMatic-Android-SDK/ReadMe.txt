@@ -226,3 +226,10 @@ Enabled multi-pixel tracking for SDK.
 -------
 
 - PubMatic Android SDK supports the banner ad via new platform "Phoenix" developed by PubMatic.
+
+
+-------
+ 5.0.3
+-------
+
+- Additional parameters supported in Phoenix banner ad request.

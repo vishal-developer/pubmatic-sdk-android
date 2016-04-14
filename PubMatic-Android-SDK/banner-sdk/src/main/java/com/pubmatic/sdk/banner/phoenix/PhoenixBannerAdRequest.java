@@ -48,9 +48,7 @@ public class PhoenixBannerAdRequest extends PhoenixAdRequest {
 	protected void initializeDefaultParams(Context context) {
 		super.initializeDefaultParams(context);
 		putPostData("o", 		"1");
-		putPostData("req_type", "2");
 		putPostData(PhoenixConstants.RESPONSE_FORMAT_PARAM, "2");//1 - VAST, 2 - JSON, 3 - Native
-
 
 	}
 
@@ -66,6 +64,7 @@ public class PhoenixBannerAdRequest extends PhoenixAdRequest {
 		} else if(getWidth()>0 && getAdHeight()>0){
 			putPostData(PhoenixConstants.AD_SIZE_PARAM, String.valueOf(getWidth())+"x"+String.valueOf(getAdHeight()));
 		}
+		putPostData(PhoenixConstants.REQUEST_TYPE_PARAM, String.valueOf(REQUEST_TYPE.IMAGE|REQUEST_TYPE.TEXT|REQUEST_TYPE.RICH_MEDIA));
 	}
 
 	@Override
