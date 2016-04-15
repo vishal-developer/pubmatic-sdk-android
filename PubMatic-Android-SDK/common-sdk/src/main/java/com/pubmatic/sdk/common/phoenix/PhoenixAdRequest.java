@@ -283,9 +283,7 @@ public abstract class PhoenixAdRequest extends AdRequest {
                     putPostData(PhoenixConstants.SECURE_FLAG_PARAM, String.valueOf(0));
                     break;
             }
-
-            putPostData(PhoenixConstants.NETWORK_TYPE_PARAM, PhoenixUtils.getNetworkType(mContext));
-
+            
             // Setting adOrientation
             if(!TextUtils.isEmpty(mAdOrientation))
                 putPostData(PhoenixConstants.AD_ORIENTATION_PARAM, mAdOrientation);
