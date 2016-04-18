@@ -206,8 +206,10 @@ public abstract class PubMaticAdRequest extends AdRequest {
             }
 
             // Setting Gender of user
-            putPostData(PubMaticConstants.GENDER_PARAM, URLEncoder.encode(
-                    mGender, PubMaticConstants.URL_ENCODING));
+            if (!TextUtils.isEmpty(mGender)) {
+                putPostData(PubMaticConstants.GENDER_PARAM, URLEncoder.encode(
+                        mGender, PubMaticConstants.URL_ENCODING));
+            }
 
                 // Setting zip code of user
             if (!TextUtils.isEmpty(mZip)) {
@@ -284,21 +286,21 @@ public abstract class PubMaticAdRequest extends AdRequest {
             putPostData(PubMaticConstants.APP_DOMAIN_PARAM, mAppDomain);
 
             //Set the awt parameter
-            switch (mAWT) {
-                case WRAPPED_IN_IFRAME:
-                    putPostData(PubMaticConstants.AWT_PARAM, String.valueOf(1));
-                    break;
-                case WRAPPED_IN_JS:
-                    putPostData(PubMaticConstants.AWT_PARAM, String.valueOf(2));
-                    break;
+            if (mAWT != null) {
+                switch (mAWT) {
+                    case WRAPPED_IN_IFRAME:
+                        putPostData(PubMaticConstants.AWT_PARAM, String.valueOf(1));
+                        break;
+                    case WRAPPED_IN_JS:
+                        putPostData(PubMaticConstants.AWT_PARAM, String.valueOf(2));
+                        break;
+                }
             }
 
             //Set the location
             if (mLocation != null) {
-                putPostData(PubMaticConstants.LOC_PARAM, URLEncoder.encode(
-                        mLocation.getLatitude() + ","
-                                + mLocation.getLongitude(),
-                        PubMaticConstants.URL_ENCODING));
+                putPostData(PubMaticConstants.LOC_PARAM, mLocation.getLatitude() + ","
+                        + mLocation.getLongitude());
 
                 putPostData(PubMaticConstants.LOC_SOURCE_PARAM, URLEncoder.encode(
                         mLocation.getProvider()));

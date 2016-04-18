@@ -266,22 +266,26 @@ public abstract class PhoenixAdRequest extends AdRequest {
 
 
             //Set the awt parameter
-            switch (mAWT) {
-                case WRAPPED_IN_IFRAME:
-                    putPostData(PhoenixConstants.AWT_PARAM, String.valueOf(1));
-                    break;
-                case WRAPPED_IN_JS:
-                    putPostData(PhoenixConstants.AWT_PARAM, String.valueOf(2));
-                    break;
+            if (mAWT != null) {
+                switch (mAWT) {
+                    case WRAPPED_IN_IFRAME:
+                        putPostData(PhoenixConstants.AWT_PARAM, String.valueOf(1));
+                        break;
+                    case WRAPPED_IN_JS:
+                        putPostData(PhoenixConstants.AWT_PARAM, String.valueOf(2));
+                        break;
+                }
             }
 
-            switch (mSecureFlag) {
-                case SECURE:
-                    putPostData(PhoenixConstants.SECURE_FLAG_PARAM, String.valueOf(1));
-                    break;
-                case NON_SECURE:
-                    putPostData(PhoenixConstants.SECURE_FLAG_PARAM, String.valueOf(0));
-                    break;
+            if (mSecureFlag != null) {
+                switch (mSecureFlag) {
+                    case SECURE:
+                        putPostData(PhoenixConstants.SECURE_FLAG_PARAM, String.valueOf(1));
+                        break;
+                    case NON_SECURE:
+                        putPostData(PhoenixConstants.SECURE_FLAG_PARAM, String.valueOf(0));
+                        break;
+                }
             }
             
             // Setting adOrientation
