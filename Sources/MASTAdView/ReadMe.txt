@@ -215,3 +215,10 @@ Enabled multi-pixel tracking for SDK.
 -------
 
 - Fixed issue: android_aid value is not sent on most of the ad request.
+
+
+-------
+4.3.9
+-------
+
+- Fixed issue: Internal browser is displaying blank page in cases where landing page contains javascript. Enabled javascript in the WebView.
