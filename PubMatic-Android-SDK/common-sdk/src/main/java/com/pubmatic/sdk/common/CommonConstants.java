@@ -3,7 +3,7 @@ package com.pubmatic.sdk.common;
 @SuppressWarnings("unused")
 public class CommonConstants {
 
-	public static final String SDK_VERSION = "5.0.2";
+	public static final String SDK_VERSION = "5.0.3";
     public static final String SDK_VERSION_ID = "2";
 
 	public enum CONTENT_TYPE {

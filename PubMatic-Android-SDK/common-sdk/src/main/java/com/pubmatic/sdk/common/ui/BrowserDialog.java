@@ -118,6 +118,7 @@ public class BrowserDialog extends Dialog {
         imageButton.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
+                webView.loadUrl("about:blank");
                 BrowserDialog.this.dismiss();
             }
         });
@@ -199,6 +200,7 @@ public class BrowserDialog extends Dialog {
         webView = new android.webkit.WebView(getContext());
         webView.setWebViewClient(new Client());
         // To set normal zooming level of webView.
+        webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setLoadWithOverviewMode(true);
         webView.getSettings().setUseWideViewPort(true);
         mContentView.addView(webView, webViewLayoutParams);
