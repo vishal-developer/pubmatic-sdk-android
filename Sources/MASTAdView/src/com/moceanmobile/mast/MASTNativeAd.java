@@ -56,6 +56,7 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 
 import com.moceanmobile.mast.AdvertisingIdClient.AdInfo;
+import com.moceanmobile.mast.AdvertisingIdClient.AdInfo.HASHING_TECHNIQUE;
 import com.moceanmobile.mast.MASTAdView.LogLevel;
 import com.moceanmobile.mast.MASTBaseAdapter.MediationNetwork;
 import com.moceanmobile.mast.bean.AssetRequest;
@@ -180,8 +181,9 @@ public final class MASTNativeAd implements AdRequest.Handler {
 	private boolean isAndroidIdEnabled;
 
 	// androidAid
-	private boolean isAndroidAidEnabled;
+	private boolean isAndroidAidEnabled = true;
 	private String androidAid = "";
+	private HASHING_TECHNIQUE hashing = HASHING_TECHNIQUE.RAW;
 
 	// Do not track / Opt-Out of interest based ads
 	private int mDoNotTrack = 0;
@@ -612,8 +614,25 @@ public final class MASTNativeAd implements AdRequest.Handler {
 		if(adInfo!=null) {
 
 			if (isAndoridAidEnabled() && !TextUtils.isEmpty(adInfo.getId())) {
-				args.put(REQUESTPARAM_ANDROID_ADVT_ID_SHA1,
-						sha1(adInfo.getId()));
+				args.put("androidaid", adInfo.getId());
+				switch (hashing) {
+					case ALL:
+						args.put("androidaid_sha1",
+								sha1(adInfo.getId()));
+						args.put("androidaid_md5",
+								md5(adInfo.getId()));
+						break;
+					case SHA1:
+						args.put("androidaid_sha1",
+								sha1(adInfo.getId()));
+						break;
+					case MD5:
+						args.put("androidaid_md5",
+								md5(adInfo.getId()));
+						break;
+				default:
+					break;
+				}
 			}
 
 			/*
@@ -773,6 +792,14 @@ public final class MASTNativeAd implements AdRequest.Handler {
 
 	public boolean isAndoridAidEnabled() {
 		return isAndroidAidEnabled;
+	}
+
+	public HASHING_TECHNIQUE getAidHashing() {
+		return hashing;
+	}
+
+	public void setAidHashing(HASHING_TECHNIQUE hashing) {
+		this.hashing = hashing;
 	}
 
 	/**
@@ -1393,6 +1420,25 @@ public final class MASTNativeAd implements AdRequest.Handler {
 
 		try {
 			MessageDigest digest = MessageDigest.getInstance("SHA-1");
+			byte[] bytes = string.getBytes("UTF-8");
+			digest.update(bytes, 0, bytes.length);
+			bytes = digest.digest();
+
+			for (final byte b : bytes) {
+				stringBuilder.append(String.format("%02X", b));
+			}
+
+			return stringBuilder.toString().toLowerCase();
+		} catch (Exception e) {
+			return "";
+		}
+	}
+	
+	public static String md5(String string) {
+		StringBuilder stringBuilder = new StringBuilder();
+
+		try {
+			MessageDigest digest = MessageDigest.getInstance("MD5");
 			byte[] bytes = string.getBytes("UTF-8");
 			digest.update(bytes, 0, bytes.length);
 			bytes = digest.digest();

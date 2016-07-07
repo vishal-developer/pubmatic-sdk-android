@@ -1,5 +1,5 @@
 /*
- * PubMatic Inc. (“PubMatic”) CONFIDENTIAL
+ * PubMatic Inc. (ï¿½PubMaticï¿½) CONFIDENTIAL
  * Unpublished Copyright (c) 2006-2014 PubMatic, All Rights Reserved.
  *
  * NOTICE:  All information contained herein is, and remains the property of PubMatic. The intellectual and technical concepts contained
@@ -67,6 +67,18 @@ public class CustomConfig extends RefreshActivity {
 	private void showSettingsDialog() {
 		SettingsDialog dialog = new SettingsDialog(this);
 		dialog.show();
+	}
+	
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		MASTAdView adView = (MASTAdView) CustomConfig.this
+				.findViewById(R.id.adView);
+		if(adView!=null) {
+			adView.reset();
+			adView = null;
+		}
 	}
 
 	private class SettingsDialog extends Dialog {

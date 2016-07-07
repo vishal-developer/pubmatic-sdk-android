@@ -19,6 +19,7 @@ package com.moceanmobile.mast.samples;
 
 import android.os.Bundle;
 
+import com.moceanmobile.mast.AdvertisingIdClient.AdInfo.HASHING_TECHNIQUE;
 import com.moceanmobile.mast.MASTAdView;
 
 public class SimpleImage extends RefreshActivity
@@ -31,6 +32,7 @@ public class SimpleImage extends RefreshActivity
 		MASTAdView adView = (MASTAdView) findViewById(R.id.adView);
 		adView.setLocationDetectionEnabled(true); // Enable Location detection
 		adView.setAndroidIdEnabled(true); // Enable Device Id detection
+		adView.setAidHashing(HASHING_TECHNIQUE.ALL);
 	}
 	
 	@Override

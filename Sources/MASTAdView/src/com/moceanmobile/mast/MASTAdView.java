@@ -83,6 +83,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.moceanmobile.mast.AdvertisingIdClient.AdInfo;
+import com.moceanmobile.mast.AdvertisingIdClient.AdInfo.HASHING_TECHNIQUE;
 import com.moceanmobile.mast.MASTAdViewDelegate.ActivityListener;
 import com.moceanmobile.mast.MASTAdViewDelegate.FeatureSupportHandler;
 import com.moceanmobile.mast.MASTAdViewDelegate.InternalBrowserListener;
@@ -200,8 +201,9 @@ public class MASTAdView extends ViewGroup {
 	private boolean isAndroidIdEnabled;
 
 	// androidAid
-	private boolean isAndroidAidEnabled;
+	private boolean isAndroidAidEnabled = true;
 	private String androidAid = "";
+	private HASHING_TECHNIQUE hashing = HASHING_TECHNIQUE.RAW;
 
 	// Do not track / Opt-Out of interest based ads
 	private int mDoNotTrack = 0;
@@ -1092,8 +1094,26 @@ public class MASTAdView extends ViewGroup {
 		if(adInfo!=null) {
 
 			if (isAndoridAidEnabled() && !TextUtils.isEmpty(adInfo.getId())) {
-				adRequestDefaultParameters.put("androidaid_sha1",
-						sha1(adInfo.getId()));
+
+				adRequestDefaultParameters.put("androidaid", adInfo.getId());
+				switch (hashing) {
+					case ALL:
+						adRequestDefaultParameters.put("androidaid_sha1",
+								sha1(adInfo.getId()));
+						adRequestDefaultParameters.put("androidaid_md5",
+								md5(adInfo.getId()));
+						break;
+					case SHA1:
+						adRequestDefaultParameters.put("androidaid_sha1",
+								sha1(adInfo.getId()));
+						break;
+					case MD5:
+						adRequestDefaultParameters.put("androidaid_md5",
+								md5(adInfo.getId()));
+						break;
+				default:
+					break;
+				}
 			}
 
 			/*
@@ -3407,6 +3427,25 @@ public class MASTAdView extends ViewGroup {
 			return "";
 		}
 	}
+	
+	public static String md5(String string) {
+		StringBuilder stringBuilder = new StringBuilder();
+
+		try {
+			MessageDigest digest = MessageDigest.getInstance("MD5");
+			byte[] bytes = string.getBytes("UTF-8");
+			digest.update(bytes, 0, bytes.length);
+			bytes = digest.digest();
+
+			for (final byte b : bytes) {
+				stringBuilder.append(String.format("%02X", b));
+			}
+
+			return stringBuilder.toString().toLowerCase();
+		} catch (Exception e) {
+			return "";
+		}
+	}
 
 	public static boolean isScreenOn = true;
 
@@ -3451,5 +3490,13 @@ public class MASTAdView extends ViewGroup {
 			Log.d("Test", "On set maraid " + isViewable);
 			mraidBridge.setViewable(isViewable);
 		}
+	}
+
+	public HASHING_TECHNIQUE getAidHashing() {
+		return hashing;
+	}
+
+	public void setAidHashing(HASHING_TECHNIQUE hashing) {
+		this.hashing = hashing;
 	}
 }
