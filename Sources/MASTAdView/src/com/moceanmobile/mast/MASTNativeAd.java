@@ -183,7 +183,7 @@ public final class MASTNativeAd implements AdRequest.Handler {
 	// androidAid
 	private boolean isAndroidAidEnabled = true;
 	private String androidAid = "";
-	private HASHING_TECHNIQUE hashing = HASHING_TECHNIQUE.RAW;
+	private HASHING_TECHNIQUE hashing = HASHING_TECHNIQUE.NONE;
 
 	// Do not track / Opt-Out of interest based ads
 	private int mDoNotTrack = 0;

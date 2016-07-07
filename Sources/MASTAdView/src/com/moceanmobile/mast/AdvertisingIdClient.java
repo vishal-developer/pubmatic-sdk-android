@@ -24,7 +24,7 @@ public final class AdvertisingIdClient {
 public static final class AdInfo {
 	
 	public enum HASHING_TECHNIQUE {
-		SHA1, MD5, RAW, ALL
+		SHA1, MD5, NONE, ALL
 	}
 	
     private final String advertisingId;

@@ -202,13 +202,7 @@ public class MASTAdView extends ViewGroup {
 
 	// androidAid
 	private boolean isAndroidAidEnabled = true;
-	private String androidAid = "";
-	private HASHING_TECHNIQUE hashing = HASHING_TECHNIQUE.RAW;
-
-	// Do not track / Opt-Out of interest based ads
-	private int mDoNotTrack = 0;
-	// 0 = User has not opted out (default)
-	// 1= User has opted out (requested do-not-track)
+	private HASHING_TECHNIQUE hashing = HASHING_TECHNIQUE.NONE;
 
 	// Receiver
 	private BroadcastReceiver mReceiver;
