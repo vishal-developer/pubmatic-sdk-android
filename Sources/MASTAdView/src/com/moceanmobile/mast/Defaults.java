@@ -41,10 +41,6 @@ public class Defaults {
 	public static final int LOCATION_DETECTION_MINTIME = 10 * 60 * 1000;
 	public static final int LOCATION_DETECTION_MINDISTANCE = 20; // Meters
 	
-	public static final String SSL_WARNING_MESSAGE 		 = "Security certificate of this url is not trusted. Do you want to continue?";
-	public static final String SSL_WARNING_CONTINUE_TEXT = "Continue";
-	public static final String SSL_WARNING_CANCEL_TEXT 	 = "Back to safety";
-
 	// How much content is allowed after parsing out click url and image or text
 	// content before
 	// falling through and rendering as html vs. native rendering.

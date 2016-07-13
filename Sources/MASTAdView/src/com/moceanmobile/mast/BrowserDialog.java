@@ -249,32 +249,14 @@ public class BrowserDialog extends Dialog {
 			progressBar.setVisibility(View.VISIBLE);
 			super.onPageStarted(view, url, favicon);
 		}
-
-		@Override
-		public void onReceivedSslError(WebView view, final SslErrorHandler handler, SslError error) {
-			final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-			//This message can be customized.
-			builder.setMessage(Defaults.SSL_WARNING_MESSAGE);
-			builder.setPositiveButton(Defaults.SSL_WARNING_CONTINUE_TEXT, new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which)
-				{ 
-					handler.proceed(); 
-				}
-			});
-			builder.setNegativeButton(Defaults.SSL_WARNING_CANCEL_TEXT, new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which)
-				{ 
-					if(handler!=null)
-						handler.cancel();
-					BrowserDialog.this.dismiss();
-				}
-			});
-			final AlertDialog dialog = builder.create();
-			dialog.show();
-		}
     	
+    	@Override
+    	public void onReceivedSslError(WebView view, SslErrorHandler handler,
+    			SslError error) {
+    		// Ignore SSL error in InApp Browser
+    		handler.proceed();
+    	}
+
     	@Override
     	public void onReceivedError(WebView view, int errorCode,
     			String description, String failingUrl) {
