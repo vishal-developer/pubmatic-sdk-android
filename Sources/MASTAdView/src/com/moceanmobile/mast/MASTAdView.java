@@ -916,7 +916,7 @@ public class MASTAdView extends ViewGroup {
 							internalUpdate(false);
 						}
 
-					}, 0, updateInterval, TimeUnit.SECONDS);
+					}, updateInterval, updateInterval, TimeUnit.SECONDS);
 		}
 
 		if (force) {
