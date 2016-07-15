@@ -875,9 +875,10 @@ public class MASTAdView extends ViewGroup {
 	}
 
 	/**
-	 * add androidaid as request param.
+	 * Add androidaid as request param & send to ad request.
+	 * By default, its values is true.
 	 * 
-	 * @param isAndroidaidEnabled
+	 * @param isAndroidaidEnabled Set false if do not want to send AID
 	 */
 	public void setAndroidAidEnabled(boolean isAndroidAidEnabled) {
 		this.isAndroidAidEnabled = isAndroidAidEnabled;
@@ -3490,6 +3491,11 @@ public class MASTAdView extends ViewGroup {
 		return hashing;
 	}
 
+	/**
+	 * Based on the given hashing type, AID value hashed & sent to the ad server. 
+	 * Calling setAndroidAidEnabled(false) will not send the aid & it's hashed values.
+	 * @param hashing Type of hashing to be used.
+	 */
 	public void setAidHashing(HASHING_TECHNIQUE hashing) {
 		this.hashing = hashing;
 	}
