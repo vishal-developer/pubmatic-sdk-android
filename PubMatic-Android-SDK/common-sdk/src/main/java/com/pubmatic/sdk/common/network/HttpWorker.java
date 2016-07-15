@@ -31,8 +31,9 @@ public class HttpWorker {
 
 		if(httpRequest==null || httpUrlConnection==null)
 			return;
-		
-		httpUrlConnection.setDoOutput(true);
+
+        if(CommonConstants.HTTPMETHODPOST.equals(httpRequest.getRequestMethod()))
+		    httpUrlConnection.setDoOutput(true);
 
 		// Setting headers
 		if (httpRequest.mContentTypeHeader != null) {
@@ -195,8 +196,11 @@ public class HttpWorker {
 		        HttpURLConnection.setFollowRedirects(false);
 				httpUrlConnection.setInstanceFollowRedirects(false);
 				httpUrlConnection.setRequestProperty("User-Agent", httpRequest.getUserAgent());
-				httpUrlConnection.setRequestProperty("Accept", "text/plain,text/html,application/xhtml+xml,application/xml;*/*");
+				httpUrlConnection.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
 				httpUrlConnection.setConnectTimeout(CommonConstants.MAX_SOCKET_TIME);
+
+                if(httpRequest.getRequestMethod() != null)
+				    httpUrlConnection.setRequestMethod(httpRequest.getRequestMethod());
 
 				// Uploading the body of POST request
 				if(requestMethod.equalsIgnoreCase(CommonConstants.HTTPMETHODPOST) && httpRequest.getPostData() != null) {

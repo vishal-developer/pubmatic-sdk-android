@@ -84,36 +84,29 @@ public class PubMaticNativeActivity extends Activity {
 	private List<PMAssetRequest> getAssetRequests() {
 		List<PMAssetRequest> assets = new ArrayList<PMAssetRequest>();
 
-		PMTitleAssetRequest titleAsset = new PMTitleAssetRequest();
-		titleAsset.setAssetId(1001); // Unique assetId is mandatory for each
-										// asset
+		PMTitleAssetRequest titleAsset = new PMTitleAssetRequest(1001);
 		titleAsset.setLength(50);
 		titleAsset.setRequired(true); // Optional (Default: false)
 		assets.add(titleAsset);
 
-		PMImageAssetRequest imageAssetIcon = new PMImageAssetRequest();
-		imageAssetIcon.setAssetId(1003);
+		PMImageAssetRequest imageAssetIcon = new PMImageAssetRequest(1003);
 		imageAssetIcon.setImageType(PMImageAssetTypes.icon);
 		assets.add(imageAssetIcon);
 
-		PMImageAssetRequest imageAssetMainImage = new PMImageAssetRequest();
-		imageAssetMainImage.setAssetId(1004);
+		PMImageAssetRequest imageAssetMainImage = new PMImageAssetRequest(1004);
 		imageAssetMainImage.setImageType(PMImageAssetTypes.main);
 		assets.add(imageAssetMainImage);
 
-		PMDataAssetRequest dataAssetDesc = new PMDataAssetRequest();
-		dataAssetDesc.setAssetId(1002);
+		PMDataAssetRequest dataAssetDesc = new PMDataAssetRequest(1002);
 		dataAssetDesc.setDataAssetType(PMDataAssetTypes.desc);
 		dataAssetDesc.setLength(25);
 		assets.add(dataAssetDesc);
 
-		PMDataAssetRequest dataAssetRating = new PMDataAssetRequest();
-		dataAssetRating.setAssetId(1005);
+		PMDataAssetRequest dataAssetRating = new PMDataAssetRequest(1005);
 		dataAssetRating.setDataAssetType(PMDataAssetTypes.rating);
 		assets.add(dataAssetRating);
 
-		PMDataAssetRequest dataAssetCta = new PMDataAssetRequest();
-		dataAssetCta.setAssetId(1006);
+		PMDataAssetRequest dataAssetCta = new PMDataAssetRequest(1006);
 		dataAssetCta.setDataAssetType(PMDataAssetTypes.ctatext);
 		assets.add(dataAssetCta);
 

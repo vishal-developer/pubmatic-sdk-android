@@ -50,6 +50,7 @@ public class NativeSamplesListActivity extends ListActivity {
 		// @formatter:off
 		samplesListAdapter.addItem(new SamplesItem("Mocean Native",  MoceanNativeActivity.class));
 		samplesListAdapter.addItem(new SamplesItem("PubMatic Native", PubMaticNativeActivity.class));
+		samplesListAdapter.addItem(new SamplesItem("Phoenix Native", PhoenixNativeActivity.class));
 
 		// @formatter:on
 

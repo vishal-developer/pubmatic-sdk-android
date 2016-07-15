@@ -13,14 +13,20 @@ public class PubMaticUtils {
     public static String getNetworkType(Context context){
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo= cm.getActiveNetworkInfo();
-        switch (networkInfo.getType()) {
-            case ConnectivityManager.TYPE_MOBILE:
-                return "cellular";
-            case ConnectivityManager.TYPE_WIFI:
-                return  "wifi";
-            default:
-                return null;
+
+        if(networkInfo != null)
+        {
+            switch (networkInfo.getType()) {
+                case ConnectivityManager.TYPE_MOBILE:
+                    return "cellular";
+                case ConnectivityManager.TYPE_WIFI:
+                    return  "wifi";
+                default:
+                    return null;
+            }
         }
+
+        return null;
     }
 
     public static String getUdidFromContext(Context context) {

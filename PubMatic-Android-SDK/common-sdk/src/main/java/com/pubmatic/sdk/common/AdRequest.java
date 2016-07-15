@@ -52,6 +52,11 @@ public abstract class AdRequest {
 	protected static String 			mUDID;
 
 	/**
+	 * Request Url Params
+	 */
+	protected Map<String, String> mUrlParams;
+
+	/**
 	 * Publisher can set his own custom defined Ad request parameters via Map
 	 */
 	protected Map<String, List<String>> mCustomParams;
@@ -72,6 +77,13 @@ public abstract class AdRequest {
 	 * @return
      */
 	public abstract boolean checkMandatoryParams();
+
+    /**
+     *
+     */
+    protected void setUpUrlParams() {
+
+    }
 
 	/**
 	 *
@@ -145,6 +157,7 @@ public abstract class AdRequest {
 
 	protected AdRequest(CommonConstants.CHANNEL channel, Context context) {
 		mChannel = channel;
+        mUrlParams = new HashMap<>(0);
 		retrieveAndroidAid(context);
 	}
 
@@ -222,6 +235,38 @@ public abstract class AdRequest {
 				this.mBaseUrl = "http://"+baseUrl;
 		}
 	}
+
+    public Map<String, String> getUrlParams() {
+        return mUrlParams;
+    }
+
+    protected void setUrlParam(Map<String, String> urlParams) {
+        mUrlParams = urlParams;
+    }
+
+    protected void addUrlParam(String key, String value) {
+        if(value != null && !value.equals(""))
+            mUrlParams.put(key, value);
+    }
+
+    public String getRequestUrl() {
+
+        StringBuffer requestUrl = new StringBuffer(getAdServerURL());
+
+        if(mUrlParams.size() != 0)
+        {
+            requestUrl.append("?");
+
+            for (Map.Entry param : mUrlParams.entrySet())
+            {
+                requestUrl.append(param.getKey() + CommonConstants.EQUAL + param.getValue() + CommonConstants.AMPERSAND);
+            }
+
+            requestUrl.setLength(requestUrl.length() - 1);
+        }
+
+        return  requestUrl.toString();
+    }
 
 	public String getPostData() {
 		return mPostData!=null ? mPostData.toString() : null;
