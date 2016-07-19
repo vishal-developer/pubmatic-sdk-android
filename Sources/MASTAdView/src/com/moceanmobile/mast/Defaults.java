@@ -29,7 +29,7 @@ package com.moceanmobile.mast;
 
 public class Defaults {
 
-	public static final String SDK_VERSION = "4.3.9";
+	public static final String SDK_VERSION = "4.4.0";
 
 	// This is used if the WebView's value returned is empty.
 	public static final String USER_AGENT = "MASTAdView/" + SDK_VERSION
@@ -40,7 +40,7 @@ public class Defaults {
 	// 10 mins in ms
 	public static final int LOCATION_DETECTION_MINTIME = 10 * 60 * 1000;
 	public static final int LOCATION_DETECTION_MINDISTANCE = 20; // Meters
-
+	
 	// How much content is allowed after parsing out click url and image or text
 	// content before
 	// falling through and rendering as html vs. native rendering.

@@ -222,3 +222,10 @@ Enabled multi-pixel tracking for SDK.
 -------
 
 - Fixed issue: Internal browser is displaying blank page in cases where landing page contains javascript. Enabled javascript in the WebView.
+
+-------
+4.4.0
+-------
+
+- Added support to enable the SHA1/MD5 or both hashing technique for Android AID.
+- Fixed issue: Ad request is triggered twice when autorefresh ad is turned on.

@@ -31,6 +31,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -255,7 +256,7 @@ public class BrowserDialog extends Dialog {
     		// Ignore SSL error in InApp Browser
     		handler.proceed();
     	}
-    	
+
     	@Override
     	public void onReceivedError(WebView view, int errorCode,
     			String description, String failingUrl) {
