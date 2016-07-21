@@ -325,8 +325,6 @@ public abstract class PhoenixAdRequest extends AdRequest {
             addUrlParam(PhoenixConstants.BLK_DOMAIN_IDS_PARAM, mBlockDomainIds);
 
         addUrlParam(PhoenixConstants.COPPA_PARAM, String.valueOf(mCoppa==true? 1 : 0));
-
-        addUrlParam("asz", "970x250");
     }
 
     @Override

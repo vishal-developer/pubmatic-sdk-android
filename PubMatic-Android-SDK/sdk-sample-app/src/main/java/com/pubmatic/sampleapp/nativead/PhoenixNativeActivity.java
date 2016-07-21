@@ -80,12 +80,10 @@ public class PhoenixNativeActivity extends Activity {
 
         // ad.setTest(true); // Uncomment to serve ads in test mode
 
-        PhoenixNativeAdRequest adRequest = PhoenixNativeAdRequest.createPhoenixNativeAdRequest(this, "892", "240");
-        //PhoenixNativeAdRequest adRequest = PhoenixNativeAdRequest.createPhoenixNativeAdRequest(this, "892", getAssetRequests());
+        //PhoenixNativeAdRequest adRequest = PhoenixNativeAdRequest.createPhoenixNativeAdRequest(this, "892", "240");
+        PhoenixNativeAdRequest adRequest = PhoenixNativeAdRequest.createPhoenixNativeAdRequest(this, "892", getAssetRequests());
 
         adRequest.setImpressionId("DIV1");
-
-        adRequest.addCustomParam("Test2", "Value21");
 
         // Request for ads
         ad.execute(adRequest);
@@ -106,7 +104,7 @@ public class PhoenixNativeActivity extends Activity {
         imageAssetIcon.setWidth(150);
         imageAssetIcon.setHeight(150);
         imageAssetIcon.setImageType(PMImageAssetTypes.icon);
-        imageAssetIcon.setMimeTypes(mimeTypes);
+        //imageAssetIcon.setMimeTypes(mimeTypes);
         //imageAssetIcon.setRequired(true);
         assets.add(imageAssetIcon);
 
@@ -114,7 +112,7 @@ public class PhoenixNativeActivity extends Activity {
         imageAssetMainImage.setWidth(960);
         imageAssetMainImage.setHeight(640);
         imageAssetMainImage.setImageType(PMImageAssetTypes.main);
-        imageAssetMainImage.setMimeTypes(mimeTypes);
+        //imageAssetMainImage.setMimeTypes(mimeTypes);
         //imageAssetMainImage.setRequired(true);
         assets.add(imageAssetMainImage);
 
