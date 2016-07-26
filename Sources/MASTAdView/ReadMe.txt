@@ -229,3 +229,9 @@ Enabled multi-pixel tracking for SDK.
 
 - Added support to enable the SHA1/MD5 or both hashing technique for Android AID.
 - Fixed issue: Ad request is triggered twice when autorefresh ad is turned on.
+
+-------
+4.4.1
+-------
+
+- Fixed issue: Decoded the click URL using "UTF-8" character encoding.
