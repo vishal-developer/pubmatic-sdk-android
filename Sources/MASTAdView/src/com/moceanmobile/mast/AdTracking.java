@@ -29,12 +29,19 @@ package com.moceanmobile.mast;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLDecoder;
 
 import android.util.Log;
 
 public class AdTracking {
     private static final String LOGTAG = AdTracking.class.getSimpleName();
 
+    /**
+     * This method decodes the given URL using UTF-8 character encoding & executes the decoded URL.
+     * @param timeout Network timeout in seconds
+     * @param url URL to be executed
+     * @param userAgent User agent to be send
+     */
     public static void invokeTrackingUrl(final int timeout, final String url,
     		final String userAgent) {
         new Thread(new Runnable() {
@@ -46,7 +53,8 @@ public class AdTracking {
     			int responseCode = 0;
     			
             	try {
-        			httpUrlConnection = (HttpURLConnection) new URL(url).openConnection();
+            		final String decodedURL = URLDecoder.decode(url, "UTF-8");
+        			httpUrlConnection = (HttpURLConnection) new URL(decodedURL).openConnection();
         			if (httpUrlConnection != null) {
 
         				httpUrlConnection.setRequestMethod(MASTAdViewConstants.HTTP_METHOD_GET);
@@ -58,7 +66,7 @@ public class AdTracking {
         				
         				if (responseCode != HttpURLConnection.HTTP_OK)
         				{
-        					Log.w(LOGTAG, "Error while invoking tracking URL : " + url + "HttpResponse:"+responseCode);
+        					Log.w(LOGTAG, "Error while invoking tracking URL : " + decodedURL + "HttpResponse:"+responseCode);
         					return;
         				}else{
         					Log.i(LOGTAG, "Ad Tracker fired successfully");
