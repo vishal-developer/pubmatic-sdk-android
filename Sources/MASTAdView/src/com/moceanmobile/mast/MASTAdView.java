@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLDecoder;
 import java.security.MessageDigest;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -1842,38 +1843,43 @@ public class MASTAdView extends ViewGroup {
 				return;
 			}
 		}
-		
+		try {
+			final String decodedURL = URLDecoder.decode(url, "UTF-8");
 
-		runOnUiThread(new Runnable() {
-			public void run() {
-				if ((bypassInternalBrowser == false) && useInternalBrowser) {
-					try {
-						URI uri = new URI(url);
-						String scheme = uri.getScheme();
-						if (scheme.startsWith("http")) {
-							openInternalBrowser(url);
-							return;
+			runOnUiThread(new Runnable() {
+				public void run() {
+					if ((bypassInternalBrowser == false) && useInternalBrowser) {
+						try {
+							URI uri = new URI(decodedURL);
+							String scheme = uri.getScheme();
+							if (scheme.startsWith("http")) {
+								openInternalBrowser(decodedURL);
+								return;
+							}
+						} catch (URISyntaxException e) {
+							// If it can't be parsed and validated as http/s don't
+							// bother with the internal browser.
 						}
-					} catch (URISyntaxException e) {
-						// If it can't be parsed and validated as http/s don't
-						// bother with the internal browser.
+					}
+	
+					if (activityListener != null) {
+						activityListener.onLeavingApplication(MASTAdView.this);
+					}
+	
+					Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(decodedURL));
+					if (intentAvailable(intent)) {
+						getContext().startActivity(intent);
+					} else {
+						logEvent(
+								"Unable to start activity for browsing URL:" + decodedURL,
+								LogLevel.Error);
 					}
 				}
+			});
 
-				if (activityListener != null) {
-					activityListener.onLeavingApplication(MASTAdView.this);
-				}
-
-				Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-				if (intentAvailable(intent)) {
-					getContext().startActivity(intent);
-				} else {
-					logEvent(
-							"Unable to start activity for browsing URL:" + url,
-							LogLevel.Error);
-				}
-			}
-		});
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
 	}
 
 	// main thread
