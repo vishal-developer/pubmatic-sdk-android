@@ -27,11 +27,15 @@
 
 package com.pubmatic.sdk.common.ui;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -41,10 +45,12 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.http.SslError;
 import android.os.Build;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
+import android.webkit.JavascriptInterface;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -59,31 +65,31 @@ public class BrowserDialog extends Dialog {
     static private final int ActionBarHeightDp = 40;
 
     private final Handler handler;
+    private Context context;
     private String url = null;
     private ImageView backButton = null;
     private ImageView forwardButton = null;
     private android.webkit.WebView webView = null;
-    RelativeLayout mContentView;
+    private RelativeLayout mContentView;
+    private android.webkit.WebView sslWebView = null;
+    private RelativeLayout.LayoutParams webViewLayoutParams;
 
-    @SuppressWarnings({"deprecation", "ResourceType"})
-	@TargetApi(23) 
     @SuppressLint("ClickableViewAccessibility")
     public BrowserDialog(Context context, String url, Handler handler) {
         super(context, android.R.style.Theme_Black_NoTitleBar);
 
         this.url = url;
+        this.context = context;
         this.handler = handler;
 
         Resources resources = getContext().getResources();
 
-        LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
-                                                     LayoutParams.MATCH_PARENT);
+        LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         mContentView = new RelativeLayout(getContext());
         mContentView.setBackgroundColor(0xffffffff);
         setContentView(mContentView, layoutParams);
 
-        RelativeLayout.LayoutParams actionBarLayoutParams = new RelativeLayout.LayoutParams(
-                LayoutParams.MATCH_PARENT,
+        RelativeLayout.LayoutParams actionBarLayoutParams = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,
                 dpToPx(ActionBarHeightDp));
         actionBarLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         LinearLayout actionBar = new LinearLayout(getContext());
@@ -95,25 +101,17 @@ public class BrowserDialog extends Dialog {
         actionBar.setVerticalGravity(Gravity.CENTER_VERTICAL);
         mContentView.addView(actionBar, actionBarLayoutParams);
 
-        @SuppressWarnings("static-access") LinearLayout.LayoutParams imageButtonLayout = new LinearLayout.LayoutParams(
-                layoutParams.MATCH_PARENT,
-                LayoutParams.MATCH_PARENT,
-                1);
-        imageButtonLayout.setMargins(2, 4, 2, 2);
+        @SuppressWarnings("static-access")
+        LinearLayout.LayoutParams imageButtonLayout = new LinearLayout.LayoutParams(layoutParams.MATCH_PARENT,
+                LayoutParams.MATCH_PARENT, 1);
+        imageButtonLayout.setMargins(2,4,2,2);
         ScaleType imageScaleType = ScaleType.FIT_CENTER;
 
         ImageView imageButton = new ImageView(getContext());
         imageButton.setScaleType(imageScaleType);
-        imageButton.setImageDrawable(new BitmapDrawable(resources,
-                                                        BrowserDialog.class.getResourceAsStream(
-                                                                "/ic_action_cancel.png")));
-        if(Build.VERSION.SDK_INT >= 23)
-        	imageButton.setBackgroundColor(getContext().getResources()
-                    .getColor(android.R.color.background_dark, getContext().getTheme()));
-        else
-        	imageButton.setBackgroundColor(getContext().getResources()
-                                                   .getColor(android.R.color.background_dark));
-        
+        imageButton.setImageDrawable(new BitmapDrawable(resources, BrowserDialog.class
+                .getResourceAsStream("/ic_action_cancel.png")));
+        imageButton.setBackgroundColor(getContext().getResources().getColor(android.R.color.background_dark));
         imageButton.setOnTouchListener(mButtonTouchListener);
         imageButton.setOnClickListener(new Button.OnClickListener() {
             @Override
@@ -125,11 +123,9 @@ public class BrowserDialog extends Dialog {
         actionBar.addView(imageButton, imageButtonLayout);
 
         backButton = new ImageView(getContext());
-        backButton.setImageDrawable(new BitmapDrawable(resources,
-                                                       BrowserDialog.class.getResourceAsStream(
-                                                               "/ic_action_back.png")));
-        backButton.setBackgroundColor(getContext().getResources()
-                                                  .getColor(android.R.color.background_dark));
+        backButton.setImageDrawable(new BitmapDrawable(resources, BrowserDialog.class
+                .getResourceAsStream("/ic_action_back.png")));
+        backButton.setBackgroundColor(getContext().getResources().getColor(android.R.color.background_dark));
         backButton.setScaleType(imageScaleType);
         backButton.setEnabled(false);
         imageButton.setOnTouchListener(mButtonTouchListener);
@@ -142,11 +138,9 @@ public class BrowserDialog extends Dialog {
         actionBar.addView(backButton, imageButtonLayout);
 
         forwardButton = new ImageView(getContext());
-        forwardButton.setImageDrawable(new BitmapDrawable(resources,
-                                                          BrowserDialog.class.getResourceAsStream(
-                                                                  "/ic_action_forward.png")));
-        forwardButton.setBackgroundColor(getContext().getResources()
-                                                     .getColor(android.R.color.background_dark));
+        forwardButton.setImageDrawable(new BitmapDrawable(resources, BrowserDialog.class
+                .getResourceAsStream("/ic_action_forward.png")));
+        forwardButton.setBackgroundColor(getContext().getResources().getColor(android.R.color.background_dark));
         forwardButton.setScaleType(imageScaleType);
         forwardButton.setEnabled(false);
         imageButton.setOnTouchListener(mButtonTouchListener);
@@ -160,11 +154,9 @@ public class BrowserDialog extends Dialog {
 
         imageButton = new ImageView(getContext());
         imageButton.setScaleType(imageScaleType);
-        imageButton.setImageDrawable(new BitmapDrawable(resources,
-                                                        BrowserDialog.class.getResourceAsStream(
-                                                                "/ic_action_refresh.png")));
-        imageButton.setBackgroundColor(getContext().getResources()
-                                                   .getColor(android.R.color.background_dark));
+        imageButton.setImageDrawable(new BitmapDrawable(resources, BrowserDialog.class
+                .getResourceAsStream("/ic_action_refresh.png")));
+        imageButton.setBackgroundColor(getContext().getResources().getColor(android.R.color.background_dark));
         imageButton.setOnTouchListener(mButtonTouchListener);
         imageButton.setOnClickListener(new Button.OnClickListener() {
             @Override
@@ -176,31 +168,26 @@ public class BrowserDialog extends Dialog {
 
         imageButton = new ImageView(getContext());
         imageButton.setScaleType(imageScaleType);
-        imageButton.setImageDrawable(new BitmapDrawable(resources,
-                                                        BrowserDialog.class.getResourceAsStream(
-                                                                "/ic_action_web_site.png")));
-        imageButton.setBackgroundColor(getContext().getResources()
-                                                   .getColor(android.R.color.background_dark));
+        imageButton.setImageDrawable(new BitmapDrawable(resources, BrowserDialog.class
+                .getResourceAsStream("/ic_action_web_site.png")));
+        imageButton.setBackgroundColor(getContext().getResources().getColor(android.R.color.background_dark));
         imageButton.setOnTouchListener(mButtonTouchListener);
         imageButton.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                BrowserDialog.this.handler.browserDialogOpenUrl(BrowserDialog.this,
-                                                                webView.getUrl(),
-                                                                true);
+                String URL = BrowserDialog.this.url;
+                BrowserDialog.this.handler.browserDialogOpenUrl(BrowserDialog.this, URL, true);
             }
         });
         actionBar.addView(imageButton, imageButtonLayout);
 
-        RelativeLayout.LayoutParams webViewLayoutParams = new RelativeLayout.LayoutParams(
-                LayoutParams.MATCH_PARENT,
-                0);
+        webViewLayoutParams = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0);
         webViewLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
         webViewLayoutParams.addRule(RelativeLayout.ABOVE, actionBar.getId());
         webView = new android.webkit.WebView(getContext());
         webView.setWebViewClient(new Client());
-        // To set normal zooming level of webView.
         webView.getSettings().setJavaScriptEnabled(true);
+        // To set normal zooming level of webView.
         webView.getSettings().setLoadWithOverviewMode(true);
         webView.getSettings().setUseWideViewPort(true);
         mContentView.addView(webView, webViewLayoutParams);
@@ -208,6 +195,9 @@ public class BrowserDialog extends Dialog {
         setOnDismissListener(new OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
+                webView.loadUrl("about:blank");
+                dismissSSLWebView();
+                BrowserDialog.this.dismiss();
                 BrowserDialog.this.handler.browserDialogDismissed(BrowserDialog.this);
             }
         });
@@ -219,26 +209,27 @@ public class BrowserDialog extends Dialog {
         public boolean onTouch(View v, MotionEvent event) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    v.setBackgroundColor(getContext().getResources()
-                                                     .getColor(android.R.color.background_light));
-                    
+                    v.setBackgroundColor(getContext().getResources().getColor(
+                            android.R.color.background_light));
                     break;
                 default:
-                    v.setBackgroundColor(getContext().getResources()
-                                                     .getColor(android.R.color.background_dark));
+                    v.setBackgroundColor(getContext().getResources().getColor(
+                            android.R.color.background_dark));
                     break;
             }
             return false;
         }
     };
 
-    public int pxToDp(float px) {
+    public int pxToDp(float px)
+    {
         DisplayMetrics displayMetrics = Resources.getSystem().getDisplayMetrics();
         int dp = (int) (px / displayMetrics.density + .5f);
         return dp;
     }
 
-    public int dpToPx(int dp) {
+    public int dpToPx(int dp)
+    {
         DisplayMetrics displayMetrics = Resources.getSystem().getDisplayMetrics();
         int px = (int) (dp * displayMetrics.density + .5f);
         return px;
@@ -259,17 +250,102 @@ public class BrowserDialog extends Dialog {
         webView.loadUrl(url);
     }
 
+    private void createSSLWebView() {
+        dismissSSLWebView();
+        sslWebView = new android.webkit.WebView(getContext());
+        sslWebView.setWebViewClient(new SSLClient());
+        mContentView.addView(sslWebView, webViewLayoutParams);
+        sslWebView.bringToFront();
+    }
+
+    private void dismissSSLWebView() {
+        try {
+            if(sslWebView!=null) {
+                try {
+                    //Don't use getContext()
+                    ((Activity)context).runOnUiThread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            mContentView.removeView(sslWebView);
+                            sslWebView.loadUrl("about:blank");
+                            sslWebView.destroy();
+                            sslWebView = null;
+                        }
+                    });
+                } catch(Exception e) {
+                    mContentView.removeView(sslWebView);
+                    sslWebView.loadUrl("about:blank");
+                    sslWebView.destroy();
+                    sslWebView = null;
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @SuppressLint("JavascriptInterface")
+    protected void loadSslErrorPage(final SslErrorHandler handler) {
+
+        try {
+            InputStream is = BrowserDialog.class
+                    .getResourceAsStream("/html/ssl_error.html");
+            BufferedReader br = new BufferedReader(
+                    new InputStreamReader(is, "UTF-8"), 16384);
+            StringBuilder sb = new StringBuilder();
+            char buffer[] = new char[4096];
+            while (true) {
+                int count = br.read(buffer);
+                if (count == -1)
+                    break;
+                sb.append(buffer, 0, count);
+            }
+            sslWebView.getSettings().setJavaScriptEnabled(true);
+            sslWebView.addJavascriptInterface(new Object(){
+                @JavascriptInterface
+                public void onHostNameSet(){
+                    Log.i("BrowserDialog",
+                            "Host name is set");
+                }
+                @JavascriptInterface
+                public void onProceedClicked(){
+
+                    try {
+                        dismissSSLWebView();
+                        handler.proceed();
+                    }catch(Exception e) {
+                        Log.e("BrowserDialog",
+                                "Not able to proceed from ssl warning page.");
+                    }
+                }
+                @JavascriptInterface
+                public void onBackClicked(){
+                    dismissSSLWebView();
+                    BrowserDialog.this.dismiss();
+                }
+            },"JsHandler");
+
+            sslWebView.loadData(sb.toString(), "text/html; charset=UTF-8", null);
+
+        } catch (Exception ex) {
+            Log.e("BrowserDialog",
+                    "Error loading ssl_error.html "
+                            + ex.getMessage());
+        }
+
+    }
+
     private class Client extends WebViewClient {
-        ProgressBar progressBar = new ProgressBar(getContext(),
-                                                  null,
-                                                  android.R.attr.progressBarStyle);
+        ProgressBar progressBar = new ProgressBar(getContext(), null,
+                android.R.attr.progressBarStyle);
 
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             if (progressBar.getParent() == null) {
                 RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
-                        LayoutParams.WRAP_CONTENT,
-                        LayoutParams.WRAP_CONTENT);
+                        LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
                 layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
                 mContentView.addView(progressBar, layoutParams);
             }
@@ -278,16 +354,16 @@ public class BrowserDialog extends Dialog {
         }
 
         @Override
-        public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-            // Ignore SSL error in InApp Browser
-            handler.proceed();
+        public void onReceivedSslError(WebView view, final SslErrorHandler handler,
+                                       SslError error) {
+
+            createSSLWebView();
+            loadSslErrorPage(handler);
         }
 
         @Override
-        public void onReceivedError(WebView view,
-                int errorCode,
-                String description,
-                String failingUrl) {
+        public void onReceivedError(WebView view, int errorCode,
+                                    String description, String failingUrl) {
             progressBar.setVisibility(View.GONE);
             super.onReceivedError(view, errorCode, description, failingUrl);
         }
@@ -317,9 +393,24 @@ public class BrowserDialog extends Dialog {
         }
     }
 
-    public interface Handler {
-        void browserDialogDismissed(BrowserDialog browserDialog);
 
-        void browserDialogOpenUrl(BrowserDialog browserDialog, String url, boolean dismiss);
+    private class SSLClient extends WebViewClient {
+        ProgressBar progressBar = new ProgressBar(getContext(), null,
+                android.R.attr.progressBarStyle);
+
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            backButton.setEnabled(view.canGoBack());
+            forwardButton.setEnabled(view.canGoForward());
+            progressBar.setVisibility(View.GONE);
+
+            sslWebView.loadUrl("javascript:setHostName('" + BrowserDialog.this.url + "')");
+
+        }
+    }
+    public interface Handler {
+        public void browserDialogDismissed(BrowserDialog browserDialog);
+
+        public void browserDialogOpenUrl(BrowserDialog browserDialog, String url, boolean dismiss);
     }
 }
