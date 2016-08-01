@@ -233,3 +233,9 @@ Enabled multi-pixel tracking for SDK.
 -------
 
 - Fixed issue: Internal browser is displaying blank page in cases where landing page contains javascript. Enabled javascript in the WebView.
+
+-------
+ 5.0.4
+-------
+
+- Fixed issue: Warning from Google for SSL validation.
