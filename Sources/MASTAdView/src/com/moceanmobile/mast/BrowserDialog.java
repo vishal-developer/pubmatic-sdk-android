@@ -27,11 +27,14 @@
 
 package com.moceanmobile.mast;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -40,10 +43,12 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.http.SslError;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
+import android.webkit.JavascriptInterface;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -57,17 +62,21 @@ public class BrowserDialog extends Dialog {
     static private final int ActionBarHeightDp = 40;
 
     private final Handler handler;
+    private Context context;
     private String url = null;
     private ImageView backButton = null;
     private ImageView forwardButton = null;
     private android.webkit.WebView webView = null;
-    RelativeLayout mContentView;
+    private RelativeLayout mContentView;
+    private android.webkit.WebView sslWebView = null;
+    private RelativeLayout.LayoutParams webViewLayoutParams;
 
     @SuppressLint("ClickableViewAccessibility")
 	public BrowserDialog(Context context, String url, Handler handler) {
         super(context, android.R.style.Theme_Black_NoTitleBar);
 
         this.url = url;
+        this.context = context;
         this.handler = handler;
 
         Resources resources = getContext().getResources();
@@ -163,12 +172,13 @@ public class BrowserDialog extends Dialog {
         imageButton.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                BrowserDialog.this.handler.browserDialogOpenUrl(BrowserDialog.this, webView.getUrl(), true);
+            	String URL = BrowserDialog.this.url;
+                BrowserDialog.this.handler.browserDialogOpenUrl(BrowserDialog.this, URL, true);
             }
         });
         actionBar.addView(imageButton, imageButtonLayout);
 
-        RelativeLayout.LayoutParams webViewLayoutParams = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0);
+        webViewLayoutParams = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0);
         webViewLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
         webViewLayoutParams.addRule(RelativeLayout.ABOVE, actionBar.getId());
         webView = new android.webkit.WebView(getContext());
@@ -182,6 +192,9 @@ public class BrowserDialog extends Dialog {
         setOnDismissListener(new OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
+            	webView.loadUrl("about:blank");
+            	dismissSSLWebView();
+                BrowserDialog.this.dismiss();
                 BrowserDialog.this.handler.browserDialogDismissed(BrowserDialog.this);
             }
         });
@@ -234,6 +247,92 @@ public class BrowserDialog extends Dialog {
         webView.loadUrl(url);
     }
 
+    private void createSSLWebView() {
+    	dismissSSLWebView();
+    	sslWebView = new android.webkit.WebView(getContext());
+        sslWebView.setWebViewClient(new SSLClient());
+        mContentView.addView(sslWebView, webViewLayoutParams);
+		sslWebView.bringToFront();
+    }
+    
+    private void dismissSSLWebView() {
+    	try {
+    		if(sslWebView!=null) {
+    			try {
+    				//Don't use getContext()
+    				((Activity)context).runOnUiThread(new Runnable() {
+    					
+    					@Override
+    					public void run() {
+    						mContentView.removeView(sslWebView);
+    						sslWebView.loadUrl("about:blank");
+    		            	sslWebView.destroy();
+    		            	sslWebView = null;
+    					}
+    				});
+    			} catch(Exception e) {
+					mContentView.removeView(sslWebView);
+					sslWebView.loadUrl("about:blank");
+	            	sslWebView.destroy();
+	            	sslWebView = null;
+    			}	
+    		}
+    		
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    }
+
+	protected void loadSslErrorPage(final SslErrorHandler handler) {
+		
+			try {
+				InputStream is = BrowserDialog.class
+						.getResourceAsStream("/html/ssl_error.html");
+				BufferedReader br = new BufferedReader(
+						new InputStreamReader(is, "UTF-8"), 16384);
+				StringBuilder sb = new StringBuilder();
+				char buffer[] = new char[4096];
+				while (true) {
+					int count = br.read(buffer);
+					if (count == -1)
+						break;
+					sb.append(buffer, 0, count);
+				}
+				sslWebView.getSettings().setJavaScriptEnabled(true);
+				sslWebView.addJavascriptInterface(new Object(){
+	                @JavascriptInterface
+	                public void onHostNameSet(){
+	                	Log.i("BrowserDialog.loadSslErrorPage",
+								"Host name is set");
+	                }
+	                @JavascriptInterface
+	                public void onProceedClicked(){
+
+	                	try {
+		                	dismissSSLWebView();
+	                		handler.proceed();
+	                	}catch(Exception e) {
+	                		Log.e("BrowserDialog",
+									"Not able to proceed from ssl warning page.");
+	                	}
+	                }
+	                @JavascriptInterface
+	                public void onBackClicked(){
+	                	dismissSSLWebView();
+	                    BrowserDialog.this.dismiss();
+	                }
+	            },"JsHandler");
+				
+				sslWebView.loadData(sb.toString(), "text/html; charset=UTF-8", null);
+				
+			} catch (Exception ex) {
+				Log.e("BrowserDialog.loadSslErrorPage",
+						"Error loading ssl_error.html "
+								+ ex.getMessage());
+			}
+		
+	}
+	
     private class Client extends WebViewClient {
 		ProgressBar progressBar = new ProgressBar(getContext(), null,
 				android.R.attr.progressBarStyle);
@@ -251,10 +350,11 @@ public class BrowserDialog extends Dialog {
 		}
     	
     	@Override
-    	public void onReceivedSslError(WebView view, SslErrorHandler handler,
+    	public void onReceivedSslError(WebView view, final SslErrorHandler handler,
     			SslError error) {
-    		// Ignore SSL error in InApp Browser
-    		handler.proceed();
+
+    		createSSLWebView();
+			loadSslErrorPage(handler);
     	}
 
     	@Override
@@ -289,6 +389,21 @@ public class BrowserDialog extends Dialog {
         }
     }
 
+
+    private class SSLClient extends WebViewClient {
+		ProgressBar progressBar = new ProgressBar(getContext(), null,
+				android.R.attr.progressBarStyle);
+		
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            backButton.setEnabled(view.canGoBack());
+            forwardButton.setEnabled(view.canGoForward());
+            progressBar.setVisibility(View.GONE);
+
+			sslWebView.loadUrl("javascript:setHostName('"+BrowserDialog.this.url+"')");
+        
+        }
+    }
     public interface Handler {
         public void browserDialogDismissed(BrowserDialog browserDialog);
 

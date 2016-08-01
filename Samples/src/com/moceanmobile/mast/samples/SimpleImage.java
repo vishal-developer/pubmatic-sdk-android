@@ -33,6 +33,7 @@ public class SimpleImage extends RefreshActivity
 		adView.setLocationDetectionEnabled(true); // Enable Location detection
 		adView.setAndroidIdEnabled(true); // Enable Device Id detection
 		adView.setAidHashing(HASHING_TECHNIQUE.ALL);
+		adView.setUseInternalBrowser(true);
 	}
 	
 	@Override
