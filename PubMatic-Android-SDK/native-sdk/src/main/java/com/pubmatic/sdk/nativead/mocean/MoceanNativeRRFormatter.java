@@ -406,6 +406,11 @@ public class MoceanNativeRRFormatter implements RRFormatter {
 		return adResponse;
 	}
 
+	@Override
+    public AdResponse formatHeaderBiddingResponse(JSONObject response) {
+        return new AdResponse();
+    }
+
 	public AdRequest getAdRequest() {
 		return mRequest;
 	}

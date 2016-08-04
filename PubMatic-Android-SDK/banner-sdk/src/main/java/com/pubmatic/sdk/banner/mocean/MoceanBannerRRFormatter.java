@@ -1,18 +1,19 @@
 package com.pubmatic.sdk.banner.mocean;
 
-import java.io.StringReader;
-
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserFactory;
-
 import com.pubmatic.sdk.banner.BannerAdDescriptor;
 import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.AdResponse;
+import com.pubmatic.sdk.common.CommonConstants;
+import com.pubmatic.sdk.common.CommonConstants.CONTENT_TYPE;
 import com.pubmatic.sdk.common.RRFormatter;
 import com.pubmatic.sdk.common.network.HttpRequest;
 import com.pubmatic.sdk.common.network.HttpResponse;
-import com.pubmatic.sdk.common.CommonConstants;
-import com.pubmatic.sdk.common.CommonConstants.CONTENT_TYPE;
+
+import org.json.JSONObject;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserFactory;
+
+import java.io.StringReader;
 
 public class MoceanBannerRRFormatter implements RRFormatter {
 
@@ -100,6 +101,10 @@ public class MoceanBannerRRFormatter implements RRFormatter {
 		return adResponse;
 
 	}
+
+    public AdResponse formatHeaderBiddingResponse(JSONObject response) {
+        return null;
+    }
 
 	public AdRequest getAdRequest() {
 		return mRequest;

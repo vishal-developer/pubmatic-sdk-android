@@ -172,6 +172,10 @@ public class PubMaticConstants {
     public static final String UDID_TYPE_PARAM 			= "udidtype";
     public static final String UDID_HASH_PARAM 			= "udidhash";
 
+    // Header Bidding HASO request parameters
+    public static final String SA_VERSION   			= "SAVersion";
+    public static final String GRS 		            	= "grs";
+    public static final String AD_SLOT_IDS 			    = "adslots";
 
     //PubMatic specific common parameters for POST Parameters
     public static final String DID_PARAM 				= "did";

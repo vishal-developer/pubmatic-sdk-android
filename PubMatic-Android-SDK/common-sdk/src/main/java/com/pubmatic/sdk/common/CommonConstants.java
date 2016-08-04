@@ -165,6 +165,7 @@ public class CommonConstants {
 	public static final String MOCEAN_AD_NETWORK_URL = "http://ads.moceanads.com/ad";
 	public static final String PHOENIX_AD_NETWORK_URL = "http://192.82.243.86:8090/ad";//http://ae.pubmatic.com/ad";
 	public static final String PUBMATIC_AD_NETWORK_URL = "http://showads.pubmatic.com/AdServer/AdServerServlet";
+    public static final String HEADER_BIDDING_HASO_URL = "http://haso.pubmatic.com/ads//9999/GRPBID/index.html";
 
 	public static final int INVALID_INT = -999;
 	public static final int AD_TAG_TYPE_VALUE = 13;

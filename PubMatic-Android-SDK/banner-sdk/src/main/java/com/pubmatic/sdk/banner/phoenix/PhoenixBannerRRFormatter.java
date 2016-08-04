@@ -155,4 +155,8 @@ public class PhoenixBannerRRFormatter  implements RRFormatter {
 		return pubResponse;
 	}
 
+    @Override
+	public AdResponse formatHeaderBiddingResponse(JSONObject response) {
+		return null;
+	}
 }
