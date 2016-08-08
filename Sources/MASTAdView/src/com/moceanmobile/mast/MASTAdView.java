@@ -1884,32 +1884,35 @@ public class MASTAdView extends ViewGroup {
 
 	// main thread
 	private void openInternalBrowser(String url) {
-		if (browserDialog == null) {
-			browserDialog = new BrowserDialog(getContext(), url,
-					new BrowserDialog.Handler() {
-						@Override
-						public void browserDialogDismissed(
-								BrowserDialog browserDialog) {
-							if (internalBrowserListener != null) {
-								internalBrowserListener
-										.onInternalBrowserDismissed(MASTAdView.this);
-							}
-						}
-
-						@Override
-						public void browserDialogOpenUrl(
-								BrowserDialog browserDialog, String url,
-								boolean dismiss) {
-							openUrl(url, true);
-
-							if (dismiss) {
-								browserDialog.dismiss();
-							}
-						}
-					});
-		} else {
-			browserDialog.loadUrl(url);
+		if (browserDialog != null)
+		{
+			browserDialog.dismiss();
+			browserDialog = null;
 		}
+	
+		browserDialog = new BrowserDialog(getContext(), url,
+				new BrowserDialog.Handler() {
+					@Override
+					public void browserDialogDismissed(
+							BrowserDialog browserDialog) {
+						if (internalBrowserListener != null) {
+							internalBrowserListener
+									.onInternalBrowserDismissed(MASTAdView.this);
+						}
+					}
+
+					@Override
+					public void browserDialogOpenUrl(
+							BrowserDialog browserDialog, String url,
+							boolean dismiss) {
+						openUrl(url, true);
+
+						if (dismiss) {
+							browserDialog.dismiss();
+						}
+					}
+				});
+		
 
 		if (browserDialog.isShowing() == false) {
 			browserDialog.show();
