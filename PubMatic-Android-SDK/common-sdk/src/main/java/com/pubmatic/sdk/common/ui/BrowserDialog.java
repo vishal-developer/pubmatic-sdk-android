@@ -67,6 +67,7 @@ public class BrowserDialog extends Dialog {
     private final Handler handler;
     private Context context;
     private String url = null;
+    private boolean isWebViewLaunched;
     private ImageView backButton = null;
     private ImageView forwardButton = null;
     private android.webkit.WebView webView = null;
@@ -127,12 +128,23 @@ public class BrowserDialog extends Dialog {
                 .getResourceAsStream("/ic_action_back.png")));
         backButton.setBackgroundColor(getContext().getResources().getColor(android.R.color.background_dark));
         backButton.setScaleType(imageScaleType);
-        backButton.setEnabled(false);
+        backButton.setEnabled(true);
         imageButton.setOnTouchListener(mButtonTouchListener);
         backButton.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                webView.goBack();
+                if(sslWebView!=null)
+                {
+                    dismissSSLWebView();
+                    if(isWebViewLaunched)
+                        webView.bringToFront();
+                    else
+                        dismiss();
+                }
+                else if(webView.canGoBack())
+                    webView.goBack();
+                else
+                    dismiss();
             }
         });
         actionBar.addView(backButton, imageButtonLayout);
@@ -271,6 +283,8 @@ public class BrowserDialog extends Dialog {
                             sslWebView.loadUrl("about:blank");
                             sslWebView.destroy();
                             sslWebView = null;
+                            if(webView!=null)
+                                webView.bringToFront();
                         }
                     });
                 } catch(Exception e) {
@@ -278,6 +292,7 @@ public class BrowserDialog extends Dialog {
                     sslWebView.loadUrl("about:blank");
                     sslWebView.destroy();
                     sslWebView = null;
+                    webView.bringToFront();
                 }
             }
 
@@ -286,7 +301,6 @@ public class BrowserDialog extends Dialog {
         }
     }
 
-    @SuppressLint("JavascriptInterface")
     protected void loadSslErrorPage(final SslErrorHandler handler) {
 
         try {
@@ -323,14 +337,16 @@ public class BrowserDialog extends Dialog {
                 @JavascriptInterface
                 public void onBackClicked(){
                     dismissSSLWebView();
-                    BrowserDialog.this.dismiss();
+                    if(isWebViewLaunched == false) {
+                        BrowserDialog.this.dismiss();
+                    }
                 }
             },"JsHandler");
 
             sslWebView.loadData(sb.toString(), "text/html; charset=UTF-8", null);
 
         } catch (Exception ex) {
-            Log.e("BrowserDialog",
+            Log.e("BrowserDialog.loadSslErrorPage",
                     "Error loading ssl_error.html "
                             + ex.getMessage());
         }
@@ -370,9 +386,13 @@ public class BrowserDialog extends Dialog {
 
         @Override
         public void onPageFinished(WebView view, String url) {
-            backButton.setEnabled(view.canGoBack());
+            backButton.setEnabled(true);
             forwardButton.setEnabled(view.canGoForward());
             progressBar.setVisibility(View.GONE);
+            isWebViewLaunched = true;
+
+            if("about:blank".equalsIgnoreCase(url))
+                dismiss();
         }
 
         @SuppressLint("DefaultLocale")
@@ -400,11 +420,12 @@ public class BrowserDialog extends Dialog {
 
         @Override
         public void onPageFinished(WebView view, String url) {
-            backButton.setEnabled(view.canGoBack());
             forwardButton.setEnabled(view.canGoForward());
             progressBar.setVisibility(View.GONE);
-
-            sslWebView.loadUrl("javascript:setHostName('" + BrowserDialog.this.url + "')");
+            if(sslWebView!=null) {
+                sslWebView.bringToFront();
+                sslWebView.loadUrl("javascript:setHostName('"+BrowserDialog.this.url+"')");
+            }
 
         }
     }
