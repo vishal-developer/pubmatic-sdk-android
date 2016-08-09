@@ -34,7 +34,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -43,7 +42,6 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.http.SslError;
-import android.os.Build;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -73,6 +71,7 @@ public class BrowserDialog extends Dialog {
     private android.webkit.WebView webView = null;
     private RelativeLayout mContentView;
     private android.webkit.WebView sslWebView = null;
+    private ProgressBar progressBar;
     private RelativeLayout.LayoutParams webViewLayoutParams;
 
     @SuppressLint("ClickableViewAccessibility")
@@ -136,9 +135,7 @@ public class BrowserDialog extends Dialog {
                 if(sslWebView!=null)
                 {
                     dismissSSLWebView();
-                    if(isWebViewLaunched)
-                        webView.bringToFront();
-                    else
+                    if(!isWebViewLaunched)
                         dismiss();
                 }
                 else if(webView.canGoBack())
@@ -213,6 +210,9 @@ public class BrowserDialog extends Dialog {
                 BrowserDialog.this.handler.browserDialogDismissed(BrowserDialog.this);
             }
         });
+
+        progressBar = new ProgressBar(getContext(), null,
+                android.R.attr.progressBarStyle);
     }
 
     private View.OnTouchListener mButtonTouchListener = new View.OnTouchListener() {
@@ -283,8 +283,6 @@ public class BrowserDialog extends Dialog {
                             sslWebView.loadUrl("about:blank");
                             sslWebView.destroy();
                             sslWebView = null;
-                            if(webView!=null)
-                                webView.bringToFront();
                         }
                     });
                 } catch(Exception e) {
@@ -292,7 +290,6 @@ public class BrowserDialog extends Dialog {
                     sslWebView.loadUrl("about:blank");
                     sslWebView.destroy();
                     sslWebView = null;
-                    webView.bringToFront();
                 }
             }
 
@@ -328,7 +325,17 @@ public class BrowserDialog extends Dialog {
 
                     try {
                         dismissSSLWebView();
+                        //bringWebViewToFront();
                         handler.proceed();
+
+                        ((Activity)context).runOnUiThread(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                progressBar.setVisibility(View.VISIBLE);
+                            }
+                        });
+
                     }catch(Exception e) {
                         Log.e("BrowserDialog",
                                 "Not able to proceed from ssl warning page.");
@@ -337,16 +344,15 @@ public class BrowserDialog extends Dialog {
                 @JavascriptInterface
                 public void onBackClicked(){
                     dismissSSLWebView();
-                    if(isWebViewLaunched == false) {
+                    if(isWebViewLaunched == false)
                         BrowserDialog.this.dismiss();
-                    }
                 }
             },"JsHandler");
 
             sslWebView.loadData(sb.toString(), "text/html; charset=UTF-8", null);
 
         } catch (Exception ex) {
-            Log.e("BrowserDialog.loadSslErrorPage",
+            Log.e("BrowserDialog",
                     "Error loading ssl_error.html "
                             + ex.getMessage());
         }
@@ -354,8 +360,6 @@ public class BrowserDialog extends Dialog {
     }
 
     private class Client extends WebViewClient {
-        ProgressBar progressBar = new ProgressBar(getContext(), null,
-                android.R.attr.progressBarStyle);
 
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
@@ -413,17 +417,13 @@ public class BrowserDialog extends Dialog {
         }
     }
 
-
     private class SSLClient extends WebViewClient {
-        ProgressBar progressBar = new ProgressBar(getContext(), null,
-                android.R.attr.progressBarStyle);
 
         @Override
         public void onPageFinished(WebView view, String url) {
             forwardButton.setEnabled(view.canGoForward());
             progressBar.setVisibility(View.GONE);
             if(sslWebView!=null) {
-                sslWebView.bringToFront();
                 sslWebView.loadUrl("javascript:setHostName('"+BrowserDialog.this.url+"')");
             }
 
