@@ -236,3 +236,10 @@ Enabled multi-pixel tracking for SDK.
 -------
 
 - Fixed issue: Warning from Google for SSL validation.
+
+
+-------
+4.5.0
+-------
+
+- Handled the SSL error callback in case of any untrusted web page load inside the internal browser of SDK.
