@@ -2,19 +2,24 @@ package com.pubmatic.headerbiddingsample;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.ViewGroup;
 
 import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.doubleclick.AppEventListener;
 import com.google.android.gms.ads.doubleclick.PublisherAdRequest;
 import com.google.android.gms.ads.doubleclick.PublisherAdView;
-import com.pubmatic.sdk.headerbidding.PubMaticPrefetchManager;
+import com.pubmatic.sdk.banner.PMBannerAdView;
 import com.pubmatic.sdk.headerbidding.PubMaticHBBannerRequest;
+import com.pubmatic.sdk.headerbidding.PubMaticPrefetchManager;
 
 import org.json.JSONObject;
 
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,10 +28,12 @@ public class MainActivity extends AppCompatActivity {
     private static final String BID_ID = "bidid";
     private static final String BID_STATUS = "bidstatus";
     private static final String ECPM = "ecpm";
+    private static final String PUBMATIC_WIN_KEY = "pubmaticdm";
     PubMaticPrefetchManager headerBiddingManager;
 
     // To track all adViews on this page.
     private Set<PublisherAdView> adViews = new HashSet<>();
+    WeakHashMap<String, PublisherAdView> adSlotAdViewMap = new WeakHashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,30 +47,31 @@ public class MainActivity extends AppCompatActivity {
 
         PubMaticPrefetchManager.PrefetchListener listener = new PubMaticPrefetchManager.PrefetchListener() {
             @Override
-            public void onBidsFetched() {
+            public void onBidsFetched(Map<String, JSONObject> hBResponse) {
                 // Header bidding completed. Now send the custom data to DFP.
                 Log.d(TAG, "onBidsFetched");
-                requestDFPAd(true);
+                requestDFPAd(hBResponse);
             }
 
             @Override
             public void onBidsFailed(String errorMessage) {
                 Log.d(TAG, "Header Bidding failed. " + errorMessage);
                 // Get on with requesting DFP for ads without HB data.
-                requestDFPAd(false);
+                requestDFPAd(null);
             }
         };
 
         // Create instance of PubMaticPrefetchManager and set listener for bidding status.
         headerBiddingManager = new PubMaticPrefetchManager(this);
         headerBiddingManager.setPrefetchListener(listener);
-        headerBiddingManager.generateAdSlotsForViews(adView1, adView2);
+        adSlotAdViewMap = headerBiddingManager.generateAdSlotsForViews(adView1, adView2);
 
         //Normal ad Events listener for DFP calls.
         registerAdListener(adView1, adView2);
+        registerListenerForPublisherAdView(adView1, adView2);
 
         //Create Pubmatic adRequest for header bidding call with single adSlotId or a Set of adSlotIds.
-        PubMaticHBBannerRequest adRequest = PubMaticHBBannerRequest.initHBRequestForAdSlotIds(this, headerBiddingManager.getAdSlotAdViewMap().keySet());
+        PubMaticHBBannerRequest adRequest = PubMaticHBBannerRequest.initHBRequestForAdSlotIds(this, adSlotAdViewMap.keySet());
         /*
         Set any targeting params on the adRequest instance.
          */
@@ -74,23 +82,23 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Send ad Request for all DFP adViews.
      */
-    private void requestDFPAd(final boolean headerBiddingSuccess) {
+    private void requestDFPAd(final Map<String, JSONObject> hBResponse) {
 
         runOnUiThread(new Runnable() {
                           @Override
                           public void run() {
-                              PublisherAdRequest adRequest = null;
+                              PublisherAdRequest adRequest;
                               PublisherAdView publisherAdView;
                               Set<PublisherAdView> adViewsSet = getAdViewsSet();
 
-                              if (headerBiddingSuccess) {
+                              if (hBResponse != null) {
                                   // Loop over all those publisherAdViews that participated in Header Bidding i.e. have a valid adSlotId mapped to them.
-                                  for (Map.Entry<String, PublisherAdView> entry : headerBiddingManager.getAdSlotAdViewMap().entrySet()) {
+                                  for (Map.Entry<String, PublisherAdView> entry : adSlotAdViewMap.entrySet()) {
                                       publisherAdView = entry.getValue();
 
                                       try {
                                           String adSlot = entry.getKey();
-                                          JSONObject pubResponse = headerBiddingManager.getPrefetchCreativeForAdSlotId(adSlot);
+                                          JSONObject pubResponse = hBResponse.get(adSlot);
 
                                           adRequest = new PublisherAdRequest.Builder().addCustomTargeting(BID_ID, adSlot)
                                                   .addCustomTargeting(BID_STATUS, pubResponse.getString(BID_STATUS))
@@ -125,9 +133,37 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * Register AppEventListener for all PublisherAdViews.
+     * Listens if PubMatic has won via header bidding.
+     */
+    private void registerListenerForPublisherAdView(PublisherAdView... publisherAdViews) {
+
+        for (final PublisherAdView publisherAdView : publisherAdViews) {
+            publisherAdView.setAppEventListener(new AppEventListener() {
+                @Override
+                public void onAppEvent(String key, final String adSlotId) {
+                    Log.d(TAG, "onAppEvent() Key: " + key + " AdSlotId: " + adSlotId);
+
+                    if (TextUtils.equals(key, PUBMATIC_WIN_KEY)) {
+                        //Display PubMatic Cached Ad
+
+                        PMBannerAdView pmView = headerBiddingManager.getRenderedPubMaticAd(MainActivity.this, adSlotId, publisherAdView);
+
+                        //Replace view with pubmatic Adview.
+                        ViewGroup parent = (ViewGroup) publisherAdView.getParent();
+                        if (parent != null) {
+                            parent.addView(pmView, publisherAdView.getLayoutParams());
+                        }
+
+                        adSlotAdViewMap.remove(adSlotId);
+                    }
+                }
+            });
+        }
+    }
+
+    /**
      * Get copy of the current set of all adViews.
-     *
-     * @return
      */
     public Set<PublisherAdView> getAdViewsSet() {
         Set<PublisherAdView> copySet = new HashSet<>();
@@ -141,6 +177,7 @@ public class MainActivity extends AppCompatActivity {
 
         headerBiddingManager.destroy();
         headerBiddingManager = null;
+        adSlotAdViewMap.clear();
 
         for (PublisherAdView adView : adViews)
             adView.destroy();

@@ -58,27 +58,16 @@ public abstract class PubMaticAdRequest extends AdRequest {
         }
     }
 
-    private boolean headerBiddingRequest;
-
-    public boolean isHeaderBiddingRequest() {
-        return headerBiddingRequest;
-    }
-
-    public void setIsHeaderBiddingRequest(boolean hbRequest) {
-        headerBiddingRequest = hbRequest;
-    }
-
     @Override
     protected void setupPostData() {
 
         super.setupPostData();
 
         //Append the basic & mandatory parameters
-        if(!isHeaderBiddingRequest()) {
-            putPostData(PubMaticConstants.PUB_ID_PARAM, mPubId);
-            putPostData(PubMaticConstants.SITE_ID_PARAM, String.valueOf(this.mSiteId));
-            putPostData(PubMaticConstants.AD_ID_PARAM, String.valueOf(this.mAdId));
-        }
+
+        putPostData(PubMaticConstants.PUB_ID_PARAM, mPubId);
+        putPostData(PubMaticConstants.SITE_ID_PARAM, String.valueOf(this.mSiteId));
+        putPostData(PubMaticConstants.AD_ID_PARAM, String.valueOf(this.mAdId));
 
         //Append custom parameters
         if(mCustomParams!=null && !mCustomParams.isEmpty()) {

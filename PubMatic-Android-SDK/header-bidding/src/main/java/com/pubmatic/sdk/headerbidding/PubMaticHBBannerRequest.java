@@ -47,7 +47,6 @@ public class PubMaticHBBannerRequest extends PubMaticBannerAdRequest {
 
         PubMaticHBBannerRequest adRequest = new PubMaticHBBannerRequest(context);
         adRequest.setAdServerURL(CommonConstants.HEADER_BIDDING_HASO_URL);
-        adRequest.setIsHeaderBiddingRequest(true);
         adRequest.adSlotIdsHB = new HashSet<>();
         return adRequest;
     }
