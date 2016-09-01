@@ -1,4 +1,4 @@
-Welcome to the PubMatic Mobile SDK package for Android, version 5.0.2
+Welcome to the PubMatic Mobile SDK package for Android, version 5.0.3
 /*
  * PubMatic Inc. ("PubMatic") CONFIDENTIAL
  * Unpublished Copyright (c) 2006-2016 PubMatic, All Rights Reserved.
@@ -226,3 +226,16 @@ Enabled multi-pixel tracking for SDK.
 -------
 
 - Support for Banner & Interstitial Ads via "Phoenix" - PubMatic ad server.
+
+
+-------
+ 5.0.3
+-------
+
+- Fixed issue: Internal browser is displaying blank page in cases where landing page contains javascript. Enabled javascript in the WebView.
+
+-------
+ 5.1.0
+-------
+
+- Handled the SSL error callback in case of any untrusted web page load inside the internal browser of SDK.
