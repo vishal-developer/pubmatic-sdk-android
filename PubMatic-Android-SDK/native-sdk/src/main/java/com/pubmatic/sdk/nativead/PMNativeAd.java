@@ -150,7 +150,6 @@ public final class PMNativeAd {
     private String mUserAgent = null;
     private boolean test = false;
     private final HashMap<String, String> mAdRequestParameters;
-    private List<PMAssetRequest> mRequestedNativeAssets;
     private BrowserDialog mBrowserDialog = null;
     // Use external system native browser by default
     private boolean mUseInternalBrowser = false;
@@ -175,7 +174,7 @@ public final class PMNativeAd {
     //private NativeAdController mAdController;
     private CHANNEL mChannel;
 
-    public void setAdrequest(AdRequest adRequest) {
+    protected void setAdrequest(AdRequest adRequest) {
         if (adRequest == null) {
             throw new IllegalArgumentException("AdRequest object is null");
         }
@@ -206,10 +205,6 @@ public final class PMNativeAd {
         initController(channel);
 
         mChannel = channel;
-        if (checkForMandatoryParams()) {
-
-        }
-
     }
 
     protected void initController(CHANNEL channel) {
@@ -228,7 +223,6 @@ public final class PMNativeAd {
     public PMNativeAd(Context context) {
         mContext = context;
         mAdRequestParameters = new HashMap<String, String>();
-        mRequestedNativeAssets = new ArrayList<PMAssetRequest>();
     }
 
     /**
@@ -258,55 +252,6 @@ public final class PMNativeAd {
                     "Kindly pass the object of type NativeRequestListener in case you want to use NativeAdView." + " Implement NativeRequestListener in your activity instead of RequestListener. ");
         } else {
             mListener = requestListener;
-        }
-    }
-
-    /**
-     * List of requested native assets.
-     * <p/>
-     * Returns subclasses of {@link PMAssetRequest} class viz: {@link PMTitleAssetRequest}, {@link
-     * PMImageAssetRequest} and {@link PMDataAssetRequest}.
-     * <p/>
-     * Sub-type of asset can be identified by 'type' variable where ever available.
-     *
-     * @return
-     */
-    public List<PMAssetRequest> getRequestedNativeAssetsList() {
-        return mRequestedNativeAssets;
-    }
-
-    /**
-     * Add native asset request in ad request.
-     * <p/>
-     * <b>NOTE:</b> Use unique assetId for each asset in asset request. The same assetId will be
-     * returned in native ad response. You can use this assetId to map requested native assets with
-     * response.
-     *
-     * @param asset Native {@link PMAssetRequest} to add in the ad request
-     *
-     * @see PMNativeAd#addNativeAssetRequestList(List) : Convenience method to add all assets at
-     * once.
-     */
-    public void addNativeAssetRequest(PMAssetRequest asset) {
-        if (mRequestedNativeAssets != null && asset != null) {
-            mRequestedNativeAssets.add(asset);
-        }
-    }
-
-    /**
-     * Convenience method to add all native asset requests at once. *
-     * <p/>
-     * <b>NOTE:</b> Use unique assetId for each asset in asset request. The same assetId will be
-     * returned in native ad response. You can use this assetId to map requested native assets with
-     * response.
-     *
-     * @param assetList List of Native {@link PMAssetRequest} to add in the ad request
-     *
-     * @see PMNativeAd#addNativeAssetRequest(PMAssetRequest asset)
-     */
-    public void addNativeAssetRequestList(List<PMAssetRequest> assetList) {
-        if (mRequestedNativeAssets != null && assetList != null) {
-            mRequestedNativeAssets.addAll(assetList);
         }
     }
 
@@ -433,7 +378,17 @@ public final class PMNativeAd {
      */
     public void execute(AdRequest adrequest) {
         setAdrequest(adrequest);
-        update();
+
+        if (checkForMandatoryParams()) {
+            update();
+        }
+        else
+        {
+            fireCallback(NATIVEAD_FAILED,
+                    new Exception("Mandatory parameters validation error"),
+                    null);
+        }
+
     }
 
     /**
@@ -441,7 +396,6 @@ public final class PMNativeAd {
      */
     public void update() {
         try {
-            validateAssetRequest(); // validate request
             internalUpdate(false); // Proceed to request for ad
         } catch (IllegalArgumentException ex) {
             /*
@@ -451,25 +405,6 @@ public final class PMNativeAd {
             ex.printStackTrace();
             PMLogger.logEvent("ERROR: Native asset validation failed. Ad requested interrupted.",
                      LogLevel.Error);
-        }
-
-    }
-
-    /**
-     * This method validates Native {@link PMAssetRequest} list which is set using
-     * addNativeAssetRequest() or addNativeAssetRequestList() methods.
-     */
-    private void validateAssetRequest() {
-
-        Set<Integer> assetIdSet = new HashSet<Integer>();
-        for (PMAssetRequest assetRequest : mRequestedNativeAssets) {
-            if (assetRequest.assetId < 1) {
-                throw new IllegalArgumentException(
-                        "ERROR: Missing/Invalid assetId.\nNote: Asset id is mandatory for each requested asset." + " Each assetId should be unique and should be > 0");
-            }
-            if (!assetIdSet.add(assetRequest.assetId)) {
-                throw new IllegalArgumentException("ERROR: Duplicate assetId.\nNote: " + "Unique assetId is mandatory for each requested asset. Each assetId should be > 0");
-            }
         }
 
     }

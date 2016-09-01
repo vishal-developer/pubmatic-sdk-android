@@ -8,6 +8,8 @@ public class PMDataAssetRequest extends PMAssetRequest {
 	/** Data Asset Type */
 	public PMDataAssetTypes dataAssetType = null;
 
+	public PMDataAssetRequest(int assetId) { this.assetId = assetId; }
+
 	public int getLength() {
 		return length;
 	}

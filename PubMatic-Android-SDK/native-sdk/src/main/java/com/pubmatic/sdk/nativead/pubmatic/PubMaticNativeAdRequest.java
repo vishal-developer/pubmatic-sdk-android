@@ -14,8 +14,10 @@ import static com.pubmatic.sdk.common.CommonConstants.REQUEST_TYPE;
 import static com.pubmatic.sdk.common.CommonConstants.REQUEST_VER;
 import static com.pubmatic.sdk.common.CommonConstants.REQUEST_VER_VALUE_1;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -265,5 +267,4 @@ public class PubMaticNativeAdRequest  extends PubMaticAdRequest {
 		} catch(JSONException e) {
 		}
 	}
-
 }
