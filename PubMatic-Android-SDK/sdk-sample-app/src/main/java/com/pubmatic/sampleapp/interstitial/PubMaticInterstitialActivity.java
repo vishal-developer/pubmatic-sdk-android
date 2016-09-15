@@ -68,6 +68,9 @@ public class PubMaticInterstitialActivity extends Activity {
 
             @Override
             public void onReceivedAd(PMBannerAdView adView) {
+                Toast.makeText(PubMaticInterstitialActivity.this,
+                        "Ad loaded!",
+                        Toast.LENGTH_SHORT).show();
                 interstitialAdView.showInterstitial();
             }
 

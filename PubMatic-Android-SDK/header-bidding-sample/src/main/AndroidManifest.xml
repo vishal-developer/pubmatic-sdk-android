@@ -19,7 +19,11 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.pubmatic.headerbiddingsample.MainActivity">
+        <activity android:name=".BannerDemoScreen">
+        </activity>
+        <activity android:name=".InterstitialDemoScreen">
+        </activity>
+        <activity android:name=".HomeScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 

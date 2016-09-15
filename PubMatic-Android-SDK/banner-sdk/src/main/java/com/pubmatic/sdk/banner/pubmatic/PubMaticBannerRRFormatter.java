@@ -58,14 +58,13 @@ public class PubMaticBannerRRFormatter implements RRFormatter {
             return null;
         }
 
-        AdResponse pubResponse = new AdResponse();
-        pubResponse.setRequest(mRequest);
-
         // Parsing of the response.
         try {
             JSONObject jsonObject = new JSONObject(response.getResponseData());
             JSONObject object = jsonObject.getJSONObject(kPubMatic_BidTag);
-            return parseJSONResponse(object);
+            AdResponse adResponse = parseJSONResponse(object);
+            adResponse.setRequest(mRequest);
+            return adResponse;
         }catch(JSONException je){
             je.printStackTrace();
             return null;
@@ -133,7 +132,7 @@ public class PubMaticBannerRRFormatter implements RRFormatter {
         } catch (JSONException | UnsupportedEncodingException e) {
             e.printStackTrace();
         } finally {
-            response = null;
+            //response = null;
         }
 
         return pubResponse;

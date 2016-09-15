@@ -2,10 +2,13 @@ package com.pubmatic.sdk.headerbidding;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.view.ViewGroup;
 
 import com.google.android.gms.ads.doubleclick.PublisherAdView;
+import com.google.android.gms.ads.doubleclick.PublisherInterstitialAd;
 import com.pubmatic.sdk.banner.PMBannerAdView;
+import com.pubmatic.sdk.banner.PMInterstitialAdView;
 import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest;
 import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerRRFormatter;
 import com.pubmatic.sdk.common.AdResponse;
@@ -61,9 +64,9 @@ public class PubMaticPrefetchManager {
 
     private PrefetchListener preFetchListener;
     private Map<String, JSONObject> hbCreatives = new HashMap<>();
-    private Map<String, Integer> adSlotsCounts = new HashMap<>();
 
     private List<WeakReference<PMBannerAdView>> pubmaticAdViews;
+    private List<WeakReference<PMInterstitialAdView>> pubmaticInterstitialAdViews;
 
     public void setPrefetchListener(PrefetchListener prefetchListener) {
         this.preFetchListener = prefetchListener;
@@ -79,8 +82,10 @@ public class PubMaticPrefetchManager {
      *
      * @param publisherAdViews Pass all PublisherAdViews on current page, comma-separated.
      */
+    @Deprecated
     public WeakHashMap<String, PublisherAdView> generateAdSlotsForViews(PublisherAdView... publisherAdViews) {
 
+        Map<String, Integer> adSlotsCounts = new HashMap<>();
         WeakHashMap<String, PublisherAdView> adSlotAdViewMap = new WeakHashMap<>();
 
         for (PublisherAdView publisherAdView : publisherAdViews) {
@@ -102,6 +107,7 @@ public class PubMaticPrefetchManager {
             publisherAdView.setTag(tag);
             adSlotAdViewMap.put(tag, publisherAdView);
         }
+        adSlotsCounts.clear();
         return adSlotAdViewMap;
     }
 
@@ -184,6 +190,33 @@ public class PubMaticPrefetchManager {
         return adView;
     }
 
+
+    /**
+     * Provide the rendered adView from PubMatic cached creative.
+     * This creative is the header bidding winner for the provided adSlotId.
+     *
+     * @param context   Activity context
+     * @param adSlotId  the winning adSlotId
+     */
+    public PMInterstitialAdView getRenderedPMInterstitialAd(Context context, String adSlotId) {
+
+        PMInterstitialAdView adView = new PMInterstitialAdView(context);
+        adView.setUseInternalBrowser(true);
+
+        PubMaticBannerRRFormatter rrFormatter = new PubMaticBannerRRFormatter();
+        AdResponse adData = rrFormatter.formatHeaderBiddingResponse(hbCreatives.get(adSlotId));
+        hbCreatives.remove(adSlotId);
+        adView.renderHeaderBiddingCreative(adData);
+
+        // Save a weak reference to this view. To be used in destroy method later.
+        if (pubmaticInterstitialAdViews == null)
+            pubmaticInterstitialAdViews = new ArrayList<>();
+        WeakReference<PMInterstitialAdView> weakRefAdView = new WeakReference<>(adView);
+        pubmaticInterstitialAdViews.add(weakRefAdView);
+
+        return adView;
+    }
+
     private HttpRequest formatHBRequest(PubMaticBannerAdRequest adRequest) {
         HttpRequest httpRequest = new HttpRequest(CONTENT_TYPE.URL_ENCODED);
         httpRequest.setUserAgent(adRequest.getUserAgent());
@@ -261,7 +294,6 @@ public class PubMaticPrefetchManager {
      */
     public void destroy() {
         hbCreatives.clear();
-        adSlotsCounts.clear();
 
         // Reset all PMBannerAdViews.
         if (pubmaticAdViews != null && pubmaticAdViews.size() != 0) {
@@ -272,6 +304,14 @@ public class PubMaticPrefetchManager {
             pubmaticAdViews.clear();
         }
 
+        // Reset all PMInterstitialAdView.
+        if (pubmaticInterstitialAdViews != null && pubmaticInterstitialAdViews.size() != 0) {
+            for (WeakReference adView : pubmaticInterstitialAdViews) {
+                if (adView.get() != null)
+                    ((PMInterstitialAdView) adView.get()).reset();
+            }
+            pubmaticInterstitialAdViews.clear();
+        }
         preFetchListener = null;
     }
 
