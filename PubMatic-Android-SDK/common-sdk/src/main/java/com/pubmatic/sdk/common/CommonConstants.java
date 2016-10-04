@@ -3,7 +3,7 @@ package com.pubmatic.sdk.common;
 @SuppressWarnings("unused")
 public class CommonConstants {
 
-	public static final String SDK_VERSION = "5.0.3";
+	public static final String SDK_VERSION = "5.1.0";
     public static final String SDK_VERSION_ID = "2";
 
 	public enum CONTENT_TYPE {
@@ -94,6 +94,7 @@ public class CommonConstants {
 	public static final String REQUEST_TITLE = "title";
 	public static final String REQUEST_TYPE = "type";
 	public static final String REQUEST_IMG = "img";
+	public static final String REQUEST_MIMES = "mimes";
 	public static final String REQUEST_DATA = "data";
 	public static final String NATIVE_ASSETS_STRING = "assets";
 	public static final String NATIVE_IMAGE_W = "w";
@@ -163,7 +164,7 @@ public class CommonConstants {
 	public static final String REQUEST_CONTENT_LANG_EN = "en";
 
 	public static final String MOCEAN_AD_NETWORK_URL = "http://ads.moceanads.com/ad";
-	public static final String PHOENIX_AD_NETWORK_URL = "http://192.82.243.86:8090/ad";//http://ae.pubmatic.com/ad";
+	public static final String PHOENIX_AD_NETWORK_URL = "http://192.82.243.85:8090/ad";//http://ae.pubmatic.com/ad";
 	public static final String PUBMATIC_AD_NETWORK_URL = "http://showads.pubmatic.com/AdServer/AdServerServlet";
     public static final String HEADER_BIDDING_HASO_URL = "http://haso.pubmatic.com/ads//9999/GRPBID/index.html";
 
@@ -225,4 +226,6 @@ public class CommonConstants {
 		public static final int SUCCESS_CODE = 0;
 
 	}
+
+	public static final String PARSING_ERROR = "-5463";
 }

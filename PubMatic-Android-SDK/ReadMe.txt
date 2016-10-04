@@ -233,3 +233,9 @@ Enabled multi-pixel tracking for SDK.
 -------
 
 - Fixed issue: Internal browser is displaying blank page in cases where landing page contains javascript. Enabled javascript in the WebView.
+
+-------
+ 5.1.0
+-------
+
+- Handled the SSL error callback in case of any untrusted web page load inside the internal browser of SDK.

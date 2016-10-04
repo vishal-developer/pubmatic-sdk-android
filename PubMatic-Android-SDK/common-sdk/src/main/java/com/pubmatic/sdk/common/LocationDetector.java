@@ -5,11 +5,14 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.location.LocationProvider;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -178,8 +181,22 @@ public class LocationDetector extends Observable {
 
 				if (provider != null) {
 					locationListener = new LocationListener();
-					locationManager.requestLocationUpdates(provider, minTime,
-							minDistance, locationListener);
+
+					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+					{
+						int permissionCheck = context.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION);
+
+						if (permissionCheck == PackageManager.PERMISSION_GRANTED)
+						{
+							locationManager.requestLocationUpdates(provider, minTime,
+									minDistance, locationListener);
+						}
+					}
+					else
+					{
+						locationManager.requestLocationUpdates(provider, minTime,
+								minDistance, locationListener);
+					}
 				}
 			} catch (Exception ex) {
 				Log.d(TAG, "Error requesting location updates.  Exception:" + ex);

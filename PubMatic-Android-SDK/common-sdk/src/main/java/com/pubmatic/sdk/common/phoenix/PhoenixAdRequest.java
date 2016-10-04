@@ -11,6 +11,7 @@ import com.pubmatic.sdk.common.AdvertisingIdClient;
 import com.pubmatic.sdk.common.CommonConstants;
 import com.pubmatic.sdk.common.pubmatic.PubMaticUtils;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.List;
@@ -25,6 +26,7 @@ public abstract class PhoenixAdRequest extends AdRequest {
     protected String          mImpressionId;
     protected String          mAdUnitId;
     private   int             mRequestType = -1;
+    private   int             mResponseFormat = -1;
     private   boolean         mDebugEnable = false;
     private PM_AD_POSITION    mAdPosition = PM_AD_POSITION.UNKNOWN;
 
@@ -46,6 +48,10 @@ public abstract class PhoenixAdRequest extends AdRequest {
 
     public int getRequestType() {
         return mRequestType;
+    }
+
+    public int getResponseFormat() {
+        return mResponseFormat;
     }
 
     public String getAdUnitId() {
@@ -88,6 +94,20 @@ public abstract class PhoenixAdRequest extends AdRequest {
         public static final int RICH_MEDIA  = 64;
     }
 
+    /**
+     * Ad response type.
+     * @param responseFormat
+     */
+    protected void setResponseFormat(int responseFormat) {
+        this.mResponseFormat = responseFormat;
+    }
+
+    public static class RESPONSE_TYPE {
+        public static final int VAST       = 1;
+        public static final int JSON       = 2;
+        public static final int NATIVE     = 3;
+    }
+
     public abstract void setAttributes(AttributeSet attr);
 
     protected PhoenixAdRequest(Context context) {
@@ -122,6 +142,189 @@ public abstract class PhoenixAdRequest extends AdRequest {
             if (getHeight() <= 0)
                 setHeight(adRequest.getHeight());
         }
+    }
+
+    @Override
+    protected void setUpUrlParams() {
+        super.setUpUrlParams();
+
+        PhoenixDeviceInformation deviceInfo = PhoenixDeviceInformation.getInstance(mContext);
+
+        addUrlParam(PhoenixConstants.REQUEST_TYPE_PARAM, String.valueOf(mRequestType));
+        addUrlParam(PhoenixConstants.RESPONSE_FORMAT_PARAM, String.valueOf(mResponseFormat));
+        addUrlParam(PhoenixConstants.SOURCE_PARAM, String.valueOf(3));
+        addUrlParam(PhoenixConstants.AD_UNIT_PARAM, mAdUnitId);
+        addUrlParam(PhoenixConstants.IMPRESSION_ID_PARAM, mImpressionId);
+        addUrlParam(PhoenixConstants.RANDOM_NUMBER_PARAM, String.valueOf(PhoenixDeviceInformation.getRandomNumber()));
+
+        try {
+            addUrlParam(PhoenixConstants.TIME_STAMP_PARAM, URLEncoder.encode(String.valueOf(PhoenixDeviceInformation.getCurrentTime()),"utf-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        if (deviceInfo.mPageURL != null) {
+            try {
+                addUrlParam(PhoenixConstants.PAGE_URL_PARAM, URLEncoder.encode(deviceInfo.mPageURL, PhoenixConstants.URL_ENCODING));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+
+            addUrlParam(PhoenixConstants.SCREEN_PARAM, deviceInfo.mDeviceScreenResolution);
+            addUrlParam(PhoenixConstants.TIME_ZONE_PARAM, PhoenixDeviceInformation.getTimeZoneOffset());
+        }
+
+        addUrlParam(PhoenixConstants.IN_IFRAME_PARAM, String.valueOf(PhoenixDeviceInformation.mInIframe));
+
+        // Set the location
+        if (mLocation != null) {
+            addUrlParam(PhoenixConstants.LATITUDE_PARAM, String.valueOf(mLocation.getLatitude()));
+            addUrlParam(PhoenixConstants.LONGITUDE_PARAM, String.valueOf(mLocation.getLongitude()));
+            addUrlParam(PhoenixConstants.LOCATION_SOURCE_PARAM, String.valueOf(mLocation.getProvider()));
+        }
+
+        // --------------- SSP related parameters ---------------
+        if(!TextUtils.isEmpty(mIABCategory))
+            addUrlParam(PhoenixConstants.IAP_CATEGORY_PARAM, mIABCategory);
+
+        if(!TextUtils.isEmpty(mAid))
+            addUrlParam(PhoenixConstants.APP_ID_PARAM, mAid);
+
+        // Setting carrier
+        if (deviceInfo.mCarrierName != null) {
+            try {
+                addUrlParam(PhoenixConstants.CARRIER_PARAM, URLEncoder.encode(deviceInfo.mCarrierName, PhoenixConstants.URL_ENCODING));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (deviceInfo.mApplicationName != null) {
+            try {
+                addUrlParam(PhoenixConstants.APP_NAME_PARAM, URLEncoder.encode(deviceInfo.mApplicationName, PhoenixConstants.URL_ENCODING));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (deviceInfo.mPackageName != null) {
+            try {
+                addUrlParam(PhoenixConstants.BUNDLE_PARAM, URLEncoder.encode(deviceInfo.mPackageName, PhoenixConstants.URL_ENCODING));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (deviceInfo.mApplicationVersion != null) {
+            try {
+                addUrlParam(PhoenixConstants.APP_VERSION_PARAM, URLEncoder.encode(deviceInfo.mApplicationVersion, PhoenixConstants.URL_ENCODING));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
+
+        //
+        //Send Advertisement ID
+        AdvertisingIdClient.AdInfo adInfo = AdvertisingIdClient.refreshAdvertisingInfo(mContext);
+        if(adInfo!=null) {
+
+            if (isAndoridAidEnabled() && !TextUtils.isEmpty(adInfo.getId())) {
+                addUrlParam(PhoenixConstants.UDID_PARAM, PubMaticUtils.sha1(adInfo.getId()));
+                addUrlParam(PhoenixConstants.UDID_TYPE_PARAM, String.valueOf(9));//9 - Android Advertising ID
+                addUrlParam(PhoenixConstants.UDID_HASH_PARAM, String.valueOf(0));//0 - raw udid
+            }
+			/*
+			 * Pass dnt=1 if user have enabled Opt-Out of interest based ads in
+			 * Google settings in Android device
+			 */
+            addUrlParam(PhoenixConstants.DNT_PARAM, String.valueOf(adInfo.isLimitAdTrackingEnabled() == true ? 1 : 0));
+        } else if(mContext!=null){
+            //Send Android ID
+            addUrlParam(PhoenixConstants.UDID_PARAM, PhoenixUtils.getUdidFromContext(mContext));
+            addUrlParam(PhoenixConstants.UDID_TYPE_PARAM, String.valueOf(3));//9 - Android ID
+            addUrlParam(PhoenixConstants.UDID_HASH_PARAM, String.valueOf(2));//0 - SHA1
+        }
+
+        // Setting js
+        addUrlParam(PhoenixConstants.JS_PARAM, String.valueOf(1));
+        addUrlParam(PhoenixConstants.APP_API_PARAM, "3::4::5");
+
+        if(PubMaticUtils.getNetworkType(mContext) != null)
+            addUrlParam(PhoenixConstants.NETWORK_TYPE_PARAM, PubMaticUtils.getNetworkType(mContext));
+
+        if(!TextUtils.isEmpty(mStoreURL))
+            addUrlParam(PhoenixConstants.STORE_URL_PARAM, mStoreURL);
+
+
+        //Set the awt parameter
+        if (mAWT != null) {
+            switch (mAWT) {
+                case WRAPPED_IN_IFRAME:
+                    addUrlParam(PhoenixConstants.AWT_PARAM, String.valueOf(1));
+                    break;
+                case WRAPPED_IN_JS:
+                    addUrlParam(PhoenixConstants.AWT_PARAM, String.valueOf(2));
+                    break;
+            }
+        }
+
+        if (mSecureFlag != null) {
+            switch (mSecureFlag) {
+                case SECURE:
+                    addUrlParam(PhoenixConstants.SECURE_FLAG_PARAM, String.valueOf(1));
+                    break;
+                case NON_SECURE:
+                    addUrlParam(PhoenixConstants.SECURE_FLAG_PARAM, String.valueOf(0));
+                    break;
+            }
+        }
+
+        // Setting adOrientation
+        if(!TextUtils.isEmpty(mAdOrientation))
+            addUrlParam(PhoenixConstants.AD_ORIENTATION_PARAM, mAdOrientation);
+
+        // Setting deviceOrientation
+        addUrlParam(PhoenixConstants.DEVICE_ORIENTATION_PARAM, String.valueOf(getDeviceOrientation(mContext)));
+
+        if(!TextUtils.isEmpty(mPMZoneId))
+            addUrlParam(PhoenixConstants.PM_ZONE_ID_PARAM, mPMZoneId);
+
+        if(!TextUtils.isEmpty(mAppCategory))
+            addUrlParam(PhoenixConstants.APP_CATEGORY_PARAM, mAppCategory);
+
+        if(!TextUtils.isEmpty(mAppDomain))
+            addUrlParam(PhoenixConstants.APP_DOMAIN_PARAM, mAppDomain);
+
+        addUrlParam(PhoenixConstants.APP_PAID_PARAM, String.valueOf(mPaid ? 1 : 0));
+
+        if(!TextUtils.isEmpty(mSiteCode))
+            addUrlParam(PhoenixConstants.SITE_CODE_PARAM, mSiteCode);
+
+        if(!TextUtils.isEmpty(mAdTruth))
+            addUrlParam(PhoenixConstants.AD_TRUTH_PARAM, mAdTruth);
+
+        if(!TextUtils.isEmpty(mAdFloor))
+            addUrlParam(PhoenixConstants.AD_FLOOR_PARAM, mAdFloor);
+
+        if(!TextUtils.isEmpty(mBlockCreativeAttr))
+            addUrlParam(PhoenixConstants.BATTR_PARAM, mBlockCreativeAttr);
+
+        if(!TextUtils.isEmpty(mBlockAdDomain))
+            addUrlParam(PhoenixConstants.BLK_ADV_DOMAIN_PARAM, mBlockAdDomain);
+
+
+        if(!TextUtils.isEmpty(mBlockIabCategory))
+            addUrlParam(PhoenixConstants.BLK_IAB_CATEG_PARAM, mBlockIabCategory);
+
+
+        if(!TextUtils.isEmpty(mBlockAdIds))
+            addUrlParam(PhoenixConstants.BLK_ADV_IDS_PARAM, mBlockAdIds);
+
+
+        if(!TextUtils.isEmpty(mBlockDomainIds))
+            addUrlParam(PhoenixConstants.BLK_DOMAIN_IDS_PARAM, mBlockDomainIds);
+
+        addUrlParam(PhoenixConstants.COPPA_PARAM, String.valueOf(mCoppa==true? 1 : 0));
     }
 
     @Override

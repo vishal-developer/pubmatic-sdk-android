@@ -62,4 +62,8 @@ public class PhoenixConstants {
     public static final String  DNT_PARAM               = "dnt";
     public static final String  COPPA_PARAM             = "coppa";
 
+    // Native Specific constants
+    public static final String  NATIVE_TEMPLATE_ID      = "ntid";
+    public static final String  NATIVE_INPUT            = "ntI";
+
 }
