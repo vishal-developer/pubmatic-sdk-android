@@ -10,6 +10,4 @@ public interface RRFormatter {
     HttpRequest formatRequest(AdRequest request);
 
     AdResponse formatResponse(HttpResponse response);
-
-    AdResponse formatHeaderBiddingResponse(JSONObject response);
 }

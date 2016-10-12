@@ -1,6 +1,5 @@
 package com.pubmatic.sdk.banner.pubmatic;
 
-
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.AttributeSet;

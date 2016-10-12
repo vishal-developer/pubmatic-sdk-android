@@ -2,15 +2,14 @@ package com.pubmatic.sdk.headerbidding;
 
 import android.content.Context;
 import android.text.TextUtils;
-import android.util.DisplayMetrics;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 
 import com.google.android.gms.ads.doubleclick.PublisherAdView;
-import com.google.android.gms.ads.doubleclick.PublisherInterstitialAd;
+import com.pubmatic.sdk.banner.BannerAdDescriptor;
 import com.pubmatic.sdk.banner.PMBannerAdView;
 import com.pubmatic.sdk.banner.PMInterstitialAdView;
 import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest;
-import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerRRFormatter;
 import com.pubmatic.sdk.common.AdResponse;
 import com.pubmatic.sdk.common.CommonConstants;
 import com.pubmatic.sdk.common.CommonConstants.CONTENT_TYPE;
@@ -18,26 +17,28 @@ import com.pubmatic.sdk.common.PMLogger;
 import com.pubmatic.sdk.common.network.HttpHandler;
 import com.pubmatic.sdk.common.network.HttpRequest;
 import com.pubmatic.sdk.common.network.HttpResponse;
+import com.pubmatic.sdk.common.pubmatic.PUBDeviceInformation;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
 public class PubMaticPrefetchManager {
 
-    Context mContext;
-    private static final String ATTHERATE = "@";
-    private static final String BYSYMBOL = "x";
+    private Context mContext;
+    private String userAgent;
+    private static final String UTF8_CHARSET = "UTF-8";
 
     /**
      * Listener to channel result events of a header bidding request to the publisher app.
@@ -48,7 +49,7 @@ public class PubMaticPrefetchManager {
          *
          * @param publisherHBResponse mapping of adslot to corresponding prefetched creative.
          */
-        void onBidsFetched(Map<String, JSONObject> publisherHBResponse);
+        void onBidsFetched(Map<String, Bid> publisherHBResponse);
 
         /**
          * Failure callback for header bidding. Publisher must go ahead with normal DFP calls.
@@ -58,15 +59,17 @@ public class PubMaticPrefetchManager {
         void onBidsFailed(String errorMessage);
     }
 
-    public PubMaticPrefetchManager(Context context) {
-        mContext = context;
-    }
-
-    private PrefetchListener preFetchListener;
-    private Map<String, JSONObject> hbCreatives = new HashMap<>();
+    private Map<String, Bid> publisherHBResponse = new HashMap<>();
 
     private List<WeakReference<PMBannerAdView>> pubmaticAdViews;
     private List<WeakReference<PMInterstitialAdView>> pubmaticInterstitialAdViews;
+
+    private PrefetchListener preFetchListener;
+
+    public PubMaticPrefetchManager(Context context) {
+        mContext = context;
+        userAgent = new WebView(context).getSettings().getUserAgentString();
+    }
 
     public void setPrefetchListener(PrefetchListener prefetchListener) {
         this.preFetchListener = prefetchListener;
@@ -76,79 +79,22 @@ public class PubMaticPrefetchManager {
         return preFetchListener;
     }
 
-    /**
-     * Generate unique tag/adSlotId for every adView. In case of same dimension adView, append ":n"
-     * where n is the number of identical size adtags seen so far.
-     *
-     * @param publisherAdViews Pass all PublisherAdViews on current page, comma-separated.
-     */
-    @Deprecated
-    public WeakHashMap<String, PublisherAdView> generateAdSlotsForViews(PublisherAdView... publisherAdViews) {
-
-        Map<String, Integer> adSlotsCounts = new HashMap<>();
-        WeakHashMap<String, PublisherAdView> adSlotAdViewMap = new WeakHashMap<>();
-
-        for (PublisherAdView publisherAdView : publisherAdViews) {
-
-            String pubMaticAdUnit = publisherAdView.getAdUnitId();
-            pubMaticAdUnit = pubMaticAdUnit.substring(pubMaticAdUnit.lastIndexOf("/")).substring(1);
-            String tag = pubMaticAdUnit + ATTHERATE +
-                    publisherAdView.getAdSize().getWidth() +
-                    BYSYMBOL + publisherAdView.getAdSize().getHeight();
-
-            if (adSlotsCounts.get(tag) == null) {
-                adSlotsCounts.put(tag, 0);
-            } else {
-                adSlotsCounts.put(tag, adSlotsCounts.get(tag) + 1);
-            }
-            if (adSlotsCounts.get(tag) != 0)
-                tag = tag + ":" + adSlotsCounts.get(tag);
-
-            publisherAdView.setTag(tag);
-            adSlotAdViewMap.put(tag, publisherAdView);
-        }
-        adSlotsCounts.clear();
-        return adSlotAdViewMap;
-    }
-
-    /**
-     * Returns the copy of header bidding creative mapped to the provided adSlotId.
-     */
-    public JSONObject getPrefetchCreativeForAdSlotId(String adSlotId) {
-
-        JSONObject creative = null;
-        try {
-            String bidJson = String.valueOf(hbCreatives.get(adSlotId));
-            if (bidJson != null) {
-                creative = new JSONObject(bidJson);
-                creative.remove("creative_tag");
-                creative.remove("tracking_url");
-            }
-        } catch (JSONException e) {
-            PMLogger.logEvent("Request Url : ", PMLogger.LogLevel.Debug);
-
-        }
-        return creative;
-    }
-
     public void executeHeaderBiddingRequest(Context context, PubMaticHBBannerRequest adRequest) {
 
         // Sanitise request. Remove any ad tag detail.
-        adRequest.setPubId("");
         adRequest.setSiteId("");
         adRequest.setAdId("");
 
-        if (adRequest.getAdSlotIdsHB().size() == 0) {
-            PMLogger.logEvent("Aborting. No adSlotIds set for Header Bidding ad Request. " +
-                            "\nCheck if \"PubMaticPrefetchManager.generateAdSlotsForViews()\" method has been called. ",
+        if (adRequest.getImpressions().size() == 0) {
+            PMLogger.logEvent("Aborting. No impressions set for Header Bidding ad Request.",
                     PMLogger.LogLevel.Error);
-            getPrefetchListener().onBidsFailed("No AdSlotId found for Header Bidding Request.");
+            getPrefetchListener().onBidsFailed("No impressions found for Header Bidding Request.");
             return;
         }
 
         adRequest.createRequest(context);
 
-        HttpRequest httpRequest = formatHBRequest(adRequest);
+        HttpRequest httpRequest = formatHeaderBiddingRequest(adRequest);
         PMLogger.logEvent("Request Url : " + httpRequest.getRequestUrl() + "\n body : " + httpRequest.getPostData(),
                 PMLogger.LogLevel.Debug);
 
@@ -176,9 +122,8 @@ public class PubMaticPrefetchManager {
         adView.setLayoutParams(layoutParams);
         adView.setUseInternalBrowser(true);
 
-        PubMaticBannerRRFormatter rrFormatter = new PubMaticBannerRRFormatter();
-        AdResponse adData = rrFormatter.formatHeaderBiddingResponse(hbCreatives.get(adSlotId));
-        hbCreatives.remove(adSlotId);
+        AdResponse adData = formatHeaderBiddingResponse(publisherHBResponse.get(adSlotId));
+        publisherHBResponse.remove(adSlotId);
         adView.renderHeaderBiddingCreative(adData);
 
         // Save a weak reference to this view. To be used in destroy method later.
@@ -190,6 +135,63 @@ public class PubMaticPrefetchManager {
         return adView;
     }
 
+    private AdResponse formatHeaderBiddingResponse(Bid bid)
+    {
+        AdResponse pubResponse = new AdResponse();
+
+        Map<String, String> adInfo = new HashMap<String, String>();
+        ArrayList<String> impressionTrackers = new ArrayList<String>();
+        ArrayList<String> clickTrackers = new ArrayList<String>();
+        adInfo.put("type", "thirdparty");
+
+        try {
+            // If there is an error from the server which happens when provided
+            // wrong ad parameters, return the error with error code and error
+            // message.
+            String errorCode;
+            /*if (!TextUtils.isEmpty(errorCode = response.optString(kerror_code))) {
+
+                pubResponse.setErrorCode(errorCode);
+                pubResponse.setErrorMessage(response.getString(kerror_message));
+                return pubResponse;
+            }*/
+
+            // Check if json contains the creative_tag and tracking_url.
+            // If these are missing then the ad is invalid. Return null else
+            // return valid adInfo object.
+            if (bid != null && !TextUtils.isEmpty(bid.getCreative())
+                    && !TextUtils.isEmpty(bid.getTrackingUrl())) {
+
+                adInfo.put("content", URLDecoder.decode(bid.getCreative(), UTF8_CHARSET));
+                impressionTrackers.add( URLDecoder.decode(bid.getTrackingUrl(), UTF8_CHARSET));
+
+                // Setting ecpm if not null
+                if (bid.getPrice() != 0) {
+                    adInfo.put("ecpm", String.valueOf(bid.getPrice()));
+                }
+                // Setting click_tracking_url if not null
+                if (bid.getTrackingUrl() != null && bid.getTrackingUrl() != "") {
+                    // clickTrackers.add(URLDecoder.decode(bid.getTrackingUrl(), UTF8_CHARSET));
+                }
+                // Setting landing_page if not null
+                /*if (!response.isNull(klanding_page)) {
+                    adInfo.put("url", URLDecoder.decode(response.getString(klanding_page), UTF8_CHARSET));
+                }*/
+            }
+
+            BannerAdDescriptor adDescriptor = new BannerAdDescriptor(adInfo);
+            adDescriptor.setImpressionTrackers(impressionTrackers);
+            adDescriptor.setClickTrackers(clickTrackers);
+            pubResponse.setRenderable(adDescriptor);
+
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } finally {
+            //response = null;
+        }
+
+        return pubResponse;
+    }
 
     /**
      * Provide the rendered adView from PubMatic cached creative.
@@ -203,9 +205,8 @@ public class PubMaticPrefetchManager {
         PMInterstitialAdView adView = new PMInterstitialAdView(context);
         adView.setUseInternalBrowser(true);
 
-        PubMaticBannerRRFormatter rrFormatter = new PubMaticBannerRRFormatter();
-        AdResponse adData = rrFormatter.formatHeaderBiddingResponse(hbCreatives.get(adSlotId));
-        hbCreatives.remove(adSlotId);
+        AdResponse adData = formatHeaderBiddingResponse(publisherHBResponse.get(adSlotId));
+        publisherHBResponse.remove(adSlotId);
         adView.renderHeaderBiddingCreative(adData);
 
         // Save a weak reference to this view. To be used in destroy method later.
@@ -217,47 +218,71 @@ public class PubMaticPrefetchManager {
         return adView;
     }
 
-    private HttpRequest formatHBRequest(PubMaticBannerAdRequest adRequest) {
+    private HttpRequest formatHeaderBiddingRequest(PubMaticBannerAdRequest adRequest) {
         HttpRequest httpRequest = new HttpRequest(CONTENT_TYPE.URL_ENCODED);
         httpRequest.setUserAgent(adRequest.getUserAgent());
         httpRequest.setConnection("close");
-        httpRequest.setRequestUrl(adRequest.getAdServerURL());
-        httpRequest.setRequestMethod(CommonConstants.HTTPMETHODGET);
+        httpRequest.setRequestMethod(CommonConstants.HTTPMETHODPOST);
         httpRequest.setRequestType(CommonConstants.AD_REQUEST_TYPE.PUB_BANNER);
+        httpRequest.setRequestUrl(adRequest.getRequestUrl());
         httpRequest.setPostData(adRequest.getPostData());
+        PUBDeviceInformation pubDeviceInformation = PUBDeviceInformation.getInstance(mContext);
+        httpRequest.setRLNClientIPAddress(pubDeviceInformation.mDeviceIpAddress);
+        httpRequest.setUserAgent(userAgent);
         return httpRequest;
     }
 
-    private Map<String, JSONObject> formatHBResponse(HttpResponse response) {
+    private Map<String, Bid> formatHBResponse(HttpResponse response) {
 
-        // parse the json array and populate hbCreatives map.
-        JSONArray bidsArray;
-        JSONObject bidJson, pubJson;
-        Map<String, JSONObject> publisherHBResponse = null;
-        try {
-            bidsArray = new JSONArray(response.getResponseData());
-            int i, len = bidsArray.length();
-            String key;
-            for (i = 0; i < len; i++) {
-                bidJson = bidsArray.getJSONObject(i);
-                if (!TextUtils.isEmpty(key = bidJson.optString("id"))) {
-                    hbCreatives.put(key, bidJson);
+        Map<String, Bid> bidsMap = new HashMap<>();
 
-                    // prepare map to return to publisher after removing "creative_tag" and "tracking_url".
-                    if (publisherHBResponse == null)
-                        publisherHBResponse = new HashMap<>();
+        JSONObject headerBiddingJsonObject;
+        JSONArray setBidJsonArray;
+        JSONObject bidParentJsonObject;
+        JSONArray bidJsonArray;
+        JSONObject bidJsonObject;
+        JSONObject extJsonObject;
+        JSONObject extensionJsonObject;
 
-                    String bid = String.valueOf(bidJson);
-                    pubJson = new JSONObject(bid);
-                    pubJson.remove("creative_tag");
-                    pubJson.remove("tracking_url");
-                    publisherHBResponse.put(key, pubJson);
-                }
+        try
+        {
+            headerBiddingJsonObject = new JSONObject(response.getResponseData());
+
+            setBidJsonArray = headerBiddingJsonObject.getJSONArray("seatbid");
+
+            bidParentJsonObject = setBidJsonArray.getJSONObject(0);
+
+            bidJsonArray = bidParentJsonObject.getJSONArray("bid");
+
+            Bid bid;
+
+            for(int i = 0 ; i < bidJsonArray.length(); i++)
+            {
+                bidJsonObject = bidJsonArray.getJSONObject(i);
+                bid = new Bid();
+
+                bid.setImpressionId(bidJsonObject.getString("impid"));
+                bid.setPrice(bidJsonObject.getDouble("price"));
+                bid.setCreative(bidJsonObject.getString("adm"));
+                bid.setWidth(bidJsonObject.getInt("w"));
+                bid.setHeight(bidJsonObject.getInt("h"));
+
+                extJsonObject = bidJsonObject.getJSONObject("ext");
+                extensionJsonObject = extJsonObject.getJSONObject("extension");
+
+                bid.setTrackingUrl(extensionJsonObject.getString("trackingUrl"));
+                bid.setSlotName(extensionJsonObject.getString("slotname"));
+                bid.setSlotIndex(extensionJsonObject.getInt("slotindex"));
+                bid.setGaId(extensionJsonObject.getInt("gaId"));
+
+                bidsMap.put(bid.getImpressionId(), bid);
             }
+
         } catch (JSONException e) {
             PMLogger.logEvent("Invalid Json response received for Header Bidding. " + e.getMessage(), PMLogger.LogLevel.Debug);
         }
-        return publisherHBResponse;
+
+        return bidsMap;
     }
 
     private HttpHandler.HttpRequestListener networkListener = new HttpHandler.HttpRequestListener() {
@@ -265,7 +290,7 @@ public class PubMaticPrefetchManager {
         @Override
         public void onRequestComplete(HttpResponse response, String requestURL) {
             // parse request to populate the hbCreatives map.
-            Map<String, JSONObject> publisherHBResponse = formatHBResponse(response);
+            publisherHBResponse = formatHBResponse(response);
             if (preFetchListener == null)
                 return;
 
@@ -293,7 +318,7 @@ public class PubMaticPrefetchManager {
      * Release resources, clear maps and reset the adViews used.
      */
     public void destroy() {
-        hbCreatives.clear();
+        publisherHBResponse.clear();
 
         // Reset all PMBannerAdViews.
         if (pubmaticAdViews != null && pubmaticAdViews.size() != 0) {

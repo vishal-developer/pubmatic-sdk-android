@@ -71,11 +71,6 @@ public class PubMaticBannerRRFormatter implements RRFormatter {
         }
     }
 
-    @Override
-    public AdResponse formatHeaderBiddingResponse(JSONObject response) {
-        return parseJSONResponse(response);
-    }
-
     private AdResponse parseJSONResponse(JSONObject response){
 
         if(response == null){
