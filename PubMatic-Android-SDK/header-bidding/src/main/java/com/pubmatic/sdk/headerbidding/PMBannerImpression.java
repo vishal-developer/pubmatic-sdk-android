@@ -9,7 +9,7 @@ import java.util.List;
 public class PMBannerImpression extends PMImpression {
 
     private String id;
-    private List<AdSize> adSizes;
+    private List<PMAdSize> adSizes;
     private boolean interstitial;
 
     public PMBannerImpression(String id, String adSlotId, List adSizes, int adSlotIndex)
@@ -27,11 +27,11 @@ public class PMBannerImpression extends PMImpression {
         this.id = id;
     }
 
-    public List<AdSize> getAdSizes() {
+    public List<PMAdSize> getAdSizes() {
         return adSizes;
     }
 
-    public void setAdSizes(List<AdSize> adSizes) {
+    public void setAdSizes(List<PMAdSize> adSizes) {
         this.adSizes = adSizes;
     }
 

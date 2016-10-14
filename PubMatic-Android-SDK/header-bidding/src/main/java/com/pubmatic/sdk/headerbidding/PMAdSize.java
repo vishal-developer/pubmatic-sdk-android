@@ -4,12 +4,12 @@ package com.pubmatic.sdk.headerbidding;
  * Created by Sagar on 10/4/2016.
  */
 
-public class AdSize {
+public class PMAdSize {
 
     private int width;
     private int height;
 
-    public AdSize(int width, int height)
+    public PMAdSize(int width, int height)
     {
         this.width = width;
         this.height = height;

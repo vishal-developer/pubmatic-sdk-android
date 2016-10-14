@@ -17,10 +17,10 @@ import com.google.android.gms.ads.doubleclick.PublisherAdRequest;
 import com.google.android.gms.ads.doubleclick.PublisherAdView;
 import com.google.android.gms.ads.doubleclick.PublisherInterstitialAd;
 import com.pubmatic.sdk.banner.PMInterstitialAdView;
-import com.pubmatic.sdk.headerbidding.AdSize;
-import com.pubmatic.sdk.headerbidding.Bid;
+import com.pubmatic.sdk.headerbidding.PMAdSize;
+import com.pubmatic.sdk.headerbidding.PMBid;
 import com.pubmatic.sdk.headerbidding.PMBannerImpression;
-import com.pubmatic.sdk.headerbidding.PubMaticHBBannerRequest;
+import com.pubmatic.sdk.headerbidding.PubMaticBannerPrefetchRequest;
 import com.pubmatic.sdk.headerbidding.PubMaticPrefetchManager;
 
 import java.util.ArrayList;
@@ -69,7 +69,7 @@ public class HeaderBiddingInterstitialAdapter {
     {
         PubMaticPrefetchManager.PrefetchListener listener = new PubMaticPrefetchManager.PrefetchListener() {
             @Override
-            public void onBidsFetched(Map<String, Bid> hBResponse) {
+            public void onBidsFetched(Map<String, PMBid> hBResponse) {
                 Log.d(TAG, "onBidsFetched");
 
                 // Header bidding completed. Now send the custom data to DFP.
@@ -90,7 +90,7 @@ public class HeaderBiddingInterstitialAdapter {
         headerBiddingManager.setPrefetchListener(listener);
 
         //Create Pubmatic adRequest for header bidding call with single impression or a Set of impressions.
-        PubMaticHBBannerRequest interstitialHeaderBiddingAdRequest = getHeaderBiddingInterstitialAdRequest();
+        PubMaticBannerPrefetchRequest interstitialHeaderBiddingAdRequest = getHeaderBiddingInterstitialAdRequest();
 
         /*
         Set any targeting params on the adRequest instance.
@@ -101,7 +101,7 @@ public class HeaderBiddingInterstitialAdapter {
     /**
      * Send ad Request for all DFP adViews.
      */
-    private void requestDFPAd(final Map<String, Bid> hBResponse) {
+    private void requestDFPAd(final Map<String, PMBid> hBResponse) {
 
         ((Activity)mContext).runOnUiThread(new Runnable() {
                                                @Override
@@ -117,7 +117,7 @@ public class HeaderBiddingInterstitialAdapter {
 
                                                            try {
                                                                String adSlot = entry.getKey();
-                                                               Bid pubResponse = hBResponse.get(adSlot);
+                                                               PMBid pubResponse = hBResponse.get(adSlot);
 
                                                                if(pubResponse != null) {
                                                                    adRequest = new PublisherAdRequest.Builder().addCustomTargeting(BID_ID, pubResponse.getImpressionId())
@@ -234,7 +234,7 @@ public class HeaderBiddingInterstitialAdapter {
         }
     }
 
-    private PubMaticHBBannerRequest getHeaderBiddingInterstitialAdRequest()
+    private PubMaticBannerPrefetchRequest getHeaderBiddingInterstitialAdRequest()
     {
         //Get Width & Height for creating of adSlots
         int measuredWidth = 0;
@@ -255,10 +255,10 @@ public class HeaderBiddingInterstitialAdapter {
             measuredHeight  = Math.round(displayMetrics.heightPixels/density);
         }
 
-        PubMaticHBBannerRequest adRequest;
+        PubMaticBannerPrefetchRequest adRequest;
 
-        List<AdSize> adSizes = new ArrayList<>(1);
-        adSizes.add(new AdSize(measuredWidth, measuredHeight));
+        List<PMAdSize> adSizes = new ArrayList<>(1);
+        adSizes.add(new PMAdSize(measuredWidth, measuredHeight));
 
         PMBannerImpression pmBannerImpression = new PMBannerImpression("impression1", "DMDemo", adSizes, 1);
         pmBannerImpression.setInterstitial(true);
@@ -266,7 +266,7 @@ public class HeaderBiddingInterstitialAdapter {
         List<PMBannerImpression> bannerImpressions = new ArrayList<>();
         bannerImpressions.add(pmBannerImpression);
 
-        adRequest = PubMaticHBBannerRequest.initHBRequestForImpression(mContext, "5890", bannerImpressions);
+        adRequest = PubMaticBannerPrefetchRequest.initHBRequestForImpression(mContext, "5890", bannerImpressions);
 
         return adRequest;
     }

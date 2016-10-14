@@ -4,7 +4,7 @@ package com.pubmatic.sdk.headerbidding;
  * Created by Sagar on 10/6/2016.
  */
 
-public class Bid {
+public class PMBid {
 
     private String slotName;
     private int slotIndex;

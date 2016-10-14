@@ -49,7 +49,7 @@ public class PubMaticPrefetchManager {
          *
          * @param publisherHBResponse mapping of adslot to corresponding prefetched creative.
          */
-        void onBidsFetched(Map<String, Bid> publisherHBResponse);
+        void onBidsFetched(Map<String, PMBid> publisherHBResponse);
 
         /**
          * Failure callback for header bidding. Publisher must go ahead with normal DFP calls.
@@ -59,7 +59,7 @@ public class PubMaticPrefetchManager {
         void onBidsFailed(String errorMessage);
     }
 
-    private Map<String, Bid> publisherHBResponse = new HashMap<>();
+    private Map<String, PMBid> publisherHBResponse = new HashMap<>();
 
     private List<WeakReference<PMBannerAdView>> pubmaticAdViews;
     private List<WeakReference<PMInterstitialAdView>> pubmaticInterstitialAdViews;
@@ -79,7 +79,7 @@ public class PubMaticPrefetchManager {
         return preFetchListener;
     }
 
-    public void executeHeaderBiddingRequest(Context context, PubMaticHBBannerRequest adRequest) {
+    public void executeHeaderBiddingRequest(Context context, PubMaticBannerPrefetchRequest adRequest) {
 
         // Sanitise request. Remove any ad tag detail.
         adRequest.setSiteId("");
@@ -135,7 +135,7 @@ public class PubMaticPrefetchManager {
         return adView;
     }
 
-    private AdResponse formatHeaderBiddingResponse(Bid bid)
+    private AdResponse formatHeaderBiddingResponse(PMBid bid)
     {
         AdResponse pubResponse = new AdResponse();
 
@@ -232,9 +232,9 @@ public class PubMaticPrefetchManager {
         return httpRequest;
     }
 
-    private Map<String, Bid> formatHBResponse(HttpResponse response) {
+    private Map<String, PMBid> formatHBResponse(HttpResponse response) {
 
-        Map<String, Bid> bidsMap = new HashMap<>();
+        Map<String, PMBid> bidsMap = new HashMap<>();
 
         JSONObject headerBiddingJsonObject;
         JSONArray setBidJsonArray;
@@ -254,12 +254,12 @@ public class PubMaticPrefetchManager {
 
             bidJsonArray = bidParentJsonObject.getJSONArray("bid");
 
-            Bid bid;
+            PMBid bid;
 
             for(int i = 0 ; i < bidJsonArray.length(); i++)
             {
                 bidJsonObject = bidJsonArray.getJSONObject(i);
-                bid = new Bid();
+                bid = new PMBid();
 
                 bid.setImpressionId(bidJsonObject.getString("impid"));
                 bid.setPrice(bidJsonObject.getDouble("price"));

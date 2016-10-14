@@ -11,10 +11,10 @@ import com.google.android.gms.ads.doubleclick.AppEventListener;
 import com.google.android.gms.ads.doubleclick.PublisherAdRequest;
 import com.google.android.gms.ads.doubleclick.PublisherAdView;
 import com.pubmatic.sdk.banner.PMBannerAdView;
-import com.pubmatic.sdk.headerbidding.AdSize;
-import com.pubmatic.sdk.headerbidding.Bid;
+import com.pubmatic.sdk.headerbidding.PMAdSize;
+import com.pubmatic.sdk.headerbidding.PMBid;
 import com.pubmatic.sdk.headerbidding.PMBannerImpression;
-import com.pubmatic.sdk.headerbidding.PubMaticHBBannerRequest;
+import com.pubmatic.sdk.headerbidding.PubMaticBannerPrefetchRequest;
 import com.pubmatic.sdk.headerbidding.PubMaticPrefetchManager;
 
 import java.util.ArrayList;
@@ -60,7 +60,7 @@ public class HeaderBiddingBannerAdapter {
     {
         PubMaticPrefetchManager.PrefetchListener listener = new PubMaticPrefetchManager.PrefetchListener() {
             @Override
-            public void onBidsFetched(Map<String, Bid> hBResponse) {
+            public void onBidsFetched(Map<String, PMBid> hBResponse) {
                 Log.d(TAG, "onBidsFetched");
 
                 // Header bidding completed. Now send the custom data to DFP.
@@ -81,7 +81,7 @@ public class HeaderBiddingBannerAdapter {
         headerBiddingManager.setPrefetchListener(listener);
 
         //Create Pubmatic adRequest for header bidding call with single impression or a Set of impressions.
-        PubMaticHBBannerRequest bannerHeaderBiddingAdRequest = getHeaderBiddingBannerAdRequest();
+        PubMaticBannerPrefetchRequest bannerHeaderBiddingAdRequest = getHeaderBiddingBannerAdRequest();
 
         /*
         Set any targeting params on the adRequest instance.
@@ -92,7 +92,7 @@ public class HeaderBiddingBannerAdapter {
     /**
      * Send ad Request for all DFP adViews.
      */
-    private void requestDFPAd(final Map<String, Bid> hBResponse) {
+    private void requestDFPAd(final Map<String, PMBid> hBResponse) {
 
         ((Activity)mContext).runOnUiThread(new Runnable() {
                           @Override
@@ -108,7 +108,7 @@ public class HeaderBiddingBannerAdapter {
 
                                       try {
                                           String adSlot = entry.getKey();
-                                          Bid pubResponse = hBResponse.get(adSlot);
+                                          PMBid pubResponse = hBResponse.get(adSlot);
 
                                           if(pubResponse != null) {
                                               adRequest = new PublisherAdRequest.Builder().addCustomTargeting(BID_ID, pubResponse.getImpressionId())
@@ -220,32 +220,32 @@ public class HeaderBiddingBannerAdapter {
         }
     }
 
-    private PubMaticHBBannerRequest getHeaderBiddingBannerAdRequest()
+    private PubMaticBannerPrefetchRequest getHeaderBiddingBannerAdRequest()
     {
-        PubMaticHBBannerRequest adRequest;
+        PubMaticBannerPrefetchRequest adRequest;
 
-        List<AdSize> adSizes = new ArrayList<>(1);
-        adSizes.add(new AdSize(300, 250));
+        List<PMAdSize> adSizes = new ArrayList<>(1);
+        adSizes.add(new PMAdSize(300, 250));
 
         PMBannerImpression pmBannerImpression = new PMBannerImpression("impression1", "DMDemo", adSizes, 1);
 
-        List<AdSize> adSizes1 = new ArrayList<>(1);
-        adSizes1.add(new AdSize(728, 90));
+        List<PMAdSize> adSizes1 = new ArrayList<>(1);
+        adSizes1.add(new PMAdSize(728, 90));
 
         PMBannerImpression pmBannerImpression1 = new PMBannerImpression("impression2", "DMDemo1", adSizes1, 1);
 
-        List<AdSize> adSizes2 = new ArrayList<>(1);
-        adSizes2.add(new AdSize(728, 90));
+        List<PMAdSize> adSizes2 = new ArrayList<>(1);
+        adSizes2.add(new PMAdSize(320, 50));
 
-        PMBannerImpression pmBannerImpression2 = new PMBannerImpression("Slot3", "DMDemo2", adSizes2, 1);
+        PMBannerImpression pmBannerImpression2 = new PMBannerImpression("impression3", "WDemo", adSizes2, 1);
 
         List<PMBannerImpression> bannerImpressions = new ArrayList<>();
         bannerImpressions.add(pmBannerImpression);
         bannerImpressions.add(pmBannerImpression1);
         bannerImpressions.add(pmBannerImpression2);
 
-        //adRequest = PubMaticHBBannerRequest.initHBRequestForImpression(this, "5890", bannerImpressions);
-        adRequest = PubMaticHBBannerRequest.initHBRequestForImpression(mContext, "46499", bannerImpressions);
+        //adRequest = PubMaticBannerPrefetchRequest.initHBRequestForImpression(this, "5890", bannerImpressions);
+        adRequest = PubMaticBannerPrefetchRequest.initHBRequestForImpression(mContext, "46499", bannerImpressions);
 
         adRequest.setAppName("Header Bidding Sample");
         adRequest.setStoreURL("http://www.financialexpress.com/");

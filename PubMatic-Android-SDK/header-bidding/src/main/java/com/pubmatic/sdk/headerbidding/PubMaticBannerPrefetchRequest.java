@@ -15,7 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class PubMaticHBBannerRequest extends PubMaticBannerAdRequest {
+public class PubMaticBannerPrefetchRequest extends PubMaticBannerAdRequest {
 
     private List<String> appIabCategory;
     private List<String> sectionIabCategory;
@@ -27,31 +27,31 @@ public class PubMaticHBBannerRequest extends PubMaticBannerAdRequest {
     private List<PMBannerImpression> impressions;
     private Set<String> adSlotIdsHB;
 
-    private PubMaticHBBannerRequest(Context context) {
+    private PubMaticBannerPrefetchRequest(Context context) {
         super(context);
         setAdServerURL(CommonConstants.HEADER_BIDDING_HASO_URL);
         impressions = new ArrayList<>();
         adSlotIdsHB = new HashSet<>();
     }
 
-    private PubMaticHBBannerRequest(Context context, String pubId, PMBannerImpression impression) {
+    private PubMaticBannerPrefetchRequest(Context context, String pubId, PMBannerImpression impression) {
         this(context);
         this.mPubId = pubId;
         impressions.add(impression);
     }
 
-    private PubMaticHBBannerRequest(Context context, String pubId, List<PMBannerImpression> impressions) {
+    private PubMaticBannerPrefetchRequest(Context context, String pubId, List<PMBannerImpression> impressions) {
         this(context);
         this.mPubId = pubId;
         this.impressions.addAll(impressions);
     }
 
-    public static PubMaticHBBannerRequest initHBRequestForImpression(Context context, String pubId, PMBannerImpression impression) {
-        return new PubMaticHBBannerRequest(context, pubId, impression);
+    public static PubMaticBannerPrefetchRequest initHBRequestForImpression(Context context, String pubId, PMBannerImpression impression) {
+        return new PubMaticBannerPrefetchRequest(context, pubId, impression);
     }
 
-    public static PubMaticHBBannerRequest initHBRequestForImpression(Context context, String pubId, List<PMBannerImpression> impressions) {
-        return new PubMaticHBBannerRequest(context, pubId, impressions);
+    public static PubMaticBannerPrefetchRequest initHBRequestForImpression(Context context, String pubId, List<PMBannerImpression> impressions) {
+        return new PubMaticBannerPrefetchRequest(context, pubId, impressions);
     }
 
     public List<PMBannerImpression> getImpressions()
@@ -206,7 +206,7 @@ public class PubMaticHBBannerRequest extends PubMaticBannerAdRequest {
 
                 JSONArray formatJsonArray = new JSONArray();
 
-                for(AdSize adSize : impression.getAdSizes())
+                for(PMAdSize adSize : impression.getAdSizes())
                 {
                     JSONObject adSizeJsonObject = new JSONObject();
 
@@ -336,6 +336,31 @@ public class PubMaticHBBannerRequest extends PubMaticBannerAdRequest {
         }
 
         return siteJsonObject;
+    }
+
+    private JSONObject getDeviceObject()
+    {
+        JSONObject deviceJsonObject = new JSONObject();
+
+        PUBDeviceInformation pubDeviceInformation = PUBDeviceInformation.getInstance(mContext);
+
+        try
+        {
+            deviceJsonObject.put("ua", getUserAgent());
+            deviceJsonObject.put("dnt", "");
+            deviceJsonObject.put("lmt", "");
+            deviceJsonObject.put("ip", pubDeviceInformation.mDeviceIpAddress);
+            deviceJsonObject.put("make", pubDeviceInformation.mDeviceMake);
+            deviceJsonObject.put("model", pubDeviceInformation.mDeviceModel);
+            deviceJsonObject.put("os", pubDeviceInformation.mDeviceOSName);
+            deviceJsonObject.put("osv", pubDeviceInformation.mDeviceOSVersion);
+        }
+        catch (Exception exception)
+        {
+            exception.printStackTrace();
+        }
+
+        return  deviceJsonObject;
     }
 
     private JSONObject getExtJson()
