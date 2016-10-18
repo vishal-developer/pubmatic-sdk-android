@@ -1696,7 +1696,7 @@ public class PMBannerAdView extends ViewGroup {
         mraidBridge = new Bridge(webView, mraidBridgeHandler);
 
         String creative = adDescriptor.getContent();
-        String url = CommonConstants.HEADER_BIDDING_HASO_URL;
+        String url = "";
         if (getAdRequest() != null)
             url = getAdRequest().getAdServerURL();
 

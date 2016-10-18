@@ -261,21 +261,26 @@ public class PubMaticPrefetchManager {
                 bidJsonObject = bidJsonArray.getJSONObject(i);
                 bid = new PMBid();
 
-                bid.setImpressionId(bidJsonObject.getString("impid"));
-                bid.setPrice(bidJsonObject.getDouble("price"));
-                bid.setCreative(bidJsonObject.getString("adm"));
-                bid.setWidth(bidJsonObject.getInt("w"));
-                bid.setHeight(bidJsonObject.getInt("h"));
+                try
+                {
+                    bid.setImpressionId(bidJsonObject.getString("impid"));
+                    bid.setPrice(bidJsonObject.getDouble("price"));
+                    bid.setCreative(bidJsonObject.getString("adm"));
+                    bid.setWidth(bidJsonObject.getInt("w"));
+                    bid.setHeight(bidJsonObject.getInt("h"));
 
-                extJsonObject = bidJsonObject.getJSONObject("ext");
-                extensionJsonObject = extJsonObject.getJSONObject("extension");
+                    extJsonObject = bidJsonObject.getJSONObject("ext");
+                    extensionJsonObject = extJsonObject.getJSONObject("extension");
 
-                bid.setTrackingUrl(extensionJsonObject.getString("trackingUrl"));
-                bid.setSlotName(extensionJsonObject.getString("slotname"));
-                bid.setSlotIndex(extensionJsonObject.getInt("slotindex"));
-                bid.setGaId(extensionJsonObject.getInt("gaId"));
+                    bid.setTrackingUrl(extensionJsonObject.getString("trackingUrl"));
+                    bid.setSlotName(extensionJsonObject.getString("slotname"));
+                    bid.setSlotIndex(extensionJsonObject.getInt("slotindex"));
+                    bid.setGaId(extensionJsonObject.getInt("gaId"));
 
-                bidsMap.put(bid.getImpressionId(), bid);
+                    bidsMap.put(bid.getImpressionId(), bid);
+                } catch (JSONException e) {
+                    PMLogger.logEvent("Error parsing bid " + e.getMessage(), PMLogger.LogLevel.Debug);
+                }
             }
 
         } catch (JSONException e) {

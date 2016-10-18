@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+
 public abstract class PubMaticAdRequest extends AdRequest {
 
     public abstract void setAttributes(AttributeSet attr);
@@ -25,6 +26,7 @@ public abstract class PubMaticAdRequest extends AdRequest {
         super(CommonConstants.CHANNEL.PUBMATIC, context);
         mContext = context;
 
+        mDefaultedCampaignList = new ArrayList<>(0);
     }
 
     @Override
@@ -34,12 +36,11 @@ public abstract class PubMaticAdRequest extends AdRequest {
 
     @Override
     public boolean checkMandatoryParams() {
-        return false;
+        return !TextUtils.isEmpty(mPubId) && !TextUtils.isEmpty(mSiteId) && !TextUtils.isEmpty(mAdId);
     }
 
     @Override
     protected void initializeDefaultParams(Context context) {
-
     }
 
     @Override
@@ -59,52 +60,204 @@ public abstract class PubMaticAdRequest extends AdRequest {
     }
 
     @Override
-    protected void setupPostData() {
+    protected void setUpUrlParams() {
+        super.setUpUrlParams();
+    }
 
-        super.setupPostData();
+    @Override
+    public void createRequest(Context context) {
+        initializeDefaultParams(context);
+        setUpUrlParams();
+        setUpPostParams();
+    }
 
-        //Append the basic & mandatory parameters
+    protected void setUpPostParams() {
+
+        // super.setUpPostParams();
+
+        // Append the basic & mandatory parameters
+        if(mOperId == OPERID.HTML)
+            putPostData(PubMaticConstants.OPER_ID_PARAM, String.valueOf(1));
+        else if(mOperId == OPERID.JAVA_SCRIPT)
+            putPostData(PubMaticConstants.OPER_ID_PARAM, String.valueOf(3));
+        else if(mOperId == OPERID.JSON)
+            putPostData(PubMaticConstants.OPER_ID_PARAM, String.valueOf(102));
+        else if(mOperId == OPERID.JSON_MOBILE)
+            putPostData(PubMaticConstants.OPER_ID_PARAM, String.valueOf(201));
 
         putPostData(PubMaticConstants.PUB_ID_PARAM, mPubId);
-        putPostData(PubMaticConstants.SITE_ID_PARAM, String.valueOf(this.mSiteId));
-        putPostData(PubMaticConstants.AD_ID_PARAM, String.valueOf(this.mAdId));
+        putPostData(PubMaticConstants.SITE_ID_PARAM, String.valueOf(mSiteId));
+        putPostData(PubMaticConstants.AD_ID_PARAM, String.valueOf(mAdId));
 
-        //Append custom parameters
-        if(mCustomParams!=null && !mCustomParams.isEmpty()) {
-            Set<String> set = mCustomParams.keySet();
-            Iterator<String> iterator = set.iterator();
-            while(iterator.hasNext()) {
-                String key = iterator.next();
-                List<String> valueList = mCustomParams.get(key);
-                for(String s : valueList) {
-                    putPostData(key,s);
-                }
-
-            }
-        }
+        if(mAdType == AD_TYPE.TEXT)
+            putPostData(PubMaticConstants.AD_TYPE_PARAM, String.valueOf(1));
+        else if(mAdType == AD_TYPE.IMAGE)
+            putPostData(PubMaticConstants.AD_TYPE_PARAM, String.valueOf(2));
+        else if(mAdType == AD_TYPE.IMAGE_TEXT)
+            putPostData(PubMaticConstants.AD_TYPE_PARAM, String.valueOf(3));
+        else if(mAdType == AD_TYPE.RICHMEDIA)
+            putPostData(PubMaticConstants.AD_TYPE_PARAM, String.valueOf(11));
+        else if(mAdType == AD_TYPE.NATIVE)
+            putPostData(PubMaticConstants.AD_TYPE_PARAM, String.valueOf(12));
+        else if(mAdType == AD_TYPE.VIDEO)
+            putPostData(PubMaticConstants.AD_TYPE_PARAM, String.valueOf(13));
+        else if(mAdType == AD_TYPE.AUDIO)
+            putPostData(PubMaticConstants.AD_TYPE_PARAM, String.valueOf(14));
 
         PUBDeviceInformation pubDeviceInformation = PUBDeviceInformation
                 .getInstance(mContext);
 
         try {
 
-            if (pubDeviceInformation.mDeviceAcceptLanguage != null) {
-                // Appending did
-                putPostData(PubMaticConstants.LANGUAGE, URLEncoder.encode(
-                        pubDeviceInformation.mDeviceAcceptLanguage,
+            if (pubDeviceInformation.mPageURL != null) {
+                putPostData(PubMaticConstants.PAGE_URL_PARAM, URLEncoder.encode(
+                        pubDeviceInformation.mPageURL,
                         PubMaticConstants.URL_ENCODING));
             }
-            // Setting country
+
+            putPostData(PubMaticConstants.AD_POSITION_PARAM, String.valueOf(PUBDeviceInformation.mAdPosition));
+            putPostData(PubMaticConstants.IN_IFRAME_PARAM, String.valueOf(PUBDeviceInformation.mInIframe));
+            putPostData(PubMaticConstants.AD_VISIBILITY_PARAM, String.valueOf(PUBDeviceInformation.mAdVisibility));
+            putPostData(PubMaticConstants.APP_CATEGORY_PARAM, mAppCategory);
+            putPostData(PubMaticConstants.DNT_PARAM, String.valueOf(mDoNotTrack ? 1 : 0));
+            putPostData(PubMaticConstants.COPPA_PARAM, String.valueOf(mCoppa ? 1 : 0));
+
+            if (mAWT != null) {
+                switch (mAWT) {
+                    case WRAPPED_IN_IFRAME:
+                        putPostData(PubMaticConstants.AWT_PARAM, String.valueOf(1));
+                        break;
+                    case WRAPPED_IN_JS:
+                        putPostData(PubMaticConstants.AWT_PARAM, String.valueOf(2));
+                        break;
+                }
+            }
+
+            // Mobile Application Profile-specific Parameters
+            if (pubDeviceInformation.mApplicationName != null) {
+                putPostData(PubMaticConstants.APP_NAME_PARAM, URLEncoder.encode(
+                        pubDeviceInformation.mApplicationName,
+                        PubMaticConstants.URL_ENCODING));
+            }
+
+            putPostData(PubMaticConstants.STORE_URL_PARAM, mStoreURL);
+            putPostData(PubMaticConstants.APP_ID_PARAM, mAid);
+
+            if (pubDeviceInformation.mPackageName != null) {
+                putPostData(PubMaticConstants.APP_BUNDLE_PARAM, URLEncoder.encode(
+                        pubDeviceInformation.mPackageName,
+                        PubMaticConstants.URL_ENCODING));
+            }
+
+            if (pubDeviceInformation.mApplicationVersion != null) {
+                putPostData(PubMaticConstants.APP_VERSION_PARAM, URLEncoder.encode(
+                        pubDeviceInformation.mApplicationVersion,
+                        PubMaticConstants.URL_ENCODING));
+            }
+
+            putPostData(PubMaticConstants.PAID_PARAM, String.valueOf(mPaid ? 1 : 0));
+            putPostData(PubMaticConstants.APP_DOMAIN_PARAM, mAppDomain);
+
+            // Mobile Application-specific Parameters
+            AdvertisingIdClient.AdInfo adInfo = AdvertisingIdClient.refreshAdvertisingInfo(mContext);
+            if(adInfo!=null) {
+
+                if (isAndoridAidEnabled() && !TextUtils.isEmpty(adInfo.getId())) {
+                    putPostData(PubMaticConstants.UDID_PARAM, PubMaticUtils.sha1(adInfo.getId()));
+                    putPostData(PubMaticConstants.UDID_TYPE_PARAM, String.valueOf(9));//9 - Android Advertising ID
+                    putPostData(PubMaticConstants.UDID_HASH_PARAM, String.valueOf(0));//0 - raw udid
+                }
+			/*
+			 * Pass dnt=1 if user have enabled Opt-Out of interest based ads in
+			 * Google settings in Android device
+			 */
+                addUrlParam(PubMaticConstants.DNT_PARAM, String.valueOf(adInfo.isLimitAdTrackingEnabled() ? 1 : 0));
+            } else if(mContext!=null){
+                //Send Android ID
+                putPostData(PubMaticConstants.UDID_PARAM, PubMaticUtils.getUdidFromContext(mContext));
+                putPostData(PubMaticConstants.UDID_TYPE_PARAM, String.valueOf(3));//9 - Android ID
+                putPostData(PubMaticConstants.UDID_HASH_PARAM, String.valueOf(2));//0 - SHA1
+            }
+
+            putPostData(PubMaticConstants.AD_REFRESH_RATE_PARAM, String.valueOf(mAdRefreshRate));
+
+            // Mobile-specific Parameters (Web/Application)
+            if (mNetworkType != null)
+                putPostData(PubMaticConstants.NETWORK_TYPE_PARAM, URLEncoder.encode(mNetworkType, PubMaticConstants.URL_ENCODING));
+            else
+                putPostData(PubMaticConstants.NETWORK_TYPE_PARAM, PubMaticUtils.getNetworkType(mContext));
+
+            if (pubDeviceInformation.mCarrierName != null) {
+                putPostData(PubMaticConstants.CARRIER_PARAM, URLEncoder.encode(
+                        pubDeviceInformation.mCarrierName,
+                        PubMaticConstants.URL_ENCODING));
+            }
+
+            // Setting js
+            putPostData(PubMaticConstants.JS_PARAM, String.valueOf(PUBDeviceInformation.mJavaScriptSupport));
+
+            if(!TextUtils.isEmpty(mAdOrientation))
+                putPostData(PubMaticConstants.AD_ORIENTATION_PARAM, mAdOrientation);
+
+            putPostData(PubMaticConstants.DEVICE_ORIENTATION_PARAM, String.valueOf(getDeviceOrientation(mContext)));
+
+            // User Information Parameters
             if (pubDeviceInformation.mDeviceCountryCode != null) {
                 putPostData(PubMaticConstants.COUNTRY_PARAM, URLEncoder.encode(
                         pubDeviceInformation.mDeviceCountryCode,
                         PubMaticConstants.URL_ENCODING));
             }
 
-            // Setting carrier
-            if (pubDeviceInformation.mCarrierName != null) {
-                putPostData(PubMaticConstants.CARRIER_PARAM, URLEncoder.encode(
-                        pubDeviceInformation.mCarrierName,
+            if (!TextUtils.isEmpty(mState)) {
+                putPostData(PubMaticConstants.USER_STATE, URLEncoder.encode(
+                        mState,
+                        PubMaticConstants.URL_ENCODING));
+            }
+
+            if (!TextUtils.isEmpty(mCity)) {
+                putPostData(PubMaticConstants.USER_CITY, URLEncoder.encode(
+                        mCity,
+                        PubMaticConstants.URL_ENCODING));
+            }
+
+            if (!TextUtils.isEmpty(mZip)) {
+                putPostData(PubMaticConstants.ZIP_PARAM, URLEncoder.encode(
+                        mZip, PubMaticConstants.URL_ENCODING));
+            }
+
+            if (!TextUtils.isEmpty(mYearOfBirth)) {
+                putPostData(PubMaticConstants.YOB_PARAM, URLEncoder.encode(
+                        mYearOfBirth,
+                        PubMaticConstants.URL_ENCODING));
+            }
+
+            if (!TextUtils.isEmpty(mGender)) {
+                putPostData(PubMaticConstants.GENDER_PARAM, URLEncoder.encode(
+                        mGender, PubMaticConstants.URL_ENCODING));
+            }
+
+            if (!TextUtils.isEmpty(mEthnicity)) {
+                putPostData(PubMaticConstants.USER_ETHNICITY, URLEncoder.encode(
+                        mEthnicity,
+                        PubMaticConstants.URL_ENCODING));
+            }
+
+            if (!TextUtils.isEmpty(mIncome)) {
+                putPostData(PubMaticConstants.USER_INCOME, URLEncoder.encode(
+                        mIncome,
+                        PubMaticConstants.URL_ENCODING));
+            }
+
+            if (mKeywordsList!=null) {
+                putPostData(PubMaticConstants.KEYWORDS_PARAM, URLEncoder.encode(
+                        getKeywordString(),
+                        PubMaticConstants.URL_ENCODING));
+            }
+
+            if (pubDeviceInformation.mDeviceAcceptLanguage != null) {
+                // Appending did
+                putPostData(PubMaticConstants.LANGUAGE, URLEncoder.encode(
+                        pubDeviceInformation.mDeviceAcceptLanguage,
                         PubMaticConstants.URL_ENCODING));
             }
 
@@ -136,134 +289,6 @@ public abstract class PubMaticAdRequest extends AdRequest {
                         PubMaticConstants.URL_ENCODING));
             }
 
-            if (pubDeviceInformation.mApplicationName != null) {
-                putPostData(PubMaticConstants.APP_NAME_PARAM, URLEncoder.encode(
-                        pubDeviceInformation.mApplicationName,
-                        PubMaticConstants.URL_ENCODING));
-            }
-
-            if (pubDeviceInformation.mPackageName != null) {
-                putPostData(PubMaticConstants.APP_BUNDLE_PARAM, URLEncoder.encode(
-                        pubDeviceInformation.mPackageName,
-                        PubMaticConstants.URL_ENCODING));
-            }
-
-            if (pubDeviceInformation.mApplicationVersion != null) {
-                putPostData(PubMaticConstants.APP_VERSION_PARAM, URLEncoder.encode(
-                        pubDeviceInformation.mApplicationVersion,
-                        PubMaticConstants.URL_ENCODING));
-            }
-
-            if (pubDeviceInformation.mPageURL != null) {
-                putPostData(PubMaticConstants.PAGE_URL_PARAM, URLEncoder.encode(
-                        pubDeviceInformation.mPageURL,
-                        PubMaticConstants.URL_ENCODING));
-            }
-
-            // Setting js
-            putPostData(PubMaticConstants.JS_PARAM, String.valueOf(PUBDeviceInformation.mJavaScriptSupport));
-            putPostData(PubMaticConstants.IN_IFRAME_PARAM, String.valueOf(PUBDeviceInformation.mInIframe));
-            putPostData(PubMaticConstants.AD_VISIBILITY_PARAM, String.valueOf(PUBDeviceInformation.mAdVisibility));
-            putPostData(PubMaticConstants.AD_POSITION_PARAM, String.valueOf(PUBDeviceInformation.mAdPosition));
-            putPostData(PubMaticConstants.APP_ID_PARAM, mAid);
-            putPostData(PubMaticConstants.APP_CATEGORY_PARAM, mAppCategory);
-            putPostData(PubMaticConstants.NETWORK_TYPE_PARAM, PubMaticUtils.getNetworkType(mContext));
-
-            //Send Advertisement ID
-            AdvertisingIdClient.AdInfo adInfo = AdvertisingIdClient.refreshAdvertisingInfo(mContext);
-            if(adInfo!=null) {
-
-                if (isAndoridAidEnabled() && !TextUtils.isEmpty(adInfo.getId())) {
-                    putPostData(PubMaticConstants.UDID_PARAM, PubMaticUtils.sha1(adInfo.getId()));
-                    putPostData(PubMaticConstants.UDID_TYPE_PARAM, String.valueOf(9));//9 - Android Advertising ID
-                    putPostData(PubMaticConstants.UDID_HASH_PARAM, String.valueOf(0));//0 - raw udid
-                }
-			/*
-			 * Pass dnt=1 if user have enabled Opt-Out of interest based ads in
-			 * Google settings in Android device
-			 */
-                putPostData(PubMaticConstants.DNT_PARAM, String.valueOf(adInfo.isLimitAdTrackingEnabled() == true ? 1 : 0));
-            } else if(mContext!=null){
-                //Send Android ID
-                putPostData(PubMaticConstants.UDID_PARAM, PubMaticUtils.getUdidFromContext(mContext));
-                putPostData(PubMaticConstants.UDID_TYPE_PARAM, String.valueOf(3));//9 - Android ID
-                putPostData(PubMaticConstants.UDID_HASH_PARAM, String.valueOf(2));//0 - SHA1
-            }
-
-            // Setting ver
-            if (pubDeviceInformation.mApplicationVersion != null) {
-                putPostData(PubMaticConstants.VER_PARAM, URLEncoder.encode(
-                        pubDeviceInformation.mApplicationVersion,
-                        PubMaticConstants.URL_ENCODING));
-            }
-
-            // Setting user specific information
-
-            // Setting year of birth
-            if (!TextUtils.isEmpty(mYearOfBirth)) {
-                putPostData(PubMaticConstants.YOB_PARAM, URLEncoder.encode(
-                        mYearOfBirth,
-                        PubMaticConstants.URL_ENCODING));
-            }
-
-            // Setting Gender of user
-            if (!TextUtils.isEmpty(mGender)) {
-                putPostData(PubMaticConstants.GENDER_PARAM, URLEncoder.encode(
-                        mGender, PubMaticConstants.URL_ENCODING));
-            }
-
-                // Setting zip code of user
-            if (!TextUtils.isEmpty(mZip)) {
-                putPostData(PubMaticConstants.ZIP_PARAM, URLEncoder.encode(
-                        mZip, PubMaticConstants.URL_ENCODING));
-            }
-
-                // Setting the income
-            if (!TextUtils.isEmpty(mIncome)) {
-                putPostData(PubMaticConstants.USER_INCOME, URLEncoder.encode(
-                        mIncome,
-                        PubMaticConstants.URL_ENCODING));
-            }
-
-                // Setting the user entnicity
-            if (!TextUtils.isEmpty(mEthnicity)) {
-                putPostData(PubMaticConstants.USER_ETHNICITY, URLEncoder.encode(
-                        mEthnicity,
-                        PubMaticConstants.URL_ENCODING));
-            }
-
-            if (mKeywordsList!=null) {
-                putPostData(PubMaticConstants.KEYWORDS_PARAM, URLEncoder.encode(
-                        getKeywordString(),
-                        PubMaticConstants.URL_ENCODING));
-            }
-
-
-            // Setting user city
-            if (!TextUtils.isEmpty(mCity)) {
-                putPostData(PubMaticConstants.USER_CITY, URLEncoder.encode(
-                        mCity,
-                        PubMaticConstants.URL_ENCODING));
-            }
-
-            // Setting the state
-            if (!TextUtils.isEmpty(mState)) {
-                putPostData(PubMaticConstants.USER_STATE, URLEncoder.encode(
-                        mState,
-                        PubMaticConstants.URL_ENCODING));
-            }
-
-
-            // Setting adOrientation
-            if(!TextUtils.isEmpty(mAdOrientation))
-             putPostData(PubMaticConstants.AD_ORIENTATION_PARAM, mAdOrientation);
-
-            // Setting deviceOrientation
-            putPostData(PubMaticConstants.DEVICE_ORIENTATION_PARAM, String.valueOf(getDeviceOrientation(mContext)));
-
-            // Setting adRefreshRate
-            putPostData(PubMaticConstants.AD_REFRESH_RATE_PARAM, String.valueOf(mAdRefreshRate));
-
             // Setting sdk_id
             putPostData(PubMaticConstants.SDK_ID_PARAM, URLEncoder
                     .encode(PUBDeviceInformation.msdkId,
@@ -274,27 +299,38 @@ public abstract class PubMaticAdRequest extends AdRequest {
                     PUBDeviceInformation.msdkVersion,
                     PubMaticConstants.URL_ENCODING));
 
-            if (mNetworkType != null) {
-                putPostData(PubMaticConstants.NETWORK_TYPE_PARAM, URLEncoder.encode(mNetworkType,
-                        PubMaticConstants.URL_ENCODING));
+            // Send KAdNetwork id if any
+            if(mKAdNetworkId != null && !mKAdNetworkId.equals(""))
+                putPostData(CommonConstants.PASSBACK_KAD_NETWORK, mKAdNetworkId);
+
+            // Send last defaulted network id if any
+            if(mLastDefaultedNetworkId != null && !mLastDefaultedNetworkId.equals(""))
+                putPostData(CommonConstants.PASSBACK_LAST_DEFAULTED_NETWORK, mLastDefaultedNetworkId);
+
+            // Send defaulted campaign list
+            if(mDefaultedCampaignList.size() > 0)
+            {
+                String campaignIds = "";
+
+                for(String campaignId : mDefaultedCampaignList)
+                    campaignIds = campaignIds + campaignId + ",";
+
+                campaignIds = campaignIds.substring(0, campaignIds.length()-1);
+
+                putPostData(CommonConstants.PASSBACK_CAMPAIGNS, campaignIds);
             }
 
-            putPostData(PubMaticConstants.AD_TYPE_PARAM, String.valueOf(11));//For Text and Image and Rich Media ads
-            putPostData(PubMaticConstants.DNT_PARAM, String.valueOf(mDoNotTrack ? 1 : 0));
-            putPostData(PubMaticConstants.COPPA_PARAM, String.valueOf(mCoppa ? 1 : 0));
-            putPostData(PubMaticConstants.STORE_URL_PARAM, mStoreURL);
-            putPostData(PubMaticConstants.PAID_PARAM, String.valueOf(mPaid ? 1 : 0));
-            putPostData(PubMaticConstants.APP_DOMAIN_PARAM, mAppDomain);
+            //Append custom parameters
+            if(mCustomParams!=null && !mCustomParams.isEmpty()) {
+                Set<String> set = mCustomParams.keySet();
+                Iterator<String> iterator = set.iterator();
+                while(iterator.hasNext()) {
+                    String key = iterator.next();
+                    List<String> valueList = mCustomParams.get(key);
+                    for(String s : valueList) {
+                        putPostData(key,s);
+                    }
 
-            //Set the awt parameter
-            if (mAWT != null) {
-                switch (mAWT) {
-                    case WRAPPED_IN_IFRAME:
-                        putPostData(PubMaticConstants.AWT_PARAM, String.valueOf(1));
-                        break;
-                    case WRAPPED_IN_JS:
-                        putPostData(PubMaticConstants.AWT_PARAM, String.valueOf(2));
-                        break;
                 }
             }
 
@@ -311,13 +347,6 @@ public abstract class PubMaticAdRequest extends AdRequest {
         } catch (Exception e) {
 
         }
-    }
-
-    @Override
-    public void createRequest(Context context) {
-        mPostData		= null;
-        initializeDefaultParams(context);
-        setupPostData();
     }
 
     //PubMatic specific enums
@@ -341,10 +370,10 @@ public abstract class PubMaticAdRequest extends AdRequest {
     public enum FORMAT_KEY { HTML, XML, JSON, JSONP, GENERIC, VAST, DAAST, OFFLINE_XML }
 
     protected Context         mContext;
+    protected OPERID          mOperId;
     protected String          mPubId;
     protected String          mSiteId;
     protected String          mAdId;
-    protected RS              mRs;
     protected AD_TYPE         mAdType;
     protected int             mAdHeight;
     protected int             mAdWidth;
@@ -367,20 +396,34 @@ public abstract class PubMaticAdRequest extends AdRequest {
     private boolean			  mDoNotTrack;
     private boolean			  mCoppa;
     private PubMaticAdRequest.AWT_OPTION mAWT;
+    protected RS              mRs;
 
-
-    //Common for Mocean & PubMatic User info params
+    //Common for Mocean & PubMatic Useser info params
     private String mCity = null;
     private String mZip = null;
     private String mDMA = null;
     private String mEthnicity = null;
     private String mGender = null;
+
     //PubMatic User info
     private String mCountry = null;
     private String mState = null;
     private String mYearOfBirth = null;
     private String mIncome = null;
     private ArrayList<String> mKeywordsList = null;
+
+    // PubMatic Passback params
+    private String mKAdNetworkId;
+    private String mLastDefaultedNetworkId;
+    private List<String> mDefaultedCampaignList;
+
+    protected OPERID getOperId() {
+        return mOperId;
+    }
+
+    protected void setOperId(OPERID operId) {
+        this.mOperId = operId;
+    }
 
     /**
      * Set the zip of the user.
@@ -390,6 +433,10 @@ public abstract class PubMaticAdRequest extends AdRequest {
      */
     public void setZip(final String zip) {
         mZip = zip;
+    }
+
+    public String getmZip() {
+        return mZip;
     }
 
     public String getDMA() {
@@ -440,6 +487,14 @@ public abstract class PubMaticAdRequest extends AdRequest {
         this.mState = state;
     }
 
+    public String getGender() {
+        return mGender;
+    }
+
+    public void setGender(String gender) {
+        this.mGender = gender;
+    }
+
     /**
      * Set the year of birth of the user.
      *
@@ -471,6 +526,9 @@ public abstract class PubMaticAdRequest extends AdRequest {
         mEthnicity = ethnicity;
     }
 
+    public String getEthnicity() {
+        return mEthnicity;
+    }
 
     /**
      * Add the new keyword that the user might be interested in.
@@ -592,11 +650,11 @@ public abstract class PubMaticAdRequest extends AdRequest {
         this.mRs = mRs;
     }
 
-    public AD_TYPE getAdType() {
+    protected AD_TYPE getAdType() {
         return mAdType;
     }
 
-    public void setAdType(AD_TYPE mAdType) {
+    protected void setAdType(AD_TYPE mAdType) {
         this.mAdType = mAdType;
     }
 
@@ -732,12 +790,54 @@ public abstract class PubMaticAdRequest extends AdRequest {
         this.mAdRefreshRate = mAdRefreshRate;
     }
 
+    public String getNetworkType() {
+        return mNetworkType;
+    }
+
+    public void setNetworkType(String networkType) {
+        this.mNetworkType = networkType;
+    }
+
     public int getOrmmaComplianceLevel() {
         return mOrmmaComplianceLevel;
     }
 
     public void setOrmmaComplianceLevel(int mOrmmaComplianceLevel) {
         this.mOrmmaComplianceLevel = mOrmmaComplianceLevel;
+    }
+
+    public String getKAdNetworkId() {
+        return mKAdNetworkId;
+    }
+
+    public void setKAdNetworkId(String kAdNetworkId) {
+        this.mKAdNetworkId = kAdNetworkId;
+    }
+
+    public String getLastDefaultedNetworkId() {
+        return mLastDefaultedNetworkId;
+    }
+
+    public void setLastDefaultedNetworkId(String lastDefaultedNetworkId) {
+        this.mLastDefaultedNetworkId = lastDefaultedNetworkId;
+    }
+
+    public List<String> getDefaultedCampaignList() {
+        return mDefaultedCampaignList;
+    }
+
+    public void addDefaultedCampaign(String campaign)
+    {
+        this.mDefaultedCampaignList.add(campaign);
+    }
+
+    public void clearDefaultedCampaignList()
+    {
+        this.mDefaultedCampaignList.clear();
+    }
+
+    public void setDefaultedCampaignList(List<String> defaultedCampaignList) {
+        this.mDefaultedCampaignList = defaultedCampaignList;
     }
 
     public String getAdOrientation() {
@@ -763,7 +863,6 @@ public abstract class PubMaticAdRequest extends AdRequest {
         this.mLocation = mLocation;
     }
 
-
     public String getLanguage() {
         return mLanguage;
     }
@@ -772,4 +871,10 @@ public abstract class PubMaticAdRequest extends AdRequest {
         this.mLanguage = mLanguage;
     }
 
+    public void resetPassbackParameters()
+    {
+        setKAdNetworkId("");
+        setLastDefaultedNetworkId("");
+        clearDefaultedCampaignList();
+    }
 }

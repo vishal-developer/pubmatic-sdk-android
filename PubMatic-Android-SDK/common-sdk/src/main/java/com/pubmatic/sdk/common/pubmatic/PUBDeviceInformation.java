@@ -145,7 +145,7 @@ public final class PUBDeviceInformation implements LocationListener {
 			mApplicationName = info.applicationInfo.loadLabel(manager).toString();
 			mPackageName = mApplicationContext.getPackageName();
 			mApplicationVersion = info.versionName;
-			mPageURL = mApplicationName + "_" + mApplicationVersion;
+			//mPageURL = mApplicationName + "_" + mApplicationVersion;
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {

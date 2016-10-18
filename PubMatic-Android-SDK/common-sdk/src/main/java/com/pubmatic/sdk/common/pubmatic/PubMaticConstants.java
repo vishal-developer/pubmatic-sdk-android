@@ -138,6 +138,7 @@ public class PubMaticConstants {
 
 
     //PubMatic specific common parameters for GET Parameters
+    public static final String OPER_ID_PARAM 			= "operId";
     public static final String PUB_ID_PARAM 			= "pubId";
     public static final String SITE_ID_PARAM 			= "siteId";
     public static final String AD_ID_PARAM 				= "adId";
@@ -172,10 +173,6 @@ public class PubMaticConstants {
     public static final String UDID_TYPE_PARAM 			= "udidtype";
     public static final String UDID_HASH_PARAM 			= "udidhash";
 
-    // Header Bidding HASO request parameters
-    public static final String SA_VERSION   			= "SAVersion";
-    public static final String GRS 		            	= "grs";
-    public static final String AD_SLOT_IDS 			    = "adslots";
 
     //PubMatic specific common parameters for POST Parameters
     public static final String DID_PARAM 				= "did";
@@ -200,8 +197,8 @@ public class PubMaticConstants {
     public static final String ZIP_PARAM 				= "zip";
     public static final String KEYWORDS_PARAM 			= "keywords";
     public static final String AREACODE 				= "areaCode";
-    public static final String USER_INCOME 				= "userIncome";
-    public static final String USER_ETHNICITY 			= "userEnthnicity";
+    public static final String USER_INCOME 				= "inc";
+    public static final String USER_ETHNICITY 			= "ethn";
     public static final String USER_CITY 				= "state";
     public static final String USER_STATE 				= "city";
     public static final String SDK_ID_PARAM 			= "msdkId";

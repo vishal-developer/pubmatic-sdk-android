@@ -11,6 +11,7 @@ import com.google.android.gms.ads.doubleclick.AppEventListener;
 import com.google.android.gms.ads.doubleclick.PublisherAdRequest;
 import com.google.android.gms.ads.doubleclick.PublisherAdView;
 import com.pubmatic.sdk.banner.PMBannerAdView;
+import com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest;
 import com.pubmatic.sdk.headerbidding.PMAdSize;
 import com.pubmatic.sdk.headerbidding.PMBid;
 import com.pubmatic.sdk.headerbidding.PMBannerImpression;
@@ -248,22 +249,23 @@ public class HeaderBiddingBannerAdapter {
         adRequest = PubMaticBannerPrefetchRequest.initHBRequestForImpression(mContext, "46499", bannerImpressions);
 
         adRequest.setAppName("Header Bidding Sample");
-        adRequest.setStoreURL("http://www.financialexpress.com/");
-        adRequest.setHasPrivacyPolicy(true);
-        adRequest.setPaid(true);
+        adRequest.setStoreURL("http://www.financialexpress.com");
+        adRequest.setAppDomain("www.financialexpress.com");
+        adRequest.isApplicationPaid(true);
+        adRequest.setAWT(PubMaticAdRequest.AWT_OPTION.WRAPPED_IN_IFRAME);
+        adRequest.setPMZoneId("1");
+        adRequest.addKeyword("entertainment");
+        adRequest.addKeyword("sports");
+        adRequest.setEthnicity("ethnicity");
 
-        List<String> appCategory = new ArrayList<String>();
-        appCategory.add("IAB1-1");
-        appCategory.add("IAB1-7");
-        adRequest.setAppIABCategory(appCategory);
+        adRequest.setYearOfBirth("1989");
+        adRequest.setGender("M");
 
-        List<String> sectionCategory = new ArrayList<String>();
-        sectionCategory.add("IAB1-5");
-        adRequest.setSectionIabCategory(sectionCategory);
+        adRequest.setCountry("IN");
+        adRequest.setCity("Pune");
+        adRequest.setZip("411011");
 
-        List<String> pageCategory = new ArrayList<String>();
-        pageCategory.add("IAB1-3");
-        adRequest.setPageIabCategory(pageCategory);
+        adRequest.setIABCategory("IAB1-1,IAB1-7");
 
         return adRequest;
     }

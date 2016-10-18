@@ -1,10 +1,15 @@
 package com.pubmatic.sdk.headerbidding;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest;
+import com.pubmatic.sdk.common.AdvertisingIdClient;
 import com.pubmatic.sdk.common.CommonConstants;
 import com.pubmatic.sdk.common.pubmatic.PUBDeviceInformation;
+import com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest;
+import com.pubmatic.sdk.common.pubmatic.PubMaticConstants;
+import com.pubmatic.sdk.common.pubmatic.PubMaticUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -15,21 +20,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest.*;
+
 public class PubMaticBannerPrefetchRequest extends PubMaticBannerAdRequest {
-
-    private List<String> appIabCategory;
-    private List<String> sectionIabCategory;
-    private List<String> pageIabCategory;
-
-    private boolean hasPrivacyPolicy;
-    private boolean paid;
 
     private List<PMBannerImpression> impressions;
     private Set<String> adSlotIdsHB;
 
     private PubMaticBannerPrefetchRequest(Context context) {
         super(context);
-        setAdServerURL(CommonConstants.HEADER_BIDDING_HASO_URL);
         impressions = new ArrayList<>();
         adSlotIdsHB = new HashSet<>();
     }
@@ -99,49 +98,10 @@ public class PubMaticBannerPrefetchRequest extends PubMaticBannerAdRequest {
     }
 
     public void createRequest(Context context) {
+        setAdType(AD_TYPE.RICHMEDIA);
         setAdServerURL("http://172.16.4.36:8000/openrtb/24");
         setUpUrlParams();
         setupPostData();
-    }
-
-    public List<String> getAppIABCategory() {
-        return appIabCategory;
-    }
-
-    public void setAppIABCategory(List<String> appIabCategory) {
-        this.appIabCategory = appIabCategory;
-    }
-
-    public List<String> getSectionIabCategory() {
-        return sectionIabCategory;
-    }
-
-    public void setSectionIabCategory(List<String> sectionIabCategory) {
-        this.sectionIabCategory = sectionIabCategory;
-    }
-
-    public List<String> getPageIabCategory() {
-        return pageIabCategory;
-    }
-
-    public void setPageIabCategory(List<String> pageIabCategory) {
-        this.pageIabCategory = pageIabCategory;
-    }
-
-    public boolean isHasPrivacyPolicy() {
-        return hasPrivacyPolicy;
-    }
-
-    public void setHasPrivacyPolicy(boolean hasPrivacyPolicy) {
-        this.hasPrivacyPolicy = hasPrivacyPolicy;
-    }
-
-    public boolean isPaid() {
-        return paid;
-    }
-
-    public void setPaid(boolean paid) {
-        this.paid = paid;
     }
 
     @Override
@@ -167,8 +127,11 @@ public class PubMaticBannerPrefetchRequest extends PubMaticBannerAdRequest {
 
             parentJsonObject.put("cur", getCurrencyJson());
             parentJsonObject.put("imp", getImpressionJson());
-            parentJsonObject.put("app", getAppJson());
             parentJsonObject.put("site", getSiteJson());
+            parentJsonObject.put("app", getAppJson());
+            parentJsonObject.put("device", getDeviceObject());
+            parentJsonObject.put("user", getUserJson());
+            parentJsonObject.put("regs", getRegsJson());
             parentJsonObject.put("ext", getExtJson());
         }
         catch (JSONException e) {
@@ -202,7 +165,10 @@ public class PubMaticBannerPrefetchRequest extends PubMaticBannerAdRequest {
 
                 JSONObject bannerJsonObject = new JSONObject();
 
-                bannerJsonObject.put("pos", 0);
+                if(impression.isInterstitial())
+                    bannerJsonObject.put("pos", 7);
+                else
+                    bannerJsonObject.put("pos", 0);
 
                 JSONArray formatJsonArray = new JSONArray();
 
@@ -261,43 +227,27 @@ public class PubMaticBannerPrefetchRequest extends PubMaticBannerAdRequest {
             else
                 appJsonObject.put("name", pubDeviceInformation.mApplicationName);
 
-            appJsonObject.put("bundle", pubDeviceInformation.mPackageName);
-            //appJsonObject.put("domain", pubDeviceInformation.mDeviceIpAddress);
-            //appJsonObject.put("domain", pubDeviceInformation.mDeviceIpAddress);
-            appJsonObject.put("storeurl", getStoreURL());
+            if(pubDeviceInformation.mPackageName != null && !pubDeviceInformation.mPackageName.equals(""))
+                appJsonObject.put("bundle", pubDeviceInformation.mPackageName);
+
+            if(getAppDomain() != null && !getAppDomain().equals(""))
+                appJsonObject.put("domain", getAppDomain());
+
+            if(getStoreURL() != null && !getStoreURL().equals(""))
+                appJsonObject.put("storeurl", getStoreURL());
 
             JSONArray catJsonArray = new JSONArray();
-            if(appIabCategory != null) {
-                for (int i = 0; i < appIabCategory.size(); i++)
-                    catJsonArray.put(appIabCategory.get(i));
+            String[] appCategories = getIABCategory().split(",");
+            if(appCategories != null && appCategories.length > 0) {
+                for (int i = 0; i < appCategories.length; i++)
+                    catJsonArray.put(appCategories[i]);
             }
+
             appJsonObject.put("cat", catJsonArray);
-
-            JSONArray sectionCatJsonArray = new JSONArray();
-            if(sectionIabCategory != null) {
-                for (int i = 0; i < sectionIabCategory.size(); i++)
-                    sectionCatJsonArray.put(sectionIabCategory.get(i));
-            }
-
-            appJsonObject.put("sectioncat", sectionCatJsonArray);
-
-            JSONArray pageCatJsonArray = new JSONArray();
-            if(pageIabCategory != null) {
-                for (int i = 0; i < pageIabCategory.size(); i++)
-                    pageCatJsonArray.put(pageIabCategory.get(i));
-            }
-
-            appJsonObject.put("pagecat", pageCatJsonArray);
 
             appJsonObject.put("ver", pubDeviceInformation.mApplicationVersion);
 
-
-            if(isHasPrivacyPolicy())
-                appJsonObject.put("privacypolicy", 1);
-            else
-                appJsonObject.put("privacypolicy", 0);
-
-            if(isPaid())
+            if(mPaid)
                 appJsonObject.put("paid", 1);
             else
                 appJsonObject.put("paid", 0);
@@ -322,8 +272,7 @@ public class PubMaticBannerPrefetchRequest extends PubMaticBannerAdRequest {
 
         try
         {
-            //siteJsonObject.put("domain", pubDeviceInformation.mDeviceIpAddress);
-            siteJsonObject.put("domain", "182.74.39.250");
+            siteJsonObject.put("domain", getAppDomain());
             siteJsonObject.put("page", "http://172.16.4.36/ssWrapperTest.html");
 
             JSONObject publisherJsonObject = new JSONObject();
@@ -346,9 +295,29 @@ public class PubMaticBannerPrefetchRequest extends PubMaticBannerAdRequest {
 
         try
         {
+            deviceJsonObject.put("geo", getGeoObject());
+
+            if(isDoNotTrack())
+                deviceJsonObject.put("dnt", 1);
+            else
+                deviceJsonObject.put("dnt", 0);
+
+            AdvertisingIdClient.AdInfo adInfo = AdvertisingIdClient.refreshAdvertisingInfo(mContext);
+            if (isAndoridAidEnabled() && !TextUtils.isEmpty(adInfo.getId())) {
+                deviceJsonObject.put("ifa", adInfo.getId());
+            }
+
+            String networkType = PubMaticUtils.getNetworkType(mContext);
+
+            if(networkType != null && !networkType.equals(""))
+                deviceJsonObject.put("connectiontype", networkType);
+
+            if(pubDeviceInformation.mCarrierName != null && !pubDeviceInformation.mCarrierName.equals(""))
+                deviceJsonObject.put("carrier", pubDeviceInformation.mCarrierName);
+
+            deviceJsonObject.put("js", pubDeviceInformation.mJavaScriptSupport);
+
             deviceJsonObject.put("ua", getUserAgent());
-            deviceJsonObject.put("dnt", "");
-            deviceJsonObject.put("lmt", "");
             deviceJsonObject.put("ip", pubDeviceInformation.mDeviceIpAddress);
             deviceJsonObject.put("make", pubDeviceInformation.mDeviceMake);
             deviceJsonObject.put("model", pubDeviceInformation.mDeviceModel);
@@ -361,6 +330,37 @@ public class PubMaticBannerPrefetchRequest extends PubMaticBannerAdRequest {
         }
 
         return  deviceJsonObject;
+    }
+
+    private JSONObject getGeoObject()
+    {
+        JSONObject geoJsonObject = new JSONObject();
+
+        PUBDeviceInformation pubDeviceInformation = PUBDeviceInformation.getInstance(mContext);
+
+        try
+        {
+            if(pubDeviceInformation.mDeviceCountryCode != null && !pubDeviceInformation.mDeviceCountryCode.equals(""))
+                geoJsonObject.put("country", pubDeviceInformation.mDeviceCountryCode);
+
+            if(getState() != null && !getState().equals(""))
+                geoJsonObject.put("region", getState());
+
+            if(getCity() != null && !getCity().equals(""))
+                geoJsonObject.put("city", getCity());
+
+            if(getDMA() != null && !getDMA().equals(""))
+                geoJsonObject.put("metro", getDMA());
+
+            if(getmZip() != null && !getmZip().equals(""))
+                geoJsonObject.put("zip", getmZip());
+
+        }
+        catch (Exception exception)
+        {
+            exception.printStackTrace();
+        }
+        return  geoJsonObject;
     }
 
     private JSONObject getExtJson()
@@ -382,17 +382,63 @@ public class PubMaticBannerPrefetchRequest extends PubMaticBannerAdRequest {
 
             PUBDeviceInformation pubDeviceInformation = PUBDeviceInformation.getInstance(mContext);
 
-            asJsonObject.put("SAVersion", pubDeviceInformation.mApplicationVersion);
+            if(mAdType == AD_TYPE.TEXT)
+                asJsonObject.put("adtype", String.valueOf(1));
+            else if(mAdType == AD_TYPE.IMAGE)
+                asJsonObject.put("adtype", String.valueOf(2));
+            else if(mAdType == AD_TYPE.IMAGE_TEXT)
+                asJsonObject.put("adtype", String.valueOf(3));
+            else if(mAdType == AD_TYPE.RICHMEDIA)
+                asJsonObject.put("adtype", String.valueOf(11));
+            else if(mAdType == AD_TYPE.NATIVE)
+                asJsonObject.put("adtype", String.valueOf(12));
+
+            asJsonObject.put("pageURL", pubDeviceInformation.mPageURL);
             asJsonObject.put("kltstamp", pubDeviceInformation.mDeviceTimeStamp);
-            asJsonObject.put("timezone", pubDeviceInformation.mDeviceTimeZone);
-            asJsonObject.put("screenResolution", pubDeviceInformation.mDeviceScreenResolution);
 
             double ranreq = Math.random();
             asJsonObject.put("ranreq", ranreq);
-            asJsonObject.put("pageURL", pubDeviceInformation.mPageURL);
-            asJsonObject.put("refurl", "");
+
+            asJsonObject.put("timezone", pubDeviceInformation.mDeviceTimeZone);
+            asJsonObject.put("screenResolution", pubDeviceInformation.mDeviceScreenResolution);
+            asJsonObject.put("adPosition", pubDeviceInformation.mAdPosition);
             asJsonObject.put("inIframe", String.valueOf(pubDeviceInformation.mInIframe));
-            asJsonObject.put("kadpageurl", pubDeviceInformation.mPageURL);
+            asJsonObject.put("adVisibility", pubDeviceInformation.mAdVisibility);
+
+            if(getAWT() == AWT_OPTION.DEFAULT)
+                asJsonObject.put("awt", "0");
+            else if(getAWT() == AWT_OPTION.WRAPPED_IN_IFRAME)
+                asJsonObject.put("awt", "1");
+            else if(getAWT() == AWT_OPTION.WRAPPED_IN_JS)
+                asJsonObject.put("awt", "2");
+
+            if(getPMZoneId() != null)
+                asJsonObject.put("pmZoneId", getPMZoneId());
+
+            AdvertisingIdClient.AdInfo adInfo = AdvertisingIdClient.refreshAdvertisingInfo(mContext);
+            if (isAndoridAidEnabled() && !TextUtils.isEmpty(adInfo.getId())) {
+                asJsonObject.put(PubMaticConstants.UDID_PARAM, adInfo.getId());
+                asJsonObject.put(PubMaticConstants.UDID_TYPE_PARAM, String.valueOf(9)); //9 - Android Advertising ID
+                asJsonObject.put(PubMaticConstants.UDID_HASH_PARAM, String.valueOf(0)); //0 - raw udid
+            }
+            else if(mContext!=null){
+                //Send Android ID
+                asJsonObject.put(PubMaticConstants.UDID_PARAM, PubMaticUtils.sha1(PubMaticUtils.getUdidFromContext(mContext)));
+                asJsonObject.put(PubMaticConstants.UDID_TYPE_PARAM, String.valueOf(3)); //3 - Android ID
+                asJsonObject.put(PubMaticConstants.UDID_HASH_PARAM, String.valueOf(2)); //2 - SHA1
+            }
+
+            if(getOrmmaComplianceLevel() >= 0)
+                asJsonObject.put("ormma", getOrmmaComplianceLevel());
+
+            if(getEthnicity() != null && !getEthnicity().equals(""))
+                asJsonObject.put("ethn", getEthnicity());
+
+            if(getKeywordString() != null && !getKeywordString().equals(""))
+                asJsonObject.put("keywords", getKeywordString());
+
+            if(getIABCategory() != null && !getIABCategory().equals(""))
+                asJsonObject.put("cat", getIABCategory());
 
             extensionJsonObject.put("as", asJsonObject);
 
@@ -405,4 +451,40 @@ public class PubMaticBannerPrefetchRequest extends PubMaticBannerAdRequest {
         return  extJsonObject;
     }
 
+    private JSONObject getUserJson()
+    {
+        JSONObject userJsonObject = new JSONObject();
+
+        try
+        {
+            if (getYearOfBirth() != null && !getYearOfBirth().equals(""))
+                userJsonObject.put("yob", getYearOfBirth());
+
+            if(getGender() != null && !getGender().equals(""))
+                userJsonObject.put("gender", getGender());
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return  userJsonObject;
+    }
+
+    private JSONObject getRegsJson()
+    {
+        JSONObject regsJsonObject = new JSONObject();
+
+        try
+        {
+            if(isCoppa())
+                regsJsonObject.put("coppa", 1);
+            else
+                regsJsonObject.put("coppa", 0);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return  regsJsonObject;
+    }
 }

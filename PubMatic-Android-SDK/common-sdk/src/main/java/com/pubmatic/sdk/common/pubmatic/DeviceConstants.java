@@ -38,7 +38,7 @@ package com.pubmatic.sdk.common.pubmatic;
 interface DeviceConstants {
 	
 	int mPubClientVersion = 1;
-	int mAdVisibility = 1;
+	int mAdVisibility = 0;
 
 	int mPubDeviceJavaScriptSupport = 1;
 	int mInIframe = 0;

@@ -4,7 +4,7 @@ package com.pubmatic.sdk.common;
 public class CommonConstants {
 
 	public static final String SDK_VERSION = "5.1.0";
-    public static final String SDK_VERSION_ID = "2";
+	public static final String SDK_VERSION_ID = "2";
 
 	public enum CONTENT_TYPE {
 		JSON, XML, URL_ENCODED, INVALID
@@ -18,14 +18,14 @@ public class CommonConstants {
 	public enum AD_REQUEST_TYPE {
 
 
-		 PUB_BANNER, PUB_NATIVE, PUB_INTERSTITIAL, PUB_RICH_MEDIA,
-		 PUB_PRIMARY_VIDEO, PUB_WRAPPER_VIDEO, PUB_PASSBACK_VIDEO,
-		  PHOENIX_BANNER, PHOENIX_NATIVE, PHOENIX_INTERSTITIAL,
-		  PHOENIX_RICH_MEDIA, PHOENIX_PRIMARY_VIDEO, PHOENIX_WRAPPER_VIDEO,
-		  PHOENIX_PASSBACK_VIDEO,
+		PUB_BANNER, PUB_NATIVE, PUB_INTERSTITIAL, PUB_RICH_MEDIA,
+		PUB_PRIMARY_VIDEO, PUB_WRAPPER_VIDEO, PUB_PASSBACK_VIDEO,
+		PHOENIX_BANNER, PHOENIX_NATIVE, PHOENIX_INTERSTITIAL,
+		PHOENIX_RICH_MEDIA, PHOENIX_PRIMARY_VIDEO, PHOENIX_WRAPPER_VIDEO,
+		PHOENIX_PASSBACK_VIDEO,
 
-		  MOCEAN_BANNER, MOCEAN_INTERSTITIAL, MOCEAN_RICH_MEDIA,
-		  MOCEAN_PRIMARY_VIDEO, MOCEAN_WRAPPER_VIDEO, MOCEAN_PASSBACK_VIDEO,
+		MOCEAN_BANNER, MOCEAN_INTERSTITIAL, MOCEAN_RICH_MEDIA,
+		MOCEAN_PRIMARY_VIDEO, MOCEAN_WRAPPER_VIDEO, MOCEAN_PASSBACK_VIDEO,
 
 		PUB_TRACKER, MOCEAN_NATIVE, MOCEAN_TRACKER,
 
@@ -45,7 +45,7 @@ public class CommonConstants {
 	// Common parameters for all platforms
 	public static final String xml_layout_attribute_logLevel 		= "logLevel";
 	public static final String xml_layout_attribute_channel 		= "channel";
-    public static final String xml_layout_attribute_update_interval = "updateInterval";
+	public static final String xml_layout_attribute_update_interval = "updateInterval";
 
 	// Phoenix specific parameters
 	public static final String REQUESTPARAM_AD_UNIT_ID 		= "adUnitId";
@@ -166,7 +166,6 @@ public class CommonConstants {
 	public static final String MOCEAN_AD_NETWORK_URL = "http://ads.moceanads.com/ad";
 	public static final String PHOENIX_AD_NETWORK_URL = "http://192.82.243.85:8090/ad";//http://ae.pubmatic.com/ad";
 	public static final String PUBMATIC_AD_NETWORK_URL = "http://showads.pubmatic.com/AdServer/AdServerServlet";
-    public static final String HEADER_BIDDING_HASO_URL = "http://haso.pubmatic.com/ads//9999/GRPBID/index.html";
 
 	public static final int INVALID_INT = -999;
 	public static final int AD_TAG_TYPE_VALUE = 13;
@@ -189,6 +188,10 @@ public class CommonConstants {
 
 	public static final String DEFAULTED_EXCREATIVES = "excreatives";
 	public static final String DEFAULTED_PUBMATIC_EXFEEDS = "pubmatic_exfeeds";
+
+	public static final String PASSBACK_KAD_NETWORK = "kadNetwork";
+	public static final String PASSBACK_CAMPAIGNS = "defcmpgIDs";
+	public static final String PASSBACK_LAST_DEFAULTED_NETWORK = "lastdefadnwkID";
 
 	/**
 	 * Enum to define the supported Mediation network.
