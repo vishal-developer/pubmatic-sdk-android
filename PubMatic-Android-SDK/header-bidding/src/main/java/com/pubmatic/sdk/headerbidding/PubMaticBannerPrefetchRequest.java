@@ -310,7 +310,12 @@ public class PubMaticBannerPrefetchRequest extends PubMaticBannerAdRequest {
             String networkType = PubMaticUtils.getNetworkType(mContext);
 
             if(networkType != null && !networkType.equals(""))
-                deviceJsonObject.put("connectiontype", networkType);
+            {
+                if(networkType.equalsIgnoreCase("wifi"))
+                    deviceJsonObject.put("connectiontype", 2);
+                else if(networkType.equalsIgnoreCase("cellular"))
+                    deviceJsonObject.put("connectiontype", 3);
+            }
 
             if(pubDeviceInformation.mCarrierName != null && !pubDeviceInformation.mCarrierName.equals(""))
                 deviceJsonObject.put("carrier", pubDeviceInformation.mCarrierName);
@@ -440,6 +445,9 @@ public class PubMaticBannerPrefetchRequest extends PubMaticBannerAdRequest {
             if(getIABCategory() != null && !getIABCategory().equals(""))
                 asJsonObject.put("cat", getIABCategory());
 
+            String networkType = PubMaticUtils.getNetworkType(mContext);
+            asJsonObject.put("nettype", networkType);
+
             extensionJsonObject.put("as", asJsonObject);
 
             extJsonObject.put("extension", extensionJsonObject);
@@ -457,12 +465,11 @@ public class PubMaticBannerPrefetchRequest extends PubMaticBannerAdRequest {
 
         try
         {
-            if (getYearOfBirth() != null && !getYearOfBirth().equals(""))
-                userJsonObject.put("yob", getYearOfBirth());
-
             if(getGender() != null && !getGender().equals(""))
                 userJsonObject.put("gender", getGender());
 
+            if (getYearOfBirth() != null && !getYearOfBirth().equals(""))
+                userJsonObject.put("yob", Integer.parseInt(getYearOfBirth()));
         } catch (JSONException e) {
             e.printStackTrace();
         }
