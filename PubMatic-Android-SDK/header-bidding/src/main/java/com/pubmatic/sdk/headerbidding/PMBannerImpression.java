@@ -8,23 +8,13 @@ import java.util.List;
 
 public class PMBannerImpression extends PMImpression {
 
-    private String id;
     private List<PMAdSize> adSizes;
     private boolean interstitial;
 
     public PMBannerImpression(String id, String adSlotId, List adSizes, int adSlotIndex)
     {
-        super(adSlotId, adSlotIndex);
-        this.id = id;
+        super(id, adSlotId, adSlotIndex);
         this.adSizes = adSizes;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public List<PMAdSize> getAdSizes() {
@@ -41,5 +31,17 @@ public class PMBannerImpression extends PMImpression {
 
     public void setInterstitial(boolean interstitial) {
         this.interstitial = interstitial;
+    }
+
+    protected boolean validate()
+    {
+        if(super.validate()) {
+            if (adSizes.size() == 0)
+                return false;
+        }
+        else
+            return false;
+
+        return true;
     }
 }

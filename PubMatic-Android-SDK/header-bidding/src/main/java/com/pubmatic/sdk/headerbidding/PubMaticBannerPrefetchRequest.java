@@ -36,13 +36,20 @@ public class PubMaticBannerPrefetchRequest extends PubMaticBannerAdRequest {
     private PubMaticBannerPrefetchRequest(Context context, String pubId, PMBannerImpression impression) {
         this(context);
         this.mPubId = pubId;
-        impressions.add(impression);
+
+        if(impression.validate())
+            impressions.add(impression);
     }
 
     private PubMaticBannerPrefetchRequest(Context context, String pubId, List<PMBannerImpression> impressions) {
         this(context);
         this.mPubId = pubId;
-        this.impressions.addAll(impressions);
+
+        for(PMBannerImpression impression : impressions)
+        {
+            if(impression.validate())
+                this.impressions.add(impression);
+        }
     }
 
     public static PubMaticBannerPrefetchRequest initHBRequestForImpression(Context context, String pubId, PMBannerImpression impression) {
@@ -408,7 +415,7 @@ public class PubMaticBannerPrefetchRequest extends PubMaticBannerAdRequest {
             asJsonObject.put("screenResolution", pubDeviceInformation.mDeviceScreenResolution);
             asJsonObject.put("adPosition", pubDeviceInformation.mAdPosition);
             asJsonObject.put("inIframe", String.valueOf(pubDeviceInformation.mInIframe));
-            asJsonObject.put("adVisibility", pubDeviceInformation.mAdVisibility);
+            asJsonObject.put("adVisibility", String.valueOf(pubDeviceInformation.mAdVisibility));
 
             if(getAWT() == AWT_OPTION.DEFAULT)
                 asJsonObject.put("awt", "0");
@@ -434,7 +441,7 @@ public class PubMaticBannerPrefetchRequest extends PubMaticBannerAdRequest {
             }
 
             if(getOrmmaComplianceLevel() >= 0)
-                asJsonObject.put("ormma", getOrmmaComplianceLevel());
+                asJsonObject.put("ormma", String.valueOf(getOrmmaComplianceLevel()));
 
             if(getEthnicity() != null && !getEthnicity().equals(""))
                 asJsonObject.put("ethn", getEthnicity());

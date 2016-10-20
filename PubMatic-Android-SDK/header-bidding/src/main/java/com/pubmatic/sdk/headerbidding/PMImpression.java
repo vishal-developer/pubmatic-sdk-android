@@ -11,14 +11,25 @@ import java.util.Map;
 
 public class PMImpression {
 
+    private String id;
     private String adSlotId;
     private int adSlotIndex;
     private Map<String, JSONArray> keyValue;
 
-    public PMImpression(String adSlotId, int adSlotIndex)
+    public PMImpression(String id, String adSlotId, int adSlotIndex)
     {
+        this.id = id;
         this.adSlotId = adSlotId;
         this.adSlotIndex = adSlotIndex;
+    }
+
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getAdSlotId() {
@@ -43,5 +54,18 @@ public class PMImpression {
 
     public void setKeyValue(Map<String, JSONArray> keyValue) {
         this.keyValue = keyValue;
+    }
+
+    protected boolean validate()
+    {
+        if(id == null || id.equals("")) {
+            return false;
+        }
+
+        if(adSlotId == null || adSlotId.equals("")) {
+            return false;
+        }
+
+        return true;
     }
 }

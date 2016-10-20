@@ -85,23 +85,30 @@ public class PubMaticPrefetchManager {
         adRequest.setSiteId("");
         adRequest.setAdId("");
 
+        if(validateHeaderBiddingRequest(adRequest))
+        {
+            adRequest.createRequest(context);
+
+            HttpRequest httpRequest = formatHeaderBiddingRequest(adRequest);
+            PMLogger.logEvent("Request Url : " + httpRequest.getRequestUrl() + "\n body : " + httpRequest.getPostData(),
+                    PMLogger.LogLevel.Debug);
+
+            HttpHandler requestProcessor = new HttpHandler(networkListener, httpRequest);
+
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            executor.execute(requestProcessor);
+        }
+    }
+
+    private boolean validateHeaderBiddingRequest(PubMaticBannerPrefetchRequest adRequest)
+    {
         if (adRequest.getImpressions().size() == 0) {
-            PMLogger.logEvent("Aborting. No impressions set for Header Bidding ad Request.",
-                    PMLogger.LogLevel.Error);
+            PMLogger.logEvent("No impressions found for Header Bidding Request.", PMLogger.LogLevel.Error);
             getPrefetchListener().onBidsFailed("No impressions found for Header Bidding Request.");
-            return;
+            return false;
         }
 
-        adRequest.createRequest(context);
-
-        HttpRequest httpRequest = formatHeaderBiddingRequest(adRequest);
-        PMLogger.logEvent("Request Url : " + httpRequest.getRequestUrl() + "\n body : " + httpRequest.getPostData(),
-                PMLogger.LogLevel.Debug);
-
-        HttpHandler requestProcessor = new HttpHandler(networkListener, httpRequest);
-
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(requestProcessor);
+        return true;
     }
 
     /**
