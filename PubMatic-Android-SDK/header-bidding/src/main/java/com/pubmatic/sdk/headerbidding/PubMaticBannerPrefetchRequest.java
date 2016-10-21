@@ -251,14 +251,18 @@ public class PubMaticBannerPrefetchRequest extends PubMaticBannerAdRequest {
             if(getStoreURL() != null && !getStoreURL().equals(""))
                 appJsonObject.put("storeurl", getStoreURL());
 
-            JSONArray catJsonArray = new JSONArray();
-            String[] appCategories = getIABCategory().split(",");
-            if(appCategories != null && appCategories.length > 0) {
-                for (int i = 0; i < appCategories.length; i++)
-                    catJsonArray.put(appCategories[i]);
-            }
+            if(getIABCategory() != null)
+            {
+                JSONArray catJsonArray = new JSONArray();
 
-            appJsonObject.put("cat", catJsonArray);
+                String[] appCategories = getIABCategory().split(",");
+                if(appCategories != null && appCategories.length > 0) {
+                    for (int i = 0; i < appCategories.length; i++)
+                        catJsonArray.put(appCategories[i]);
+                }
+
+                appJsonObject.put("cat", catJsonArray);
+            }
 
             appJsonObject.put("ver", pubDeviceInformation.mApplicationVersion);
 
