@@ -264,6 +264,8 @@ public class HeaderBiddingBannerAdapter {
         adRequest.setCountry("IN");
         adRequest.setCity("Pune");
         adRequest.setZip("411011");
+        adRequest.setCoppa(true);
+        adRequest.setOrmmaComplianceLevel(1);
 
         adRequest.setIABCategory("IAB1-1,IAB1-7");
 

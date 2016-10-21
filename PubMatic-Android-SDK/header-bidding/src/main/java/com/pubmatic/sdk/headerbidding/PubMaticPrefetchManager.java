@@ -166,8 +166,7 @@ public class PubMaticPrefetchManager {
             // Check if json contains the creative_tag and tracking_url.
             // If these are missing then the ad is invalid. Return null else
             // return valid adInfo object.
-            if (bid != null && !TextUtils.isEmpty(bid.getCreative())
-                    && !TextUtils.isEmpty(bid.getTrackingUrl())) {
+            if (bid != null && !TextUtils.isEmpty(bid.getCreative())) {
 
                 adInfo.put("content", URLDecoder.decode(bid.getCreative(), UTF8_CHARSET));
                 impressionTrackers.add( URLDecoder.decode(bid.getTrackingUrl(), UTF8_CHARSET));
@@ -282,7 +281,6 @@ public class PubMaticPrefetchManager {
                     bid.setTrackingUrl(extensionJsonObject.getString("trackingUrl"));
                     bid.setSlotName(extensionJsonObject.getString("slotname"));
                     bid.setSlotIndex(extensionJsonObject.getInt("slotindex"));
-                    bid.setGaId(extensionJsonObject.getInt("gaId"));
 
                     bidsMap.put(bid.getImpressionId(), bid);
                 } catch (JSONException e) {

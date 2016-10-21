@@ -15,6 +15,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -190,6 +191,13 @@ public class PubMaticBannerPrefetchRequest extends PubMaticBannerAdRequest {
                 }
 
                 bannerJsonObject.put("format", formatJsonArray);
+
+                JSONArray apiJsonArray = new JSONArray();
+                apiJsonArray.put(3);
+                apiJsonArray.put(4);
+                apiJsonArray.put(5);
+
+                bannerJsonObject.put("api", apiJsonArray);
 
                 // impression - banner
                 impressionJsonObject.put("banner", bannerJsonObject);
@@ -452,6 +460,8 @@ public class PubMaticBannerPrefetchRequest extends PubMaticBannerAdRequest {
             if(getIABCategory() != null && !getIABCategory().equals(""))
                 asJsonObject.put("cat", getIABCategory());
 
+            asJsonObject.put("api", URLEncoder.encode("3::4::5"));
+
             String networkType = PubMaticUtils.getNetworkType(mContext);
             asJsonObject.put("nettype", networkType);
 
@@ -477,7 +487,7 @@ public class PubMaticBannerPrefetchRequest extends PubMaticBannerAdRequest {
 
             if (getYearOfBirth() != null && !getYearOfBirth().equals(""))
                 userJsonObject.put("yob", Integer.parseInt(getYearOfBirth()));
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
