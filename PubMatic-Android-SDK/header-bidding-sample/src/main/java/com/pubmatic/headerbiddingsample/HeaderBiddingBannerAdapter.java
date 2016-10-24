@@ -226,14 +226,14 @@ public class HeaderBiddingBannerAdapter {
         PubMaticBannerPrefetchRequest adRequest;
 
         List<PMAdSize> adSizes = new ArrayList<>(1);
-        adSizes.add(new PMAdSize(300, 250));
+        adSizes.add(new PMAdSize(320, 50));
 
         PMBannerImpression pmBannerImpression = new PMBannerImpression("impression1", "DMDemo", adSizes, 1);
 
         List<PMAdSize> adSizes1 = new ArrayList<>(1);
-        adSizes1.add(new PMAdSize(728, 90));
+        adSizes1.add(new PMAdSize(320, 50));
 
-        PMBannerImpression pmBannerImpression1 = new PMBannerImpression("impression2", "DMDemo1", adSizes1, 1);
+        PMBannerImpression pmBannerImpression1 = new PMBannerImpression("impression2", "DMDemo2", adSizes1, 1);
 
         List<PMAdSize> adSizes2 = new ArrayList<>(1);
         adSizes2.add(new PMAdSize(320, 50));
@@ -246,7 +246,7 @@ public class HeaderBiddingBannerAdapter {
         bannerImpressions.add(pmBannerImpression2);
 
         //adRequest = PubMaticBannerPrefetchRequest.initHBRequestForImpression(this, "5890", bannerImpressions);
-        adRequest = PubMaticBannerPrefetchRequest.initHBRequestForImpression(mContext, "46499", bannerImpressions);
+        adRequest = PubMaticBannerPrefetchRequest.initHBRequestForImpression(mContext, "31400", bannerImpressions);
 
         adRequest.setStoreURL("http://www.financialexpress.com");
         adRequest.setAppDomain("www.financialexpress.com");
@@ -259,7 +259,7 @@ public class HeaderBiddingBannerAdapter {
 
         adRequest.setYearOfBirth("1989");
         adRequest.setGender("M");
-        
+
         adRequest.setCity("Pune");
         adRequest.setZip("411011");
         adRequest.setCoppa(true);

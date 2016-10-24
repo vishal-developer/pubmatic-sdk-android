@@ -202,7 +202,7 @@ public class PubMaticBannerPrefetchRequest extends PubMaticBannerAdRequest {
                 impressionJsonObject.put("banner", bannerJsonObject);
 
                 if(impression.isInterstitial())
-                    impressionJsonObject.put("instl", true);
+                    impressionJsonObject.put("instl", 1);
 
                 JSONObject extJsonObject = new JSONObject();
 

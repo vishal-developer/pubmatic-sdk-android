@@ -258,7 +258,8 @@ public class HeaderBiddingInterstitialAdapter {
         PubMaticBannerPrefetchRequest adRequest;
 
         List<PMAdSize> adSizes = new ArrayList<>(1);
-        adSizes.add(new PMAdSize(measuredWidth, measuredHeight));
+        //adSizes.add(new PMAdSize(measuredWidth, measuredHeight));
+        adSizes.add(new PMAdSize(320, 480));
 
         PMBannerImpression pmBannerImpression = new PMBannerImpression("impression1", "DMDemo", adSizes, 1);
         pmBannerImpression.setInterstitial(true);
@@ -266,7 +267,7 @@ public class HeaderBiddingInterstitialAdapter {
         List<PMBannerImpression> bannerImpressions = new ArrayList<>();
         bannerImpressions.add(pmBannerImpression);
 
-        adRequest = PubMaticBannerPrefetchRequest.initHBRequestForImpression(mContext, "5890", bannerImpressions);
+        adRequest = PubMaticBannerPrefetchRequest.initHBRequestForImpression(mContext, "31400", bannerImpressions);
 
         return adRequest;
     }
