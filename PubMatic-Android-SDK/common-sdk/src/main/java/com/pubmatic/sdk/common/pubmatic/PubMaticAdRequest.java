@@ -467,10 +467,6 @@ public abstract class PubMaticAdRequest extends AdRequest {
         return mCountry;
     }
 
-    public void setCountry(String mCountry) {
-        this.mCountry = mCountry;
-    }
-
     /**
      *
      * @return
@@ -739,10 +735,6 @@ public abstract class PubMaticAdRequest extends AdRequest {
 
     public String getAppName() {
         return mAppName;
-    }
-
-    public void setAppName(String mAppName) {
-        this.mAppName = mAppName;
     }
 
     public String getStoreURL() {

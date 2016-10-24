@@ -248,7 +248,6 @@ public class HeaderBiddingBannerAdapter {
         //adRequest = PubMaticBannerPrefetchRequest.initHBRequestForImpression(this, "5890", bannerImpressions);
         adRequest = PubMaticBannerPrefetchRequest.initHBRequestForImpression(mContext, "46499", bannerImpressions);
 
-        adRequest.setAppName("Header Bidding Sample");
         adRequest.setStoreURL("http://www.financialexpress.com");
         adRequest.setAppDomain("www.financialexpress.com");
         adRequest.isApplicationPaid(true);
@@ -260,8 +259,7 @@ public class HeaderBiddingBannerAdapter {
 
         adRequest.setYearOfBirth("1989");
         adRequest.setGender("M");
-
-        adRequest.setCountry("IN");
+        
         adRequest.setCity("Pune");
         adRequest.setZip("411011");
         adRequest.setCoppa(true);

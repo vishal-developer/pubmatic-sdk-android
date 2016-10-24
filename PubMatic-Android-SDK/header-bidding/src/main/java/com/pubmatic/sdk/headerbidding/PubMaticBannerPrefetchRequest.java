@@ -234,11 +234,7 @@ public class PubMaticBannerPrefetchRequest extends PubMaticBannerAdRequest {
 
         try
         {
-            appJsonObject.put("id", "");
-
-            if(getAppName() != null && !getAppName().equals(""))
-                appJsonObject.put("name", getAppName());
-            else
+            if(pubDeviceInformation.mApplicationName != null && !pubDeviceInformation.mApplicationName.equals(""))
                 appJsonObject.put("name", pubDeviceInformation.mApplicationName);
 
             if(pubDeviceInformation.mPackageName != null && !pubDeviceInformation.mPackageName.equals(""))
