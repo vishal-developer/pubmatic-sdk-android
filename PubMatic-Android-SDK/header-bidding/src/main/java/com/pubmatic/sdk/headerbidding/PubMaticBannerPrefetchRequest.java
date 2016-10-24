@@ -135,7 +135,6 @@ public class PubMaticBannerPrefetchRequest extends PubMaticBannerAdRequest {
 
             parentJsonObject.put("cur", getCurrencyJson());
             parentJsonObject.put("imp", getImpressionJson());
-            parentJsonObject.put("site", getSiteJson());
             parentJsonObject.put("app", getAppJson());
             parentJsonObject.put("device", getDeviceObject());
             parentJsonObject.put("user", getUserJson());
@@ -281,29 +280,6 @@ public class PubMaticBannerPrefetchRequest extends PubMaticBannerAdRequest {
         }
 
         return appJsonObject;
-    }
-
-    private JSONObject getSiteJson()
-    {
-        JSONObject siteJsonObject = new JSONObject();
-
-        PUBDeviceInformation pubDeviceInformation = PUBDeviceInformation.getInstance(mContext);
-
-        try
-        {
-            siteJsonObject.put("domain", getAppDomain());
-            siteJsonObject.put("page", "http://172.16.4.36/ssWrapperTest.html");
-
-            JSONObject publisherJsonObject = new JSONObject();
-            publisherJsonObject.put("id", getPubId());
-
-            siteJsonObject.put("publisher", publisherJsonObject);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return siteJsonObject;
     }
 
     private JSONObject getDeviceObject()
@@ -458,7 +434,7 @@ public class PubMaticBannerPrefetchRequest extends PubMaticBannerAdRequest {
             if(getEthnicity() != null && !getEthnicity().equals(""))
                 asJsonObject.put("ethn", getEthnicity());
 
-            if(getKeywordString() != null && !getKeywordString().equals(""))
+            if(mKeywordsList != null && !mKeywordsList.isEmpty())
                 asJsonObject.put("keywords", getKeywordString());
 
             if(getIABCategory() != null && !getIABCategory().equals(""))

@@ -410,7 +410,7 @@ public abstract class PubMaticAdRequest extends AdRequest {
     private String mState = null;
     private String mYearOfBirth = null;
     private String mIncome = null;
-    private ArrayList<String> mKeywordsList = null;
+    protected ArrayList<String> mKeywordsList = null;
 
     // PubMatic Passback params
     private String mKAdNetworkId;
@@ -541,7 +541,8 @@ public abstract class PubMaticAdRequest extends AdRequest {
             mKeywordsList = new ArrayList<String>();
         }
 
-        mKeywordsList.add(keyword);
+        if(keyword != null && !keyword.equals(""))
+            mKeywordsList.add(keyword);
     }
 
     /**
@@ -569,20 +570,18 @@ public abstract class PubMaticAdRequest extends AdRequest {
      */
     public String getKeywordString() {
 
-        if (mKeywordsList != null && !mKeywordsList.isEmpty()) {
-            StringBuffer keywordStringBuffer = null;
+        StringBuffer keywordStringBuffer = new StringBuffer();
 
-            for (String keyword : mKeywordsList) {
-                if (keywordStringBuffer == null) {
-                    keywordStringBuffer = new StringBuffer(keyword);
-                } else {
-                    keywordStringBuffer.append("," + keyword);
-                }
-            }
-            return keywordStringBuffer.toString();
+        if (mKeywordsList != null && !mKeywordsList.isEmpty()) {
+
+            for (String keyword : mKeywordsList)
+                keywordStringBuffer.append(keyword + ",");
+
         }
 
-        return null;
+        keywordStringBuffer.setLength(keywordStringBuffer.length() - 1);
+
+        return keywordStringBuffer.toString();
     }
     /**
      *
