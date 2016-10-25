@@ -29,7 +29,7 @@ package com.moceanmobile.mast;
 
 public class Defaults {
 
-	public static final String SDK_VERSION = "4.5.0";
+	public static final String SDK_VERSION = "4.5.1";
 
 	// This is used if the WebView's value returned is empty.
 	public static final String USER_AGENT = "MASTAdView/" + SDK_VERSION
@@ -47,11 +47,14 @@ public class Defaults {
 	public static final int DESCRIPTOR_THIRD_PARTY_VALIDATOR_LENGTH = 20;
 
 	public static final String AD_NETWORK_URL = "http://ads.moceanads.com/ad";
+	
+	public static final String DISABLE_FAV_ICON = "<link rel=\"shortcut icon\" href=\"data:image/x-icon;,\" type=\"image/x-icon\">";
 
 	// Default injection HTML rich media ads.
 	// IMPORTANT: This string have specific format specifiers (%s).
 	// Improper modification to this string can cause ad rendering failures.
-	public static final String RICHMEDIA_FORMAT = "<html><head><meta name=\"viewport\" content=\"user-scalable=0\"/><style>body{margin:0;padding:0;}</style><script type=\"text/javascript\">%s</script></head><body><div align=\"center\">%s</div></body></html>";
+	public static final String RICHMEDIA_FORMAT = "<html><head>" + DISABLE_FAV_ICON 
+			+ "<meta name=\"viewport\" content=\"user-scalable=0\"/><style>body{margin:0;padding:0;}</style><script type=\"text/javascript\">%s</script></head><body><div align=\"center\">%s</div></body></html>";
 
 	// Defaults for native ad serving
 	public static final String NATIVE_REQUEST_COUNT = "1";

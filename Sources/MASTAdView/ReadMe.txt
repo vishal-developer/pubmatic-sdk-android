@@ -243,3 +243,9 @@ Enabled multi-pixel tracking for SDK.
 -------
 
 - Handled the SSL error callback in case of any untrusted web page load inside the internal browser of SDK.
+
+-------
+4.5.1
+-------
+
+- Disabled the call to /favicon.ico to avoid the extra payload.
