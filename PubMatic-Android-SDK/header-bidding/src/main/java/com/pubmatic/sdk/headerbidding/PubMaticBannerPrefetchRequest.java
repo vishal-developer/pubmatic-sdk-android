@@ -311,6 +311,8 @@ public class PubMaticBannerPrefetchRequest extends PubMaticBannerAdRequest {
                         deviceJsonObject.put("ifa", adInfo.getId());
                     }
                 }
+                else
+                    deviceJsonObject.put("dnt", 1);
             }
 
             String networkType = PubMaticUtils.getNetworkType(mContext);
