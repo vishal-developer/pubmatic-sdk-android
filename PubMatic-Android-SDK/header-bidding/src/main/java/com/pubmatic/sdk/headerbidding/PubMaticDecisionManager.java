@@ -34,7 +34,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
-public class PubMaticPrefetchManager {
+public class PubMaticDecisionManager {
 
     private Context mContext;
     private String userAgent;
@@ -66,7 +66,7 @@ public class PubMaticPrefetchManager {
 
     private PrefetchListener preFetchListener;
 
-    public PubMaticPrefetchManager(Context context) {
+    public PubMaticDecisionManager(Context context) {
         mContext = context;
         userAgent = new WebView(context).getSettings().getUserAgentString();
     }

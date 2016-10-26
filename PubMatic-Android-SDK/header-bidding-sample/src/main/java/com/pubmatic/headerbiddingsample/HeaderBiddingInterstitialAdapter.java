@@ -21,7 +21,7 @@ import com.pubmatic.sdk.headerbidding.PMAdSize;
 import com.pubmatic.sdk.headerbidding.PMBid;
 import com.pubmatic.sdk.headerbidding.PMBannerImpression;
 import com.pubmatic.sdk.headerbidding.PubMaticBannerPrefetchRequest;
-import com.pubmatic.sdk.headerbidding.PubMaticPrefetchManager;
+import com.pubmatic.sdk.headerbidding.PubMaticDecisionManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,7 +45,7 @@ public class HeaderBiddingInterstitialAdapter {
 
     private Context mContext;
     private Set<PublisherAdView> adViews = new HashSet<>();
-    private PubMaticPrefetchManager headerBiddingManager;
+    private PubMaticDecisionManager headerBiddingManager;
     private HashMap<String, PublisherInterstitialAd> adSlotAdViewMap = new HashMap<>();
 
     private static final String TAG = "HeaderBiddingInterstitialAdapter";
@@ -67,7 +67,7 @@ public class HeaderBiddingInterstitialAdapter {
 
     private void requestPubMaticHeaderBidding()
     {
-        PubMaticPrefetchManager.PrefetchListener listener = new PubMaticPrefetchManager.PrefetchListener() {
+        PubMaticDecisionManager.PrefetchListener listener = new PubMaticDecisionManager.PrefetchListener() {
             @Override
             public void onBidsFetched(Map<String, PMBid> hBResponse) {
                 Log.d(TAG, "onBidsFetched");
@@ -85,8 +85,8 @@ public class HeaderBiddingInterstitialAdapter {
             }
         };
 
-        // Create instance of PubMaticPrefetchManager and set listener for bidding status.
-        headerBiddingManager = new PubMaticPrefetchManager(mContext);
+        // Create instance of PubMaticDecisionManager and set listener for bidding status.
+        headerBiddingManager = new PubMaticDecisionManager(mContext);
         headerBiddingManager.setPrefetchListener(listener);
 
         //Create Pubmatic adRequest for header bidding call with single impression or a Set of impressions.

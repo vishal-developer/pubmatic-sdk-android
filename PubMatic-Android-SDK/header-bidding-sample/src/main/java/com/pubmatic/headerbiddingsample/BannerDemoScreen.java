@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.google.android.gms.ads.doubleclick.PublisherAdView;
-import com.pubmatic.sdk.headerbidding.PubMaticPrefetchManager;
+import com.pubmatic.sdk.headerbidding.PubMaticDecisionManager;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,7 +17,7 @@ public class BannerDemoScreen extends AppCompatActivity {
 
     private HashMap<String, PublisherAdView> adSlotAdViewMap = new HashMap<>();
 
-    private PubMaticPrefetchManager headerBiddingManager;
+    private PubMaticDecisionManager headerBiddingManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
