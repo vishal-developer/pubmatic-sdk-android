@@ -255,7 +255,8 @@ public class HeaderBiddingBannerAdapter {
         adRequest.setPMZoneId("1");
         adRequest.addKeyword("entertainment");
         adRequest.addKeyword("sports");
-        adRequest.setEthnicity("ethnicity");
+        adRequest.setEthnicity("1");
+        adRequest.setIncome("income");
 
         adRequest.setYearOfBirth("1989");
         adRequest.setGender("M");

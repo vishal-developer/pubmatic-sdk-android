@@ -440,14 +440,17 @@ public class PubMaticBannerPrefetchRequest extends PubMaticBannerAdRequest {
                         asJsonObject.put(PubMaticConstants.UDID_TYPE_PARAM, String.valueOf(3)); //3 - Android ID
                         asJsonObject.put(PubMaticConstants.UDID_HASH_PARAM, String.valueOf(2)); //2 - SHA1
                     }
+
+                    if(getEthnicity() != null && !getEthnicity().equals(""))
+                        asJsonObject.put("ethn", getEthnicity());
+
+                    if(getIncome() != null && !getIncome().equals(""))
+                        asJsonObject.put("inc", getIncome());
                 }
             }
 
             if(getOrmmaComplianceLevel() >= 0)
                 asJsonObject.put("ormma", String.valueOf(getOrmmaComplianceLevel()));
-
-            if(getEthnicity() != null && !getEthnicity().equals(""))
-                asJsonObject.put("ethn", getEthnicity());
 
             if(mKeywordsList != null && !mKeywordsList.isEmpty())
                 asJsonObject.put("keywords", getKeywordString());
