@@ -126,6 +126,8 @@ public class PubMaticBannerPrefetchRequest extends PubMaticBannerAdRequest {
     {
         JSONObject parentJsonObject = new JSONObject();
 
+        AdvertisingIdClient.AdInfo adInfo = AdvertisingIdClient.refreshAdvertisingInfo(mContext);
+
         try
         {
             long randomNumber = (long) (Math.random() * 10000000000l);
@@ -139,7 +141,10 @@ public class PubMaticBannerPrefetchRequest extends PubMaticBannerAdRequest {
             parentJsonObject.put("device", getDeviceObject());
 
             if(!isDoNotTrack())
-                parentJsonObject.put("user", getUserJson());
+            {
+                if(!AdvertisingIdClient.getLimitedAdTrackingState(mContext, false))
+                    parentJsonObject.put("user", getUserJson());
+            }
 
             parentJsonObject.put("regs", getRegsJson());
             parentJsonObject.put("ext", getExtJson());
@@ -295,11 +300,16 @@ public class PubMaticBannerPrefetchRequest extends PubMaticBannerAdRequest {
                 deviceJsonObject.put("dnt", 1);
             }
             else {
-                deviceJsonObject.put("dnt", 0);
 
                 AdvertisingIdClient.AdInfo adInfo = AdvertisingIdClient.refreshAdvertisingInfo(mContext);
-                if (isAndoridAidEnabled() && !TextUtils.isEmpty(adInfo.getId())) {
-                    deviceJsonObject.put("ifa", adInfo.getId());
+
+                if(!AdvertisingIdClient.getLimitedAdTrackingState(mContext, false))
+                {
+                    deviceJsonObject.put("dnt", 0);
+
+                    if (isAndoridAidEnabled() && !TextUtils.isEmpty(adInfo.getId())) {
+                        deviceJsonObject.put("ifa", adInfo.getId());
+                    }
                 }
             }
 
@@ -418,15 +428,18 @@ public class PubMaticBannerPrefetchRequest extends PubMaticBannerAdRequest {
 
             if(!isDoNotTrack()) {
                 AdvertisingIdClient.AdInfo adInfo = AdvertisingIdClient.refreshAdvertisingInfo(mContext);
-                if (isAndoridAidEnabled() && !TextUtils.isEmpty(adInfo.getId())) {
-                    asJsonObject.put(PubMaticConstants.UDID_PARAM, adInfo.getId());
-                    asJsonObject.put(PubMaticConstants.UDID_TYPE_PARAM, String.valueOf(9)); //9 - Android Advertising ID
-                    asJsonObject.put(PubMaticConstants.UDID_HASH_PARAM, String.valueOf(0)); //0 - raw udid
-                } else if (mContext != null) {
-                    //Send Android ID
-                    asJsonObject.put(PubMaticConstants.UDID_PARAM, PubMaticUtils.sha1(PubMaticUtils.getUdidFromContext(mContext)));
-                    asJsonObject.put(PubMaticConstants.UDID_TYPE_PARAM, String.valueOf(3)); //3 - Android ID
-                    asJsonObject.put(PubMaticConstants.UDID_HASH_PARAM, String.valueOf(2)); //2 - SHA1
+
+                if(!AdvertisingIdClient.getLimitedAdTrackingState(mContext, false)) {
+                    if (isAndoridAidEnabled() && !TextUtils.isEmpty(adInfo.getId())) {
+                        asJsonObject.put(PubMaticConstants.UDID_PARAM, adInfo.getId());
+                        asJsonObject.put(PubMaticConstants.UDID_TYPE_PARAM, String.valueOf(9)); //9 - Android Advertising ID
+                        asJsonObject.put(PubMaticConstants.UDID_HASH_PARAM, String.valueOf(0)); //0 - raw udid
+                    } else if (mContext != null) {
+                        //Send Android ID
+                        asJsonObject.put(PubMaticConstants.UDID_PARAM, PubMaticUtils.sha1(PubMaticUtils.getUdidFromContext(mContext)));
+                        asJsonObject.put(PubMaticConstants.UDID_TYPE_PARAM, String.valueOf(3)); //3 - Android ID
+                        asJsonObject.put(PubMaticConstants.UDID_HASH_PARAM, String.valueOf(2)); //2 - SHA1
+                    }
                 }
             }
 
