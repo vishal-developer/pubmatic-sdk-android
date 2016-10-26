@@ -162,7 +162,7 @@ public abstract class AdRequest {
 	}
 
 	// androidAid
-	private boolean isAndroidAidEnabled;
+	private boolean isAndroidAidEnabled= true;
 
 	/**
 	 * add androidaid as request param.
