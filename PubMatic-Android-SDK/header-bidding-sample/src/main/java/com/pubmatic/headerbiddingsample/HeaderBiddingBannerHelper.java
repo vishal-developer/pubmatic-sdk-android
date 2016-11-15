@@ -13,13 +13,12 @@ import com.google.android.gms.ads.doubleclick.PublisherAdView;
 import com.pubmatic.sdk.banner.PMBannerAdView;
 import com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest;
 import com.pubmatic.sdk.headerbidding.PMAdSize;
+import com.pubmatic.sdk.headerbidding.PMBannerPrefetchRequest;
 import com.pubmatic.sdk.headerbidding.PMBid;
 import com.pubmatic.sdk.headerbidding.PMBannerImpression;
-import com.pubmatic.sdk.headerbidding.PubMaticBannerPrefetchRequest;
-import com.pubmatic.sdk.headerbidding.PubMaticDecisionManager;
+import com.pubmatic.sdk.headerbidding.PMPrefetchManager;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -28,38 +27,61 @@ import java.util.Set;
 /**
  * Created by Sagar on 10/12/2016.
  */
-public class HeaderBiddingBannerAdapter {
+public class HeaderBiddingBannerHelper {
 
-    private static final String BID = "bid";
-    private static final String BID_ID = "bidid";
-    private static final String BID_STATUS = "bidstatus";
-    private static final String PUBMATIC_WIN_KEY = "pubmaticdm";
+    public static final class AdSlotInfo {
 
-    private Context mContext;
-    private Set<PublisherAdView> adViews = new HashSet<>();
-    private PubMaticDecisionManager headerBiddingManager;
-    private HashMap<String, PublisherAdView> adSlotAdViewMap = new HashMap<>();
+        private String           slotName;
+        private List<PMAdSize>   adSizes;
+        private PublisherAdView  adView;
 
-    private static final String TAG = "HeaderBiddingBannerAdapter";
+        public AdSlotInfo(String slotName, List<PMAdSize> adSizes, PublisherAdView adView) {
+            this.slotName = slotName;
+            this.adSizes  = adSizes;
+            this.adView   = adView;
+        }
 
-    public HeaderBiddingBannerAdapter(Context context, HashMap<String, PublisherAdView> adSlotAdViewMap)
-    {
-        mContext = context;
-        this.adSlotAdViewMap = adSlotAdViewMap;
+        public String getSlotName() {
+            return slotName;
+        }
+
+        public List<PMAdSize> getAdSizes() {
+            return adSizes;
+        }
+
+        public PublisherAdView getAdView() {
+            return adView;
+        }
+    }
+
+    private static final String BID                 = "bid";
+    private static final String BID_ID              = "bidid";
+    private static final String BID_STATUS          = "bidstatus";
+    private static final String PUBMATIC_WIN_KEY    = "pubmaticdm";
+
+    private Context                   mContext;
+    private PMPrefetchManager         pmPrefetchManager;
+    private List<AdSlotInfo>          adSlotInfoList;
+
+    private static final String       TAG = "HeaderBiddingBannerHelper";
+
+    public HeaderBiddingBannerHelper(Context context, List<AdSlotInfo> adSlotInfoList) {
+        this.mContext        = context;
+        this.adSlotInfoList = adSlotInfoList;
     }
 
     public void execute()
     {
         //Normal ad Events listener for DFP calls.
-        registerAdListener(adSlotAdViewMap);
-        registerListenerForPublisherAdView(adSlotAdViewMap);
+        registerAdListener(adSlotInfoList);
+        registerListenerForPublisherAdView(adSlotInfoList);
 
         requestPubMaticHeaderBidding();
     }
 
     private void requestPubMaticHeaderBidding()
     {
-        PubMaticDecisionManager.PrefetchListener listener = new PubMaticDecisionManager.PrefetchListener() {
+        PMPrefetchManager.PMPrefetchListener listener = new PMPrefetchManager.PMPrefetchListener() {
             @Override
             public void onBidsFetched(Map<String, PMBid> hBResponse) {
                 Log.d(TAG, "onBidsFetched");
@@ -77,17 +99,23 @@ public class HeaderBiddingBannerAdapter {
             }
         };
 
-        // Create instance of PubMaticDecisionManager and set listener for bidding status.
-        headerBiddingManager = new PubMaticDecisionManager(mContext);
-        headerBiddingManager.setPrefetchListener(listener);
+        // Create instance of PMPrefetchManager and set listener for bidding status.
+        pmPrefetchManager = new PMPrefetchManager(mContext, listener);
 
         //Create Pubmatic adRequest for header bidding call with single impression or a Set of impressions.
-        PubMaticBannerPrefetchRequest bannerHeaderBiddingAdRequest = getHeaderBiddingBannerAdRequest();
+        PMBannerPrefetchRequest bannerHeaderBiddingAdRequest = getHeaderBiddingBannerAdRequest();
 
-        /*
-        Set any targeting params on the adRequest instance.
-        */
-        headerBiddingManager.executeHeaderBiddingRequest(mContext, bannerHeaderBiddingAdRequest);
+        //Set any targeting params on the adRequest instance.
+        pmPrefetchManager.prefetchCreatives(bannerHeaderBiddingAdRequest);
+    }
+
+    /**
+     * Returns the unique id against the PublisherAdView. It is being used as a ImpressionId.
+     * @param adView
+     * @return Returns id of hash value against given PublisherAdView
+     */
+    private String getUniqueIdForView(final PublisherAdView adView) {
+        return String.valueOf(System.identityHashCode(adView));
     }
 
     /**
@@ -103,13 +131,15 @@ public class HeaderBiddingBannerAdapter {
                               Set<PublisherAdView> adViewsSet = getAdViewsSet();
 
                               if (hBResponse != null) {
-                                  // Loop over all those publisherAdViews that participated in Header Bidding i.e. have a valid adSlotId mapped to them.
-                                  for (Map.Entry<String, PublisherAdView> entry : adSlotAdViewMap.entrySet()) {
-                                      publisherAdView = entry.getValue();
+                                  // Loop over all those publisherAdViews that participated in Header Bidding i.e. have a valid impressionId mapped to them.
+                                  for (AdSlotInfo adSlotInfo : adSlotInfoList) {
+                                      publisherAdView = adSlotInfo.adView;
 
                                       try {
-                                          String adSlot = entry.getKey();
-                                          PMBid pubResponse = hBResponse.get(adSlot);
+                                          String impressionId = getUniqueIdForView(adSlotInfo.adView);
+
+                                          //Fetch the winning bid details for the impressionId & send to DFP
+                                          PMBid pubResponse = hBResponse.get(impressionId);
 
                                           if(pubResponse != null) {
                                               adRequest = new PublisherAdRequest.Builder().addCustomTargeting(BID_ID, pubResponse.getImpressionId())
@@ -130,9 +160,11 @@ public class HeaderBiddingBannerAdapter {
                                           }
                                       } catch (Exception ex) {
                                           // Do nothing. This view will send normal adRequest later.
+                                          Log.e(TAG, "Error while sending request to DFP :: " + ex.toString());
                                       }
                                   }
                               }
+
                               // Send Ad Request for the remaining adViews.
                               for (PublisherAdView ad : adViewsSet) {
                                   adRequest = new PublisherAdRequest.Builder().build();
@@ -143,28 +175,90 @@ public class HeaderBiddingBannerAdapter {
         );
     }
 
-    public Set<PublisherAdView> getAdViewsSet() {
+    private Set<PublisherAdView> getAdViewsSet() {
 
         Set<PublisherAdView> adViewSet = new HashSet<>();
 
-        for(Map.Entry<String, PublisherAdView> entry : adSlotAdViewMap.entrySet())
+        if(adSlotInfoList != null)
         {
-            PublisherAdView adView = entry.getValue();
-            adViewSet.add(adView);
+            for (AdSlotInfo adSlotInfo : adSlotInfoList)
+            {
+                adViewSet.add(adSlotInfo.adView);
+            }
         }
 
         return adViewSet;
     }
 
-    private void registerAdListener(HashMap<String, PublisherAdView> adSlotAdViewMap) {
+    private void registerAdListener(List<AdSlotInfo> adSlotInfoList) {
 
-        for(Map.Entry<String, PublisherAdView> entry : adSlotAdViewMap.entrySet())
+        for(AdSlotInfo adSlotInfo : adSlotInfoList)
         {
-            PublisherAdView adView = entry.getValue();
-
-            if (adView != null)
-                adView.setAdListener(new DfpAdListener());
+            if (adSlotInfo!=null && adSlotInfo.adView != null)
+                adSlotInfo.adView.setAdListener(new DfpAdListener());
         }
+    }
+
+    private void registerListenerForPublisherAdView(final List<AdSlotInfo> adSlotInfoList) {
+
+        for(final AdSlotInfo adSlotInfo : adSlotInfoList)
+        {
+            if (adSlotInfo!=null && adSlotInfo.adView != null)
+            {
+                adSlotInfo.adView.setAppEventListener(new AppEventListener() {
+                    @Override
+                    public void onAppEvent(String key, final String impressionId) {
+                        Log.d(TAG, "AppEvent Key:" + key + " AdSlotId:" + impressionId);
+
+                        if (TextUtils.equals(key, PUBMATIC_WIN_KEY)) {
+
+                            //Display PubMatic Cached Ad
+                            PMBannerAdView pmView = pmPrefetchManager.getRenderedPubMaticAd(mContext, impressionId, adSlotInfo.adView);
+
+                            //Replace view with pubmatic Adview.
+                            ViewGroup parent = (ViewGroup) adSlotInfo.adView.getParent();
+                            if (parent != null) {
+                                parent.addView(pmView, adSlotInfo.adView.getLayoutParams());
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    }
+
+    private PMBannerPrefetchRequest getHeaderBiddingBannerAdRequest()
+    {
+        PMBannerPrefetchRequest adRequest;
+
+        List<PMBannerImpression> bannerImpressions = new ArrayList<>();
+        for(AdSlotInfo adSlotInfo : adSlotInfoList) {
+            bannerImpressions.add(new PMBannerImpression(getUniqueIdForView(adSlotInfo.adView), adSlotInfo.slotName, adSlotInfo.adSizes, 1));
+        }
+
+        adRequest = PMBannerPrefetchRequest.initHBRequestForImpression(mContext, "31400", bannerImpressions);
+
+        adRequest.setStoreURL("http://www.financialexpress.com");
+        adRequest.setAppDomain("www.financialexpress.com");
+        adRequest.isApplicationPaid(true);
+        adRequest.setAWT(PubMaticAdRequest.AWT_OPTION.WRAPPED_IN_IFRAME);
+        adRequest.setPMZoneId("1");
+        adRequest.addKeyword("entertainment");
+        adRequest.addKeyword("sports");
+        adRequest.setEthnicity("1");
+        adRequest.setIncome("income");
+
+        adRequest.setYearOfBirth("1989");
+        adRequest.setGender("M");
+
+        adRequest.setCity("Pune");
+        adRequest.setZip("411011");
+        adRequest.setCoppa(true);
+        adRequest.setOrmmaComplianceLevel(1);
+
+        adRequest.setIABCategory("IAB1-1,IAB1-7");
+
+        return adRequest;
     }
 
     class DfpAdListener extends AdListener {
@@ -189,85 +283,4 @@ public class HeaderBiddingBannerAdapter {
         }
     }
 
-    private void registerListenerForPublisherAdView(final HashMap<String, PublisherAdView> adSlotAdViewMap) {
-
-        for(Map.Entry<String, PublisherAdView> entry : adSlotAdViewMap.entrySet())
-        {
-            final PublisherAdView publisherAdView = entry.getValue();
-
-            if (publisherAdView != null)
-            {
-                publisherAdView.setAppEventListener(new AppEventListener() {
-                    @Override
-                    public void onAppEvent(String key, final String adSlotId) {
-                        Log.d(TAG, "onAppEvent() Key: " + key + " AdSlotId: " + adSlotId);
-
-                        if (TextUtils.equals(key, PUBMATIC_WIN_KEY)) {
-
-                            //Display PubMatic Cached Ad
-                            PMBannerAdView pmView = headerBiddingManager.getRenderedPubMaticAd(mContext, adSlotId, publisherAdView);
-
-                            //Replace view with pubmatic Adview.
-                            ViewGroup parent = (ViewGroup) publisherAdView.getParent();
-                            if (parent != null) {
-                                parent.addView(pmView, publisherAdView.getLayoutParams());
-                            }
-
-                            adSlotAdViewMap.remove(adSlotId);
-                        }
-                    }
-                });
-            }
-        }
-    }
-
-    private PubMaticBannerPrefetchRequest getHeaderBiddingBannerAdRequest()
-    {
-        PubMaticBannerPrefetchRequest adRequest;
-
-        List<PMAdSize> adSizes = new ArrayList<>(1);
-        adSizes.add(new PMAdSize(320, 50));
-
-        PMBannerImpression pmBannerImpression = new PMBannerImpression("impression1", "DMDemo", adSizes, 1);
-
-        List<PMAdSize> adSizes1 = new ArrayList<>(1);
-        adSizes1.add(new PMAdSize(320, 50));
-
-        PMBannerImpression pmBannerImpression1 = new PMBannerImpression("impression2", "DMDemo2", adSizes1, 1);
-
-        List<PMAdSize> adSizes2 = new ArrayList<>(1);
-        adSizes2.add(new PMAdSize(320, 50));
-
-        PMBannerImpression pmBannerImpression2 = new PMBannerImpression("impression3", "WDemo", adSizes2, 1);
-
-        List<PMBannerImpression> bannerImpressions = new ArrayList<>();
-        bannerImpressions.add(pmBannerImpression);
-        bannerImpressions.add(pmBannerImpression1);
-        bannerImpressions.add(pmBannerImpression2);
-
-        //adRequest = PubMaticBannerPrefetchRequest.initHBRequestForImpression(this, "5890", bannerImpressions);
-        adRequest = PubMaticBannerPrefetchRequest.initHBRequestForImpression(mContext, "31400", bannerImpressions);
-
-        adRequest.setStoreURL("http://www.financialexpress.com");
-        adRequest.setAppDomain("www.financialexpress.com");
-        adRequest.isApplicationPaid(true);
-        adRequest.setAWT(PubMaticAdRequest.AWT_OPTION.WRAPPED_IN_IFRAME);
-        adRequest.setPMZoneId("1");
-        adRequest.addKeyword("entertainment");
-        adRequest.addKeyword("sports");
-        adRequest.setEthnicity("1");
-        adRequest.setIncome("income");
-
-        adRequest.setYearOfBirth("1989");
-        adRequest.setGender("M");
-
-        adRequest.setCity("Pune");
-        adRequest.setZip("411011");
-        adRequest.setCoppa(true);
-        adRequest.setOrmmaComplianceLevel(1);
-
-        adRequest.setIABCategory("IAB1-1,IAB1-7");
-
-        return adRequest;
-    }
 }

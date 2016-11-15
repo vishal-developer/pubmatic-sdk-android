@@ -18,10 +18,10 @@ import com.google.android.gms.ads.doubleclick.PublisherAdView;
 import com.google.android.gms.ads.doubleclick.PublisherInterstitialAd;
 import com.pubmatic.sdk.banner.PMInterstitialAdView;
 import com.pubmatic.sdk.headerbidding.PMAdSize;
+import com.pubmatic.sdk.headerbidding.PMBannerPrefetchRequest;
 import com.pubmatic.sdk.headerbidding.PMBid;
 import com.pubmatic.sdk.headerbidding.PMBannerImpression;
-import com.pubmatic.sdk.headerbidding.PubMaticBannerPrefetchRequest;
-import com.pubmatic.sdk.headerbidding.PubMaticDecisionManager;
+import com.pubmatic.sdk.headerbidding.PMPrefetchManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,7 +45,7 @@ public class HeaderBiddingInterstitialAdapter {
 
     private Context mContext;
     private Set<PublisherAdView> adViews = new HashSet<>();
-    private PubMaticDecisionManager headerBiddingManager;
+    private PMPrefetchManager headerBiddingManager;
     private HashMap<String, PublisherInterstitialAd> adSlotAdViewMap = new HashMap<>();
 
     private static final String TAG = "HeaderBiddingInterstitialAdapter";
@@ -67,7 +67,7 @@ public class HeaderBiddingInterstitialAdapter {
 
     private void requestPubMaticHeaderBidding()
     {
-        PubMaticDecisionManager.PrefetchListener listener = new PubMaticDecisionManager.PrefetchListener() {
+        PMPrefetchManager.PMPrefetchListener listener = new PMPrefetchManager.PMPrefetchListener() {
             @Override
             public void onBidsFetched(Map<String, PMBid> hBResponse) {
                 Log.d(TAG, "onBidsFetched");
@@ -85,17 +85,16 @@ public class HeaderBiddingInterstitialAdapter {
             }
         };
 
-        // Create instance of PubMaticDecisionManager and set listener for bidding status.
-        headerBiddingManager = new PubMaticDecisionManager(mContext);
-        headerBiddingManager.setPrefetchListener(listener);
+        // Create instance of PMPrefetchManager and set listener for bidding status.
+        headerBiddingManager = new PMPrefetchManager(mContext, listener);
 
         //Create Pubmatic adRequest for header bidding call with single impression or a Set of impressions.
-        PubMaticBannerPrefetchRequest interstitialHeaderBiddingAdRequest = getHeaderBiddingInterstitialAdRequest();
+        PMBannerPrefetchRequest interstitialHeaderBiddingAdRequest = getHeaderBiddingInterstitialAdRequest();
 
         /*
         Set any targeting params on the adRequest instance.
         */
-        headerBiddingManager.executeHeaderBiddingRequest(mContext, interstitialHeaderBiddingAdRequest);
+        headerBiddingManager.prefetchCreatives(interstitialHeaderBiddingAdRequest);
     }
 
     /**
@@ -234,7 +233,7 @@ public class HeaderBiddingInterstitialAdapter {
         }
     }
 
-    private PubMaticBannerPrefetchRequest getHeaderBiddingInterstitialAdRequest()
+    private PMBannerPrefetchRequest getHeaderBiddingInterstitialAdRequest()
     {
         //Get Width & Height for creating of adSlots
         int measuredWidth = 0;
@@ -255,7 +254,7 @@ public class HeaderBiddingInterstitialAdapter {
             measuredHeight  = Math.round(displayMetrics.heightPixels/density);
         }
 
-        PubMaticBannerPrefetchRequest adRequest;
+        PMBannerPrefetchRequest adRequest;
 
         List<PMAdSize> adSizes = new ArrayList<>(1);
         //adSizes.add(new PMAdSize(measuredWidth, measuredHeight));
@@ -267,7 +266,7 @@ public class HeaderBiddingInterstitialAdapter {
         List<PMBannerImpression> bannerImpressions = new ArrayList<>();
         bannerImpressions.add(pmBannerImpression);
 
-        adRequest = PubMaticBannerPrefetchRequest.initHBRequestForImpression(mContext, "31400", bannerImpressions);
+        adRequest = PMBannerPrefetchRequest.initHBRequestForImpression(mContext, "31400", bannerImpressions);
 
         return adRequest;
     }

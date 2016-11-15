@@ -1,3 +1,30 @@
+/*
+ * PubMatic Inc. ("PubMatic") CONFIDENTIAL Unpublished Copyright (c) 2006-2016
+ * PubMatic, All Rights Reserved.
+ *
+ * NOTICE: All information contained herein is, and remains the property of
+ * PubMatic. The intellectual and technical concepts contained herein are
+ * proprietary to PubMatic and may be covered by U.S. and Foreign Patents,
+ * patents in process, and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material is
+ * strictly forbidden unless prior written permission is obtained from PubMatic.
+ * Access to the source code contained herein is hereby forbidden to anyone
+ * except current PubMatic employees, managers or contractors who have executed
+ * Confidentiality and Non-disclosure agreements explicitly covering such
+ * access.
+ *
+ * The copyright notice above does not evidence any actual or intended
+ * publication or disclosure of this source code, which includes information
+ * that is confidential and/or proprietary, and is a trade secret, of PubMatic.
+ * ANY REPRODUCTION, MODIFICATION, DISTRIBUTION, PUBLIC PERFORMANCE, OR PUBLIC
+ * DISPLAY OF OR THROUGH USE OF THIS SOURCE CODE WITHOUT THE EXPRESS WRITTEN
+ * CONSENT OF PubMatic IS STRICTLY PROHIBITED, AND IN VIOLATION OF APPLICABLE
+ * LAWS AND INTERNATIONAL TREATIES. THE RECEIPT OR POSSESSION OF THIS SOURCE
+ * CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS TO
+ * REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR
+ * SELL ANYTHING THAT IT MAY DESCRIBE, IN WHOLE OR IN PART.
+ */
+
 package com.pubmatic.sdk.headerbidding;
 
 import android.content.Context;
@@ -33,8 +60,17 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-
-public class PubMaticDecisionManager {
+/**
+ * This class is the responsible for fetching the bids from PubMatic ad server.
+ * It gives callback to Publisher application via PMPrefetchListener. It also
+ * manages the bids for future rendering.
+ *
+ * Provides the auto refresh feature using which it continous notify the Publisher
+ * with new bid details after specified interval. Only for first refresh the notification
+ * occurs at <refreshInterval - networkTimeout> in seconds. And all successor notification
+ * will occur after <refreshInterval> in seconds.
+ */
+public class PMPrefetchManager {
 
     private Context mContext;
     private String userAgent;
@@ -43,7 +79,7 @@ public class PubMaticDecisionManager {
     /**
      * Listener to channel result events of a header bidding request to the publisher app.
      */
-    public interface PrefetchListener {
+    public interface PMPrefetchListener {
         /**
          * Success callback for Header Bidding request on PubMatic Server.
          *
@@ -64,22 +100,20 @@ public class PubMaticDecisionManager {
     private List<WeakReference<PMBannerAdView>> pubmaticAdViews;
     private List<WeakReference<PMInterstitialAdView>> pubmaticInterstitialAdViews;
 
-    private PrefetchListener preFetchListener;
+    private PMPrefetchListener pmPreFetchListener;
 
-    public PubMaticDecisionManager(Context context) {
+    public PMPrefetchManager(Context context, PMPrefetchListener pmPrefetchListener) {
         mContext = context;
+        this.pmPreFetchListener = pmPrefetchListener;
+
         userAgent = new WebView(context).getSettings().getUserAgentString();
     }
 
-    public void setPrefetchListener(PrefetchListener prefetchListener) {
-        this.preFetchListener = prefetchListener;
+    public PMPrefetchListener getPrefetchListener() {
+        return pmPreFetchListener;
     }
 
-    public PrefetchListener getPrefetchListener() {
-        return preFetchListener;
-    }
-
-    public void executeHeaderBiddingRequest(Context context, PubMaticBannerPrefetchRequest adRequest) {
+    public void prefetchCreatives(PMBannerPrefetchRequest adRequest) {
 
         // Sanitise request. Remove any ad tag detail.
         adRequest.setSiteId("");
@@ -87,7 +121,7 @@ public class PubMaticDecisionManager {
 
         if(validateHeaderBiddingRequest(adRequest))
         {
-            adRequest.createRequest(context);
+            adRequest.createRequest(mContext);
 
             HttpRequest httpRequest = formatHeaderBiddingRequest(adRequest);
             PMLogger.logEvent("Request Url : " + httpRequest.getRequestUrl() + "\n body : " + httpRequest.getPostData(),
@@ -100,7 +134,7 @@ public class PubMaticDecisionManager {
         }
     }
 
-    private boolean validateHeaderBiddingRequest(PubMaticBannerPrefetchRequest adRequest)
+    private boolean validateHeaderBiddingRequest(PMBannerPrefetchRequest adRequest)
     {
         if (adRequest.getImpressions().size() == 0) {
             PMLogger.logEvent("No impressions found for Header Bidding Request.", PMLogger.LogLevel.Error);
@@ -113,13 +147,13 @@ public class PubMaticDecisionManager {
 
     /**
      * Provide the rendered adView from PubMatic cached creative.
-     * This creative is the header bidding winner for the provided adSlotId.
+     * This creative is the header bidding winner for the provided impressionId.
      *
      * @param context   Activity context
-     * @param adSlotId  the winning adSlotId
+     * @param impressionId  the winning impressionId
      * @param dfpAdView the PublisherAdView in which the new creative from PubMatic is to be displayed.
      */
-    public PMBannerAdView getRenderedPubMaticAd(Context context, String adSlotId, PublisherAdView dfpAdView) {
+    public PMBannerAdView getRenderedPubMaticAd(Context context, String impressionId, PublisherAdView dfpAdView) {
 
         PMBannerAdView adView = new PMBannerAdView(context);
 
@@ -129,8 +163,8 @@ public class PubMaticDecisionManager {
         adView.setLayoutParams(layoutParams);
         adView.setUseInternalBrowser(true);
 
-        AdResponse adData = formatHeaderBiddingResponse(publisherHBResponse.get(adSlotId));
-        publisherHBResponse.remove(adSlotId);
+        AdResponse adData = formatHeaderBiddingResponse(publisherHBResponse.get(impressionId));
+        publisherHBResponse.remove(impressionId);
         adView.renderHeaderBiddingCreative(adData);
 
         // Save a weak reference to this view. To be used in destroy method later.
@@ -272,15 +306,15 @@ public class PubMaticDecisionManager {
                     bid.setImpressionId(bidJsonObject.getString("impid"));
                     bid.setPrice(bidJsonObject.getDouble("price"));
                     bid.setCreative(bidJsonObject.getString("adm"));
-                    bid.setWidth(bidJsonObject.getInt("w"));
-                    bid.setHeight(bidJsonObject.getInt("h"));
+                    bid.setWidth(bidJsonObject.optInt("w"));
+                    bid.setHeight(bidJsonObject.optInt("h"));
 
-                    extJsonObject = bidJsonObject.getJSONObject("ext");
-                    extensionJsonObject = extJsonObject.getJSONObject("extension");
+                    extJsonObject = bidJsonObject.optJSONObject("ext");
+                    extensionJsonObject = extJsonObject.optJSONObject("extension");
 
-                    bid.setTrackingUrl(extensionJsonObject.getString("trackingUrl"));
+                    bid.setTrackingUrl(extensionJsonObject.optString("trackingUrl"));
                     bid.setSlotName(extensionJsonObject.getString("slotname"));
-                    bid.setSlotIndex(extensionJsonObject.getInt("slotindex"));
+                    bid.setSlotIndex(extensionJsonObject.optInt("slotindex"));
 
                     bidsMap.put(bid.getImpressionId(), bid);
                 } catch (JSONException e) {
@@ -301,21 +335,21 @@ public class PubMaticDecisionManager {
         public void onRequestComplete(HttpResponse response, String requestURL) {
             // parse request to populate the hbCreatives map.
             publisherHBResponse = formatHBResponse(response);
-            if (preFetchListener == null)
+            if (pmPreFetchListener == null)
                 return;
 
             if (publisherHBResponse != null && publisherHBResponse.size() > 0)
-                preFetchListener.onBidsFetched(publisherHBResponse);
+                pmPreFetchListener.onBidsFetched(publisherHBResponse);
             else
-                preFetchListener.onBidsFailed("Error in parsing Header Bidding response.");
+                pmPreFetchListener.onBidsFailed("No Bids available");
         }
 
         @Override
         public void onErrorOccured(int errorType, int errorCode, String requestURL) {
             String message = "Error Occurred while sending HB request.  " + " Code : " + errorCode + " requestURL " + requestURL;
             PMLogger.logEvent(message, PMLogger.LogLevel.Debug);
-            if (preFetchListener != null)
-                preFetchListener.onBidsFailed(message);
+            if (pmPreFetchListener != null)
+                pmPreFetchListener.onBidsFailed(message);
         }
 
         @Override
@@ -347,7 +381,7 @@ public class PubMaticDecisionManager {
             }
             pubmaticInterstitialAdViews.clear();
         }
-        preFetchListener = null;
+        pmPreFetchListener = null;
     }
 
 }

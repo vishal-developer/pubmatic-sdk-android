@@ -1,3 +1,30 @@
+/*
+ * PubMatic Inc. ("PubMatic") CONFIDENTIAL Unpublished Copyright (c) 2006-2016
+ * PubMatic, All Rights Reserved.
+ *
+ * NOTICE: All information contained herein is, and remains the property of
+ * PubMatic. The intellectual and technical concepts contained herein are
+ * proprietary to PubMatic and may be covered by U.S. and Foreign Patents,
+ * patents in process, and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material is
+ * strictly forbidden unless prior written permission is obtained from PubMatic.
+ * Access to the source code contained herein is hereby forbidden to anyone
+ * except current PubMatic employees, managers or contractors who have executed
+ * Confidentiality and Non-disclosure agreements explicitly covering such
+ * access.
+ *
+ * The copyright notice above does not evidence any actual or intended
+ * publication or disclosure of this source code, which includes information
+ * that is confidential and/or proprietary, and is a trade secret, of PubMatic.
+ * ANY REPRODUCTION, MODIFICATION, DISTRIBUTION, PUBLIC PERFORMANCE, OR PUBLIC
+ * DISPLAY OF OR THROUGH USE OF THIS SOURCE CODE WITHOUT THE EXPRESS WRITTEN
+ * CONSENT OF PubMatic IS STRICTLY PROHIBITED, AND IN VIOLATION OF APPLICABLE
+ * LAWS AND INTERNATIONAL TREATIES. THE RECEIPT OR POSSESSION OF THIS SOURCE
+ * CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS TO
+ * REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR
+ * SELL ANYTHING THAT IT MAY DESCRIBE, IN WHOLE OR IN PART.
+ */
+
 package com.pubmatic.sdk.headerbidding;
 
 import android.content.Context;
@@ -5,9 +32,7 @@ import android.text.TextUtils;
 
 import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest;
 import com.pubmatic.sdk.common.AdvertisingIdClient;
-import com.pubmatic.sdk.common.CommonConstants;
 import com.pubmatic.sdk.common.pubmatic.PUBDeviceInformation;
-import com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest;
 import com.pubmatic.sdk.common.pubmatic.PubMaticConstants;
 import com.pubmatic.sdk.common.pubmatic.PubMaticUtils;
 
@@ -21,20 +46,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest.*;
-
-public class PubMaticBannerPrefetchRequest extends PubMaticBannerAdRequest {
+public class PMBannerPrefetchRequest extends PubMaticBannerAdRequest {
 
     private List<PMBannerImpression> impressions;
     private Set<String> adSlotIdsHB;
 
-    private PubMaticBannerPrefetchRequest(Context context) {
+    private PMBannerPrefetchRequest(Context context) {
         super(context);
         impressions = new ArrayList<>();
         adSlotIdsHB = new HashSet<>();
     }
 
-    private PubMaticBannerPrefetchRequest(Context context, String pubId, PMBannerImpression impression) {
+    private PMBannerPrefetchRequest(Context context, String pubId, PMBannerImpression impression) {
         this(context);
         this.mPubId = pubId;
 
@@ -42,7 +65,7 @@ public class PubMaticBannerPrefetchRequest extends PubMaticBannerAdRequest {
             impressions.add(impression);
     }
 
-    private PubMaticBannerPrefetchRequest(Context context, String pubId, List<PMBannerImpression> impressions) {
+    private PMBannerPrefetchRequest(Context context, String pubId, List<PMBannerImpression> impressions) {
         this(context);
         this.mPubId = pubId;
 
@@ -53,12 +76,12 @@ public class PubMaticBannerPrefetchRequest extends PubMaticBannerAdRequest {
         }
     }
 
-    public static PubMaticBannerPrefetchRequest initHBRequestForImpression(Context context, String pubId, PMBannerImpression impression) {
-        return new PubMaticBannerPrefetchRequest(context, pubId, impression);
+    public static PMBannerPrefetchRequest initHBRequestForImpression(Context context, String pubId, PMBannerImpression impression) {
+        return new PMBannerPrefetchRequest(context, pubId, impression);
     }
 
-    public static PubMaticBannerPrefetchRequest initHBRequestForImpression(Context context, String pubId, List<PMBannerImpression> impressions) {
-        return new PubMaticBannerPrefetchRequest(context, pubId, impressions);
+    public static PMBannerPrefetchRequest initHBRequestForImpression(Context context, String pubId, List<PMBannerImpression> impressions) {
+        return new PMBannerPrefetchRequest(context, pubId, impressions);
     }
 
     public List<PMBannerImpression> getImpressions()
