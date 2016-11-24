@@ -19,7 +19,7 @@ public class BannerDemoScreen extends AppCompatActivity {
     private Set<PublisherAdView> adViews = new HashSet<>();
 
     private List<HeaderBiddingBannerHelper.AdSlotInfo> adSlotInfoList;
-    private HeaderBiddingBannerHelper hbBannerHelper;
+    private HeaderBiddingBannerHelper headerBiddingHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,19 +34,19 @@ public class BannerDemoScreen extends AppCompatActivity {
 
         List<PMAdSize>   adSizes1 = new ArrayList<>(1);
         adSizes1.add(new PMAdSize(320, 50));
-        HeaderBiddingBannerHelper.AdSlotInfo adSlotInfo1 = new HeaderBiddingBannerHelper.AdSlotInfo("DMDemo", adSizes1, adView1);
+        HeaderBiddingBannerHelper.AdSlotInfo adSlotInfo1 = new HeaderBiddingBannerHelper.AdSlotInfo("/15671365/mobile_app_hb", adSizes1, adView1);
 
         List<PMAdSize>   adSizes2 = new ArrayList<>(1);
         adSizes2.add(new PMAdSize(320, 50));
-        HeaderBiddingBannerHelper.AdSlotInfo adSlotInfo2 = new HeaderBiddingBannerHelper.AdSlotInfo("DMDemo2", adSizes2, adView2);
+        HeaderBiddingBannerHelper.AdSlotInfo adSlotInfo2 = new HeaderBiddingBannerHelper.AdSlotInfo("/15671365/mobile_app_hb2", adSizes2, adView2);
 
         adSlotInfoList = new ArrayList<>(2);
         adSlotInfoList.add(adSlotInfo1);
         adSlotInfoList.add(adSlotInfo2);
 
         // For Adapter
-        hbBannerHelper = new HeaderBiddingBannerHelper(this, adSlotInfoList);
-        hbBannerHelper.execute();
+        headerBiddingHelper = new HeaderBiddingBannerHelper(this, adSlotInfoList);
+        headerBiddingHelper.execute();
     }
 
     @Override
@@ -60,9 +60,9 @@ public class BannerDemoScreen extends AppCompatActivity {
 
         adViews.clear();
 
-        if(hbBannerHelper !=null) {
+        if(headerBiddingHelper !=null) {
             //hbBannerHelper.destroy();
-            hbBannerHelper = null;
+            headerBiddingHelper = null;
         }
     }
 }

@@ -77,11 +77,13 @@ import com.pubmatic.sdk.banner.ui.ImageView;
 import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.AdResponse;
 import com.pubmatic.sdk.common.CommonConstants;
+import com.pubmatic.sdk.common.PMAdRendered;
 import com.pubmatic.sdk.common.PMLogger.LogLevel;
 import com.pubmatic.sdk.common.LocationDetector;
 import com.pubmatic.sdk.common.PMLogger;
 import com.pubmatic.sdk.common.CommonConstants.CHANNEL;
 import com.pubmatic.sdk.common.RRFormatter;
+import com.pubmatic.sdk.common.ResponseGenerator;
 import com.pubmatic.sdk.common.network.AdTracking;
 import com.pubmatic.sdk.common.network.HttpHandler;
 import com.pubmatic.sdk.common.network.HttpHandler.HttpRequestListener;
@@ -102,6 +104,7 @@ import java.net.URLDecoder;
 import java.security.MessageDigest;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,7 +115,7 @@ import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("unused")
 @SuppressLint("NewApi")
-public class PMBannerAdView extends ViewGroup {
+public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
     public interface BannerAdViewDelegate {
 
@@ -3469,5 +3472,65 @@ public class PMBannerAdView extends ViewGroup {
 
         if (isAdResponseValid(adData))
             renderAdDescriptor(adData.getRenderable());
+    }
+
+    @Override
+    public void renderPrefetchedAd(String impressionId, ResponseGenerator responseGenerator) {
+
+        AdResponse pubResponse = new AdResponse();
+
+        Map<String, String> adInfo = new HashMap<String, String>();
+        ArrayList<String> impressionTrackers = new ArrayList<String>();
+        ArrayList<String> clickTrackers = new ArrayList<String>();
+        adInfo.put("type", "thirdparty");
+
+        try {
+            // If there is an error from the server which happens when provided
+            // wrong ad parameters, return the error with error code and error
+            // message.
+            String errorCode;
+            /*if (!TextUtils.isEmpty(errorCode = response.optString(kerror_code))) {
+
+                pubResponse.setErrorCode(errorCode);
+                pubResponse.setErrorMessage(response.getString(kerror_message));
+                return pubResponse;
+            }*/
+
+            // Check if json contains the creative_tag and tracking_url.
+            // If these are missing then the ad is invalid. Return null else
+            // return valid adInfo object.
+            if (!TextUtils.isEmpty(responseGenerator.getCreative(impressionId))) {
+
+                adInfo.put("content", URLDecoder.decode(responseGenerator.getCreative(impressionId), CommonConstants.ENCODING_UTF_8));
+                impressionTrackers.add( URLDecoder.decode(responseGenerator.getTrackingUrl(impressionId), CommonConstants.ENCODING_UTF_8));
+
+                // Setting ecpm if not null
+                if (responseGenerator.getPrice(impressionId) != 0) {
+                    adInfo.put("ecpm", String.valueOf(responseGenerator.getPrice(impressionId)));
+                }
+                // Setting click_tracking_url if not null
+                if (responseGenerator.getTrackingUrl(impressionId) != null && responseGenerator.getTrackingUrl(impressionId) != "") {
+                    // clickTrackers.add(URLDecoder.decode(bid.getTrackingUrl(), UTF8_CHARSET));
+                }
+                // Setting landing_page if not null
+                /*if (!response.isNull(klanding_page)) {
+                    adInfo.put("url", URLDecoder.decode(response.getString(klanding_page), UTF8_CHARSET));
+                }*/
+            }
+
+            BannerAdDescriptor adDescriptor = new BannerAdDescriptor(adInfo);
+            adDescriptor.setImpressionTrackers(impressionTrackers);
+            adDescriptor.setClickTrackers(clickTrackers);
+            pubResponse.setRenderable(adDescriptor);
+
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } finally {
+            //response = null;
+        }
+
+        if (isAdResponseValid(pubResponse))
+            renderAdDescriptor(pubResponse.getRenderable());
+
     }
 }

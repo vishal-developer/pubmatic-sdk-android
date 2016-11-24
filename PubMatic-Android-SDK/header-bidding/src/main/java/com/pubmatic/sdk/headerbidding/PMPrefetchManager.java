@@ -40,7 +40,9 @@ import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest;
 import com.pubmatic.sdk.common.AdResponse;
 import com.pubmatic.sdk.common.CommonConstants;
 import com.pubmatic.sdk.common.CommonConstants.CONTENT_TYPE;
+import com.pubmatic.sdk.common.PMAdRendered;
 import com.pubmatic.sdk.common.PMLogger;
+import com.pubmatic.sdk.common.ResponseGenerator;
 import com.pubmatic.sdk.common.network.HttpHandler;
 import com.pubmatic.sdk.common.network.HttpRequest;
 import com.pubmatic.sdk.common.network.HttpResponse;
@@ -70,7 +72,7 @@ import java.util.concurrent.Executors;
  * occurs at <refreshInterval - networkTimeout> in seconds. And all successor notification
  * will occur after <refreshInterval> in seconds.
  */
-public class PMPrefetchManager {
+public class PMPrefetchManager implements ResponseGenerator {
 
     private Context mContext;
     private String userAgent;
@@ -97,8 +99,8 @@ public class PMPrefetchManager {
 
     private Map<String, PMBid> publisherHBResponse = new HashMap<>();
 
-    private List<WeakReference<PMBannerAdView>> pubmaticAdViews;
-    private List<WeakReference<PMInterstitialAdView>> pubmaticInterstitialAdViews;
+    private List<WeakReference<PMAdRendered>> pubmaticAdViews;
+    private List<WeakReference<PMAdRendered>> pubmaticInterstitialAdViews;
 
     private PMPrefetchListener pmPreFetchListener;
 
@@ -149,31 +151,21 @@ public class PMPrefetchManager {
      * Provide the rendered adView from PubMatic cached creative.
      * This creative is the header bidding winner for the provided impressionId.
      *
-     * @param context   Activity context
      * @param impressionId  the winning impressionId
-     * @param dfpAdView the PublisherAdView in which the new creative from PubMatic is to be displayed.
      */
-    public PMBannerAdView getRenderedPubMaticAd(Context context, String impressionId, PublisherAdView dfpAdView) {
+    public void renderPubMaticAd(String impressionId, PMAdRendered pmAdRendered) {
 
-        PMBannerAdView adView = new PMBannerAdView(context);
+        //AdResponse adData = formatHeaderBiddingResponse(publisherHBResponse.get(impressionId));
+        //adView.renderHeaderBiddingCreative(adData);
 
-        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(dfpAdView.getLayoutParams());
-        layoutParams.width = dfpAdView.getMeasuredWidth();
-        layoutParams.height = dfpAdView.getMeasuredHeight();
-        adView.setLayoutParams(layoutParams);
-        adView.setUseInternalBrowser(true);
-
-        AdResponse adData = formatHeaderBiddingResponse(publisherHBResponse.get(impressionId));
+        pmAdRendered.renderPrefetchedAd(impressionId, this);
         publisherHBResponse.remove(impressionId);
-        adView.renderHeaderBiddingCreative(adData);
 
         // Save a weak reference to this view. To be used in destroy method later.
         if (pubmaticAdViews == null)
             pubmaticAdViews = new ArrayList<>();
-        WeakReference<PMBannerAdView> weakRefAdView = new WeakReference<>(adView);
+        WeakReference<PMAdRendered> weakRefAdView = new WeakReference<>(pmAdRendered);
         pubmaticAdViews.add(weakRefAdView);
-
-        return adView;
     }
 
     private AdResponse formatHeaderBiddingResponse(PMBid bid)
@@ -237,25 +229,18 @@ public class PMPrefetchManager {
      * Provide the rendered adView from PubMatic cached creative.
      * This creative is the header bidding winner for the provided adSlotId.
      *
-     * @param context   Activity context
-     * @param adSlotId  the winning adSlotId
      */
-    public PMInterstitialAdView getRenderedPMInterstitialAd(Context context, String adSlotId) {
+    public void renderedPMInterstitialAd(String impressionId, PMAdRendered pmAdRendered) {
 
-        PMInterstitialAdView adView = new PMInterstitialAdView(context);
-        adView.setUseInternalBrowser(true);
-
-        AdResponse adData = formatHeaderBiddingResponse(publisherHBResponse.get(adSlotId));
-        publisherHBResponse.remove(adSlotId);
-        adView.renderHeaderBiddingCreative(adData);
+        pmAdRendered.renderPrefetchedAd(impressionId, this);
+        publisherHBResponse.remove(impressionId);
 
         // Save a weak reference to this view. To be used in destroy method later.
         if (pubmaticInterstitialAdViews == null)
             pubmaticInterstitialAdViews = new ArrayList<>();
-        WeakReference<PMInterstitialAdView> weakRefAdView = new WeakReference<>(adView);
+        WeakReference<PMAdRendered> weakRefAdView = new WeakReference<>(pmAdRendered);
         pubmaticInterstitialAdViews.add(weakRefAdView);
 
-        return adView;
     }
 
     private HttpRequest formatHeaderBiddingRequest(PubMaticBannerAdRequest adRequest) {
@@ -384,4 +369,41 @@ public class PMPrefetchManager {
         pmPreFetchListener = null;
     }
 
+    @Override
+    public String getTrackingUrl(String impressionId) {
+
+        if(publisherHBResponse != null)
+        {
+            PMBid pmBid = publisherHBResponse.get(impressionId);
+            return pmBid.getTrackingUrl();
+        }
+
+        return null;
+    }
+
+    @Override
+    public String getCreative(String impressionId) {
+
+        if(publisherHBResponse != null)
+        {
+            PMBid pmBid = publisherHBResponse.get(impressionId);
+            return pmBid.getCreative();
+        }
+
+        return null;
+
+    }
+
+    @Override
+    public Double getPrice(String impressionId) {
+
+        if(publisherHBResponse != null)
+        {
+            PMBid pmBid = publisherHBResponse.get(impressionId);
+            return pmBid.getPrice();
+        }
+
+        return null;
+
+    }
 }

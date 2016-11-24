@@ -3,11 +3,15 @@ package com.pubmatic.headerbiddingsample;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import com.google.android.gms.ads.doubleclick.PublisherAdView;
 import com.google.android.gms.ads.doubleclick.PublisherInterstitialAd;
+import com.pubmatic.sdk.headerbidding.PMAdSize;
 import com.pubmatic.sdk.headerbidding.PMPrefetchManager;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class InterstitialDemoScreen extends AppCompatActivity {
@@ -15,9 +19,8 @@ public class InterstitialDemoScreen extends AppCompatActivity {
     // To track all adViews on this page.
     private Set<PublisherInterstitialAd> adViews = new HashSet<>();
 
-    private HashMap<String, PublisherInterstitialAd> adSlotAdViewMap = new HashMap<>();
-
-    private PMPrefetchManager headerBiddingManager;
+    private List<HeaderBiddingInterstitialAdapter.AdSlotInfo> adSlotInfoList;
+    private HeaderBiddingInterstitialAdapter headerBiddingHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,19 +30,32 @@ public class InterstitialDemoScreen extends AppCompatActivity {
         PublisherInterstitialAd adView = new PublisherInterstitialAd(this);
         adView.setAdUnitId(getResources().getString(R.string.interstitial_ad_unit_id));
 
-        adSlotAdViewMap.put("impression1", adView);
+        adViews.add(adView);
+
+        List<PMAdSize>   adSizes1 = new ArrayList<>(1);
+        adSizes1.add(new PMAdSize(320, 480));
+        HeaderBiddingInterstitialAdapter.AdSlotInfo adSlotInfo1 = new HeaderBiddingInterstitialAdapter.AdSlotInfo("/15671365/mobile_app_hb", adSizes1, adView);
+
+        adSlotInfoList = new ArrayList<>(2);
+        adSlotInfoList.add(adSlotInfo1);
 
         // For Adapter
-        HeaderBiddingInterstitialAdapter headerBiddingInterstitialAdapter = new HeaderBiddingInterstitialAdapter(this, adSlotAdViewMap);
-        headerBiddingInterstitialAdapter.execute();
+        headerBiddingHelper = new HeaderBiddingInterstitialAdapter(this, adSlotInfoList);
+        headerBiddingHelper.execute();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
-        adSlotAdViewMap.clear();
+        adSlotInfoList.clear();
+
         adViews.clear();
+
+        if(headerBiddingHelper !=null) {
+            //hbBannerHelper.destroy();
+            headerBiddingHelper = null;
+        }
     }
 }
 

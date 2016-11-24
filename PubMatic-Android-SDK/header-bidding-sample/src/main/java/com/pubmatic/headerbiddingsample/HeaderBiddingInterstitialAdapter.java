@@ -14,7 +14,6 @@ import android.widget.RelativeLayout;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.doubleclick.AppEventListener;
 import com.google.android.gms.ads.doubleclick.PublisherAdRequest;
-import com.google.android.gms.ads.doubleclick.PublisherAdView;
 import com.google.android.gms.ads.doubleclick.PublisherInterstitialAd;
 import com.pubmatic.sdk.banner.PMInterstitialAdView;
 import com.pubmatic.sdk.headerbidding.PMAdSize;
@@ -24,7 +23,6 @@ import com.pubmatic.sdk.headerbidding.PMBannerImpression;
 import com.pubmatic.sdk.headerbidding.PMPrefetchManager;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -38,29 +36,52 @@ import static android.content.Context.WINDOW_SERVICE;
 
 public class HeaderBiddingInterstitialAdapter {
 
-    private static final String BID = "bid";
-    private static final String BID_ID = "bidid";
-    private static final String BID_STATUS = "bidstatus";
-    private static final String PUBMATIC_WIN_KEY = "pubmaticdm";
+    public static final class AdSlotInfo {
 
-    private Context mContext;
-    private Set<PublisherAdView> adViews = new HashSet<>();
-    private PMPrefetchManager headerBiddingManager;
-    private HashMap<String, PublisherInterstitialAd> adSlotAdViewMap = new HashMap<>();
+        private String           slotName;
+        private List<PMAdSize>   adSizes;
+        private PublisherInterstitialAd  adView;
 
-    private static final String TAG = "HeaderBiddingInterstitialAdapter";
+        public AdSlotInfo(String slotName, List<PMAdSize> adSizes, PublisherInterstitialAd adView) {
+            this.slotName = slotName;
+            this.adSizes  = adSizes;
+            this.adView   = adView;
+        }
 
-    public HeaderBiddingInterstitialAdapter(Context context, HashMap<String, PublisherInterstitialAd> adSlotAdViewMap)
-    {
-        mContext = context;
-        this.adSlotAdViewMap = adSlotAdViewMap;
+        public String getSlotName() {
+            return slotName;
+        }
+
+        public List<PMAdSize> getAdSizes() {
+            return adSizes;
+        }
+
+        public PublisherInterstitialAd getAdView() {
+            return adView;
+        }
+    }
+
+    private static final String BID                 = "bid";
+    private static final String BID_ID              = "bidid";
+    private static final String BID_STATUS          = "bidstatus";
+    private static final String PUBMATIC_WIN_KEY    = "pubmaticdm";
+
+    private Context                   mContext;
+    private PMPrefetchManager         pmPrefetchManager;
+    private List<AdSlotInfo>          adSlotInfoList;
+
+    private static final String       TAG = "HeaderBiddingInterstitialAdapter";
+
+    public HeaderBiddingInterstitialAdapter(Context context, List<HeaderBiddingInterstitialAdapter.AdSlotInfo> adSlotInfoList) {
+        this.mContext        = context;
+        this.adSlotInfoList = adSlotInfoList;
     }
 
     public void execute()
     {
         //Normal ad Events listener for DFP calls.
-        registerAdListener(adSlotAdViewMap);
-        registerListenerForPublisherAdView(adSlotAdViewMap);
+        registerAdListener(adSlotInfoList);
+        registerListenerForPublisherAdView(adSlotInfoList);
 
         requestPubMaticHeaderBidding();
     }
@@ -86,15 +107,24 @@ public class HeaderBiddingInterstitialAdapter {
         };
 
         // Create instance of PMPrefetchManager and set listener for bidding status.
-        headerBiddingManager = new PMPrefetchManager(mContext, listener);
+        pmPrefetchManager = new PMPrefetchManager(mContext, listener);
 
         //Create Pubmatic adRequest for header bidding call with single impression or a Set of impressions.
-        PMBannerPrefetchRequest interstitialHeaderBiddingAdRequest = getHeaderBiddingInterstitialAdRequest();
+        PMBannerPrefetchRequest interstitialHeaderBiddingAdRequest = getHeaderBiddingInterstitialAdRequest1();
 
         /*
         Set any targeting params on the adRequest instance.
         */
-        headerBiddingManager.prefetchCreatives(interstitialHeaderBiddingAdRequest);
+        pmPrefetchManager.prefetchCreatives(interstitialHeaderBiddingAdRequest);
+    }
+
+    /**
+     * Returns the unique id against the PublisherAdView. It is being used as a ImpressionId.
+     * @param adView
+     * @return Returns id of hash value against given PublisherAdView
+     */
+    private String getUniqueIdForView(final PublisherInterstitialAd adView) {
+        return String.valueOf(System.identityHashCode(adView));
     }
 
     /**
@@ -110,18 +140,20 @@ public class HeaderBiddingInterstitialAdapter {
                                                    Set<PublisherInterstitialAd> adViewsSet = getAdViewsSet();
 
                                                    if (hBResponse != null) {
-                                                       // Loop over all those publisherAdViews that participated in Header Bidding i.e. have a valid adSlotId mapped to them.
-                                                       for (Map.Entry<String, PublisherInterstitialAd> entry : adSlotAdViewMap.entrySet()) {
-                                                           publisherAdView = entry.getValue();
+                                                       // Loop over all those publisherAdViews that participated in Header Bidding i.e. have a valid impressionId mapped to them.
+                                                       for (HeaderBiddingInterstitialAdapter.AdSlotInfo adSlotInfo : adSlotInfoList) {
+                                                           publisherAdView = adSlotInfo.adView;
 
                                                            try {
-                                                               String adSlot = entry.getKey();
-                                                               PMBid pubResponse = hBResponse.get(adSlot);
+                                                               String impressionId = getUniqueIdForView(adSlotInfo.adView);
+
+                                                               //Fetch the winning bid details for the impressionId & send to DFP
+                                                               PMBid pubResponse = hBResponse.get(impressionId);
 
                                                                if(pubResponse != null) {
                                                                    adRequest = new PublisherAdRequest.Builder().addCustomTargeting(BID_ID, pubResponse.getImpressionId())
                                                                            .addCustomTargeting(BID_STATUS, "1")
-                                                                           .addCustomTargeting(BID, String.valueOf(pubResponse.getPrice())).build();
+                                                                           .addCustomTargeting(BID, String.valueOf(17.1)).build();
 
                                                                    publisherAdView.loadAd(adRequest);
                                                                    adViewsSet.remove(publisherAdView);
@@ -137,9 +169,11 @@ public class HeaderBiddingInterstitialAdapter {
                                                                }
                                                            } catch (Exception ex) {
                                                                // Do nothing. This view will send normal adRequest later.
+                                                               Log.e(TAG, "Error while sending request to DFP :: " + ex.toString());
                                                            }
                                                        }
                                                    }
+
                                                    // Send Ad Request for the remaining adViews.
                                                    for (PublisherInterstitialAd ad : adViewsSet) {
                                                        adRequest = new PublisherAdRequest.Builder().build();
@@ -150,87 +184,81 @@ public class HeaderBiddingInterstitialAdapter {
         );
     }
 
-    public Set<PublisherInterstitialAd> getAdViewsSet() {
+    private Set<PublisherInterstitialAd> getAdViewsSet() {
 
         Set<PublisherInterstitialAd> adViewSet = new HashSet<>();
 
-        for(Map.Entry<String, PublisherInterstitialAd> entry : adSlotAdViewMap.entrySet())
+        if(adSlotInfoList != null)
         {
-            PublisherInterstitialAd adView = entry.getValue();
-            adViewSet.add(adView);
+            for (HeaderBiddingInterstitialAdapter.AdSlotInfo adSlotInfo : adSlotInfoList)
+            {
+                adViewSet.add(adSlotInfo.adView);
+            }
         }
 
         return adViewSet;
     }
 
-    private void registerAdListener(HashMap<String, PublisherInterstitialAd> adSlotAdViewMap) {
+    private void registerAdListener(List<HeaderBiddingInterstitialAdapter.AdSlotInfo> adSlotInfoList) {
 
-        for(Map.Entry<String, PublisherInterstitialAd> entry : adSlotAdViewMap.entrySet())
+        for(HeaderBiddingInterstitialAdapter.AdSlotInfo adSlotInfo : adSlotInfoList)
         {
-            PublisherInterstitialAd adView = entry.getValue();
-
-            if (adView != null)
-                adView.setAdListener(new DfpAdListener());
+            if (adSlotInfo!=null && adSlotInfo.adView != null)
+                adSlotInfo.adView.setAdListener(new HeaderBiddingInterstitialAdapter.DfpAdListener());
         }
     }
 
-    class DfpAdListener extends AdListener {
-        public void onAdLoaded() {
-            Log.d(TAG, "onAdLoaded");
-        }
+    private void registerListenerForPublisherAdView(final List<HeaderBiddingInterstitialAdapter.AdSlotInfo> adSlotInfoList) {
 
-        public void onAdFailedToLoad(int errorCode) {
-            Log.d(TAG, "onAdFailedToLoad");
-        }
-
-        public void onAdOpened() {
-            Log.d(TAG, "onAdOpened");
-        }
-
-        public void onAdClosed() {
-            Log.d(TAG, "onAdClosed");
-        }
-
-        public void onAdLeftApplication() {
-            Log.d(TAG, "onAdLeftApplication");
-        }
-    }
-
-    private void registerListenerForPublisherAdView(final HashMap<String, PublisherInterstitialAd> adSlotAdViewMap) {
-
-        for(Map.Entry<String, PublisherInterstitialAd> entry : adSlotAdViewMap.entrySet())
+        for(final HeaderBiddingInterstitialAdapter.AdSlotInfo adSlotInfo : adSlotInfoList)
         {
-            final PublisherInterstitialAd publisherAdView = entry.getValue();
-
-            if (publisherAdView != null)
+            if (adSlotInfo!=null && adSlotInfo.adView != null)
             {
-                publisherAdView.setAppEventListener(new AppEventListener() {
+                adSlotInfo.adView.setAppEventListener(new AppEventListener() {
                     @Override
-                    public void onAppEvent(String key, final String adSlotId) {
-                        Log.d(TAG, "onAppEvent() Key: " + key + " AdSlotId: " + adSlotId);
+                    public void onAppEvent(String key, final String impressionId) {
+                        Log.d(TAG, "AppEvent Key:" + key + " AdSlotId:" + impressionId);
 
                         if (TextUtils.equals(key, PUBMATIC_WIN_KEY)) {
 
+                            adSlotInfoList.get(0).adView = null;
+
+                            PMInterstitialAdView adView = new PMInterstitialAdView(mContext);
+                            adView.setUseInternalBrowser(true);
+
+                            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                    ViewGroup.LayoutParams.MATCH_PARENT);
+
                             //Display PubMatic Cached Ad
-                            PMInterstitialAdView pmView = headerBiddingManager.getRenderedPMInterstitialAd(mContext, adSlotId);
+                            pmPrefetchManager.renderedPMInterstitialAd(impressionId, adView);
 
                             //Replace view with pubmatic Adview.
                             ViewGroup parent = (ViewGroup) ((Activity)mContext).findViewById(R.id.parent);
                             if (parent != null) {
-
-                                RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                        ViewGroup.LayoutParams.MATCH_PARENT);
-
-                                parent.addView(pmView, layoutParams);
-                                pmView.showInterstitial();
+                                parent.addView(adView, layoutParams);
+                                adView.showInterstitial();
                             }
-
-                            adSlotAdViewMap.remove(adSlotId);
                         }
                     }
                 });
             }
         }
+    }
+
+    private PMBannerPrefetchRequest getHeaderBiddingInterstitialAdRequest1()
+    {
+        PMBannerPrefetchRequest adRequest;
+
+        List<PMBannerImpression> interstitialImpressions = new ArrayList<>();
+        for(HeaderBiddingInterstitialAdapter.AdSlotInfo adSlotInfo : adSlotInfoList) {
+            PMBannerImpression pmBannerImpression = new PMBannerImpression(getUniqueIdForView(adSlotInfo.adView), adSlotInfo.slotName, adSlotInfo.adSizes, 1);
+            pmBannerImpression.setInterstitial(true);
+            interstitialImpressions.add(pmBannerImpression);
+        }
+
+        adRequest = PMBannerPrefetchRequest.initHBRequestForImpression(mContext, "31400", interstitialImpressions);
+
+        return adRequest;
     }
 
     private PMBannerPrefetchRequest getHeaderBiddingInterstitialAdRequest()
@@ -271,6 +299,30 @@ public class HeaderBiddingInterstitialAdapter {
         return adRequest;
     }
 
+    class DfpAdListener extends AdListener {
+        public void onAdLoaded() {
+            Log.d(TAG, "onAdLoaded");
+
+            if(adSlotInfoList.get(0).adView != null)
+                adSlotInfoList.get(0).adView.show();
+        }
+
+        public void onAdFailedToLoad(int errorCode) {
+            Log.d(TAG, "onAdFailedToLoad");
+        }
+
+        public void onAdOpened() {
+            Log.d(TAG, "onAdOpened");
+        }
+
+        public void onAdClosed() {
+            Log.d(TAG, "onAdClosed");
+        }
+
+        public void onAdLeftApplication() {
+            Log.d(TAG, "onAdLeftApplication");
+        }
+    }
 
 
 }

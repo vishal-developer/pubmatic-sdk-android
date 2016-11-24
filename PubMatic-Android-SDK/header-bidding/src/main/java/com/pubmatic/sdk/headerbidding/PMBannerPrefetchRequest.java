@@ -130,7 +130,7 @@ public class PMBannerPrefetchRequest extends PubMaticBannerAdRequest {
 
     public void createRequest(Context context) {
         setAdType(AD_TYPE.RICHMEDIA);
-        setAdServerURL("http://172.16.4.36:8000/openrtb/24");
+        setAdServerURL("http://hb.pubmatic.com/openrtb/24");
         setUpUrlParams();
         setupPostData();
     }
@@ -466,8 +466,25 @@ public class PMBannerPrefetchRequest extends PubMaticBannerAdRequest {
                         asJsonObject.put(PubMaticConstants.UDID_HASH_PARAM, String.valueOf(2)); //2 - SHA1
                     }
 
-                    if(getEthnicity() != null && !getEthnicity().equals(""))
-                        asJsonObject.put("ethn", getEthnicity());
+                    if(getEthnicity() != null) {
+                        switch (getEthnicity()) {
+                            case HISPANIC:
+                                asJsonObject.put("ethn", "0");
+                                break;
+                            case AFRICAN_AMERICAN:
+                                asJsonObject.put("ethn", "1");
+                                break;
+                            case CAUCASIAN:
+                                asJsonObject.put("ethn", "2");
+                                break;
+                            case ASIAN_AMERICAN:
+                                asJsonObject.put("ethn", "3");
+                                break;
+                            default:
+                                asJsonObject.put("ethn", "4");
+                                break;
+                        }
+                    }
 
                     if(getIncome() != null && !getIncome().equals(""))
                         asJsonObject.put("inc", getIncome());

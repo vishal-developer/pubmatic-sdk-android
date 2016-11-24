@@ -212,13 +212,22 @@ public class HeaderBiddingBannerHelper {
 
                         if (TextUtils.equals(key, PUBMATIC_WIN_KEY)) {
 
+                            PMBannerAdView adView = new PMBannerAdView(mContext);
+
+                            ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(adSlotInfo.adView.getLayoutParams());
+                            layoutParams.width = adSlotInfo.adView.getMeasuredWidth();
+                            layoutParams.height = adSlotInfo.adView.getMeasuredHeight();
+                            adView.setLayoutParams(layoutParams);
+                            adView.setUseInternalBrowser(true);
+
                             //Display PubMatic Cached Ad
-                            PMBannerAdView pmView = pmPrefetchManager.getRenderedPubMaticAd(mContext, impressionId, adSlotInfo.adView);
+                            pmPrefetchManager.renderPubMaticAd(impressionId, adView);
 
                             //Replace view with pubmatic Adview.
                             ViewGroup parent = (ViewGroup) adSlotInfo.adView.getParent();
                             if (parent != null) {
-                                parent.addView(pmView, adSlotInfo.adView.getLayoutParams());
+                                parent.removeView(adSlotInfo.adView);
+                                parent.addView(adView, adSlotInfo.adView.getLayoutParams());
                             }
                         }
                     }
@@ -240,12 +249,12 @@ public class HeaderBiddingBannerHelper {
 
         adRequest.setStoreURL("http://www.financialexpress.com");
         adRequest.setAppDomain("www.financialexpress.com");
-        adRequest.isApplicationPaid(true);
+        adRequest.setApplicationPaid(false);
         adRequest.setAWT(PubMaticAdRequest.AWT_OPTION.WRAPPED_IN_IFRAME);
         adRequest.setPMZoneId("1");
         adRequest.addKeyword("entertainment");
         adRequest.addKeyword("sports");
-        adRequest.setEthnicity("1");
+        adRequest.setEthnicity(PubMaticAdRequest.ETHNICITY.ASIAN_AMERICAN);
         adRequest.setIncome("income");
 
         adRequest.setYearOfBirth("1989");
@@ -257,6 +266,7 @@ public class HeaderBiddingBannerHelper {
         adRequest.setOrmmaComplianceLevel(1);
 
         adRequest.setIABCategory("IAB1-1,IAB1-7");
+        adRequest.setAppCategory("Entertainment");
 
         return adRequest;
     }

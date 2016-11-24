@@ -236,10 +236,25 @@ public abstract class PubMaticAdRequest extends AdRequest {
                         mGender, PubMaticConstants.URL_ENCODING));
             }
 
-            if (!TextUtils.isEmpty(mEthnicity)) {
-                putPostData(PubMaticConstants.USER_ETHNICITY, URLEncoder.encode(
-                        mEthnicity,
-                        PubMaticConstants.URL_ENCODING));
+            if(getEthnicity() != null) {
+                switch (getEthnicity()) {
+                    case HISPANIC:
+                        putPostData(PubMaticConstants.USER_ETHNICITY, "0");
+                        break;
+                    case AFRICAN_AMERICAN:
+                        putPostData(PubMaticConstants.USER_ETHNICITY, "1");
+                        break;
+                    case CAUCASIAN:
+                        putPostData(PubMaticConstants.USER_ETHNICITY, "2");
+                        break;
+                    case ASIAN_AMERICAN:
+                        putPostData(PubMaticConstants.USER_ETHNICITY, "3");
+                        break;
+                    default:
+                        putPostData(PubMaticConstants.USER_ETHNICITY, "4");
+                        break;
+                }
+
             }
 
             if (!TextUtils.isEmpty(mIncome)) {
@@ -402,7 +417,7 @@ public abstract class PubMaticAdRequest extends AdRequest {
     private String mCity = null;
     private String mZip = null;
     private String mDMA = null;
-    private String mEthnicity = null;
+    private ETHNICITY mEthnicity = null;
     private String mGender = null;
 
     //PubMatic User info
@@ -517,12 +532,12 @@ public abstract class PubMaticAdRequest extends AdRequest {
      * @param ethnicity
      *            User ethnicity
      */
-    public void setEthnicity(final String ethnicity)
+    public void setEthnicity(final ETHNICITY ethnicity)
     {
         mEthnicity = ethnicity;
     }
 
-    public String getEthnicity() {
+    public ETHNICITY getEthnicity() {
         return mEthnicity;
     }
 
@@ -769,8 +784,12 @@ public abstract class PubMaticAdRequest extends AdRequest {
         this.mAppCategory = mAppCategory;
     }
 
-    public void isApplicationPaid(boolean mPaid) {
-        this.mPaid = mPaid;
+    public boolean isApplicationPaid() {
+        return this.mPaid;
+    }
+
+    public void setApplicationPaid(boolean paid) {
+        this.mPaid = paid;
     }
 
     public int getAdRefreshRate() {
