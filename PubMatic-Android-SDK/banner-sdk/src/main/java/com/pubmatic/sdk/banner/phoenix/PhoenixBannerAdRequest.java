@@ -16,7 +16,6 @@ public class PhoenixBannerAdRequest extends PhoenixAdRequest {
 	private int				mAdWidth = -1;
 	private int				mAdHeight = -1;
 
-
 	private PhoenixBannerAdRequest(Context context) {
 		super(context);
 	}

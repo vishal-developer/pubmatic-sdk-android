@@ -1,0 +1,14 @@
+<resources>
+    <item name="ad_tag_zone" type="id"/>
+    <item name="ad_tag_pub_id" type="id"/>
+    <item name="ad_tag_site_id" type="id"/>
+    <item name="ad_tag_ad_id" type="id"/>
+    <item name="ad_tag_ad_unit_id" type="id"/>
+
+    <item name="configuration_width" type="id"/>
+    <item name="configuration_height" type="id"/>
+
+    <item name="targetting_city" type="id"/>
+    <item name="targetting_zip" type="id"/>
+
+</resources>

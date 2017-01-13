@@ -75,7 +75,7 @@ public class PubMaticNativeActivity extends Activity {
 		// ad.setTest(true); // Uncomment to serve ads in test mode
 
 		PubMaticNativeAdRequest adRequest = PubMaticNativeAdRequest
-				.createPubMaticNativeAdRequest(this, "31400", "52368", "383372", getAssetRequests());
+				.createPubMaticNativeAdRequest(this, "31400", "52368", "265636", getAssetRequests());
         adRequest.setAdServerURL("http://showads1065.pubmatic.com/AdServer/AdServerServlet");
 		// Request for ads
 		ad.execute(adRequest);

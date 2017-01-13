@@ -1,1 +1,1 @@
-include ':common-sdk', ':banner-sdk', ':sdk-sample-app', ':native-sdk'
+include ':common-sdk', ':banner-sdk', ':sdk-sample-app', ':native-sdk', ':pubmaticsample'

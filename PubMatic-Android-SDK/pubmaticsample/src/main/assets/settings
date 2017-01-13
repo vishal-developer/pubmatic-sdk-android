@@ -1,0 +1,150 @@
+{
+  "Mocean": [
+    {
+      "Banner": [
+        {
+          "name": "Ad Tag",
+          "options": {
+            "zone": ""
+          }
+        },
+        {
+          "name": "Configuration",
+          "options": {
+            "width": "320",
+            "height": "50"
+          }
+        },
+        {
+          "name": "Targetting",
+          "options": {
+            "City": "",
+            "Zip": ""
+          }
+        }
+      ],
+      "Native": [
+        {
+          "name": "Ad Tag",
+          "options": {
+            "zone": ""
+          }
+        },
+        {
+          "name": "Configuration",
+          "options": {
+            "width": "320",
+            "height": "50"
+          }
+        },
+        {
+          "name": "Targetting",
+          "options": {
+            "City": "",
+            "Zip": ""
+          }
+        }
+      ]
+    }
+  ],
+  "PubMatic": [
+    {
+      "Banner": [
+        {
+          "name": "Ad Tag",
+          "options": {
+            "pubId": "31400",
+            "siteId": "32504",
+            "adId": "439662"
+          }
+        },
+        {
+          "name": "Configuration",
+          "options": {
+            "width": "320",
+            "height": "50"
+          }
+        },
+        {
+          "name": "Targetting",
+          "options": {
+            "City": "",
+            "Zip": ""
+          }
+        }
+      ],
+      "Native": [
+        {
+          "name": "Ad Tag",
+          "options": {
+            "pubId": "",
+            "siteId": "",
+            "adId": ""
+          }
+        },
+        {
+          "name": "Configuration",
+          "options": {
+            "width": "320",
+            "height": "50"
+          }
+        },
+        {
+          "name": "Targetting",
+          "options": {
+            "City": "",
+            "Zip": ""
+          }
+        }
+      ]
+    }
+  ],
+  "Phoenix": [
+    {
+      "Banner": [
+        {
+          "name": "Ad Tag",
+          "options": {
+            "adUnitId": "555:fe29119e-894e-4122-8dcd-b5cb7350352a"
+          }
+        },
+        {
+          "name": "Configuration",
+          "options": {
+            "width": "320",
+            "height": "50"
+          }
+        },
+        {
+          "name": "Targetting",
+          "options": {
+            "City": "",
+            "Zip": ""
+          }
+        }
+      ],
+      "Native": [
+        {
+          "name": "Ad Tag",
+          "options": {
+            "adUnitId": ""
+          }
+        },
+        {
+          "name": "Configuration",
+          "options": {
+            "width": "320",
+            "height": "50"
+          }
+        },
+        {
+          "name": "Targetting",
+          "options": {
+            "City": "",
+            "Zip": ""
+          }
+        }
+      ]
+    }
+  ]
+}
