@@ -279,15 +279,15 @@ public class PMBannerPrefetchRequest extends PubMaticBannerAdRequest {
 
             if(getIABCategory() != null)
             {
-                JSONArray catJsonArray = new JSONArray();
+                JSONArray iabCatJsonArray = new JSONArray();
 
-                String[] appCategories = getIABCategory().split(",");
-                if(appCategories != null && appCategories.length > 0) {
-                    for (int i = 0; i < appCategories.length; i++)
-                        catJsonArray.put(appCategories[i]);
+                String[] iabCategories = getIABCategory().split(",");
+                if(iabCategories != null && iabCategories.length > 0) {
+                    for (int i = 0; i < iabCategories.length; i++)
+                        iabCatJsonArray.put(iabCategories[i]);
                 }
 
-                appJsonObject.put("cat", catJsonArray);
+                appJsonObject.put("cat", iabCatJsonArray);
             }
 
             appJsonObject.put("ver", pubDeviceInformation.mApplicationVersion);
@@ -498,7 +498,10 @@ public class PMBannerPrefetchRequest extends PubMaticBannerAdRequest {
                 asJsonObject.put("keywords", getKeywordString());
 
             if(getIABCategory() != null && !getIABCategory().equals(""))
-                asJsonObject.put("cat", getIABCategory());
+                asJsonObject.put("iabcat", getIABCategory());
+
+            if(getAppCategory() != null && !getAppCategory().equals(""))
+                asJsonObject.put("cat", getAppCategory());
 
             asJsonObject.put("api", URLEncoder.encode("3::4::5"));
 

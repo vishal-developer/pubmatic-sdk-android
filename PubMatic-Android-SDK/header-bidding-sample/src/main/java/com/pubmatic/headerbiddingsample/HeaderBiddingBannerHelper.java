@@ -266,7 +266,7 @@ public class HeaderBiddingBannerHelper {
         adRequest.setOrmmaComplianceLevel(1);
 
         adRequest.setIABCategory("IAB1-1,IAB1-7");
-        adRequest.setAppCategory("Entertainment");
+        adRequest.setAppCategory("Entertainment, Sports");
 
         return adRequest;
     }
