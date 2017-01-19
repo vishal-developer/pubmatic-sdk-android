@@ -239,3 +239,9 @@ Enabled multi-pixel tracking for SDK.
 -------
 
 - Handled the SSL error callback in case of any untrusted web page load inside the internal browser of SDK.
+
+-------
+ 5.1.1
+-------
+
+- Published the SDK library to JitPack central repository for public distribution.
