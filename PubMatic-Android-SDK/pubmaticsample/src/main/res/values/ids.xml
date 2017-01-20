@@ -7,8 +7,27 @@
 
     <item name="configuration_width" type="id"/>
     <item name="configuration_height" type="id"/>
+    <item name="configuration_do_not_track" type="id"/>
+    <item name="configuration_android_aid_enabled" type="id"/>
+    <item name="configuration_coppa" type="id"/>
+    <item name="configuration_time_out_interval" type="id"/>
+    <item name="configuration_ad_refresh_rate" type="id"/>
+    <item name="configuration_ad_server_url" type="id"/>
 
+    <item name="targetting_user_agent" type="id"/>
+    <item name="targetting_location" type="id"/>
+    <item name="targetting_app_category" type="id"/>
+    <item name="targetting_iab_category" type="id"/>
+    <item name="targetting_store_url" type="id"/>
+    <item name="targetting_app_name" type="id"/>
+    <item name="targetting_app_domain" type="id"/>
     <item name="targetting_city" type="id"/>
     <item name="targetting_zip" type="id"/>
+    <item name="targetting_country" type="id"/>
+    <item name="targetting_year_of_birth" type="id"/>
+    <item name="targetting_income" type="id"/>
+    <item name="targetting_dma" type="id"/>
+    <item name="targetting_language" type="id"/>
+    <item name="targetting_orma_compliance" type="id"/>
 
 </resources>

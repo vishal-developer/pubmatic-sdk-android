@@ -11,8 +11,8 @@
         {
           "name": "Configuration",
           "options": {
-            "width": "320",
-            "height": "50"
+            "width": "",
+            "height": ""
           }
         },
         {
@@ -33,8 +33,8 @@
         {
           "name": "Configuration",
           "options": {
-            "width": "320",
-            "height": "50"
+            "width": "",
+            "height": ""
           }
         },
         {
@@ -53,23 +53,42 @@
         {
           "name": "Ad Tag",
           "options": {
-            "pubId": "31400",
-            "siteId": "32504",
-            "adId": "439662"
+            "pubId": "",
+            "siteId": "",
+            "adId": ""
           }
         },
         {
           "name": "Configuration",
           "options": {
-            "width": "320",
-            "height": "50"
+            "width": "",
+            "height": "",
+            "Do Not Track": "false",
+            "Android Aid Enabled": "true",
+            "Coppa": "true",
+            "Time Out Interval": "",
+            "Ad Refresh Rate": "",
+            "Ad Server Url": ""
           }
         },
         {
           "name": "Targetting",
           "options": {
+            "User Agent": "useragent",
+            "Location": "",
+            "App Category": "appcat",
+            "IAB Category": "iabcat",
+            "Store Url": "storeurl",
+            "App Name": "appname",
+            "App Domain": "appdomain",
             "City": "",
-            "Zip": ""
+            "Zip": "",
+            "Country": "india",
+            "Year of Birth": "",
+            "Income": "",
+            "DMA": "",
+            "Lauguage": "kan",
+            "Orma Compliance": ""
           }
         }
       ],
@@ -85,8 +104,8 @@
         {
           "name": "Configuration",
           "options": {
-            "width": "320",
-            "height": "50"
+            "width": "",
+            "height": ""
           }
         },
         {
@@ -133,8 +152,8 @@
         {
           "name": "Configuration",
           "options": {
-            "width": "320",
-            "height": "50"
+            "width": "",
+            "height": ""
           }
         },
         {
