@@ -1,12 +1,16 @@
 package com.pubmatic.sample;
 
 import android.content.Context;
+import android.os.Environment;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -126,13 +130,23 @@ public final class ConfigurationManager {
         BufferedReader reader = null;
         StringBuffer settings = new StringBuffer();
         JSONObject settingsJson = null;
+        InputStream inputStream = null;
+        String str;
 
         try
         {
-            InputStream json = context.getAssets().open("settings");
-            BufferedReader in= new BufferedReader(new InputStreamReader(json, "UTF-8"));
+            if (shouldImportSettings())
+            {
+                File myFile = new File("/storage/emulated/0/Automation/settings");
+                inputStream = new FileInputStream(myFile);
+            }
+            else
+            {
+                inputStream = context.getAssets().open("settings");
+            }
 
-            String str;
+
+            BufferedReader in= new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
 
             while ((str = in.readLine()) != null) {
                 settings.append(str);
@@ -161,5 +175,16 @@ public final class ConfigurationManager {
         }
 
         return settingsJson;
+    }
+
+    private boolean shouldImportSettings()
+    {
+        //File file1 = new File(Environment.getExternalStorageDirectory().getAbsolutePath() +"/Automation", "settings" );
+        File file = new File("/storage/emulated/0/Automation/settings");
+
+        if (file.exists())
+            return true;
+        else
+            return false;
     }
 }
