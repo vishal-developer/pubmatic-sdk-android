@@ -102,7 +102,7 @@ public class PubMaticBannerRRFormatter implements RRFormatter {
             if (!TextUtils.isEmpty(response.optString(kcreative_tag))
                     && !TextUtils.isEmpty(response.optString(ktracking_url))) {
 
-                adInfo.put("content", URLDecoder.decode(response.getString(kcreative_tag), UTF8_CHARSET));
+                adInfo.put("content", response.getString(kcreative_tag));
                 impressionTrackers.add( URLDecoder.decode(response.getString(ktracking_url), UTF8_CHARSET));
 
                 // Setting ecpm if not null

@@ -3501,7 +3501,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             // return valid adInfo object.
             if (!TextUtils.isEmpty(responseGenerator.getCreative(impressionId))) {
 
-                adInfo.put("content", URLDecoder.decode(responseGenerator.getCreative(impressionId), CommonConstants.ENCODING_UTF_8));
+                adInfo.put("content", responseGenerator.getCreative(impressionId));
                 impressionTrackers.add( URLDecoder.decode(responseGenerator.getTrackingUrl(impressionId), CommonConstants.ENCODING_UTF_8));
 
                 // Setting ecpm if not null
