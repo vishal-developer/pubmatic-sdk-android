@@ -1,169 +1,107 @@
 {
-  "Mocean": [
-    {
-      "Banner": [
-        {
-          "name": "Ad Tag",
-          "options": {
-            "zone": ""
-          }
-        },
-        {
-          "name": "Configuration",
-          "options": {
-            "width": "",
-            "height": ""
-          }
-        },
-        {
-          "name": "Targetting",
-          "options": {
-            "City": "",
-            "Zip": ""
-          }
-        }
-      ],
-      "Native": [
-        {
-          "name": "Ad Tag",
-          "options": {
-            "zone": ""
-          }
-        },
-        {
-          "name": "Configuration",
-          "options": {
-            "width": "",
-            "height": ""
-          }
-        },
-        {
-          "name": "Targetting",
-          "options": {
-            "City": "",
-            "Zip": ""
-          }
-        }
-      ]
+  "Mocean": {
+    "Banner": {
+      "Ad Tag": {
+        "zone": ""
+      },
+      "Configuration": {
+        "width": "",
+        "height": ""
+      },
+      "Targetting": {
+        "City": "",
+        "Zip": ""
+      }
+    },
+    "Native": {
+      "Ad Tag": {
+        "zone": ""
+      },
+      "Configuration": {
+        "width": "",
+        "height": ""
+      },
+      "Targetting": {
+        "City": "",
+        "Zip": ""
+      }
     }
-  ],
-  "PubMatic": [
-    {
-      "Banner": [
-        {
-          "name": "Ad Tag",
-          "options": {
-            "pubId": "",
-            "siteId": "",
-            "adId": ""
-          }
-        },
-        {
-          "name": "Configuration",
-          "options": {
-            "width": "",
-            "height": "",
-            "Do Not Track": "false",
-            "Android Aid Enabled": "true",
-            "Coppa": "true",
-            "Time Out Interval": "",
-            "Ad Refresh Rate": "",
-            "Ad Server Url": ""
-          }
-        },
-        {
-          "name": "Targetting",
-          "options": {
-            "User Agent": "useragent",
-            "Location": "",
-            "App Category": "appcat",
-            "IAB Category": "iabcat",
-            "Store Url": "storeurl",
-            "App Name": "appname",
-            "App Domain": "appdomain",
-            "City": "",
-            "Zip": "",
-            "Country": "india",
-            "Year of Birth": "",
-            "Income": "",
-            "DMA": "",
-            "Lauguage": "kan",
-            "Orma Compliance": ""
-          }
-        }
-      ],
-      "Native": [
-        {
-          "name": "Ad Tag",
-          "options": {
-            "pubId": "",
-            "siteId": "",
-            "adId": ""
-          }
-        },
-        {
-          "name": "Configuration",
-          "options": {
-            "width": "",
-            "height": ""
-          }
-        },
-        {
-          "name": "Targetting",
-          "options": {
-            "City": "",
-            "Zip": ""
-          }
-        }
-      ]
+  },
+  "PubMatic": {
+    "Banner": {
+      "Ad Tag": {
+        "pubId": "",
+        "siteId": "",
+        "adId": ""
+      },
+      "Configuration": {
+        "width": "",
+        "height": "",
+        "Do Not Track": "false",
+        "Android Aid Enabled": "true",
+        "Coppa": "true",
+        "Time Out Interval": "",
+        "Ad Refresh Rate": "",
+        "Ad Server Url": ""
+      },
+      "Targetting": {
+        "User Agent": "useragent",
+        "Location": "",
+        "App Category": "appcat",
+        "IAB Category": "iabcat",
+        "Store Url": "storeurl",
+        "App Name": "appname",
+        "App Domain": "appdomain",
+        "City": "",
+        "Zip": "",
+        "Country": "india",
+        "Year of Birth": "",
+        "Income": "",
+        "DMA": "",
+        "Lauguage": "kan",
+        "Orma Compliance": ""
+      }
+    },
+    "Native": {
+      "Ad Tag": {
+        "zone": ""
+      },
+      "Configuration": {
+        "width": "",
+        "height": ""
+      },
+      "Targetting": {
+        "City": "",
+        "Zip": ""
+      }
     }
-  ],
-  "Phoenix": [
-    {
-      "Banner": [
-        {
-          "name": "Ad Tag",
-          "options": {
-            "adUnitId": "555:fe29119e-894e-4122-8dcd-b5cb7350352a"
-          }
-        },
-        {
-          "name": "Configuration",
-          "options": {
-            "width": "320",
-            "height": "50"
-          }
-        },
-        {
-          "name": "Targetting",
-          "options": {
-            "City": "",
-            "Zip": ""
-          }
-        }
-      ],
-      "Native": [
-        {
-          "name": "Ad Tag",
-          "options": {
-            "adUnitId": ""
-          }
-        },
-        {
-          "name": "Configuration",
-          "options": {
-            "width": "",
-            "height": ""
-          }
-        },
-        {
-          "name": "Targetting",
-          "options": {
-            "City": "",
-            "Zip": ""
-          }
-        }
-      ]
+  },
+  "Phoenix": {
+    "Banner": {
+      "Ad Tag": {
+        "adUnitId": "555:fe29119e-894e-4122-8dcd-b5cb7350352a"
+      },
+      "Configuration": {
+        "width": "320",
+        "height": "50"
+      },
+      "Targetting": {
+        "City": "",
+        "Zip": ""
+      }
+    },
+    "Native": {
+      "Ad Tag": {
+        "zone": ""
+      },
+      "Configuration": {
+        "width": "",
+        "height": ""
+      },
+      "Targetting": {
+        "City": "",
+        "Zip": ""
+      }
     }
-  ]
+  }
 }

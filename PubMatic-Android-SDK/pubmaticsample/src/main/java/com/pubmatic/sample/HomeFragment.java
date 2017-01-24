@@ -1,12 +1,16 @@
 package com.pubmatic.sample;
 
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,6 +25,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.security.Permission;
 import java.util.LinkedHashMap;
 
 /**
@@ -42,6 +47,8 @@ public class HomeFragment extends Fragment {
     private ConfigurationManager.AD_TYPE mAdType;
 
     private View mLoadAd;
+
+    private static final int MY_PERMISSIONS_READ_EXTERNAL_STORAGE = 112;
 
     LinkedHashMap<String, LinkedHashMap<String, String>> mSettings;
 
@@ -77,7 +84,10 @@ public class HomeFragment extends Fragment {
         mLoadAd = rootView.findViewById(R.id.home_load_ad);
         mLoadAd.setOnClickListener(onLoadAd);
 
-        refreshSettings();
+        int readExternalStoragePermissionCheck = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE);
+
+        if(readExternalStoragePermissionCheck != PackageManager.PERMISSION_GRANTED)
+            ActivityCompat.requestPermissions(getActivity(), new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_READ_EXTERNAL_STORAGE);
 
         return rootView;
     }
@@ -86,8 +96,8 @@ public class HomeFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        mSpinnerPlatform.setSelection(0);
-        mSpinnerAdType.setSelection(0);
+        /*mSpinnerPlatform.setSelection(0);
+        mSpinnerAdType.setSelection(0);*/
 
     }
 
@@ -159,7 +169,8 @@ public class HomeFragment extends Fragment {
             else
                 mPlatform = ConfigurationManager.PLATFORM.MOCEAN;
 
-            refreshSettings();
+            if(ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
+                refreshSettings();
         }
 
         @Override
@@ -190,7 +201,8 @@ public class HomeFragment extends Fragment {
             else
                 mAdType = ConfigurationManager.AD_TYPE.BANNER;
 
-            refreshSettings();
+            if(ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
+                refreshSettings();
         }
 
         @Override
@@ -341,4 +353,20 @@ public class HomeFragment extends Fragment {
             }
         }
     };
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_READ_EXTERNAL_STORAGE: {
+
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                    refreshSettings();
+                 else
+                    Toast.makeText(getActivity(), "Permissions denied", Toast.LENGTH_SHORT).show();
+
+                return;
+            }
+        }
+    }
 }

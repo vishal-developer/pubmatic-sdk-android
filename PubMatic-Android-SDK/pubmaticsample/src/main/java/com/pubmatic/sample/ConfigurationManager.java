@@ -47,8 +47,8 @@ public final class ConfigurationManager {
     {
         LinkedHashMap<String, LinkedHashMap<String, String>> settings = null;
 
-        JSONArray platformJsonArray = null;
-        JSONArray adTypeJsonArray = null;
+        JSONObject platformJsonObject = null;
+        JSONObject adTypeJsonObject = null;
 
         String platformKey = null;
         String adTypeKey = null;
@@ -67,19 +67,12 @@ public final class ConfigurationManager {
 
         try
         {
-            platformJsonArray = mSettingsJson.getJSONArray(platformKey);
+            platformJsonObject = mSettingsJson.getJSONObject(platformKey);
+            adTypeJsonObject = platformJsonObject.getJSONObject(adTypeKey);
 
-            for(int i = 0 ; i < platformJsonArray.length() ; i++)
+            if(adTypeJsonObject != null)
             {
-                adTypeJsonArray = platformJsonArray.getJSONObject(i).optJSONArray(adTypeKey);
-
-                if(adTypeJsonArray != null)
-                    break;
-            }
-
-            if(adTypeJsonArray != null)
-            {
-                settings = getSettingItems(adTypeJsonArray);
+                settings = getSettingItems(adTypeJsonObject);
             }
         }
         catch(Exception exception)
@@ -90,22 +83,28 @@ public final class ConfigurationManager {
         return settings;
     }
 
-    private LinkedHashMap<String, LinkedHashMap<String, String>> getSettingItems(JSONArray adTypeJsonArray) {
+    private LinkedHashMap<String, LinkedHashMap<String, String>> getSettingItems(JSONObject adTypeJsonObject) {
 
         LinkedHashMap<String, LinkedHashMap<String, String>> settings = new LinkedHashMap<>();
 
         try {
 
-            for (int j = 0; j < adTypeJsonArray.length(); j++) {
-                String settingHeader = adTypeJsonArray.getJSONObject(j).getString("name");
-                JSONObject optionsJsonObject = adTypeJsonArray.getJSONObject(j).getJSONObject("options");
+            String settingHeader;
+            JSONObject optionsJsonObject;
 
-                Iterator<String> iter = optionsJsonObject.keys();
+            Iterator<String> adTypeIterator = adTypeJsonObject.keys();
+
+            while (adTypeIterator.hasNext()) {
+
+                settingHeader = adTypeIterator.next();
+                optionsJsonObject = adTypeJsonObject.getJSONObject(settingHeader);
+
+                Iterator<String> optionsIterator = optionsJsonObject.keys();
 
                 LinkedHashMap<String, String> options = new LinkedHashMap<>();
 
-                while (iter.hasNext()) {
-                    String key = iter.next();
+                while (optionsIterator.hasNext()) {
+                    String key = optionsIterator.next();
                     try {
                         String value = optionsJsonObject.getString(key);
 
@@ -137,11 +136,15 @@ public final class ConfigurationManager {
         {
             if (shouldImportSettings())
             {
+                Log.i("Configuration Manager", "Reading from external storage");
+
                 File myFile = new File("/storage/emulated/0/Automation/settings");
                 inputStream = new FileInputStream(myFile);
             }
             else
             {
+                Log.i("Configuration Manager", "Reading from internal storage");
+
                 inputStream = context.getAssets().open("settings");
             }
 
