@@ -48,10 +48,12 @@ public class HomeActivity extends FragmentActivity  {
         };
 
         actionBar.addTab(actionBar.newTab()
+                .setContentDescription("home")
                 .setIcon(getResources().getDrawable(R.drawable.home))
                 .setTabListener(tabListener));
 
         actionBar.addTab(actionBar.newTab()
+                .setContentDescription("settings")
                 .setIcon(getResources().getDrawable(R.drawable.settings))
                 .setTabListener(tabListener));
 

@@ -215,6 +215,12 @@ public class BannerAdFragment extends DialogFragment {
             exception.printStackTrace();
         }
 
+        boolean isUseInternalBrowserChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_USE_INTERNAL_BROWSER);
+        banner.setUseInternalBrowser(isUseInternalBrowserChecked);
+
+        boolean isAutoLocationDetectionChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_AUTO_LOCATION_DETECTION);
+        banner.setLocationDetectionEnabled(isAutoLocationDetectionChecked);
+
         // Make the ad request to Server banner.execute(adRequest);
         banner.execute(adRequest);
     }
