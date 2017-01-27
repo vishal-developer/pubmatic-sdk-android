@@ -48,7 +48,7 @@ public class HomeFragment extends Fragment {
 
     private View mLoadAd;
 
-    private static final int MY_PERMISSIONS_READ_EXTERNAL_STORAGE = 112;
+    public static final int MY_PERMISSIONS_READ_EXTERNAL_STORAGE = 112;
 
     LinkedHashMap<String, LinkedHashMap<String, String>> mSettings;
 
@@ -87,7 +87,7 @@ public class HomeFragment extends Fragment {
         int readExternalStoragePermissionCheck = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE);
 
         if(readExternalStoragePermissionCheck != PackageManager.PERMISSION_GRANTED)
-            ActivityCompat.requestPermissions(getActivity(), new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_READ_EXTERNAL_STORAGE);
+            requestPermissions(new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_READ_EXTERNAL_STORAGE);
 
         return rootView;
     }
@@ -211,7 +211,7 @@ public class HomeFragment extends Fragment {
         }
     };
 
-    private void refreshSettings()
+    public void refreshSettings()
     {
         mSettingsParent.removeAllViews();
 

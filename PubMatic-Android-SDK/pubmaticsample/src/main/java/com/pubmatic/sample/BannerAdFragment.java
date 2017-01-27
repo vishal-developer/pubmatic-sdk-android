@@ -19,7 +19,6 @@ import com.pubmatic.sdk.banner.mocean.MoceanBannerAdRequest;
 import com.pubmatic.sdk.banner.phoenix.PhoenixBannerAdRequest;
 import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest;
 import com.pubmatic.sdk.common.AdRequest;
-import com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest;
 
 import java.util.LinkedHashMap;
 
@@ -110,11 +109,29 @@ public class BannerAdFragment extends DialogFragment {
 
             adRequest = MoceanBannerAdRequest.createMoceanBannerAdRequest(getActivity(), zone);
 
+            String test = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_TEST);
+            ((MoceanBannerAdRequest)adRequest).setTest(Boolean.parseBoolean(test));
+
+            String ip = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_IP);
+            ((MoceanBannerAdRequest)adRequest).setIp(ip);
+
             String city = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_CITY);
             ((MoceanBannerAdRequest)adRequest).setCity(city);
 
+            String age = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_AGE);
+            ((MoceanBannerAdRequest)adRequest).setAge(age);
+
+            String gender = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_GENDER);
+            ((MoceanBannerAdRequest)adRequest).setGender(gender);
+
+            String isoRegion = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_ISO_REGION);
+            ((MoceanBannerAdRequest)adRequest).setIsoRegion(isoRegion);
+
             String zip = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_ZIP);
             ((MoceanBannerAdRequest)adRequest).setZip(zip);
+
+            String dma = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_DMA);
+            ((MoceanBannerAdRequest)adRequest).setDMA(dma);
         }
         else if(mPlatform == ConfigurationManager.PLATFORM.PUBMATIC) {
 

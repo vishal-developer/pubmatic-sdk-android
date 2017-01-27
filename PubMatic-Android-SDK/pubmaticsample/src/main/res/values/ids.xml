@@ -13,6 +13,7 @@
     <item name="configuration_time_out_interval" type="id"/>
     <item name="configuration_ad_refresh_rate" type="id"/>
     <item name="configuration_ad_server_url" type="id"/>
+    <item name="configuration_test" type="id"/>
 
     <item name="targetting_user_agent" type="id"/>
     <item name="targetting_location" type="id"/>
@@ -29,5 +30,10 @@
     <item name="targetting_dma" type="id"/>
     <item name="targetting_language" type="id"/>
     <item name="targetting_orma_compliance" type="id"/>
+    <item name="targetting_ip" type="id"/>
+    <item name="targetting_age" type="id"/>
+    <item name="targetting_gender" type="id"/>
+    <item name="targetting_over_18" type="id"/>
+    <item name="targetting_iso_region" type="id"/>
 
 </resources>

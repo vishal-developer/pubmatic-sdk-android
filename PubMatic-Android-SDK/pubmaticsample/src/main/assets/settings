@@ -6,11 +6,18 @@
       },
       "Configuration": {
         "width": "",
-        "height": ""
+        "height": "",
+        "test": ""
       },
       "Targetting": {
+        "IP": "",
         "City": "",
-        "Zip": ""
+        "Age": "",
+        "Gender": "",
+        "Over 18": "",
+        "ISO Region": "",
+        "Zip": "",
+        "DMA": ""
       }
     },
     "Native": {

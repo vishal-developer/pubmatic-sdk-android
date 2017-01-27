@@ -39,6 +39,8 @@ public class PMUtils {
                 id = R.id.configuration_ad_refresh_rate;
             else if(setting.equals(PMConstants.SETTINGS_CONFIGURATION_AD_SERVER_URL))
                 id = R.id.configuration_ad_server_url;
+            else if(setting.equals(PMConstants.SETTINGS_CONFIGURATION_TEST))
+                id = R.id.configuration_test;
         }
         else if(settingsHeader.equals(PMConstants.SETTINGS_HEADING_TARGETTING))
         {
@@ -72,6 +74,16 @@ public class PMUtils {
                 id = R.id.targetting_language;
             else if(setting.equals(PMConstants.SETTINGS_TARGETTING_ORMA_COMPLIANCE))
                 id = R.id.targetting_orma_compliance;
+            else if(setting.equals(PMConstants.SETTINGS_TARGETTING_IP))
+                id = R.id.targetting_ip;
+            else if(setting.equals(PMConstants.SETTINGS_TARGETTING_AGE))
+                id = R.id.targetting_age;
+            else if(setting.equals(PMConstants.SETTINGS_TARGETTING_GENDER))
+                id = R.id.targetting_gender;
+            else if(setting.equals(PMConstants.SETTINGS_TARGETTING_OVER_18))
+                id = R.id.targetting_over_18;
+            else if(setting.equals(PMConstants.SETTINGS_TARGETTING_ISO_REGION))
+                id = R.id.targetting_iso_region;
         }
 
         return id;

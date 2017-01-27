@@ -25,6 +25,7 @@ public class PMConstants {
     public static final String SETTINGS_CONFIGURATION_TIME_OUT_INTERVAL = "Time Out Interval";
     public static final String SETTINGS_CONFIGURATION_AD_REFRESH_RATE = "Ad Refresh Rate";
     public static final String SETTINGS_CONFIGURATION_AD_SERVER_URL = "Ad Server Url";
+    public static final String SETTINGS_CONFIGURATION_TEST = "Test";
 
     public static final String SETTINGS_HEADING_TARGETTING = "Targetting";
     public static final String SETTINGS_TARGETTING_USER_AGENT = "User Agent";
@@ -42,6 +43,11 @@ public class PMConstants {
     public static final String SETTINGS_TARGETTING_DMA = "DMA";
     public static final String SETTINGS_TARGETTING_LANGUAGE = "Language";
     public static final String SETTINGS_TARGETTING_ORMA_COMPLIANCE = "Orma Compliance";
+    public static final String SETTINGS_TARGETTING_IP = "IP";
+    public static final String SETTINGS_TARGETTING_AGE = "Age";
+    public static final String SETTINGS_TARGETTING_GENDER = "Gender";
+    public static final String SETTINGS_TARGETTING_OVER_18 = "Over18";
+    public static final String SETTINGS_TARGETTING_ISO_REGION = "ISO Region";
 
 
 
