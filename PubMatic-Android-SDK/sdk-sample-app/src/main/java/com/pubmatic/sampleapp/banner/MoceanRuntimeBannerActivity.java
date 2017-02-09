@@ -50,15 +50,8 @@ public class MoceanRuntimeBannerActivity extends Activity {
         MoceanBannerAdRequest adRequest = MoceanBannerAdRequest
                 .createMoceanBannerAdRequest(this, "88269");
 
-        Location location = new Location("");
-        location.setLatitude(1.0);
-        location.setLongitude(2.0);
-
-        adRequest.setLocation(location);
-
         banner.setUseInternalBrowser(true);
         banner.setUpdateInterval(15);
-        banner.setLocationDetectionEnabled(true);
         banner.execute(adRequest);
     }
 

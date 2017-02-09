@@ -91,12 +91,6 @@ public class MoceanNativeActivity extends Activity {
 		list.add("list3");
 		adRequest.addCustomParam("Test3", list);
 
-		Location location = new Location("");
-		location.setLatitude(1.0);
-		location.setLongitude(2.0);
-
-		adRequest.setLocation(location);
-
 		ad.setLocationDetectionEnabled(true);
 
 		// Request for ads

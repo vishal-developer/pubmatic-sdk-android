@@ -168,7 +168,7 @@ public final class PMNativeAd {
 
     // Location support
     private Location location;
-    private boolean mRetrieveLocationInfo;
+    private boolean mRetrieveLocationInfo = true;
 
     //private NativeAdController mAdController;
     private CHANNEL mChannel;

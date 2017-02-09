@@ -41,12 +41,6 @@ public class PubRuntimeBannerActivity extends Activity {
         banner.setUseInternalBrowser(true);
         banner.setUpdateInterval(15);
 
-        Location location = new Location("");
-        location.setLatitude(1.0);
-        location.setLongitude(2.0);
-
-        adRequest.setLocation(location);
-
         banner.execute(adRequest);
 
     }

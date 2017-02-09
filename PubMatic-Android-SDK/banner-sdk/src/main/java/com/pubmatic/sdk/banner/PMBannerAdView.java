@@ -376,7 +376,7 @@ public class PMBannerAdView extends ViewGroup {
     private boolean invokeTracking = false;
     private boolean mImpressionTrackerSent = false;
     private boolean mClickTrackerSent = false;
-    private boolean mRetrieveLocationInfo;
+    private boolean mRetrieveLocationInfo = true;
 
     // Internal browser
     private BrowserDialog browserDialog = null;
