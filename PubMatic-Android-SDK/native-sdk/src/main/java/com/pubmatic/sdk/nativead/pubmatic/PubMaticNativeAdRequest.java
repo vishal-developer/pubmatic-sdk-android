@@ -158,8 +158,9 @@ public class PubMaticNativeAdRequest  extends PubMaticAdRequest {
 
 		putPostData("count", "1");
 		putPostData("operId", "201");
-		putPostData("adtype", "12");
 		putPostData("version", CommonConstants.SDK_VERSION);
+		putPostData(PubMaticConstants.AD_TYPE_PARAM, String.valueOf(12));//For Native ads
+
 		if (this.test) {
 			putPostData("test", "1");
 		}
@@ -196,7 +197,6 @@ public class PubMaticNativeAdRequest  extends PubMaticAdRequest {
 	private void setupAssetData() {
 		try {
 			JSONObject nativeObj = new JSONObject();
-			nativeObj.put(REQUEST_VER, REQUEST_VER_VALUE_1);
 			JSONArray assetsArray = new JSONArray();
 			JSONObject assetObj;
 			JSONObject titleObj;
@@ -205,7 +205,7 @@ public class PubMaticNativeAdRequest  extends PubMaticAdRequest {
 			for (PMAssetRequest assetRequest : requestedAssetsList) {
 				if (assetRequest != null) {
 					assetObj = new JSONObject();
-					assetObj.put(ID_STRING, assetRequest.assetId);
+					assetObj.put(ID_STRING, assetRequest.getAssetId());
 					assetObj.put(REQUEST_REQUIRED,
 							(assetRequest.isRequired ? 1 : 0));
 					if (assetRequest instanceof PMTitleAssetRequest) {
