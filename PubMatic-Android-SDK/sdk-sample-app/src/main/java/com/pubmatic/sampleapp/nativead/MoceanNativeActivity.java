@@ -90,9 +90,7 @@ public class MoceanNativeActivity extends Activity {
 		list.add("list2");
 		list.add("list3");
 		adRequest.addCustomParam("Test3", list);
-
-		ad.setLocationDetectionEnabled(true);
-
+		
 		// Request for ads
 		ad.execute(adRequest);
 	}
