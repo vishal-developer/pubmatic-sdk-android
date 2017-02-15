@@ -67,6 +67,10 @@
             android:name=".nativead.PubMaticNativeActivity"
             android:label="@string/native_ad_demo">
         </activity>
+        <activity
+            android:name=".nativead.PhoenixNativeActivity"
+            android:label="@string/native_ad_demo">
+        </activity>
         <activity android:name=".interstitial.InterstitialSamplesListActivity"
                   android:label="@string/interstitial_ad_demo">
         </activity>
