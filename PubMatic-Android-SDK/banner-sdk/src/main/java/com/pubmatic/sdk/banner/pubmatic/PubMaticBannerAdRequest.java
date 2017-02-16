@@ -56,6 +56,8 @@ public class PubMaticBannerAdRequest extends PubMaticAdRequest {
 		if (mPostData == null)
 			mPostData = new StringBuffer();
 
+		putPostData(PubMaticConstants.AD_TYPE_PARAM, String.valueOf(11));//For Text and Image and Rich Media ads
+
 		// Set the Ad size
 		if (mPubAdSize != null) {//Need to confirm AD_HEIGHT_PARAM or SIZE_Y_PARAM
 			putPostData(PubMaticConstants.AD_HEIGHT_PARAM, String.valueOf(mPubAdSize.getAdHeight()));

@@ -20,10 +20,14 @@ package com.pubmatic.sampleapp;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ListActivity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,6 +42,8 @@ import com.pubmatic.sampleapp.nativead.NativeSamplesListActivity;
 
 public class SamplesListActivity extends ListActivity {
 	SamplesListAdapter samplesListAdapter = null;
+
+	private static final int MY_PERMISSIONS_REQUEST_LOCATION = 12355;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +61,11 @@ public class SamplesListActivity extends ListActivity {
 		samplesListAdapter.addItem(new SamplesItem("Native Demo", NativeSamplesListActivity.class));
 
 		super.setListAdapter(samplesListAdapter);
+
+        int LocationPermissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+
+        if(LocationPermissionCheck != PackageManager.PERMISSION_GRANTED)
+            ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION }, MY_PERMISSIONS_REQUEST_LOCATION);
 	}
 
 	@Override
@@ -127,4 +138,5 @@ public class SamplesListActivity extends ListActivity {
 			return view;
 		}
 	}
+
 }
