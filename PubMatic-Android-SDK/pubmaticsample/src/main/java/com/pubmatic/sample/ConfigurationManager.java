@@ -23,7 +23,7 @@ import java.util.LinkedHashMap;
 public final class ConfigurationManager {
 
     public enum PLATFORM { MOCEAN, PUBMATIC, PHEONIX };
-    public enum AD_TYPE { BANNER, NATIVE };
+    public enum AD_TYPE { BANNER, INTERSTITIAL, NATIVE };
 
     private JSONObject mSettingsJson;
     private Context mContext;
@@ -62,6 +62,8 @@ public final class ConfigurationManager {
 
         if(adType == AD_TYPE.BANNER)
             adTypeKey = "Banner";
+        else if(adType == AD_TYPE.INTERSTITIAL)
+            adTypeKey = "Interstitial";
         else if(adType == AD_TYPE.NATIVE)
             adTypeKey = "Native";
 

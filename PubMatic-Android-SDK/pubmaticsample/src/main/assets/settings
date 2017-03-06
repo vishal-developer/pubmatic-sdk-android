@@ -20,6 +20,24 @@
         "DMA": ""
       }
     },
+    "Interstitial": {
+      "Ad Tag": {
+        "zone": ""
+      },
+      "Configuration": {
+        "test": ""
+      },
+      "Targetting": {
+        "IP": "",
+        "City": "",
+        "Age": "",
+        "Gender": "",
+        "Over 18": "",
+        "ISO Region": "",
+        "Zip": "",
+        "DMA": ""
+      }
+    },
     "Native": {
       "Ad Tag": {
         "zone": ""
@@ -69,6 +87,38 @@
         "Orma Compliance": ""
       }
     },
+    "Interstitial": {
+      "Ad Tag": {
+        "pubId": "",
+        "siteId": "",
+        "adId": ""
+      },
+      "Configuration": {
+        "Do Not Track": "false",
+        "Android Aid Enabled": "true",
+        "Coppa": "true",
+        "Time Out Interval": "",
+        "Ad Refresh Rate": "",
+        "Ad Server Url": ""
+      },
+      "Targetting": {
+        "User Agent": "useragent",
+        "Location": "",
+        "App Category": "appcat",
+        "IAB Category": "iabcat",
+        "Store Url": "storeurl",
+        "App Name": "appname",
+        "App Domain": "appdomain",
+        "City": "",
+        "Zip": "",
+        "Country": "india",
+        "Year of Birth": "",
+        "Income": "",
+        "DMA": "",
+        "Lauguage": "kan",
+        "Orma Compliance": ""
+      }
+    },
     "Native": {
       "Ad Tag": {
         "zone": ""
@@ -91,6 +141,15 @@
       "Configuration": {
         "width": "320",
         "height": "50"
+      },
+      "Targetting": {
+        "City": "",
+        "Zip": ""
+      }
+    },
+    "Interstitial": {
+      "Ad Tag": {
+        "adUnitId": "555:fe29119e-894e-4122-8dcd-b5cb7350352a"
       },
       "Targetting": {
         "City": "",

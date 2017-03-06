@@ -65,7 +65,7 @@ public class HomeFragment extends Fragment {
         mSpinnerAdType = (Spinner) rootView.findViewById(R.id.home_spinner_ad_type);
 
         platforms = new String[] {"Mocean", "PubMatic", "Phoenix"};
-        adTypes = new String[] {"Banner", "Native"};
+        adTypes = new String[] {"Banner", "Interstitial", "Native"};
 
         mPlatformAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, platforms);
         mSpinnerPlatform.setAdapter(mPlatformAdapter);
@@ -196,6 +196,8 @@ public class HomeFragment extends Fragment {
 
             if(adType.equals("Banner"))
                 mAdType = ConfigurationManager.AD_TYPE.BANNER;
+            else if(adType.equals("Interstitial"))
+                mAdType = ConfigurationManager.AD_TYPE.INTERSTITIAL;
             else if(adType.equals("Native"))
                 mAdType = ConfigurationManager.AD_TYPE.NATIVE;
             else
@@ -347,9 +349,60 @@ public class HomeFragment extends Fragment {
 
                 }
             }
-            else if(mAdType == ConfigurationManager.AD_TYPE.NATIVE)
+            else if(mAdType == ConfigurationManager.AD_TYPE.INTERSTITIAL)
             {
+                if(mPlatform == ConfigurationManager.PLATFORM.MOCEAN)
+                {
+                    EditText et = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_AD_TAG + ":" + PMConstants.SETTINGS_AD_TAG_ZONE);
+                    String zone = et.getText().toString();
+                    mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).put(PMConstants.SETTINGS_AD_TAG_ZONE, zone);
 
+                    EditText etCity = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_CITY);
+                    String city = etCity.getText().toString();
+                    mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_CITY, city);
+
+                    EditText etZip = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_ZIP);
+                    String zip = etZip.getText().toString();
+                    mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_ZIP, zip);
+
+                    if(zone != null && !zone.equals(""))
+                    {
+                        InterstitialAdFragment interstitialAdDialogFragment = new InterstitialAdFragment(mPlatform, mSettings);
+                        interstitialAdDialogFragment.show(getActivity().getFragmentManager(), "InterstitialAdFragment");
+                    }
+                    else
+                        Toast.makeText(getActivity(), "Please enter a zone", Toast.LENGTH_LONG).show();
+                }
+                else if(mPlatform == ConfigurationManager.PLATFORM.PUBMATIC)
+                {
+                    EditText pubEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_AD_TAG + ":" + PMConstants.SETTINGS_AD_TAG_PUB_ID);
+                    String pubId = pubEt.getText().toString();
+                    mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).put(PMConstants.SETTINGS_AD_TAG_PUB_ID, pubId);
+
+                    EditText siteEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_AD_TAG + ":" + PMConstants.SETTINGS_AD_TAG_SITE_ID);
+                    String siteId = siteEt.getText().toString();
+                    mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).put(PMConstants.SETTINGS_AD_TAG_SITE_ID, siteId);
+
+                    EditText adEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_AD_TAG + ":" + PMConstants.SETTINGS_AD_TAG_AD_ID);
+                    String adId = adEt.getText().toString();
+                    mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).put(PMConstants.SETTINGS_AD_TAG_AD_ID, adId);
+
+                    EditText etCity = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_CITY);
+                    String city = etCity.getText().toString();
+                    mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_CITY, city);
+
+                    EditText etZip = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_ZIP);
+                    String zip = etZip.getText().toString();
+                    mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_ZIP, zip);
+
+                    if(pubId != null && !pubId.equals("") && siteId != null && !siteId.equals("") && adId != null & !adId.equals(""))
+                    {
+                        InterstitialAdFragment interstitialAdFragment = new InterstitialAdFragment(mPlatform, mSettings);
+                        interstitialAdFragment.show(getActivity().getFragmentManager(), "interstitialAdFragment");
+                    }
+                    else
+                        Toast.makeText(getActivity(), "Please enter pubId, siteId and adId", Toast.LENGTH_LONG).show();
+                }
             }
         }
     };
