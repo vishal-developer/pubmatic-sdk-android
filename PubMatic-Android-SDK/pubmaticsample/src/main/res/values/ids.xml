@@ -16,7 +16,8 @@
     <item name="configuration_test" type="id"/>
 
     <item name="targetting_user_agent" type="id"/>
-    <item name="targetting_location" type="id"/>
+    <item name="targetting_latitude" type="id"/>
+    <item name="targetting_longitude" type="id"/>
     <item name="targetting_app_category" type="id"/>
     <item name="targetting_iab_category" type="id"/>
     <item name="targetting_store_url" type="id"/>
@@ -27,6 +28,8 @@
     <item name="targetting_country" type="id"/>
     <item name="targetting_year_of_birth" type="id"/>
     <item name="targetting_income" type="id"/>
+    <item name="targetting_ethnicity" type="id"/>
+    <item name="targetting_paid" type="id"/>
     <item name="targetting_dma" type="id"/>
     <item name="targetting_language" type="id"/>
     <item name="targetting_orma_compliance" type="id"/>

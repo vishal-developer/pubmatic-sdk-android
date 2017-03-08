@@ -28,8 +28,8 @@ public class PMConstants {
     public static final String SETTINGS_CONFIGURATION_TEST = "Test";
 
     public static final String SETTINGS_HEADING_TARGETTING = "Targetting";
-    public static final String SETTINGS_TARGETTING_USER_AGENT = "User Agent";
-    public static final String SETTINGS_TARGETTING_LOCATION = "Location";
+    public static final String SETTINGS_TARGETTING_LATITUDE = "Latitude";
+    public static final String SETTINGS_TARGETTING_LONGITUDE = "Longitude";
     public static final String SETTINGS_TARGETTING_APP_CATEGORY = "App Category";
     public static final String SETTINGS_TARGETTING_IAB_CATEGORY = "IAB Category";
     public static final String SETTINGS_TARGETTING_STORE_URL = "Store Url";
@@ -38,15 +38,17 @@ public class PMConstants {
     public static final String SETTINGS_TARGETTING_CITY = "City";
     public static final String SETTINGS_TARGETTING_ZIP = "Zip";
     public static final String SETTINGS_TARGETTING_COUNTRY = "Country";
-    public static final String SETTINGS_TARGETTING_YEAR_OF_BIRTH = "Year Of Birth";
+    public static final String SETTINGS_TARGETTING_YEAR_OF_BIRTH = "Year of Birth";
     public static final String SETTINGS_TARGETTING_INCOME = "Income";
+    public static final String SETTINGS_TARGETTING_ETHNICITY = "Ethnicity";
+    public static final String SETTINGS_TARGETTING_PAID = "Paid";
     public static final String SETTINGS_TARGETTING_DMA = "DMA";
     public static final String SETTINGS_TARGETTING_LANGUAGE = "Language";
     public static final String SETTINGS_TARGETTING_ORMA_COMPLIANCE = "Orma Compliance";
     public static final String SETTINGS_TARGETTING_IP = "IP";
     public static final String SETTINGS_TARGETTING_AGE = "Age";
     public static final String SETTINGS_TARGETTING_GENDER = "Gender";
-    public static final String SETTINGS_TARGETTING_OVER_18 = "Over18";
+    public static final String SETTINGS_TARGETTING_OVER_18 = "Over 18";
     public static final String SETTINGS_TARGETTING_ISO_REGION = "ISO Region";
 
 

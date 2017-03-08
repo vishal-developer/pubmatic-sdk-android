@@ -44,10 +44,10 @@ public class PMUtils {
         }
         else if(settingsHeader.equals(PMConstants.SETTINGS_HEADING_TARGETTING))
         {
-            if(setting.equals(PMConstants.SETTINGS_TARGETTING_USER_AGENT))
-                id = R.id.targetting_user_agent;
-            else if(setting.equals(PMConstants.SETTINGS_TARGETTING_LOCATION))
-                id = R.id.targetting_location;
+            if(setting.equals(PMConstants.SETTINGS_TARGETTING_LATITUDE))
+                id = R.id.targetting_latitude;
+            else if(setting.equals(PMConstants.SETTINGS_TARGETTING_LONGITUDE))
+                id = R.id.targetting_longitude;
             else if(setting.equals(PMConstants.SETTINGS_TARGETTING_APP_CATEGORY))
                 id = R.id.targetting_app_category;
             else if(setting.equals(PMConstants.SETTINGS_TARGETTING_IAB_CATEGORY))
@@ -68,6 +68,10 @@ public class PMUtils {
                 id = R.id.targetting_year_of_birth;
             else if(setting.equals(PMConstants.SETTINGS_TARGETTING_INCOME))
                 id = R.id.targetting_income;
+            else if(setting.equals(PMConstants.SETTINGS_TARGETTING_ETHNICITY))
+                id = R.id.targetting_ethnicity;
+            else if(setting.equals(PMConstants.SETTINGS_TARGETTING_PAID))
+                id = R.id.targetting_paid;
             else if(setting.equals(PMConstants.SETTINGS_TARGETTING_DMA))
                 id = R.id.targetting_dma;
             else if(setting.equals(PMConstants.SETTINGS_TARGETTING_LANGUAGE))

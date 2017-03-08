@@ -287,6 +287,8 @@ public class HomeFragment extends Fragment {
                     String zip = etZip.getText().toString();
                     mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_ZIP, zip);
 
+                    getMoceanTargettingParameters();
+
                     if(zone != null && !zone.equals(""))
                     {
                         BannerAdFragment bannerAdDialogFragment = new BannerAdFragment(mPlatform, mSettings);
@@ -309,13 +311,7 @@ public class HomeFragment extends Fragment {
                     String adId = adEt.getText().toString();
                     mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).put(PMConstants.SETTINGS_AD_TAG_AD_ID, adId);
 
-                    EditText etCity = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_CITY);
-                    String city = etCity.getText().toString();
-                    mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_CITY, city);
-
-                    EditText etZip = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_ZIP);
-                    String zip = etZip.getText().toString();
-                    mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_ZIP, zip);
+                    getPubmaticTargettingParameters();
 
                     if(pubId != null && !pubId.equals("") && siteId != null && !siteId.equals("") && adId != null & !adId.equals(""))
                     {
@@ -387,6 +383,20 @@ public class HomeFragment extends Fragment {
                     String adId = adEt.getText().toString();
                     mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).put(PMConstants.SETTINGS_AD_TAG_AD_ID, adId);
 
+                    getPubmaticTargettingParameters();
+
+                    EditText etLatitude = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_LATITUDE);
+                    String latitude = etLatitude.getText().toString();
+
+                    if(!latitude.equals(""))
+                        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_LATITUDE, latitude);
+
+                    EditText etLongitude = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_LONGITUDE);
+                    String longitude = etLongitude.getText().toString();
+
+                    if(!longitude.equals(""))
+                        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_LONGITUDE, longitude);
+
                     EditText etCity = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_CITY);
                     String city = etCity.getText().toString();
                     mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_CITY, city);
@@ -421,5 +431,138 @@ public class HomeFragment extends Fragment {
                 return;
             }
         }
+    }
+
+    private void getMoceanTargettingParameters()
+    {
+        EditText etLatitude = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_LATITUDE);
+        String latitude = etLatitude.getText().toString();
+
+        if(!latitude.equals(""))
+            mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_LATITUDE, latitude);
+
+        EditText etLongitude = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_LONGITUDE);
+        String longitude = etLongitude.getText().toString();
+
+        if(!longitude.equals(""))
+            mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_LONGITUDE, longitude);
+
+        EditText etCity = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_CITY);
+        String city = etCity.getText().toString();
+        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_CITY, city);
+
+        EditText etZip = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_ZIP);
+        String zip = etZip.getText().toString();
+        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_ZIP, zip);
+
+        EditText etDMA = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_DMA);
+        String dma = etDMA.getText().toString();
+        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_DMA, dma);
+
+        // Area
+
+        EditText etAge = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_AGE);
+        String age = etAge.getText().toString();
+        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_AGE, age);
+
+        // Birthday
+
+        EditText etGender = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_GENDER);
+        String gender = etGender.getText().toString();
+        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_ETHNICITY, gender);
+
+        EditText etEthnicity = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_ETHNICITY);
+        String ethnicity = etEthnicity.getText().toString();
+        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_ETHNICITY, ethnicity);
+
+        EditText etLanguage = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_LANGUAGE);
+        String language = etLanguage.getText().toString();
+        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_LANGUAGE, language);
+
+        EditText etOver18 = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_OVER_18);
+        String over18 = etOver18.getText().toString();
+        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_OVER_18, over18);
+
+        // Timeout
+        // Keywords
+    }
+
+    private void getPubmaticTargettingParameters()
+    {
+        EditText etLatitude = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_LATITUDE);
+        String latitude = etLatitude.getText().toString();
+
+        if(!latitude.equals(""))
+            mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_LATITUDE, latitude);
+
+        EditText etLongitude = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_LONGITUDE);
+        String longitude = etLongitude.getText().toString();
+
+        if(!longitude.equals(""))
+            mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_LONGITUDE, longitude);
+
+        EditText appCategoryEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_APP_CATEGORY);
+        String appCategoryId = appCategoryEt.getText().toString();
+        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_APP_CATEGORY, appCategoryId);
+
+        EditText iabCategoryEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_IAB_CATEGORY);
+        String iabCategoryId = iabCategoryEt.getText().toString();
+        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_IAB_CATEGORY, iabCategoryId);
+
+        EditText storeUrlEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_STORE_URL);
+        String storeUrl = storeUrlEt.getText().toString();
+        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_STORE_URL, storeUrl);
+
+        EditText appNameEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_APP_NAME);
+        String appName = appNameEt.getText().toString();
+        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_APP_NAME, appName);
+
+        EditText appDomainEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_APP_DOMAIN);
+        String appDomain = appDomainEt.getText().toString();
+        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_APP_DOMAIN, appDomain);
+
+        EditText etCity = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_CITY);
+        String city = etCity.getText().toString();
+        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_CITY, city);
+
+        EditText etZip = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_ZIP);
+        String zip = etZip.getText().toString();
+        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_ZIP, zip);
+
+        EditText etCountry = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_COUNTRY);
+        String country = etCountry.getText().toString();
+        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_COUNTRY, country);
+
+        EditText etYearOfBirth = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_YEAR_OF_BIRTH);
+        String yearOfBirth = etYearOfBirth.getText().toString();
+        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_YEAR_OF_BIRTH, yearOfBirth);
+
+        EditText etIncome = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_INCOME);
+        String income = etIncome.getText().toString();
+        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_INCOME, income);
+
+        EditText etEthnicity = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_ETHNICITY);
+        String ethnicity = etEthnicity.getText().toString();
+        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_ETHNICITY, ethnicity);
+
+        EditText etGender = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_GENDER);
+        String gender = etGender.getText().toString();
+        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_ETHNICITY, gender);
+
+        EditText etDMA = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_DMA);
+        String dma = etDMA.getText().toString();
+        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_DMA, dma);
+
+        EditText etLanguage = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_LANGUAGE);
+        String language = etLanguage.getText().toString();
+        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_LANGUAGE, language);
+
+        EditText etOrmaCompliance = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_ORMA_COMPLIANCE);
+        String ormaCompliance = etOrmaCompliance.getText().toString();
+        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_ORMA_COMPLIANCE, ormaCompliance);
+
+        EditText etPaid = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_PAID);
+        String paid = etPaid.getText().toString();
+        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_PAID, paid);
     }
 }
