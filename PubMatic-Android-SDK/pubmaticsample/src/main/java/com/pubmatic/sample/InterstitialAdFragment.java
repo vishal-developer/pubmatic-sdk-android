@@ -166,6 +166,26 @@ public class InterstitialAdFragment extends DialogFragment {
                 if(!over18.equals("") && over18 != null)
                     ((MoceanBannerAdRequest)adRequest).setOver18(over18);*/
 
+                String birthday = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_BIRTHDAY);
+
+                if(!birthday.equals("") && birthday != null)
+                    ((MoceanBannerAdRequest)adRequest).setBirthDay(birthday);
+
+                String area = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_AREA);
+
+                if(!area.equals("") && area != null)
+                    ((MoceanBannerAdRequest)adRequest).setAreaCode(area);
+
+                /*String timeout = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_TIMEOUT);
+
+                if(!timeout.equals("") && timeout != null)
+                    ((MoceanBannerAdRequest)adRequest).setTimeout(Integer.parseInt(timeout));*/
+
+                /*String keywords = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_KEYWORDS);
+
+                if(!keywords.equals("") && keywords != null)
+                    ((MoceanBannerAdRequest)adRequest).setKeywords(keywords);*/
+
             }
             catch (Exception exception)
             {

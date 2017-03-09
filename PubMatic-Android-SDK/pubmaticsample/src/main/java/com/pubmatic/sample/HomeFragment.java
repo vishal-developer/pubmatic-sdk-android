@@ -459,13 +459,17 @@ public class HomeFragment extends Fragment {
         String dma = etDMA.getText().toString();
         mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_DMA, dma);
 
-        // Area
+        EditText etArea = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_AREA);
+        String area = etArea.getText().toString();
+        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_AREA, area);
 
         EditText etAge = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_AGE);
         String age = etAge.getText().toString();
         mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_AGE, age);
 
-        // Birthday
+        EditText etBirthday = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_BIRTHDAY);
+        String birthday = etBirthday.getText().toString();
+        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_BIRTHDAY, birthday);
 
         EditText etGender = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_GENDER);
         String gender = etGender.getText().toString();
@@ -483,8 +487,13 @@ public class HomeFragment extends Fragment {
         String over18 = etOver18.getText().toString();
         mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_OVER_18, over18);
 
-        // Timeout
-        // Keywords
+        EditText etTimeout = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_TIMEOUT);
+        String timeout = etTimeout.getText().toString();
+        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_TIMEOUT, timeout);
+
+        EditText etKeywords = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_KEYWORDS);
+        String keywords = etKeywords.getText().toString();
+        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_KEYWORDS, keywords);
     }
 
     private void getPubmaticTargettingParameters()

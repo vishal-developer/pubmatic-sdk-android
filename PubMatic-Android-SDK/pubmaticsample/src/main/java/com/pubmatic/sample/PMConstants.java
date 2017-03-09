@@ -50,6 +50,10 @@ public class PMConstants {
     public static final String SETTINGS_TARGETTING_GENDER = "Gender";
     public static final String SETTINGS_TARGETTING_OVER_18 = "Over 18";
     public static final String SETTINGS_TARGETTING_ISO_REGION = "ISO Region";
+    public static final String SETTINGS_TARGETTING_BIRTHDAY = "Birthday";
+    public static final String SETTINGS_TARGETTING_AREA = "Area";
+    public static final String SETTINGS_TARGETTING_TIMEOUT = "Timeout";
+    public static final String SETTINGS_TARGETTING_KEYWORDS = "Keywords";
 
 
 

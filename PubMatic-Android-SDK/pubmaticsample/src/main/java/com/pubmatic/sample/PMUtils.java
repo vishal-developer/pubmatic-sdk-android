@@ -88,6 +88,14 @@ public class PMUtils {
                 id = R.id.targetting_over_18;
             else if(setting.equals(PMConstants.SETTINGS_TARGETTING_ISO_REGION))
                 id = R.id.targetting_iso_region;
+            else if(setting.equals(PMConstants.SETTINGS_TARGETTING_BIRTHDAY))
+                id = R.id.targetting_birthday;
+            else if(setting.equals(PMConstants.SETTINGS_TARGETTING_AREA))
+                id = R.id.targetting_area;
+            else if(setting.equals(PMConstants.SETTINGS_TARGETTING_TIMEOUT))
+                id = R.id.targetting_timeout;
+            else if(setting.equals(PMConstants.SETTINGS_TARGETTING_KEYWORDS))
+                id = R.id.targetting_keywords;
         }
 
         return id;

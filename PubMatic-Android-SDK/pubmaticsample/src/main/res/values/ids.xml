@@ -38,5 +38,9 @@
     <item name="targetting_gender" type="id"/>
     <item name="targetting_over_18" type="id"/>
     <item name="targetting_iso_region" type="id"/>
+    <item name="targetting_birthday" type="id"/>
+    <item name="targetting_area" type="id"/>
+    <item name="targetting_timeout" type="id"/>
+    <item name="targetting_keywords" type="id"/>
 
 </resources>
