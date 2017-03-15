@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -48,6 +49,8 @@ public class HomeFragment extends Fragment {
 
     private View mLoadAd;
 
+    private final Handler handler = new Handler();
+
     public static final int MY_PERMISSIONS_READ_EXTERNAL_STORAGE = 112;
 
     LinkedHashMap<String, LinkedHashMap<String, String>> mSettings;
@@ -84,10 +87,15 @@ public class HomeFragment extends Fragment {
         mLoadAd = rootView.findViewById(R.id.home_load_ad);
         mLoadAd.setOnClickListener(onLoadAd);
 
-        int readExternalStoragePermissionCheck = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE);
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                int readExternalStoragePermissionCheck = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE);
 
-        if(readExternalStoragePermissionCheck != PackageManager.PERMISSION_GRANTED)
-            requestPermissions(new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_READ_EXTERNAL_STORAGE);
+                if(readExternalStoragePermissionCheck != PackageManager.PERMISSION_GRANTED)
+                    requestPermissions(new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_READ_EXTERNAL_STORAGE);
+            }
+        }, 500);
 
         return rootView;
     }
