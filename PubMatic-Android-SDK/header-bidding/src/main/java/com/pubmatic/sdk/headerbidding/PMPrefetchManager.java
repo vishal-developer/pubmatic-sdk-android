@@ -262,51 +262,90 @@ public class PMPrefetchManager implements ResponseGenerator {
         Map<String, PMBid> bidsMap = new HashMap<>();
 
         JSONObject headerBiddingJsonObject;
-        JSONArray setBidJsonArray;
+        JSONArray seatBidJsonArray;
         JSONObject bidParentJsonObject;
         JSONArray bidJsonArray;
         JSONObject bidJsonObject;
         JSONObject extJsonObject;
         JSONObject extensionJsonObject;
+        JSONArray summaryJsonArray;
+        JSONObject summaryJsonObject;
 
         try
         {
             headerBiddingJsonObject = new JSONObject(response.getResponseData());
 
-            setBidJsonArray = headerBiddingJsonObject.getJSONArray("seatbid");
+            seatBidJsonArray = headerBiddingJsonObject.optJSONArray("seatbid");
 
-            bidParentJsonObject = setBidJsonArray.getJSONObject(0);
-
-            bidJsonArray = bidParentJsonObject.getJSONArray("bid");
-
-            PMBid bid;
-
-            for(int i = 0 ; i < bidJsonArray.length(); i++)
+            if(seatBidJsonArray != null && seatBidJsonArray.length() > 0)
             {
-                bidJsonObject = bidJsonArray.getJSONObject(i);
-                bid = new PMBid();
+                bidParentJsonObject = seatBidJsonArray.optJSONObject(0);
 
-                try
+                bidJsonArray = bidParentJsonObject.optJSONArray("bid");
+
+                if(bidJsonArray != null && bidJsonArray.length() > 0)
                 {
-                    bid.setImpressionId(bidJsonObject.getString("impid"));
-                    bid.setPrice(bidJsonObject.getDouble("price"));
-                    bid.setCreative(bidJsonObject.getString("adm"));
-                    bid.setWidth(bidJsonObject.optInt("w"));
-                    bid.setHeight(bidJsonObject.optInt("h"));
+                    PMBid bid;
 
-                    extJsonObject = bidJsonObject.optJSONObject("ext");
-                    extensionJsonObject = extJsonObject.optJSONObject("extension");
+                    for(int i = 0 ; i < bidJsonArray.length(); i++) {
+                        bidJsonObject = bidJsonArray.getJSONObject(i);
+                        bid = new PMBid();
 
-                    bid.setTrackingUrl(extensionJsonObject.optString("trackingUrl"));
-                    bid.setSlotName(extensionJsonObject.getString("slotname"));
-                    bid.setSlotIndex(extensionJsonObject.optInt("slotindex"));
+                        try {
+                            bid.setImpressionId(bidJsonObject.optString("impid"));
+                            bid.setPrice(bidJsonObject.optDouble("price"));
+                            bid.setCreative(bidJsonObject.optString("adm"));
+                            bid.setDealId(bidJsonObject.optString("dealid"));
+                            bid.setWidth(bidJsonObject.optInt("w"));
+                            bid.setHeight(bidJsonObject.optInt("h"));
 
-                    bidsMap.put(bid.getImpressionId(), bid);
-                } catch (JSONException e) {
-                    PMLogger.logEvent("Error parsing bid " + e.getMessage(), PMLogger.LogLevel.Debug);
+                            extJsonObject = bidJsonObject.optJSONObject("ext");
+
+                            if(extJsonObject != null)
+                            {
+                                extensionJsonObject = extJsonObject.optJSONObject("extension");
+
+                                if(extensionJsonObject != null)
+                                {
+                                    bid.setTrackingUrl(extensionJsonObject.optString("trackingUrl"));
+                                    bid.setClickTrackingUrl(extensionJsonObject.optString("clicktrackingurl"));
+                                    bid.setSlotName(extensionJsonObject.getString("slotname"));
+                                    bid.setSlotIndex(extensionJsonObject.optInt("slotindex"));
+
+                                    // This will be deleted after the summary bug is resolved
+                                    bid.setErrorCode(extensionJsonObject.optInt("errorCode"));
+
+                                    summaryJsonArray = extensionJsonObject.optJSONArray("summary");
+
+                                    if(summaryJsonArray != null && summaryJsonArray.length() > 0)
+                                    {
+                                        summaryJsonObject = summaryJsonArray.optJSONObject(0);
+
+                                        if(summaryJsonObject != null)
+                                        {
+                                            bid.setErrorCode(summaryJsonObject.optInt("errorCode"));
+                                            bid.setErrorMessage(summaryJsonObject.optString("errorMessage"));
+                                        }
+                                    }
+                                }
+                            }
+
+                            bidsMap.put(bid.getImpressionId(), bid);
+
+                        } catch (JSONException e) {
+                            PMLogger.logEvent("Error parsing bid " + e.getMessage(), PMLogger.LogLevel.Debug);
+                        }
+                    }
+                }
+                else
+                {
+                    PMLogger.logEvent("Parsing error : No bids found", PMLogger.LogLevel.Debug);
                 }
             }
-
+            else
+            {
+                PMLogger.logEvent("Parsing error : No seatbid found", PMLogger.LogLevel.Debug);
+            }
         } catch (JSONException e) {
             PMLogger.logEvent("Invalid Json response received for Header Bidding. " + e.getMessage(), PMLogger.LogLevel.Debug);
         }
@@ -376,6 +415,18 @@ public class PMPrefetchManager implements ResponseGenerator {
         {
             PMBid pmBid = publisherHBResponse.get(impressionId);
             return pmBid.getTrackingUrl();
+        }
+
+        return null;
+    }
+
+    @Override
+    public String getClickTrackingUrl(String impressionId) {
+
+        if(publisherHBResponse != null)
+        {
+            PMBid pmBid = publisherHBResponse.get(impressionId);
+            return pmBid.getClickTrackingUrl();
         }
 
         return null;

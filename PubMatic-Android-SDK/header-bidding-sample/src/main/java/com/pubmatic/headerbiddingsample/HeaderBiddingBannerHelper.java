@@ -56,6 +56,7 @@ public class HeaderBiddingBannerHelper {
 
     private static final String BID                 = "bid";
     private static final String BID_ID              = "bidid";
+    private static final String WDEAL_ID            = "wdeal";
     private static final String BID_STATUS          = "bidstatus";
     private static final String PUBMATIC_WIN_KEY    = "pubmaticdm";
 
@@ -142,18 +143,41 @@ public class HeaderBiddingBannerHelper {
                                           PMBid pubResponse = hBResponse.get(impressionId);
 
                                           if(pubResponse != null) {
-                                              adRequest = new PublisherAdRequest.Builder().addCustomTargeting(BID_ID, pubResponse.getImpressionId())
-                                                      .addCustomTargeting(BID_STATUS, "1")
-                                                      .addCustomTargeting(BID, String.valueOf(pubResponse.getPrice())).build();
 
+                                              PublisherAdRequest.Builder requestBuilder = new PublisherAdRequest.Builder();
+
+                                              if(!TextUtils.isEmpty(pubResponse.getDealId())) {
+                                                  requestBuilder.addCustomTargeting(WDEAL_ID, pubResponse.getDealId());
+                                                  Log.d(TAG, "DFP custom param [" + WDEAL_ID + "] = " + pubResponse.getDealId());
+                                              }
+
+                                              if(!TextUtils.isEmpty(pubResponse.getImpressionId())) {
+                                                  requestBuilder.addCustomTargeting(BID_ID, pubResponse.getImpressionId());
+                                                  Log.d(TAG, "DFP custom param [" + BID_ID + "] = " + pubResponse.getImpressionId());
+                                              }
+
+                                              String price = String.valueOf(pubResponse.getPrice());
+
+                                              if(!TextUtils.isEmpty(price)) {
+                                                  double bidPrice = Double.valueOf(price);
+
+                                                  if(bidPrice > 0.0d) {
+                                                      requestBuilder.addCustomTargeting(BID, price);
+                                                      requestBuilder.addCustomTargeting(BID_STATUS, "1");
+                                                      Log.d(TAG, "DFP custom param [" + BID + "] = " + price + " & [" + BID_STATUS + "] = 1");
+                                                  } else {
+                                                      requestBuilder.addCustomTargeting(BID_STATUS, "0");
+                                                      Log.d(TAG, "DFP custom param [" + BID_STATUS + "] = 0");
+                                                  }
+                                              }
+
+                                              adRequest = requestBuilder.build();
                                               publisherAdView.loadAd(adRequest);
                                               adViewsSet.remove(publisherAdView);
                                           }
                                           else
                                           {
-                                              adRequest = new PublisherAdRequest.Builder().addCustomTargeting(BID_ID, pubResponse.getImpressionId())
-                                                      .addCustomTargeting(BID_STATUS, "0")
-                                                      .addCustomTargeting(BID, String.valueOf(pubResponse.getPrice())).build();
+                                              adRequest = new PublisherAdRequest.Builder().build();
 
                                               publisherAdView.loadAd(adRequest);
                                               adViewsSet.remove(publisherAdView);
@@ -267,6 +291,9 @@ public class HeaderBiddingBannerHelper {
 
         adRequest.setIABCategory("IAB1-1,IAB1-7");
         adRequest.setAppCategory("Entertainment, Sports");
+
+        adRequest.setHashingTechnique(PMBannerPrefetchRequest.HASHING_TECHNIQUE.RAW);
+        adRequest.setAndroidAidEnabled(false);
 
         return adRequest;
     }

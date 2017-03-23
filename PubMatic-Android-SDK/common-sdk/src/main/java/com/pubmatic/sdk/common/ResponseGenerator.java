@@ -8,6 +8,8 @@ public interface ResponseGenerator {
 
     public String getTrackingUrl(String impressionId);
 
+    public String getClickTrackingUrl(String impressionId);
+
     public String getCreative(String impressionId);
 
     public Double getPrice(String impressionId);

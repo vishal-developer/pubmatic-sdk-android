@@ -37,7 +37,11 @@ public class PMBid {
     private String creative;
     private long width;
     private long height;
+    private String dealId;
     private String trackingUrl;
+    private String clickTrackingUrl;
+    private int errorCode;
+    private String errorMessage;
 
     public String getSlotName() {
         return slotName;
@@ -95,6 +99,14 @@ public class PMBid {
         this.height = height;
     }
 
+    public String getDealId() {
+        return dealId;
+    }
+
+    public void setDealId(String dealId) {
+        this.dealId = dealId;
+    }
+
     public String getTrackingUrl() {
         return trackingUrl;
     }
@@ -103,11 +115,35 @@ public class PMBid {
         this.trackingUrl = trackingUrl;
     }
 
+    public String getClickTrackingUrl() {
+        return clickTrackingUrl;
+    }
+
+    public void setClickTrackingUrl(String clickTrackingUrl) {
+        this.clickTrackingUrl = clickTrackingUrl;
+    }
+
     public String getCreative() {
         return creative;
     }
 
     public void setCreative(String creative) {
         this.creative = creative;
+    }
+
+    public int getErrorCode() {
+        return errorCode;
+    }
+
+    public void setErrorCode(int errorCode) {
+        this.errorCode = errorCode;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 }

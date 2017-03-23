@@ -3485,42 +3485,31 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         adInfo.put("type", "thirdparty");
 
         try {
-            // If there is an error from the server which happens when provided
-            // wrong ad parameters, return the error with error code and error
-            // message.
-            String errorCode;
-            /*if (!TextUtils.isEmpty(errorCode = response.optString(kerror_code))) {
 
-                pubResponse.setErrorCode(errorCode);
-                pubResponse.setErrorMessage(response.getString(kerror_message));
-                return pubResponse;
-            }*/
-
-            // Check if json contains the creative_tag and tracking_url.
-            // If these are missing then the ad is invalid. Return null else
-            // return valid adInfo object.
             if (!TextUtils.isEmpty(responseGenerator.getCreative(impressionId))) {
 
                 adInfo.put("content", URLDecoder.decode(responseGenerator.getCreative(impressionId), CommonConstants.ENCODING_UTF_8));
-                impressionTrackers.add( URLDecoder.decode(responseGenerator.getTrackingUrl(impressionId), CommonConstants.ENCODING_UTF_8));
 
                 // Setting ecpm if not null
                 if (responseGenerator.getPrice(impressionId) != 0) {
                     adInfo.put("ecpm", String.valueOf(responseGenerator.getPrice(impressionId)));
                 }
-                // Setting click_tracking_url if not null
-                if (responseGenerator.getTrackingUrl(impressionId) != null && responseGenerator.getTrackingUrl(impressionId) != "") {
-                    // clickTrackers.add(URLDecoder.decode(bid.getTrackingUrl(), UTF8_CHARSET));
+
+                // Setting tracking url if not null
+                if (responseGenerator.getTrackingUrl(impressionId) != null && !responseGenerator.getTrackingUrl(impressionId).equals("")) {
+                    impressionTrackers.add( URLDecoder.decode(responseGenerator.getTrackingUrl(impressionId), CommonConstants.ENCODING_UTF_8));
                 }
-                // Setting landing_page if not null
-                /*if (!response.isNull(klanding_page)) {
-                    adInfo.put("url", URLDecoder.decode(response.getString(klanding_page), UTF8_CHARSET));
-                }*/
+
+                // Setting click tracking url if not null
+                if (responseGenerator.getClickTrackingUrl(impressionId) != null && !responseGenerator.getClickTrackingUrl(impressionId).equals("")) {
+                    clickTrackers.add( URLDecoder.decode(responseGenerator.getClickTrackingUrl(impressionId), CommonConstants.ENCODING_UTF_8));
+                }
             }
 
             BannerAdDescriptor adDescriptor = new BannerAdDescriptor(adInfo);
             adDescriptor.setImpressionTrackers(impressionTrackers);
             adDescriptor.setClickTrackers(clickTrackers);
+
             pubResponse.setRenderable(adDescriptor);
 
         } catch (UnsupportedEncodingException e) {
