@@ -93,7 +93,7 @@ public class BrowserDialog extends Dialog {
                 dpToPx(ActionBarHeightDp));
         actionBarLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         LinearLayout actionBar = new LinearLayout(getContext());
-        //actionBar.setId(100);
+        actionBar.setId(100);
 
         actionBar.setBackgroundColor(0xFF1A1A1A);
 

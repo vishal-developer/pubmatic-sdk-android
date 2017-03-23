@@ -3488,7 +3488,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
             if (!TextUtils.isEmpty(responseGenerator.getCreative(impressionId))) {
 
-                adInfo.put("content", URLDecoder.decode(responseGenerator.getCreative(impressionId), CommonConstants.ENCODING_UTF_8));
+                adInfo.put("content", responseGenerator.getCreative(impressionId));
 
                 // Setting ecpm if not null
                 if (responseGenerator.getPrice(impressionId) != 0) {
