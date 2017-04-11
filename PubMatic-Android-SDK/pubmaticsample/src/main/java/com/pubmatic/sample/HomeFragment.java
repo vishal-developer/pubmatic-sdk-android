@@ -319,6 +319,7 @@ public class HomeFragment extends Fragment {
                     String adId = adEt.getText().toString();
                     mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).put(PMConstants.SETTINGS_AD_TAG_AD_ID, adId);
 
+                    getPubMaticConfigurationParameters();
                     getPubmaticTargettingParameters();
 
                     if(pubId != null && !pubId.equals("") && siteId != null && !siteId.equals("") && adId != null & !adId.equals(""))
@@ -581,5 +582,16 @@ public class HomeFragment extends Fragment {
         EditText etPaid = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_PAID);
         String paid = etPaid.getText().toString();
         mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_PAID, paid);
+    }
+
+    private void getPubMaticConfigurationParameters()
+    {
+        EditText dntEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_CONFIGURATION + ":" + PMConstants.SETTINGS_CONFIGURATION_DO_NOT_TRACK);
+        String dnt = dntEt.getText().toString();
+        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_CONFIGURATION_DO_NOT_TRACK, dnt);
+
+        EditText androidAidEnabledEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_CONFIGURATION + ":" + PMConstants.SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED);
+        String androidAidEnabled = androidAidEnabledEt.getText().toString();
+        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED, androidAidEnabled);
     }
 }

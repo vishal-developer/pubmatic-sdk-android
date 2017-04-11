@@ -231,6 +231,20 @@ public abstract class PubMaticAdRequest extends AdRequest {
                         PubMaticConstants.URL_ENCODING));
             }
 
+            // Setting the iab category
+            if (!TextUtils.isEmpty(mIABCategory)) {
+                putPostData(PubMaticConstants.IAB_CATEGORY, URLEncoder.encode(
+                        mIABCategory,
+                        PubMaticConstants.URL_ENCODING));
+            }
+
+            // Setting the DMA
+            if (!TextUtils.isEmpty(mDMA)) {
+                putPostData(PubMaticConstants.DMA, URLEncoder.encode(
+                        mDMA,
+                        PubMaticConstants.URL_ENCODING));
+            }
+
             if (mKeywordsList!=null) {
                 putPostData(PubMaticConstants.KEYWORDS_PARAM, URLEncoder.encode(
                         getKeywordString(),
@@ -421,6 +435,14 @@ public abstract class PubMaticAdRequest extends AdRequest {
 
     public void setCountry(String mCountry) {
         this.mCountry = mCountry;
+    }
+
+    public String getGender() {
+        return mGender;
+    }
+
+    public void setGender(String gender) {
+        this.mGender = gender;
     }
 
     /**

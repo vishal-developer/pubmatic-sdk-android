@@ -171,6 +171,8 @@ public class PubMaticConstants {
     public static final String UDID_PARAM 				= "udid";
     public static final String UDID_TYPE_PARAM 			= "udidtype";
     public static final String UDID_HASH_PARAM 			= "udidhash";
+    public static final String IAB_CATEGORY             = "iabcat";
+    public static final String DMA                      = "dma";
 
 
     //PubMatic specific common parameters for POST Parameters
@@ -196,10 +198,10 @@ public class PubMaticConstants {
     public static final String ZIP_PARAM 				= "zip";
     public static final String KEYWORDS_PARAM 			= "keywords";
     public static final String AREACODE 				= "areaCode";
-    public static final String USER_INCOME 				= "userIncome";
+    public static final String USER_INCOME 				= "inc";
     public static final String USER_ETHNICITY 			= "userEnthnicity";
-    public static final String USER_CITY 				= "state";
-    public static final String USER_STATE 				= "city";
+    public static final String USER_CITY 				= "city";
+    public static final String USER_STATE 				= "state";
     public static final String SDK_ID_PARAM 			= "msdkId";
     public static final String SDK_VER_PARAM 			= "msdkVersion";
 

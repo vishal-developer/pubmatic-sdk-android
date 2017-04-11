@@ -140,16 +140,25 @@ public class BannerAdFragment extends DialogFragment {
                 if(!zip.equals("") && !zip.equals(""))
                     ((MoceanBannerAdRequest)adRequest).setZip(zip);
 
-
                 String dma = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_DMA);
 
                 if(!dma.equals("") && !dma.equals(""))
                     ((MoceanBannerAdRequest)adRequest).setDMA(dma);
 
+                String area = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_AREA);
+
+                if(!area.equals("") && area != null)
+                    ((MoceanBannerAdRequest)adRequest).setAreaCode(area);
+
                 String age = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_AGE);
 
                 if(!age.equals("") && !age.equals(""))
                     ((MoceanBannerAdRequest)adRequest).setAge(age);
+
+                String birthday = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_BIRTHDAY);
+
+                if(!birthday.equals("") && birthday != null)
+                    ((MoceanBannerAdRequest)adRequest).setBirthDay(birthday);
 
                 String gender = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_GENDER);
 
@@ -170,16 +179,6 @@ public class BannerAdFragment extends DialogFragment {
 
                 if(!over18.equals("") && over18 != null)
                     ((MoceanBannerAdRequest)adRequest).setOver18(over18);*/
-
-                String birthday = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_BIRTHDAY);
-
-                if(!birthday.equals("") && birthday != null)
-                    ((MoceanBannerAdRequest)adRequest).setBirthDay(birthday);
-
-                String area = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_AREA);
-
-                if(!area.equals("") && area != null)
-                    ((MoceanBannerAdRequest)adRequest).setAreaCode(area);
 
                 /*String timeout = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_TIMEOUT);
 
@@ -208,7 +207,6 @@ public class BannerAdFragment extends DialogFragment {
                 return;
             }
 
-            //adRequest = PubMaticBannerAdRequest.createPubMaticBannerAdRequest(getActivity(), "31400", "32504", "439662");
             adRequest = PubMaticBannerAdRequest.createPubMaticBannerAdRequest(getActivity(), pubId, siteId, adId);
 
             // Configuration Parameters
@@ -237,6 +235,21 @@ public class BannerAdFragment extends DialogFragment {
                     ((PubMaticBannerAdRequest)adRequest).setLocation(location);
                 }
 
+                String city = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_CITY);
+
+                if(!city.equals("") && city != null)
+                    ((PubMaticBannerAdRequest)adRequest).setCity(city);
+
+                String zip = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_ZIP);
+
+                if(!zip.equals("") && zip != null)
+                    ((PubMaticBannerAdRequest)adRequest).setZip(zip);
+
+                String appDomain = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_APP_DOMAIN);
+
+                if(!appDomain.equals("") && appDomain != null)
+                    ((PubMaticBannerAdRequest)adRequest).setAppDomain(appDomain);
+
                 String appCategory = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_APP_CATEGORY);
 
                 if(!appCategory.equals("") && appCategory != null)
@@ -257,26 +270,6 @@ public class BannerAdFragment extends DialogFragment {
                 if(!appName.equals("") && appName != null)
                     ((PubMaticBannerAdRequest)adRequest).setAppName(appName);
 
-                String appDomain = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_APP_DOMAIN);
-
-                if(!appDomain.equals("") && appDomain != null)
-                    ((PubMaticBannerAdRequest)adRequest).setAppDomain(appDomain);
-
-                String city = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_CITY);
-
-                if(!city.equals("") && city != null)
-                    ((PubMaticBannerAdRequest)adRequest).setCity(city);
-
-                String zip = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_ZIP);
-
-                if(!zip.equals("") && zip != null)
-                    ((PubMaticBannerAdRequest)adRequest).setZip(zip);
-
-                String country = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_COUNTRY);
-
-                if(!country.equals("") && country != null)
-                    ((PubMaticBannerAdRequest)adRequest).setCountry(country);
-
                 String yearOfBirth = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_YEAR_OF_BIRTH);
 
                 if(!yearOfBirth.equals("") && yearOfBirth != null)
@@ -292,30 +285,35 @@ public class BannerAdFragment extends DialogFragment {
                 if(!ethnicity.equals("") && ethnicity != null)
                     ((PubMaticBannerAdRequest)adRequest).setEthnicity(ethnicity);
 
-                /*String gender = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_GENDER);
+                String gender = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_GENDER);
 
                 if(!gender.equals("") && gender != null)
-                    ((PubMaticBannerAdRequest)adRequest).setGender(gender);*/
+                    ((PubMaticBannerAdRequest)adRequest).setGender(gender);
 
                 String dma = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_DMA);
 
                 if(!dma.equals("") && dma != null)
                     ((PubMaticBannerAdRequest)adRequest).setDMA(dma);
 
-                String language = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_LANGUAGE);
-
-                if(!language.equals("") && language != null)
-                    ((PubMaticBannerAdRequest)adRequest).setLanguage(language);
-
-                /*String ormaCompliance = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_ORMA_COMPLIANCE);
-
-                if(!ormaCompliance.equals("") && ormaCompliance != null)
-                    ((PubMaticBannerAdRequest)adRequest).setOrmmaComplianceLevel(Integer.parseInt(ormaCompliance));*/
-
                 String paid = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_PAID);
 
                 if(!paid.equals("") && paid != null)
                     ((PubMaticBannerAdRequest)adRequest).isApplicationPaid(Boolean.parseBoolean(paid));
+
+                /*String language = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_LANGUAGE);
+
+                if(!language.equals("") && language != null)
+                    ((PubMaticBannerAdRequest)adRequest).setLanguage(language);
+
+                String ormaCompliance = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_ORMA_COMPLIANCE);
+
+                if(!ormaCompliance.equals("") && ormaCompliance != null)
+                    ((PubMaticBannerAdRequest)adRequest).setOrmmaComplianceLevel(Integer.parseInt(ormaCompliance));
+
+                    String country = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_COUNTRY);
+
+                if(!country.equals("") && country != null)
+                    ((PubMaticBannerAdRequest)adRequest).setCountry(country);*/
             }
             catch (Exception exception)
             {

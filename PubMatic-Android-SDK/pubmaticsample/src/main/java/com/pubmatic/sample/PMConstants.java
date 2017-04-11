@@ -21,7 +21,7 @@ public class PMConstants {
     public static final String SETTINGS_CONFIGURATION_HEIGHT = "height";
     public static final String SETTINGS_CONFIGURATION_DO_NOT_TRACK = "Do Not Track";
     public static final String SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED = "Android Aid Enabled";
-    public static final String SETTINGS_CONFIGURATION_COPPA = "COPPA";
+    public static final String SETTINGS_CONFIGURATION_COPPA = "Coppa";
     public static final String SETTINGS_CONFIGURATION_TIME_OUT_INTERVAL = "Time Out Interval";
     public static final String SETTINGS_CONFIGURATION_AD_REFRESH_RATE = "Ad Refresh Rate";
     public static final String SETTINGS_CONFIGURATION_AD_SERVER_URL = "Ad Server Url";
