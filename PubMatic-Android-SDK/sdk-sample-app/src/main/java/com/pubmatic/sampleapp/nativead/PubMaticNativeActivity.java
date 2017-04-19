@@ -75,8 +75,8 @@ public class PubMaticNativeActivity extends Activity {
 		// ad.setTest(true); // Uncomment to serve ads in test mode
 
 		PubMaticNativeAdRequest adRequest = PubMaticNativeAdRequest
-				.createPubMaticNativeAdRequest(this, "31400", "52368", "265636", getAssetRequests());
-        adRequest.setAdServerURL("http://showads1065.pubmatic.com/AdServer/AdServerServlet");
+				.createPubMaticNativeAdRequest(this, "31400", "52368", "383372", getAssetRequests());
+
 		// Request for ads
 		ad.execute(adRequest);
 	}
@@ -84,29 +84,29 @@ public class PubMaticNativeActivity extends Activity {
 	private List<PMAssetRequest> getAssetRequests() {
 		List<PMAssetRequest> assets = new ArrayList<PMAssetRequest>();
 
-		PMTitleAssetRequest titleAsset = new PMTitleAssetRequest(1001);
+		PMTitleAssetRequest titleAsset = new PMTitleAssetRequest(1);// Unique assetId is mandatory for each asset
 		titleAsset.setLength(50);
 		titleAsset.setRequired(true); // Optional (Default: false)
 		assets.add(titleAsset);
 
-		PMImageAssetRequest imageAssetIcon = new PMImageAssetRequest(1003);
+		PMImageAssetRequest imageAssetIcon = new PMImageAssetRequest(2);
 		imageAssetIcon.setImageType(PMImageAssetTypes.icon);
 		assets.add(imageAssetIcon);
 
-		PMImageAssetRequest imageAssetMainImage = new PMImageAssetRequest(1004);
+		PMImageAssetRequest imageAssetMainImage = new PMImageAssetRequest(3);
 		imageAssetMainImage.setImageType(PMImageAssetTypes.main);
 		assets.add(imageAssetMainImage);
 
-		PMDataAssetRequest dataAssetDesc = new PMDataAssetRequest(1002);
+		PMDataAssetRequest dataAssetDesc = new PMDataAssetRequest(5);
 		dataAssetDesc.setDataAssetType(PMDataAssetTypes.desc);
 		dataAssetDesc.setLength(25);
 		assets.add(dataAssetDesc);
 
-		PMDataAssetRequest dataAssetRating = new PMDataAssetRequest(1005);
+		PMDataAssetRequest dataAssetRating = new PMDataAssetRequest(6);
 		dataAssetRating.setDataAssetType(PMDataAssetTypes.rating);
 		assets.add(dataAssetRating);
 
-		PMDataAssetRequest dataAssetCta = new PMDataAssetRequest(1006);
+		PMDataAssetRequest dataAssetCta = new PMDataAssetRequest(7);
 		dataAssetCta.setDataAssetType(PMDataAssetTypes.ctatext);
 		assets.add(dataAssetCta);
 
@@ -185,11 +185,11 @@ public class PubMaticNativeActivity extends Activity {
 								 * must match that of in request.
 								 */
 								switch (asset.getAssetId()) {
-								case 1001:
+								case 1:
 									txtTitle.setText(((PMTitleAssetResponse) asset)
 											.getTitleText());
 									break;
-								case 1003:
+								case 2:
 									PMNativeAd.Image iconImage = ((PMImageAssetResponse) asset)
 											.getImage();
 									if (iconImage != null) {
@@ -198,7 +198,7 @@ public class PubMaticNativeActivity extends Activity {
 												iconImage.getUrl());
 									}
 									break;
-								case 1004:
+								case 3:
 									PMNativeAd.Image mainImage = ((PMImageAssetResponse) asset)
 											.getImage();
 									if (mainImage != null) {
@@ -207,16 +207,16 @@ public class PubMaticNativeActivity extends Activity {
 												mainImage.getUrl());
 									}
 									break;
-								case 1002:
+								case 5:
 									txtDescription
 											.setText(((PMDataAssetResponse) asset)
 													.getValue());
 									break;
-								case 1006:
+								case 7:
 									ctaText
 											.setText(((PMDataAssetResponse) asset).getValue());
 									break;
-								case 1005:
+								case 6:
 									String ratingStr = ((PMDataAssetResponse) asset)
 											.getValue();
 									try {

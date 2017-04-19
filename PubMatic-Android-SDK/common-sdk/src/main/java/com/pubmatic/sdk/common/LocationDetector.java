@@ -47,8 +47,11 @@ public class LocationDetector extends Observable {
 
         if(observer == null) throw new NullPointerException("Null Observer");
         synchronized (MUTEX) {
+            //Add the observer if not already added
         	if(!observers.contains(observer)) observers.add(observer);
-        	if(!isLocationDetectionEnabled()) setLocationDetectionEnabled(true);
+
+            //Check if device location is enabled then start the update request
+        	if(isDeviceLocationEnabled() && locationListener == null) requestLocationUpdate();
         }
     }
 
@@ -57,7 +60,7 @@ public class LocationDetector extends Observable {
     	super.deleteObserver(observer);
         synchronized (MUTEX) {
         	observers.remove(observer);
-        	if(observers.isEmpty()) setLocationDetectionEnabled(false);
+        	if(observers.isEmpty()) removeLocationUpdate();
         }
     }
 
@@ -66,7 +69,7 @@ public class LocationDetector extends Observable {
     	super.deleteObservers();
     	synchronized (MUTEX) {
     		observers.clear();
-        	setLocationDetectionEnabled(false);
+        	removeLocationUpdate();;
         }
     }
 
@@ -102,111 +105,183 @@ public class LocationDetector extends Observable {
 	 *
 	 * @return true if location detection is enabled, false if not
 	 */
-	public boolean isLocationDetectionEnabled() {
-		if (locationManager != null) {
+	public boolean isDeviceLocationEnabled() {
+		if (context!=null && context.getSystemService(Context.LOCATION_SERVICE) != null)
 			return true;
-		}
-
-		return false;
+        else
+		    return false;
 	}
 
-	/**
-	 * Enables or disable SDK location detection. If enabled with this method
-	 * the most battery optimized settings are used. For more fine tuned control
-	 * over location detection settings use enableLocationDetection(). This
-	 * method is used to disable location detection for either method of
-	 * enabling location detection.
-	 * <p>
-	 * Permissions for coarse or fine location detection may be required.
-	 *
-	 * @param locationDetectionEnabled
-	 */
-	public void setLocationDetectionEnabled(boolean locationDetectionEnabled) {
-		if (locationDetectionEnabled == false) {
-			if (locationManager != null && locationListener != null) {
-                try{
-				    locationManager.removeUpdates(locationListener);
+    /**
+     *
+     */
+    private void removeLocationUpdate()
+    {
+        if (locationManager != null && locationListener != null) {
+            try{
+                locationManager.removeUpdates(locationListener);
+            }
+            catch (SecurityException se){
+
+            }
+
+            locationManager = null;
+            locationListener = null;
+        }
+    }
+
+    /**
+     * Enables location detection with specified criteria. To disable location
+     * detection use setLocationDetectionEnabled(false).
+     *
+     * @return
+     */
+    public Location getLocation() {
+        try {
+            locationManager = (LocationManager) this.context
+                    .getSystemService(Context.LOCATION_SERVICE);
+
+            // getting GPS status
+            boolean isGPSEnabled = locationManager
+                    .isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+            // getting network status
+            boolean isNetworkEnabled = locationManager
+                    .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+            if (!isGPSEnabled && !isNetworkEnabled) {
+                // no network provider is enabled
+            } else {
+
+                // First get location from Network Provider
+                if (isNetworkEnabled) {
+
+                    if (locationManager != null)
+                    {
+
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                        {
+
+                            int permissionCheck = context.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION);
+
+                            if(permissionCheck == PackageManager.PERMISSION_GRANTED)
+                            {
+                                this.location = locationManager
+                                        .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                            }
+                        }
+                        else
+                        {
+                            this.location = locationManager
+                                    .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                        }
+                    }
                 }
-                catch (SecurityException se){
+                // if GPS Enabled get lat/long using GPS Services
+                else if (isGPSEnabled) {
+                    if (location == null) {
 
+                        if (locationManager != null) {
+
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+                                int permissionCheck = context.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION);
+
+                                if(permissionCheck == PackageManager.PERMISSION_GRANTED)
+                                {
+                                    this.location = locationManager
+                                            .getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                                }
+                            }
+                            else
+                            {
+                                this.location = locationManager
+                                        .getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                            }
+                        }
+                    }
                 }
-				locationManager = null;
-				locationListener = null;
-			}
+            }
 
-			return;
-		}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-		Criteria criteria = new Criteria();
-		criteria.setCostAllowed(false);
+        return location;
+    }
 
-		criteria.setPowerRequirement(Criteria.NO_REQUIREMENT);
-		criteria.setBearingRequired(false);
-		criteria.setSpeedRequired(false);
-		criteria.setAltitudeRequired(false);
-		criteria.setAccuracy(Criteria.ACCURACY_COARSE);
+    /**
+     * Enables location detection with specified criteria. To disable location
+     * detection use setLocationDetectionEnabled(false).
+     * @return
+     */
+    public Location requestLocationUpdate() {
 
-		enableLocationDetection(CommonConstants.LOCATION_DETECTION_MINTIME,
-				CommonConstants.LOCATION_DETECTION_MINDISTANCE, criteria, null);
-	}
+        try {
+            locationManager = (LocationManager) this.context
+                    .getSystemService(Context.LOCATION_SERVICE);
 
-	/**
-	 * Enables location detection with specified criteria. To disable location
-	 * detection use setLocationDetectionEnabled(false).
-	 *
-	 * @param minTime
-	 *            LocationManager.requestLocationUpdates minTime
-	 * @param minDistance
-	 *            LocationManager.requestLocationUpdates minDistance
-	 * @param criteria
-	 *            Criteria used to find an available provider. Ignored if
-	 *            provider is non-null.
-	 * @param provider
-	 *            Named provider used by the LocationManager to obtain location
-	 *            updates.
-	 */
-	public void enableLocationDetection(long minTime, float minDistance,
-										Criteria criteria, String provider) {
-		if ((provider == null) && (criteria == null))
-			throw new IllegalArgumentException("criteria or provider required");
+            if (locationManager != null) {
+                locationListener = new LocationListener();
 
-		locationManager = (LocationManager) this.context
-				.getSystemService(Context.LOCATION_SERVICE);
-		if (locationManager != null) {
-			try {
-				if (provider == null) {
-					provider = locationManager.getBestProvider(
-							criteria, true);
-				}
+                // getting GPS status
+                boolean isGPSEnabled = locationManager
+                        .isProviderEnabled(LocationManager.GPS_PROVIDER);
 
-				if (provider != null) {
-					locationListener = new LocationListener();
+                // getting network status
+                boolean isNetworkEnabled = locationManager
+                        .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
-					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-					{
-						int permissionCheck = context.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION);
+                if (!isGPSEnabled && !isNetworkEnabled) {
+                    // no network provider is enabled
+                } else
+                {
+                    // First get location from Network Provider
+                    if (isNetworkEnabled)
+                    {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                        {
+                            int permissionCheck = context.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION);
 
-						if (permissionCheck == PackageManager.PERMISSION_GRANTED)
-						{
-							locationManager.requestLocationUpdates(provider, minTime,
-									minDistance, locationListener);
-						}
-					}
-					else
-					{
-						locationManager.requestLocationUpdates(provider, minTime,
-								minDistance, locationListener);
-					}
-				}
-			} catch (Exception ex) {
-				Log.d(TAG, "Error requesting location updates.  Exception:" + ex);
+                            if (permissionCheck == PackageManager.PERMISSION_GRANTED)
+                            {
+                                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, CommonConstants.LOCATION_DETECTION_MINTIME,
+                                        CommonConstants.LOCATION_DETECTION_MINDISTANCE, locationListener);
+                            }
+                        }
+                        else
+                        {
+                            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, CommonConstants.LOCATION_DETECTION_MINTIME,
+                                    CommonConstants.LOCATION_DETECTION_MINDISTANCE, locationListener);
+                        }
+                    }
+                    // if GPS Enabled get lat/long using GPS Services
+                    else if (isGPSEnabled)
+                    {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                        {
+                            int permissionCheck = context.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION);
 
-				locationManager.removeUpdates(locationListener);
-				locationManager = null;
-				locationListener = null;
-			}
-		}
-	}
+                            if (permissionCheck == PackageManager.PERMISSION_GRANTED)
+                            {
+                                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, CommonConstants.LOCATION_DETECTION_MINTIME,
+                                        CommonConstants.LOCATION_DETECTION_MINDISTANCE, locationListener);
+                            }
+                        }
+                        else
+                        {
+                            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, CommonConstants.LOCATION_DETECTION_MINTIME,
+                                    CommonConstants.LOCATION_DETECTION_MINDISTANCE, locationListener);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return location;
+    }
 
 	/**
 	 * This class listens for the location update from android system
