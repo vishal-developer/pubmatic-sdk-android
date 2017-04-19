@@ -33,15 +33,6 @@ public class PhoenixBannerRRFormatter  implements RRFormatter {
 	private static final String kcreative_tag       = "ct";
 	private static final String ktracking_url       = "tr";
 	private static final String kclick_tracking_url = "cltr";
-	private static final String kid_tag             = "id";
-	private static final String krefresh_time_tag   = "at";
-	private static final String kprefetch_data_tag  = "pd";
-	private static final String kcreative_width_tag = "w";
-	private static final String kcreative_height_tag= "h";
-	private static final String kcreative_id_tag    = "Creative ID";
-	private static final String korder_id_tag       = "Order ID";
-	private static final String kline_item_tag      = "LineItem ID";
-	private static final String kadunit_id_tag      = "AdUnit ID";
 	private static final String kcreative_type_tag  = "crTy";
 
 	@Override
@@ -110,7 +101,7 @@ public class PhoenixBannerRRFormatter  implements RRFormatter {
 					}
 
 					try {
-						String creative= URLDecoder.decode(object.getString(kcreative_tag), PubMaticConstants.URL_ENCODING);
+						String creative= URLDecoder.decode(object.getString(kcreative_tag), CommonConstants.URL_ENCODING);
 						adInfo.put("content", creative);
 					} catch (UnsupportedEncodingException e) {
 
@@ -127,14 +118,7 @@ public class PhoenixBannerRRFormatter  implements RRFormatter {
 					for (int j = 0; j < clickTrackingArray.length(); j++) {
 						if(!TextUtils.isEmpty(clickTrackingArray.getString(j)))
 							clickTrackers.add(clickTrackingArray.getString(j));
-						//JSONObject tracker = clickTrackingArray.getJSONObject(i);
-						//clickTrackers.add(tracker.getString(String.valueOf(j)));
 					}
-
-					// Setting landing_page if not null
-					//if (!object.isNull(klanding_page)) {
-					//    adInfo.put("url", object.getString(klanding_page));
-					//}
 
 					// Setting creative_type if not null
 					if (!object.isNull(kcreative_type_tag)) {

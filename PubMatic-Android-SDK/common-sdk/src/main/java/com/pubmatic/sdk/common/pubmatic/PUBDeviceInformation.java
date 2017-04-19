@@ -84,7 +84,6 @@ public final class PUBDeviceInformation implements LocationListener {
 	public static int mInIframe = DeviceConstants.mInIframe;
 	public static final String mAdPosition = DeviceConstants.mAdPosition;
 	public static final String msdkVersion = CommonConstants.SDK_VERSION;
-	public static final String msdkId = CommonConstants.SDK_VERSION_ID;
 	private static PUBDeviceInformation instance = null;
 
 	/**
