@@ -48,16 +48,16 @@ public class BannerSamplesListActivity extends ListActivity {
 
 		samplesListAdapter = new SamplesListAdapter();
 
-		// @formatter:off
 		samplesListAdapter.addItem(new SamplesItem("Mocean Banner", "XML rendering", MoceanStaticBannerActivity.class));
 		samplesListAdapter.addItem(new SamplesItem("Java rendering", MoceanRuntimeBannerActivity.class));
 
 		samplesListAdapter.addItem(new SamplesItem("PubMatic Banner", "XML rendering", PubStaticBannerActivity.class));
 		samplesListAdapter.addItem(new SamplesItem("Java rendering", PubRuntimeBannerActivity.class));
 
-		samplesListAdapter.addItem(new SamplesItem("Phoenix Banner", "XML rendering", PhoenixStaticBannerActivity.class));
-		samplesListAdapter.addItem(new SamplesItem("Java rendering", PhoenixRuntimeBannerActivity.class));
-		// @formatter:on
+		//Not required. UAS is seperate platform supported by PubMatic. It is not yet released for all Publishers
+		//samplesListAdapter.addItem(new SamplesItem("UAS Banner", "XML rendering", PhoenixStaticBannerActivity.class));
+		//samplesListAdapter.addItem(new SamplesItem("Java rendering", PhoenixRuntimeBannerActivity.class));
+
 		PMLogger.setLogLevel(PMLogger.LogLevel.Debug);
 		super.setListAdapter(samplesListAdapter);
 	}
