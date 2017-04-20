@@ -38,6 +38,7 @@ public class PMConstants {
     public static final String SETTINGS_TARGETTING_CITY = "City";
     public static final String SETTINGS_TARGETTING_ZIP = "Zip";
     public static final String SETTINGS_TARGETTING_COUNTRY = "Country";
+    public static final String SETTINGS_TARGETTING_STATE = "State";
     public static final String SETTINGS_TARGETTING_YEAR_OF_BIRTH = "Year of Birth";
     public static final String SETTINGS_TARGETTING_INCOME = "Income";
     public static final String SETTINGS_TARGETTING_ETHNICITY = "Ethnicity";
@@ -46,6 +47,7 @@ public class PMConstants {
     public static final String SETTINGS_TARGETTING_LANGUAGE = "Language";
     public static final String SETTINGS_TARGETTING_ORMA_COMPLIANCE = "Orma Compliance";
     public static final String SETTINGS_TARGETTING_IP = "IP";
+    public static final String SETTINGS_TARGETTING_AWT = "AWT";
     public static final String SETTINGS_TARGETTING_AGE = "Age";
     public static final String SETTINGS_TARGETTING_GENDER = "Gender";
     public static final String SETTINGS_TARGETTING_OVER_18 = "Over 18";

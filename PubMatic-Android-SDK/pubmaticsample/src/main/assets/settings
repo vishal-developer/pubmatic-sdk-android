@@ -52,15 +52,26 @@
     },
     "Native": {
       "Ad Tag": {
-        "zone": ""
+        "zone": "179492"
       },
       "Configuration": {
-        "width": "",
-        "height": ""
+        "test": ""
       },
       "Targetting": {
-        "City": "",
-        "Zip": ""
+        "Latitude":"3.8",
+        "Longitude":"3.8",
+        "City": "Pune",
+        "Zip": "40117",
+        "DMA": "41007",
+        "Area": "Rambag Colony",
+        "Age": "27",
+        "Birthday": "02111989",
+        "Gender": "Male",
+        "Ethnicity": "India",
+        "Language": "Hindi",
+        "Over 18": "No",
+        "Timeout": "8",
+        "Keywords": "Keyword"
       }
     }
   },
@@ -92,14 +103,16 @@
         "City": "Pune",
         "Zip": "41007",
         "Country": "india",
+        "State": "Maharashtra",
         "Year of Birth": "02111989",
         "Income": "5000",
         "Ethnicity": "India",
         "Gender": "Male",
         "DMA": "41107",
         "Language": "kan",
-        "Orma Compliance": "Yes",
-        "Paid": "True"
+        "Orma Compliance": "1",
+        "Paid": "True",
+        "AWT": "0"
       }
     },
     "Interstitial": {
@@ -127,27 +140,53 @@
         "City": "",
         "Zip": "",
         "Country": "india",
+        "State": "Maharashtra",
         "Year of Birth": "",
         "Income": "",
         "Ethnicity": "",
         "Gender": "",
         "DMA": "",
-        "Lauguage": "kan",
-        "Orma Compliance": "",
-        "Paid": ""
+        "Language": "kan",
+        "Orma Compliance": "1",
+        "Paid": "",
+        "AWT": "0"
       }
     },
     "Native": {
       "Ad Tag": {
-        "zone": ""
+        "pubId": "31400",
+        "siteId": "52368",
+        "adId": "383372"
       },
       "Configuration": {
-        "width": "",
-        "height": ""
+        "Do Not Track": "false",
+        "Android Aid Enabled": "true",
+        "Coppa": "true",
+        "Time Out Interval": "",
+        "Ad Refresh Rate": "",
+        "Ad Server Url": ""
       },
       "Targetting": {
-        "City": "",
-        "Zip": ""
+        "Latitude": "3.5",
+        "Longitude": "3.5",
+        "App Category": "appcat",
+        "IAB Category": "iabcat",
+        "Store Url": "storeurl",
+        "App Name": "appname",
+        "App Domain": "appdomain",
+        "City": "Pune",
+        "Zip": "41007",
+        "Country": "india",
+        "State": "Maharashtra",
+        "Year of Birth": "02111989",
+        "Income": "5000",
+        "Ethnicity": "India",
+        "Gender": "Male",
+        "DMA": "41107",
+        "Language": "kan",
+        "Orma Compliance": "1",
+        "Paid": "True",
+        "AWT": "0"
       }
     }
   },
@@ -179,8 +218,7 @@
         "zone": ""
       },
       "Configuration": {
-        "width": "",
-        "height": ""
+        "test": ""
       },
       "Targetting": {
         "City": "",

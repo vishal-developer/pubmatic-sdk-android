@@ -53,6 +53,7 @@ public class PubMaticConstants {
     public static final String PUB_ID_PARAM 			= "pubId";
     public static final String SITE_ID_PARAM 			= "siteId";
     public static final String AD_ID_PARAM 				= "adId";
+    public static final String OPER_ID_PARAM 			= "operId";
     public static final String SIZE_X_PARAM 			= "size_x";
     public static final String SIZE_Y_PARAM 			= "size_y";
     public static final String AD_WIDTH_PARAM 			= "kadwidth";
@@ -111,7 +112,7 @@ public class PubMaticConstants {
     public static final String KEYWORDS_PARAM 			= "keywords";
     public static final String AREACODE 				= "areaCode";
     public static final String USER_INCOME 				= "inc";
-    public static final String USER_ETHNICITY 			= "userEnthnicity";
+    public static final String USER_ETHNICITY 			= "ethn";
     public static final String USER_CITY 				= "city";
     public static final String USER_STATE 				= "state";
     public static final String SDK_ID_PARAM 			= "msdkId";

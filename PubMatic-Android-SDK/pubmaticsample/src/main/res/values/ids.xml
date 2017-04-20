@@ -26,6 +26,7 @@
     <item name="targetting_city" type="id"/>
     <item name="targetting_zip" type="id"/>
     <item name="targetting_country" type="id"/>
+    <item name="targetting_state" type="id"/>
     <item name="targetting_year_of_birth" type="id"/>
     <item name="targetting_income" type="id"/>
     <item name="targetting_ethnicity" type="id"/>
@@ -34,6 +35,7 @@
     <item name="targetting_language" type="id"/>
     <item name="targetting_orma_compliance" type="id"/>
     <item name="targetting_ip" type="id"/>
+    <item name="targetting_awt" type="id"/>
     <item name="targetting_age" type="id"/>
     <item name="targetting_gender" type="id"/>
     <item name="targetting_over_18" type="id"/>

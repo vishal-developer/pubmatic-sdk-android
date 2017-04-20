@@ -135,11 +135,11 @@ public abstract class PubMaticAdRequest extends AdRequest {
                         CommonConstants.URL_ENCODING));
             }
 
-            if (pubDeviceInformation.mApplicationName != null) {
-                putPostData(PubMaticConstants.APP_NAME_PARAM, URLEncoder.encode(
-                        pubDeviceInformation.mApplicationName,
-                        CommonConstants.URL_ENCODING));
-            }
+            if (!mAppName.isEmpty())
+                putPostData(PubMaticConstants.APP_NAME_PARAM, URLEncoder.encode(mAppName, CommonConstants.URL_ENCODING));
+            else if(!pubDeviceInformation.mApplicationName.isEmpty())
+                putPostData(PubMaticConstants.APP_NAME_PARAM, URLEncoder.encode(pubDeviceInformation.mApplicationName, CommonConstants.URL_ENCODING));
+
 
             if (pubDeviceInformation.mPackageName != null) {
                 putPostData(PubMaticConstants.APP_BUNDLE_PARAM, URLEncoder.encode(
@@ -175,18 +175,13 @@ public abstract class PubMaticAdRequest extends AdRequest {
                 if (isAndoridAidEnabled() && !TextUtils.isEmpty(adInfo.getId())) {
                     putPostData(PubMaticConstants.UDID_PARAM, PubMaticUtils.sha1(adInfo.getId()));
                     putPostData(PubMaticConstants.UDID_TYPE_PARAM, String.valueOf(9));//9 - Android Advertising ID
-                    putPostData(PubMaticConstants.UDID_HASH_PARAM, String.valueOf(0));//0 - raw udid
+                    putPostData(PubMaticConstants.UDID_HASH_PARAM, String.valueOf(1));//1 - raw udid
                 }
-			/*
-			 * Pass dnt=1 if user have enabled Opt-Out of interest based ads in
-			 * Google settings in Android device
-			 */
-                putPostData(PubMaticConstants.DNT_PARAM, String.valueOf(adInfo.isLimitAdTrackingEnabled() == true ? 1 : 0));
             } else if(mContext!=null){
                 //Send Android ID
                 putPostData(PubMaticConstants.UDID_PARAM, PubMaticUtils.getUdidFromContext(mContext));
                 putPostData(PubMaticConstants.UDID_TYPE_PARAM, String.valueOf(3));//9 - Android ID
-                putPostData(PubMaticConstants.UDID_HASH_PARAM, String.valueOf(2));//0 - SHA1
+                putPostData(PubMaticConstants.UDID_HASH_PARAM, String.valueOf(2));//2 - SHA1
             }
 
             // Setting ver
@@ -485,7 +480,6 @@ public abstract class PubMaticAdRequest extends AdRequest {
     {
         mEthnicity = ethnicity;
     }
-
 
     /**
      * Add the new keyword that the user might be interested in.

@@ -64,6 +64,8 @@ public class PMUtils {
                 id = R.id.targetting_zip;
             else if(setting.equals(PMConstants.SETTINGS_TARGETTING_COUNTRY))
                 id = R.id.targetting_country;
+            else if(setting.equals(PMConstants.SETTINGS_TARGETTING_STATE))
+                id = R.id.targetting_state;
             else if(setting.equals(PMConstants.SETTINGS_TARGETTING_YEAR_OF_BIRTH))
                 id = R.id.targetting_year_of_birth;
             else if(setting.equals(PMConstants.SETTINGS_TARGETTING_INCOME))
@@ -80,6 +82,8 @@ public class PMUtils {
                 id = R.id.targetting_orma_compliance;
             else if(setting.equals(PMConstants.SETTINGS_TARGETTING_IP))
                 id = R.id.targetting_ip;
+            else if(setting.equals(PMConstants.SETTINGS_TARGETTING_AWT))
+                id = R.id.targetting_awt;
             else if(setting.equals(PMConstants.SETTINGS_TARGETTING_AGE))
                 id = R.id.targetting_age;
             else if(setting.equals(PMConstants.SETTINGS_TARGETTING_GENDER))

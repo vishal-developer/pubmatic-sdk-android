@@ -157,30 +157,8 @@ public class PubMaticNativeAdRequest  extends PubMaticAdRequest {
 		if(getHeight()>0)
 			putPostData(CommonConstants.SIZE_Y_PARAM, String.valueOf(getHeight()));
 
-
-		putPostData("count", "1");
-		putPostData("operId", "201");
-		putPostData("version", CommonConstants.SDK_VERSION);
-		putPostData(PubMaticConstants.AD_TYPE_PARAM, String.valueOf(12));//For Native ads
-
-		if (this.test) {
-			putPostData("test", "1");
-		}
-		// Network related params reqd by Mocean
-		try {
-			TelephonyManager tm = (TelephonyManager) context
-					.getSystemService(Context.TELEPHONY_SERVICE);
-			String networkOperator = tm.getNetworkOperator();
-
-			if ((networkOperator != null) && (networkOperator.length() > 3)) {
-				String mcc = networkOperator.substring(0, 3);
-				String mnc = networkOperator.substring(3);
-				putPostData("mcc", String.valueOf(mcc));
-				putPostData("mnc", String.valueOf(mnc));
-			}
-		} catch (Exception ex) {
-			System.out.println("Unable to obtain mcc and mnc. Exception:" + ex);
-		}
+		putPostData(PubMaticConstants.OPER_ID_PARAM, "201");
+		putPostData(PubMaticConstants.AD_TYPE_PARAM, String.valueOf(12));
 
 		//attach the Native asset request data
 		setupAssetData();

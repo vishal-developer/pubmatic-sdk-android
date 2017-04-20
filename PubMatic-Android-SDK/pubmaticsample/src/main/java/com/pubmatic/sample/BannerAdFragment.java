@@ -21,6 +21,7 @@ import com.pubmatic.sdk.banner.mocean.MoceanBannerAdRequest;
 import com.pubmatic.sdk.banner.phoenix.PhoenixBannerAdRequest;
 import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest;
 import com.pubmatic.sdk.common.AdRequest;
+import com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest;
 
 import java.util.LinkedHashMap;
 
@@ -71,7 +72,7 @@ public class BannerAdFragment extends DialogFragment {
         mBuilder = new AlertDialog.Builder(getActivity());
 
         mInflater = getActivity().getLayoutInflater();
-        view = mInflater.inflate(R.layout.mocean_banner, null);
+        view = mInflater.inflate(R.layout.banner_template, null);
 
         loadAd(view);
 
@@ -300,20 +301,29 @@ public class BannerAdFragment extends DialogFragment {
                 if(!paid.equals("") && paid != null)
                     ((PubMaticBannerAdRequest)adRequest).isApplicationPaid(Boolean.parseBoolean(paid));
 
-                /*String language = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_LANGUAGE);
+                String country = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_COUNTRY);
 
-                if(!language.equals("") && language != null)
-                    ((PubMaticBannerAdRequest)adRequest).setLanguage(language);
+                if(!country.equals("") && country != null)
+                    ((PubMaticBannerAdRequest)adRequest).setCountry(country);
+
+                String awt = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_AWT);
+
+                if(!awt.equals("") && awt != null)
+                {
+                    int awtOption = Integer.parseInt(awt);
+
+                    if(awtOption == 0)
+                        ((PubMaticBannerAdRequest)adRequest).setAWT(PubMaticAdRequest.AWT_OPTION.DEFAULT);
+                    else if(awtOption == 1)
+                        ((PubMaticBannerAdRequest)adRequest).setAWT(PubMaticAdRequest.AWT_OPTION.WRAPPED_IN_IFRAME);
+                    else if(awtOption == 2)
+                        ((PubMaticBannerAdRequest)adRequest).setAWT(PubMaticAdRequest.AWT_OPTION.WRAPPED_IN_JS);
+                }
 
                 String ormaCompliance = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_ORMA_COMPLIANCE);
 
                 if(!ormaCompliance.equals("") && ormaCompliance != null)
                     ((PubMaticBannerAdRequest)adRequest).setOrmmaComplianceLevel(Integer.parseInt(ormaCompliance));
-
-                    String country = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_COUNTRY);
-
-                if(!country.equals("") && country != null)
-                    ((PubMaticBannerAdRequest)adRequest).setCountry(country);*/
             }
             catch (Exception exception)
             {
