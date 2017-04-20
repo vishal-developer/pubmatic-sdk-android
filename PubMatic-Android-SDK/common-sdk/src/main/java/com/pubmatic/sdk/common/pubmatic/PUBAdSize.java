@@ -91,7 +91,7 @@ public final class PUBAdSize {
 	 * @param adWidth
 	 * @param adHeight
 	 */
-	private PUBAdSize(int adWidth, int adHeight) {
+	public PUBAdSize(int adWidth, int adHeight) {
 		this.adWidth = adWidth;
 		this.adHeight = adHeight;
 	}

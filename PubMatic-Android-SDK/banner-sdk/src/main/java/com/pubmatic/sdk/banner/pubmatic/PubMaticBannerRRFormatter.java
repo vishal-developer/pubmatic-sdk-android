@@ -1,5 +1,7 @@
 package com.pubmatic.sdk.banner.pubmatic;
 
+import android.text.TextUtils;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +17,8 @@ import com.pubmatic.sdk.common.network.HttpRequest;
 import com.pubmatic.sdk.common.network.HttpResponse;
 import com.pubmatic.sdk.common.CommonConstants;
 import com.pubmatic.sdk.common.CommonConstants.CONTENT_TYPE;
+
+import static android.R.attr.name;
 
 public class PubMaticBannerRRFormatter implements RRFormatter {
 
@@ -104,6 +108,14 @@ public class PubMaticBannerRRFormatter implements RRFormatter {
                     adInfo.put("url", object.getString(klanding_page));
                 }
 
+                String width = object.optString("w");
+                String height = object.optString("h");
+                if (!TextUtils.isEmpty(width)) {
+                    adInfo.put("width", width);
+                }
+                if (!TextUtils.isEmpty(height)) {
+                    adInfo.put("height", height);
+                }
             }
 
             BannerAdDescriptor adDescriptor = new BannerAdDescriptor(adInfo);

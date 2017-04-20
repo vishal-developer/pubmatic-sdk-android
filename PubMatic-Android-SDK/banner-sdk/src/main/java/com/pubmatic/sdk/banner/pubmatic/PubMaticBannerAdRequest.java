@@ -13,6 +13,7 @@ import com.pubmatic.sdk.common.pubmatic.PubMaticConstants;
 public class PubMaticBannerAdRequest extends PubMaticAdRequest {
 
 	private PUBAdSize 	mPubAdSize 		 = null;
+	private PUBAdSize[] mMultiAdSizes	 = null;
 	private int 		mTimeoutInterval = CommonConstants.INVALID_INT;
 
 	//Should not exposed to Publisher, Handled by SDK.
@@ -65,6 +66,24 @@ public class PubMaticBannerAdRequest extends PubMaticAdRequest {
 		} else {
 			putPostData(PubMaticConstants.AD_WIDTH_PARAM, String.valueOf(getWidth()));
 			putPostData(PubMaticConstants.AD_HEIGHT_PARAM, String.valueOf(getHeight()));
+		}
+
+		//Send multisize parameter seperated by comma. Max 4 sizes would be considered at server
+		if(mMultiAdSizes!=null && mMultiAdSizes.length>0) {
+			StringBuffer multisize = new StringBuffer();
+			int length = 0;
+
+			while(length<mMultiAdSizes.length) {
+				PUBAdSize size = mMultiAdSizes[length];
+				if(size!=null) {
+					multisize.append(size.getAdWidth()+"x"+size.getAdHeight());
+					length++;
+				}
+				if(length!=mMultiAdSizes.length)
+					multisize.append(",");
+			}
+
+			putPostData(PubMaticConstants.MULTI_SIZE_PARAM, multisize.toString());
 		}
 	}
 
@@ -161,6 +180,24 @@ public class PubMaticBannerAdRequest extends PubMaticAdRequest {
 	 */
 	public void setPubAdSize(PUBAdSize mPubAdSize) {
 		this.mPubAdSize = mPubAdSize;
+	}
+
+	/**
+	 * Returns the Ad size array for banner ad
+	 * @return
+	 */
+	public PUBAdSize[] getOptionalAdSizes() {
+		return mMultiAdSizes;
+	}
+
+	/**
+	 * Set the multisize keyword with provided pair of ad sizes. Compatible
+	 * creative would be returned based on DSP auctioning. Maximum first 4
+	 * sizes would be considered at server.
+	 * @param mMultiAdSizes
+	 */
+	public void setOptionalAdSizes(PUBAdSize[] mMultiAdSizes) {
+		this.mMultiAdSizes = mMultiAdSizes;
 	}
 
 	/**

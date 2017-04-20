@@ -1428,7 +1428,7 @@ public class PMBannerAdView extends ViewGroup {
         }
     }
 
-    public int getImageWidth() {
+    public int getAdWidth() {
         int width = 0;
         if (mAdDescriptor != null && mAdDescriptor.getWidth() != null) {
             return Integer.parseInt(mAdDescriptor.getWidth());
@@ -1436,7 +1436,7 @@ public class PMBannerAdView extends ViewGroup {
         return width;
     }
 
-    public int getImageHeight() {
+    public int getAdHeight() {
         int height = 0;
         if (mAdDescriptor != null && mAdDescriptor.getHeight() != null) {
             return Integer.parseInt(mAdDescriptor.getHeight());
