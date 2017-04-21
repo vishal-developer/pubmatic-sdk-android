@@ -2,6 +2,7 @@ package com.pubmatic.sampleapp.banner;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.location.Location;
 import android.os.Bundle;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
@@ -39,6 +40,7 @@ public class PubRuntimeBannerActivity extends Activity {
         adRequest.setAdSize(PUBAdSize.PUBBANNER_SIZE_320x50);
         banner.setUseInternalBrowser(true);
         banner.setUpdateInterval(15);
+
         banner.execute(adRequest);
 
     }

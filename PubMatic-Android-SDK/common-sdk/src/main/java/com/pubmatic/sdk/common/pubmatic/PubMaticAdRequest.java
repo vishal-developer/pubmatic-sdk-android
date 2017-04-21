@@ -349,6 +349,7 @@ public abstract class PubMaticAdRequest extends AdRequest {
                 putPostData(CommonConstants.PASSBACK_CAMPAIGNS, campaignIds);
             }
 
+
             //Append custom parameters
             if(mCustomParams!=null && !mCustomParams.isEmpty()) {
                 Set<String> set = mCustomParams.keySet();
@@ -359,7 +360,6 @@ public abstract class PubMaticAdRequest extends AdRequest {
                     for(String s : valueList) {
                         putPostData(key,s);
                     }
-
                 }
             }
 

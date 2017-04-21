@@ -1,6 +1,7 @@
 package com.pubmatic.sampleapp.nativead;
 
 import android.app.Activity;
+import android.location.Location;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -89,8 +90,7 @@ public class MoceanNativeActivity extends Activity {
 		list.add("list2");
 		list.add("list3");
 		adRequest.addCustomParam("Test3", list);
-
-		adRequest.addCustomParam("Test2", list);
+		
 		// Request for ads
 		ad.execute(adRequest);
 	}

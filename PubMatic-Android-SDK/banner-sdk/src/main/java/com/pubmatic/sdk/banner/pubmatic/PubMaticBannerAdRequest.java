@@ -173,5 +173,4 @@ public class PubMaticBannerAdRequest extends PubMaticAdRequest {
     public void setTimeoutInterval(int mTimeoutInterval) {
         this.mTimeoutInterval = mTimeoutInterval;
     }
-
 }

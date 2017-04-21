@@ -388,10 +388,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
     // Internal browser
     private BrowserDialog browserDialog = null;
 
-    // Location support
-    private LocationManager locationManager = null;
-    private LocationListener locationListener = null;
-
     // Delegates
     private BannerAdViewDelegate.ActivityListener activityListener;
     private BannerAdViewDelegate.FeatureSupportHandler featureSupportHandler;
@@ -426,9 +422,10 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         setChannel(adRequest.getChannel());
         mAdController.setAdRequest(adRequest);
 
-        //Start the location update if Publisher does not provides the location
-        if(adRequest.getLocation() == null && mRetrieveLocationInfo) {
-            findLocation(true);
+        //Start the location update if Publisher has enabled location detection
+        if(mRetrieveLocationInfo) {
+            location = LocationDetector.getInstance(getContext()).getLocation();
+            LocationDetector.getInstance(getContext()).addObserver(locationObserver);
         }
     }
 
@@ -878,45 +875,11 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
      * @return true if location detection is enabled, false if not
      */
     public boolean isLocationDetectionEnabled() {
-        if (locationManager != null) {
-            return true;
-        }
-
-        return false;
+        return mRetrieveLocationInfo;
     }
 
     public Location getLocation() {
         return location;
-    }
-
-    private void findLocation(boolean locationDetectionEnabled) {
-        if (!locationDetectionEnabled) {
-            if (locationManager != null && locationListener != null) {
-                try {
-                    locationManager.removeUpdates(locationListener);
-                } catch (SecurityException ex) {
-
-                } finally {
-                    locationManager = null;
-                    locationListener = null;
-                }
-            }
-            return;
-        }
-
-        Criteria criteria = new Criteria();
-        criteria.setCostAllowed(false);
-
-        criteria.setPowerRequirement(Criteria.NO_REQUIREMENT);
-        criteria.setBearingRequired(false);
-        criteria.setSpeedRequired(false);
-        criteria.setAltitudeRequired(false);
-        criteria.setAccuracy(Criteria.ACCURACY_COARSE);
-
-        enableLocationDetection(CommonConstants.LOCATION_DETECTION_MINTIME,
-                CommonConstants.LOCATION_DETECTION_MINDISTANCE,
-                criteria,
-                null);
     }
 
     /**
@@ -932,29 +895,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         mRetrieveLocationInfo = locationDetectionEnabled;
     }
 
-    /**
-     * Enables location detection with specified criteria. To disable location detection use
-     * setLocationDetectionEnabled(false).
-     *
-     * @param minTime LocationManager.requestLocationUpdates minTime
-     * @param minDistance LocationManager.requestLocationUpdates minDistance
-     * @param criteria Criteria used to find an available provider. Ignored if provider is
-     * non-null.
-     * @param provider Named provider used by the LocationManager to obtain location updates.
-     *
-     * @see LocationManager  requestLocationUpdates
-     */
-    public void enableLocationDetection(long minTime,
-                                        float minDistance,
-                                        Criteria criteria,
-                                        String provider) {
-        if ((provider == null) && (criteria == null)) {
-            throw new IllegalArgumentException("criteria or provider required");
-        }
-
-        LocationDetector.getInstance(getContext()).addObserver(locationObserver);
-    }
-
     private Observer locationObserver = new Observer() {
         @Override
         public void update(Observable observable, Object data) {
@@ -964,7 +904,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             }
         }
     };
-
 
     /**
      * Executes the Banner ad request.
@@ -1099,7 +1038,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         closeInternalBrowser();
         browserDialog = null;
 
-        findLocation(false);
+        //findLocation();
         unregisterReceiver();
     }
 
@@ -1184,12 +1123,14 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             }
         }
 
+        // Insert the location parameter in ad request,
+        // if publisher has enabled location detection
+        // and does not provid location
+        if(mRetrieveLocationInfo && location != null)
+            adRequest.setLocation(location);
+
         adRequest.createRequest(getContext());
 
-        // Insert the location parameter in ad request,
-        // if publisher does not provided
-        if(adRequest.getLocation() == null)
-            adRequest.setLocation(location);
         if(!TextUtils.isEmpty(androidAid)) {
             //adRequest
         }

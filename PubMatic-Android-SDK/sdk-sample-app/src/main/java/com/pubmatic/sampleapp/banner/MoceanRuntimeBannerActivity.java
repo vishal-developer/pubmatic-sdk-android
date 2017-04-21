@@ -18,6 +18,7 @@ package com.pubmatic.sampleapp.banner;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
@@ -48,6 +49,7 @@ public class MoceanRuntimeBannerActivity extends Activity {
         PMLogger.setLogLevel(PMLogger.LogLevel.Debug);
         MoceanBannerAdRequest adRequest = MoceanBannerAdRequest
                 .createMoceanBannerAdRequest(this, "88269");
+
         banner.setUseInternalBrowser(true);
         banner.setUpdateInterval(15);
         banner.execute(adRequest);

@@ -55,9 +55,7 @@ import org.json.JSONObject;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
@@ -185,10 +183,10 @@ public final class PMNativeAd {
         // mAdRequest = adRequest;
         setChannel(adRequest.getChannel());
         setAdRequest(adRequest);
-        
-        //Start the location update if Publisher does not provides the location
-        if(adRequest.getLocation() == null && mRetrieveLocationInfo) {
-            findLocation(true);
+
+        //Start the location update if Publisher has enabled location detection
+        if(mRetrieveLocationInfo) {
+            location = LocationDetector.getInstance(mContext).getLocation();
         }
 
     }
@@ -456,6 +454,12 @@ public final class PMNativeAd {
             args.put(REQUESTPARAM_ANDROID_ID_SHA1, getUdidFromContext(mContext));
         }
 
+        // Insert the location parameter in ad request,
+        // if publisher has enabled location detection
+        // and does not provid location
+        if(mRetrieveLocationInfo && location != null)
+            mAdRequest.setLocation(location);
+
         // Make a fresh adRequest
         mAdRequest.setUserAgent(getUserAgent());
 
@@ -707,25 +711,20 @@ public final class PMNativeAd {
         internalUpdate(true);
     }
 
-    public Location getLocation() {
-        return location;
+    /**
+     * Determines if location detection is enabled. If enabled, the SDK will use the location
+     * services of the device to determine the device's location ad add ad request parameters
+     * (lat/long) to the ad request. Location detection can be enabled with
+     * setLocationDetectionEnabled() or enableLocationDetection().
+     *
+     * @return true if location detection is enabled, false if not
+     */
+    public boolean isLocationDetectionEnabled() {
+        return mRetrieveLocationInfo;
     }
 
-    private void findLocation(boolean locationDetectionEnabled) {
-
-        Criteria criteria = new Criteria();
-        criteria.setCostAllowed(false);
-
-        criteria.setPowerRequirement(Criteria.NO_REQUIREMENT);
-        criteria.setBearingRequired(false);
-        criteria.setSpeedRequired(false);
-        criteria.setAltitudeRequired(false);
-        criteria.setAccuracy(Criteria.ACCURACY_COARSE);
-
-        enableLocationDetection(CommonConstants.LOCATION_DETECTION_MINTIME,
-        		CommonConstants.LOCATION_DETECTION_MINDISTANCE,
-                                criteria,
-                                null);
+    public Location getLocation() {
+        return location;
     }
 
     /**
@@ -741,30 +740,6 @@ public final class PMNativeAd {
         mRetrieveLocationInfo = locationDetectionEnabled;
     }
 
-    /**
-     * Enables location detection with specified criteria. To disable location detection use
-     * setLocationDetectionEnabled(false).
-     *
-     * @param minTime LocationManager.requestLocationUpdates minTime
-     * @param minDistance LocationManager.requestLocationUpdates minDistance
-     * @param criteria Criteria used to find an available provider. Ignored if provider is
-     * non-null.
-     * @param provider Named provider used by the LocationManager to obtain location updates.
-     *
-     * @see LocationManager#requestLocationUpdates
-     */
-    public void enableLocationDetection(long minTime,
-            float minDistance,
-            Criteria criteria,
-            String provider) {
-    	 if ((provider == null) && (criteria == null)) {
-             throw new IllegalArgumentException("criteria or provider required");
-         }
-
-         LocationDetector.getInstance(mContext).addObserver(locationObserver);
-
-    }
-
     private Observer locationObserver = new Observer() {
         @Override
         public void update(Observable observable, Object data) {
@@ -774,6 +749,7 @@ public final class PMNativeAd {
             }
         }
     };
+
     public void reset() {
 
         mNativeAdDescriptor = null;
