@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.pubmatic.sdk.banner.mocean.MoceanBannerAdRequest;
 import com.pubmatic.sdk.banner.phoenix.PhoenixBannerAdRequest;
+import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest;
 import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest;
 import com.pubmatic.sdk.nativead.PMNativeAd;
@@ -332,7 +333,16 @@ public class NativeAdFragment extends DialogFragment {
                 String ethnicity = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_ETHNICITY);
 
                 if(!ethnicity.equals("") && ethnicity != null)
-                    ((PubMaticNativeAdRequest)adRequest).setEthnicity(ethnicity);
+                {
+                    if(ethnicity.equalsIgnoreCase("HISPANIC"))
+                        ((PubMaticNativeAdRequest)adRequest).setEthnicity(PubMaticAdRequest.ETHNICITY.HISPANIC);
+                    else if(ethnicity.equalsIgnoreCase("AFRICAN_AMERICAN"))
+                        ((PubMaticNativeAdRequest)adRequest).setEthnicity(PubMaticAdRequest.ETHNICITY.AFRICAN_AMERICAN);
+                    else if(ethnicity.equalsIgnoreCase("CAUCASIAN"))
+                        ((PubMaticNativeAdRequest)adRequest).setEthnicity(PubMaticAdRequest.ETHNICITY.CAUCASIAN);
+                    else if(ethnicity.equalsIgnoreCase("ASIAN_AMERICAN"))
+                        ((PubMaticNativeAdRequest)adRequest).setEthnicity(PubMaticAdRequest.ETHNICITY.ASIAN_AMERICAN);
+                }
 
                 String gender = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_GENDER);
 

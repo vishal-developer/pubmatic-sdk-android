@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">HeaderBiddingSample</string>
+    <string name="banner_sample_tag">/6499/example/banner</string>
+    <string name="banner_ad_unit_id">/15671365/mobile_app_hb</string>
+    <string name="banner_ad_unit_id_2">/15671365/mobile_app_hb2</string>
+    <string name="interstitial_ad_unit_id">/15671365/mobile_app_hb</string>
+
+    <string name="content">Lorem Ipsum is simply dummy text of the printing and typesetting industry.\n Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.\n It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</string>
+    <string name="adSlotId1">mobile_app_hb@320x50</string>
+    <string name="header_bidding_description">It\'s a way for publishers to conduct direct auctions, so as to bypass the inefficiencies that keep apps from finding the best prices for their ad space inventory. \n\nIn a nutshell, header bidding is the process of sending out an initial ad call simultaneously to multiple buyers prior to the page even loading. Buyers get first look at the inventory and submit a pre-bid price. This pre-bid price then becomes the bid floor for the ad server call, which checks if any other buyers can beat it.
+\n\nHeader bidding mainly benefits publishers who use third party SDKs (For Example DFP) to manage their ads. DFP doesn\'t allow publishers to pull in programmatic buyers that compete against AdX and direct deals, so publishers are limited as to which buyers they can utilize. Header bidding helps publishers get around this limitation by calling all of their programmatic buyers before the ad request is made to DFP. It then passes in the winning price from the header bidding in the ad request to DFP, and uses that as the basis to see if DFP can beat the price. This workaround allows the publishers to offer their inventory to more potential buyers.
+\n\nWhen a page in the publisher\'s app is loaded, the code reaches out to PubMatic for bids before the ad server\'s direct sales are called. Bidding is essentially simultaneous, instead of sequential, and focuses on all available impressions, not just the ones available after direct sales.
+\n\nIf they want, publishers can also allow the winning bid to compete with the prices available from the direct-sold ads.
+\n\nThis header bidding arrangement accomplishes several things. All the demand sources are bidding at the same time, which replaces waterfall\'s preferential ordering of buyers. Advertisers get a shot at the best ad inventory. Stats have shown publisher gains as high as 50 percent in CPMs.
+    </string>
+</resources>

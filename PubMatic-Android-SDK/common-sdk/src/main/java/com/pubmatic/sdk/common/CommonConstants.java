@@ -48,7 +48,7 @@ public class CommonConstants {
 	// Common parameters for all platforms
 	public static final String xml_layout_attribute_logLevel 		= "logLevel";
 	public static final String xml_layout_attribute_channel 		= "channel";
-    public static final String xml_layout_attribute_update_interval = "updateInterval";
+	public static final String xml_layout_attribute_update_interval = "updateInterval";
 
 	// Phoenix specific parameters
 	public static final String REQUESTPARAM_AD_UNIT_ID 		= "adUnitId";
@@ -191,6 +191,10 @@ public class CommonConstants {
 
 	public static final String DEFAULTED_EXCREATIVES = "excreatives";
 	public static final String DEFAULTED_PUBMATIC_EXFEEDS = "pubmatic_exfeeds";
+
+	public static final String PASSBACK_KAD_NETWORK = "kadNetwork";
+	public static final String PASSBACK_CAMPAIGNS = "defcmpgIDs";
+	public static final String PASSBACK_LAST_DEFAULTED_NETWORK = "lastdefadnwkID";
 
 	/**
 	 * Enum to define the supported Mediation network.

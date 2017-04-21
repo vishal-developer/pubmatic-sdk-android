@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mojiva>
+    <ad type="thirdparty" subtype="mediation" feed="PubMatic Desktop">
+        <creativeid>702549</creativeid>
+        <feedid>1123</feedid>
+        <url />
+        <text />
+        <track><![CDATA[http://aktrack.pubmatic.com/AdServer/AdDisplayTrackerServlet?operId=1&pubId=31400&siteId=70817&adId=183828&adServerId=2539&kefact=0.100000&kaxefact=0.100000&kadNetFrequecy=1&kadwidth=320&kadheight=50&kadsizeid=138&kltstamp=1436256007&indirectAdId=0&adServerOptimizerId=2&ranreq=0.8602526931405036&kpbmtpfact=0.000000&dcId=2&tldId=0&passback=0&imprId=EC38FC94-3F82-4AA3-9EDC-F2F7BD325482&oid=EC38FC94-3F82-4AA3-9EDC-F2F7BD325482&mobflag=1&ismobileapp=1&udidtype=0&pageURL=http%3A%2F%2Fexample.com]]></track>
+      <content>&lt;!-- client_side_external_campaign
+&lt;external_campaign version="1.0"&gt;&lt;campaign_id&gt;675489&lt;/campaign_id&gt;&lt;type&gt;MoPub&lt;/type&gt;&lt;external_params&gt;&lt;param name="adUnitId"&gt;b195f8dd8ded45fe847ad89ed1d016da&lt;/param&gt;&lt;param name="adType"&gt;&lt;/param&gt;&lt;param name="zip"&gt;10036&lt;/param&gt;&lt;param name="long"&gt;-73.9902&lt;/param&gt;&lt;param name="lat"&gt;40.7593&lt;/param&gt;&lt;/external_params&gt;&lt;track_url&gt;http://ads.moceanads.com/5/img/78933473-9fce-11e4-94db-b8ca3a685e3a&lt;/track_url&gt;&lt;/external_campaign&gt;
+--&gt;</content>
+    <impressiontrackers>
+        <impressiontracker><![CDATA[http://aktrack.pubmatic.com]]></impressiontracker>
+    </impressiontrackers>
+    <clicktrackers>
+        <clicktracker><![CDATA[http://%ADHOST%/7/click/2eedbe00-247e-11e5-97da-a0369f11e885/702549]]></clicktracker>
+        <clicktracker><![CDATA[http://clicktrack.pubmatic.com/AdServer/AdDisplayTrackerServlet?operId=3&clickData=aHR0cDovL2NsaWNrdHJhY2sucHVibWF0aWMuY29tL0FkU2VydmVyL0FkRGlzcGxheVRyYWNrZXJTZXJ2bGV0P29wZXJJZD0zJnB1YklkPTMxNDAwJnNpdGVJZD0xNDA0NDExMzU2ODI3MjEmYWRJZD0xODM4Mjgma2Fkc2l6ZWlkPTE0MDQ0MTEzNTYxMjA0MiZ0bGRJZD0wJnBhc3NiYWNrPTAmYWRTZXJ2ZXJJZD0yNTM5JmltcGlkPUVDMzhGQzk0LTNGODItNEFBMy05RURDLUYyRjdCRDMyNTQ4MiZtb2JmbGFnPTEmaXNtb2JpbGVhcHA9MQ==&url=]]></clicktracker>
+    </clicktrackers>
+</ad>
+    </mojiva>

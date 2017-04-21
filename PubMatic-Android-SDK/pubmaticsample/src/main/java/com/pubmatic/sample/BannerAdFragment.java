@@ -22,6 +22,7 @@ import com.pubmatic.sdk.banner.phoenix.PhoenixBannerAdRequest;
 import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest;
 import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest;
+import com.pubmatic.sdk.common.pubmatic.PubMaticConstants;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -285,7 +286,16 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
                 String ethnicity = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_ETHNICITY);
 
                 if(!ethnicity.equals("") && ethnicity != null)
-                    ((PubMaticBannerAdRequest)adRequest).setEthnicity(ethnicity);
+                {
+                    if(ethnicity.equalsIgnoreCase("HISPANIC"))
+                        ((PubMaticBannerAdRequest)adRequest).setEthnicity(PubMaticAdRequest.ETHNICITY.HISPANIC);
+                    else if(ethnicity.equalsIgnoreCase("AFRICAN_AMERICAN"))
+                        ((PubMaticBannerAdRequest)adRequest).setEthnicity(PubMaticAdRequest.ETHNICITY.AFRICAN_AMERICAN);
+                    else if(ethnicity.equalsIgnoreCase("CAUCASIAN"))
+                        ((PubMaticBannerAdRequest)adRequest).setEthnicity(PubMaticAdRequest.ETHNICITY.CAUCASIAN);
+                    else if(ethnicity.equalsIgnoreCase("ASIAN_AMERICAN"))
+                        ((PubMaticBannerAdRequest)adRequest).setEthnicity(PubMaticAdRequest.ETHNICITY.ASIAN_AMERICAN);
+                }
 
                 String gender = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_GENDER);
 

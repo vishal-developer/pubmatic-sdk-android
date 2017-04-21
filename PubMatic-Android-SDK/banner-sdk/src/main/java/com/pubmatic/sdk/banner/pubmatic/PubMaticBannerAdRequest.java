@@ -1,26 +1,25 @@
 package com.pubmatic.sdk.banner.pubmatic;
 
-
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 
+import com.pubmatic.sdk.common.CommonConstants;
 import com.pubmatic.sdk.common.pubmatic.PUBAdSize;
 import com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest;
-import com.pubmatic.sdk.common.CommonConstants;
 import com.pubmatic.sdk.common.pubmatic.PubMaticConstants;
 
 public class PubMaticBannerAdRequest extends PubMaticAdRequest {
 
-	private PUBAdSize 	mPubAdSize 		 = null;
+	private PUBAdSize mPubAdSize = null;
 	private PUBAdSize[] mMultiAdSizes	 = null;
-	private int 		mTimeoutInterval = CommonConstants.INVALID_INT;
+	private int mTimeoutInterval = CommonConstants.INVALID_INT;
 
 	//Should not exposed to Publisher, Handled by SDK.
-	private int 		mDefaultedAdNetworkId;
-	private int 		mDefaultedCampaignId;
+	private int mDefaultedAdNetworkId;
+	private int mDefaultedCampaignId;
 
-	private PubMaticBannerAdRequest(Context context) {
+	protected PubMaticBannerAdRequest(Context context) {
 		super(context);
 	}
 
@@ -57,8 +56,6 @@ public class PubMaticBannerAdRequest extends PubMaticAdRequest {
 		if (mPostData == null)
 			mPostData = new StringBuffer();
 
-		putPostData(PubMaticConstants.AD_TYPE_PARAM, String.valueOf(11));//For Text and Image and Rich Media ads
-
 		// Set the Ad size
 		if (mPubAdSize != null) {//Need to confirm AD_HEIGHT_PARAM or SIZE_Y_PARAM
 			putPostData(PubMaticConstants.AD_HEIGHT_PARAM, String.valueOf(mPubAdSize.getAdHeight()));
@@ -90,8 +87,8 @@ public class PubMaticBannerAdRequest extends PubMaticAdRequest {
 	/**
 	 * Ad will be refreshed by given time interval in seconds. By default,
 	 * Library will set to 0 second and Ad will be not refresh automatically.
-	 * <p>
-	 * <p>
+	 * <p/>
+	 * <p/>
 	 * The adRefreshRa te should be in range on 12 to 120 second. If you set the
 	 * ad refresh time interval value < 0 or >=1 && < 12, library will set it to
 	 * 12 seconds If you set the ad refresh time interval >120 seconds, library
@@ -138,7 +135,7 @@ public class PubMaticBannerAdRequest extends PubMaticAdRequest {
 	}
 
 	public void setAttributes(AttributeSet attr) {
-		if(attr==null)
+		if (attr == null)
 			return;
 		try {
 			mPubId = attr.getAttributeValue(null,
@@ -213,5 +210,4 @@ public class PubMaticBannerAdRequest extends PubMaticAdRequest {
 	public void setTimeoutInterval(int mTimeoutInterval) {
 		this.mTimeoutInterval = mTimeoutInterval;
 	}
-
 }

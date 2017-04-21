@@ -33,6 +33,7 @@ package com.pubmatic.sdk.common.pubmatic;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 import android.content.Context;
@@ -76,6 +77,7 @@ public final class PUBDeviceInformation implements LocationListener {
 	public String mDeviceAcceptLanguage = null;
 	public String mDeviceScreenResolution = null;
 
+    public String mDeviceTimeStamp = "";
 	public double mDeviceTimeZone = 0.0;
 	public String mDeviceLocation = "";
 	// Hard Coded Values
@@ -142,7 +144,7 @@ public final class PUBDeviceInformation implements LocationListener {
 			mApplicationName = info.applicationInfo.loadLabel(manager).toString();
 			mPackageName = mApplicationContext.getPackageName();
 			mApplicationVersion = info.versionName;
-			mPageURL = mApplicationName + "_" + mApplicationVersion;
+			//mPageURL = mApplicationName + "_" + mApplicationVersion;
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -151,6 +153,8 @@ public final class PUBDeviceInformation implements LocationListener {
 		}
 
 		mDeviceIpAddress = getDeviceIpAddress();
+
+        mDeviceTimeStamp = getCurrentTimeStamp();
 	}
 
 	// Return the same instance
@@ -273,5 +277,23 @@ public final class PUBDeviceInformation implements LocationListener {
 
 	public void onStatusChanged(String provider, int status, Bundle extras) {
 
+	}
+
+	/**
+	 *
+	 * @return yyyy-MM-dd HH:mm:ss formate date as string
+	 */
+	public static String getCurrentTimeStamp(){
+		try {
+
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String currentDateTime = dateFormat.format(new Date()); // Find todays date
+
+			return currentDateTime;
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			return null;
+		}
 	}
 }

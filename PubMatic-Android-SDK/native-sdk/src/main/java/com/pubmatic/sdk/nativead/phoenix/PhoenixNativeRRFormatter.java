@@ -373,4 +373,6 @@ public class PhoenixNativeRRFormatter implements RRFormatter {
     public void setRequest(AdRequest mRequest) {
         this.mRequest = mRequest;
     }
+
+    public AdResponse formatHeaderBiddingResponse(JSONObject response) { return null; }
 }

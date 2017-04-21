@@ -70,6 +70,16 @@ public class BannerAdDescriptor implements AdResponse.Renderable {
         String subAdType = parser.getAttributeValue(null, "subtype");
         adInfo.put("subtype", subAdType);
 
+        //For richmedia & thirdparty, width/height would be there if size_required=1 is sent in ad request
+        String width = parser.getAttributeValue(null, "width");
+        String height = parser.getAttributeValue(null, "height");
+        if (TextUtils.isEmpty(width) == false) {
+            adInfo.put("width", width);
+        }
+        if (TextUtils.isEmpty(height) == false) {
+            adInfo.put("height", height);
+        }
+
         // read past start tag
         parser.next();
 
@@ -83,17 +93,22 @@ public class BannerAdDescriptor implements AdResponse.Renderable {
                 // done with the ad descriptor
                 break;
             } else if (eventType == XmlPullParser.START_TAG) {
+
                 String subType = parser.getAttributeValue(null, "type");
-                String width = parser.getAttributeValue(null, "width");
-                String height = parser.getAttributeValue(null, "height");
                 if (TextUtils.isEmpty(subType) == false) {
                     adInfo.put(name + "Type", subType);
                 }
-                if (TextUtils.isEmpty(width) == false && width != null) {
-                    adInfo.put("width", width);
-                }
-                if (TextUtils.isEmpty(height) == false && height != null) {
-                    adInfo.put("height", height);
+
+                //For img type of ad, width/height would be inside img attribute instead of ad attribute
+                if("img".equalsIgnoreCase(name)) {
+                    width = parser.getAttributeValue(null, "width");
+                    height = parser.getAttributeValue(null, "height");
+                    if (TextUtils.isEmpty(width) == false) {
+                        adInfo.put("width", width);
+                    }
+                    if (TextUtils.isEmpty(height) == false) {
+                        adInfo.put("height", height);
+                    }
                 }
 
                 parser.next();

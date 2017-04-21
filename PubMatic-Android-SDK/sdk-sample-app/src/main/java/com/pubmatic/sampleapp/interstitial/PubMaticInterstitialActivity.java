@@ -68,6 +68,9 @@ public class PubMaticInterstitialActivity extends Activity {
 
             @Override
             public void onReceivedAd(PMBannerAdView adView) {
+                Toast.makeText(PubMaticInterstitialActivity.this,
+                        "Ad loaded!",
+                        Toast.LENGTH_SHORT).show();
                 interstitialAdView.showInterstitial();
             }
 
@@ -80,7 +83,7 @@ public class PubMaticInterstitialActivity extends Activity {
         });
 
         PubMaticBannerAdRequest adRequest = PubMaticBannerAdRequest.createPubMaticBannerAdRequest(
-                this, "2685", "103754", "405170");
+                this, "31400", "32504", "884567");
         interstitialAdView.execute(adRequest);
     }
 }

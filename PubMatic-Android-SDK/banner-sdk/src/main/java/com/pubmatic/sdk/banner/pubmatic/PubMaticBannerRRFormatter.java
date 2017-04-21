@@ -12,11 +12,20 @@ import org.json.JSONObject;
 import com.pubmatic.sdk.banner.BannerAdDescriptor;
 import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.AdResponse;
+import com.pubmatic.sdk.common.CommonConstants;
+import com.pubmatic.sdk.common.CommonConstants.CONTENT_TYPE;
 import com.pubmatic.sdk.common.RRFormatter;
 import com.pubmatic.sdk.common.network.HttpRequest;
 import com.pubmatic.sdk.common.network.HttpResponse;
-import com.pubmatic.sdk.common.CommonConstants;
-import com.pubmatic.sdk.common.CommonConstants.CONTENT_TYPE;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import static android.R.attr.name;
 
@@ -30,6 +39,7 @@ public class PubMaticBannerRRFormatter implements RRFormatter {
     private static final String kclick_tracking_url = "click_tracking_url";
     private static final String kerror_code = "error_code";
     private static final String kerror_message = "error_string";
+    private static final String UTF8_CHARSET = "UTF-8";
 
     private AdRequest mRequest;
 
@@ -51,8 +61,32 @@ public class PubMaticBannerRRFormatter implements RRFormatter {
     @Override
     public AdResponse formatResponse(HttpResponse response) {
 
+        // Check whether the adResponse is null or not. If it is null then
+        // it is an invalid ad, so sending the null response.
+        if (response == null) {
+            return null;
+        }
+
+        // Parsing of the response.
+        try {
+            JSONObject jsonObject = new JSONObject(response.getResponseData());
+            JSONObject object = jsonObject.getJSONObject(kPubMatic_BidTag);
+            AdResponse adResponse = parseJSONResponse(object);
+            adResponse.setRequest(mRequest);
+            return adResponse;
+        }catch(JSONException je){
+            je.printStackTrace();
+            return null;
+        }
+    }
+
+    private AdResponse parseJSONResponse(JSONObject response){
+
+        if(response == null){
+            return null;
+        }
+
         AdResponse pubResponse = new AdResponse();
-        pubResponse.setRequest(mRequest);
 
         Map<String, String> adInfo = new HashMap<String, String>();
         ArrayList<String> impressionTrackers = new ArrayList<String>();
@@ -60,56 +94,41 @@ public class PubMaticBannerRRFormatter implements RRFormatter {
         adInfo.put("type", "thirdparty");
 
         try {
-            // Check whether the adResponse is null or not. If it is null then
-            // it is
-            // an invalid ad, so sending the null response.
-            if (response == null) {
-                return null;
-            }
-
-            // Parsing of the response.
-            JSONObject jsonObject = new JSONObject(response.getResponseData().toString());
-            JSONObject object = jsonObject.getJSONObject(kPubMatic_BidTag);
-
             // If there is an error from the server which happens when provided
             // wrong ad parameters, return the error with error code and error
             // message.
+            String errorCode;
+            if (!TextUtils.isEmpty(errorCode = response.optString(kerror_code))) {
 
-            if (!object.isNull(kerror_code) && !(object.getString(kerror_code)
-                                                       .equalsIgnoreCase(""))) {
-
-                pubResponse.setErrorCode(object.getString(kerror_code));
-                pubResponse.setErrorMessage(object.getString(kerror_message));
-
+                pubResponse.setErrorCode(errorCode);
+                pubResponse.setErrorMessage(response.getString(kerror_message));
                 return pubResponse;
             }
 
             // Check if json contains the creative_tag and tracking_url.
             // If these are missing then the ad is invalid. Return null else
             // return valid adInfo object.
-            if (object.isNull(kcreative_tag) == false && !(object.getString(kcreative_tag)
-                                                                 .equalsIgnoreCase("")) && object.isNull(
-                    ktracking_url) == false && !(object.getString(ktracking_url)
-                                                       .equalsIgnoreCase(""))) {
+            if (!TextUtils.isEmpty(response.optString(kcreative_tag))
+                    && !TextUtils.isEmpty(response.optString(ktracking_url))) {
 
-                adInfo.put("content", object.getString(kcreative_tag));
-                impressionTrackers.add(object.getString(ktracking_url));
+                adInfo.put("content", response.getString(kcreative_tag));
+                impressionTrackers.add( URLDecoder.decode(response.getString(ktracking_url), UTF8_CHARSET));
 
                 // Setting ecpm if not null
-                if (!object.isNull(kecpm)) {
-                    adInfo.put("ecpm", object.getString(kecpm));
+                if (!response.isNull(kecpm)) {
+                    adInfo.put("ecpm", response.getString(kecpm));
                 }
                 // Setting click_tracking_url if not null
-                if (!object.isNull(kclick_tracking_url)) {
-                    clickTrackers.add(object.getString(kclick_tracking_url));
+                if (!response.isNull(kclick_tracking_url)) {
+                    clickTrackers.add(URLDecoder.decode(response.getString(kclick_tracking_url), UTF8_CHARSET));
                 }
                 // Setting landing_page if not null
-                if (!object.isNull(klanding_page)) {
-                    adInfo.put("url", object.getString(klanding_page));
+                if (!response.isNull(klanding_page)) {
+                    adInfo.put("url", URLDecoder.decode(response.getString(klanding_page), UTF8_CHARSET));
                 }
 
-                String width = object.optString("w");
-                String height = object.optString("h");
+                String width = response.optString("w");
+                String height = response.optString("h");
                 if (!TextUtils.isEmpty(width)) {
                     adInfo.put("width", width);
                 }
@@ -122,13 +141,13 @@ public class PubMaticBannerRRFormatter implements RRFormatter {
             adDescriptor.setImpressionTrackers(impressionTrackers);
             adDescriptor.setClickTrackers(clickTrackers);
             pubResponse.setRenderable(adDescriptor);
-        } catch (JSONException e) {
+
+        } catch (JSONException | UnsupportedEncodingException e) {
             e.printStackTrace();
         } finally {
-            response = null;
+            //response = null;
         }
 
         return pubResponse;
-
     }
 }

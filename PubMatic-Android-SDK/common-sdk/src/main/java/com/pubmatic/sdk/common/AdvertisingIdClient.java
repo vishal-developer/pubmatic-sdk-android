@@ -78,7 +78,7 @@ public static final class AdInfo {
         if(Looper.myLooper() == Looper.getMainLooper()) throw new IllegalStateException("Cannot be called from the main thread");
 
         try { PackageManager pm = context.getPackageManager(); pm.getPackageInfo("com.android.vending", 0); }
-        catch (Exception e) { throw e; }
+        catch (Exception e) { return null; }
 
         AdvertisingConnection connection = new AdvertisingConnection();
         Intent intent = new Intent("com.google.android.gms.ads.identifier.service.START");
