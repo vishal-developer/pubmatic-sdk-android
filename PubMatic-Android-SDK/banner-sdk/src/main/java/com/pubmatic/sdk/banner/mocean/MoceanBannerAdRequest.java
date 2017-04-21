@@ -41,6 +41,7 @@ public class MoceanBannerAdRequest extends MoceanAdRequest {
 
 		putPostData("count", "1");
 		putPostData("key", "3");
+		putPostData("size_required", "1");
 		putPostData("version", CommonConstants.SDK_VERSION);
 		if (this.test) {
 			putPostData("test", "1");
