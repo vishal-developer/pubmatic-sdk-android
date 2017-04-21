@@ -20,6 +20,20 @@ import java.util.Set;
 
 public abstract class PubMaticAdRequest extends AdRequest {
 
+    public enum HASHING_TECHNIQUE {
+        SHA1, MD5, RAW
+    }
+
+    protected HASHING_TECHNIQUE hashing = HASHING_TECHNIQUE.RAW;
+
+    public HASHING_TECHNIQUE getUdidHash() {
+        return hashing;
+    }
+
+    public void setUdidHash(HASHING_TECHNIQUE hashing) {
+        this.hashing = hashing;
+    }
+
     public abstract void setAttributes(AttributeSet attr);
 
     protected PubMaticAdRequest(Context context) {

@@ -51,11 +51,6 @@ public class PMBannerPrefetchRequest extends PubMaticBannerAdRequest {
     private List<PMBannerImpression> impressions;
     private Set<String> adSlotIdsHB;
 
-    protected HASHING_TECHNIQUE hashing = HASHING_TECHNIQUE.RAW;
-
-    public enum HASHING_TECHNIQUE {
-        SHA1, MD5, RAW
-    }
 
     private PMBannerPrefetchRequest(Context context) {
         super(context);
@@ -88,14 +83,6 @@ public class PMBannerPrefetchRequest extends PubMaticBannerAdRequest {
 
     public static PMBannerPrefetchRequest initHBRequestForImpression(Context context, String pubId, List<PMBannerImpression> impressions) {
         return new PMBannerPrefetchRequest(context, pubId, impressions);
-    }
-
-    public HASHING_TECHNIQUE getHashingTechnique() {
-        return hashing;
-    }
-
-    public void setHashingTechnique(HASHING_TECHNIQUE hashing) {
-        this.hashing = hashing;
     }
 
     public List<PMBannerImpression> getImpressions()
@@ -344,7 +331,7 @@ public class PMBannerPrefetchRequest extends PubMaticBannerAdRequest {
                 {
                     deviceJsonObject.put("dnt", 0);
 
-                    if (isAndoridAidEnabled() && !TextUtils.isEmpty(adInfo.getId())) {
+                    if (isAndoridAidEnabled() && adInfo!=null && !TextUtils.isEmpty(adInfo.getId())) {
 
                         String advertisingId = adInfo.getId();
 
@@ -361,8 +348,7 @@ public class PMBannerPrefetchRequest extends PubMaticBannerAdRequest {
                                 break;
                         }
 
-                    }
-                    else {
+                    } else {
 
                         String androidId = PMUtils.getUdidFromContext(mContext);
 
@@ -498,7 +484,7 @@ public class PMBannerPrefetchRequest extends PubMaticBannerAdRequest {
                 AdvertisingIdClient.AdInfo adInfo = AdvertisingIdClient.refreshAdvertisingInfo(mContext);
 
                 if(!AdvertisingIdClient.getLimitedAdTrackingState(mContext, false)) {
-                    if (isAndoridAidEnabled() && !TextUtils.isEmpty(adInfo.getId())) {
+                    if (isAndoridAidEnabled() && adInfo!=null && !TextUtils.isEmpty(adInfo.getId())) {
 
                         String advertisingId = adInfo.getId();
 
@@ -510,7 +496,7 @@ public class PMBannerPrefetchRequest extends PubMaticBannerAdRequest {
                                 break;
                             case SHA1:
                                 asJsonObject.put(PubMaticConstants.UDID_PARAM, PMUtils.sha1(advertisingId));
-                                asJsonObject.put(PubMaticConstants.UDID_HASH_PARAM, PMConstants.HASHING_SHA);
+                                asJsonObject.put(PubMaticConstants.UDID_HASH_PARAM, PMConstants.HASHING_SHA1);
                                 break;
                             case MD5:
                                 asJsonObject.put(PubMaticConstants.UDID_PARAM, PMUtils.md5(advertisingId));
@@ -531,7 +517,7 @@ public class PMBannerPrefetchRequest extends PubMaticBannerAdRequest {
                                 break;
                             case SHA1:
                                 asJsonObject.put(PubMaticConstants.UDID_PARAM, PMUtils.sha1(androidId));
-                                asJsonObject.put(PubMaticConstants.UDID_HASH_PARAM, PMConstants.HASHING_SHA);
+                                asJsonObject.put(PubMaticConstants.UDID_HASH_PARAM, PMConstants.HASHING_SHA1);
                                 break;
                             case MD5:
                                 asJsonObject.put(PubMaticConstants.UDID_PARAM, PMUtils.md5(androidId));

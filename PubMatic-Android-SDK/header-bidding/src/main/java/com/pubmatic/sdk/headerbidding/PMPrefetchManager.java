@@ -168,6 +168,17 @@ public class PMPrefetchManager implements ResponseGenerator {
         pubmaticAdViews.add(weakRefAdView);
     }
 
+    public void reset() {
+        if(pubmaticAdViews!=null) {
+            if(pubmaticAdViews.size()>0) {
+                for(WeakReference<PMAdRendered> adRendered : pubmaticAdViews) {
+                    ((PMBannerAdView)adRendered.get()).reset();
+                }
+            }
+            pubmaticAdViews = null;
+        }
+    }
+
     private AdResponse formatHeaderBiddingResponse(PMBid bid)
     {
         AdResponse pubResponse = new AdResponse();

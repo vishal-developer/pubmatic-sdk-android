@@ -27,5 +27,5 @@ task generateAllJars() {
 
 }
 
-generateAllJars.dependsOn(':common-sdk:exportJar', ':banner-sdk:exportJar', ':native-sdk:exportJar')
+generateAllJars.dependsOn(':common-sdk:exportJar', ':banner-sdk:exportJar', ':native-sdk:exportJar', ':header-bidding:exportJar')
 

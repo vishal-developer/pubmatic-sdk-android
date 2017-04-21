@@ -26,3 +26,20 @@ dependencies {
     compile project(path: ':banner-sdk')
     compile 'com.google.android.gms:play-services-ads-lite:9.2.1'
 }
+
+
+// Task to delete the old jar
+task deleteOldJar(type: Delete) {
+    delete '../SDK-JAR/header-bidding.jar'
+}
+
+// Task to export contents as jar
+task exportJar(type: Copy) {
+    from('build/intermediates/bundles/release/')
+    into('../SDK-JAR/')
+    include('classes.jar')
+    //Name of Jar
+    rename('classes.jar', 'header-bidding.jar')
+}
+
+exportJar.dependsOn(deleteOldJar, build)

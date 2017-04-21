@@ -61,7 +61,7 @@ public class BannerDemoScreen extends AppCompatActivity {
         adViews.clear();
 
         if(headerBiddingHelper !=null) {
-            //hbBannerHelper.destroy();
+            headerBiddingHelper.destroy();
             headerBiddingHelper = null;
         }
     }

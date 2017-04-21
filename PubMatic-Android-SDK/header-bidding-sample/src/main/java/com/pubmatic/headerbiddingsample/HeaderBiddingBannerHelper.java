@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Created by Sagar on 10/12/2016.
+ * Helper class for Publisher to integrate PubMatic HB via DFP
  */
 public class HeaderBiddingBannerHelper {
 
@@ -292,10 +292,14 @@ public class HeaderBiddingBannerHelper {
         adRequest.setIABCategory("IAB1-1,IAB1-7");
         adRequest.setAppCategory("Entertainment, Sports");
 
-        adRequest.setHashingTechnique(PMBannerPrefetchRequest.HASHING_TECHNIQUE.RAW);
+        adRequest.setUdidHash(PMBannerPrefetchRequest.HASHING_TECHNIQUE.RAW);
         adRequest.setAndroidAidEnabled(false);
 
         return adRequest;
+    }
+    public void destroy() {
+        if(pmPrefetchManager!=null)
+            pmPrefetchManager.reset();
     }
 
     class DfpAdListener extends AdListener {
