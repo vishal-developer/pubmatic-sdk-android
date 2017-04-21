@@ -2,6 +2,8 @@ package com.pubmatic.sample;
 
 import android.app.ActionBar;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
@@ -27,6 +29,8 @@ public class HomeActivity extends FragmentActivity  {
         mViewPager = (ViewPager) findViewById(R.id.pager);
 
         final ActionBar actionBar = getActionBar();
+
+        actionBar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(android.R.color.holo_blue_dark)));
 
         // Specify that tabs should be displayed in the action bar.
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);

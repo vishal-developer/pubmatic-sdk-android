@@ -61,7 +61,6 @@ public class NativeAdFragment extends DialogFragment {
     private TextView ctaText = null;
     private TextView txtDescription = null;
     private RatingBar ratingBar = null;
-    private TextView txtLogView = null;
     private RelativeLayout mLayout = null;
 
     private PMNativeAd ad = null;
@@ -112,7 +111,7 @@ public class NativeAdFragment extends DialogFragment {
         Dialog dialog = mBuilder.create();
 
         Drawable drawable = new ColorDrawable(Color.BLACK);
-        drawable.setAlpha(120);
+        drawable.setAlpha(220);
 
         dialog.getWindow().setBackgroundDrawable(drawable);
 
@@ -128,7 +127,6 @@ public class NativeAdFragment extends DialogFragment {
         ctaText = (TextView) view.findViewById(R.id.ctaText);
         txtDescription = (TextView) view.findViewById(R.id.txtDescription);
         ratingBar = (RatingBar) view.findViewById(R.id.ratingbar);
-        txtLogView = (TextView) view.findViewById(R.id.textView);
     }
 
     private void loadAd(View rootView)

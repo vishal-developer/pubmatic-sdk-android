@@ -33,7 +33,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_margin="5dp" >
 
                 <TextView
                     android:layout_width="0dp"
@@ -47,22 +48,27 @@
                     android:textSize="15sp"
                     android:textStyle="bold" />
 
-                <Spinner
-                    android:id="@+id/home_spinner_platform"
+                <TextView
+                    android:id="@+id/home_platform"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
                     android:layout_weight="1"
-                    android:gravity="right"
-                    android:paddingBottom="5dp"
-                    android:paddingLeft="10dp"
-                    android:paddingTop="5dp" />
+                    android:drawablePadding="5dp"
+                    android:gravity="center"
+                    android:padding="7dp"
+                    android:text="Mocean"
+                    android:textColor="@android:color/black"
+                    android:textSize="15dp" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_margin="5dp" >
 
                 <TextView
                     android:layout_width="0dp"
@@ -76,15 +82,19 @@
                     android:textSize="15sp"
                     android:textStyle="bold" />
 
-                <Spinner
-                    android:id="@+id/home_spinner_ad_type"
+                <TextView
+                    android:id="@+id/home_ad_type"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
                     android:layout_weight="1"
-                    android:gravity="right"
-                    android:paddingBottom="5dp"
-                    android:paddingLeft="10dp"
-                    android:paddingTop="5dp" />
+                    android:drawablePadding="5dp"
+                    android:gravity="center"
+                    android:padding="7dp"
+                    android:text="Banner"
+                    android:textColor="@android:color/black"
+                    android:textSize="15dp" />
 
             </LinearLayout>
 

@@ -2,13 +2,12 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="50dp">
+    android:paddingTop="75dp" >
 
     <RelativeLayout
         android:id="@+id/native_parent"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal" >
+        android:layout_height="wrap_content" >
 
         <ImageView
             android:id="@+id/imgLogo"
@@ -28,7 +27,6 @@
             android:layout_alignParentRight="true"
             android:layout_toRightOf="@id/imgLogo"
             android:paddingLeft="5dp"
-            android:text="&lt;Native Title>"
             android:textColor="#2164A1" />
 
         <TextView
@@ -39,7 +37,6 @@
             android:layout_below="@id/txtTitle"
             android:layout_toRightOf="@id/imgLogo"
             android:paddingLeft="5dp"
-            android:text="&lt;Native Description>"
             android:textColor="#555555" />
 
         <ImageView
@@ -77,19 +74,8 @@
             android:layout_marginRight="5dp"
             android:layout_marginTop="2dp"
             android:layout_toRightOf="@id/ratingbar"
-            android:background="#555555"
             android:gravity="center_horizontal"
             android:padding="5dp"
-            android:text="&lt;CTA>"
             android:textAllCaps="true" />
-
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@id/ctaText"
-            android:layout_marginTop="5dp"
-            android:background="#66DDDDDD"
-            android:textColor="#333333" />
     </RelativeLayout>
 </RelativeLayout>

@@ -2,6 +2,7 @@ package com.pubmatic.sample;
 
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -17,11 +18,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,8 +38,8 @@ import java.util.LinkedHashMap;
 
 public class HomeFragment extends Fragment {
 
-    private Spinner mSpinnerPlatform;
-    private Spinner mSpinnerAdType;
+    private TextView mPlatformSelector;
+    private TextView mAdTypeSelector;
 
     private String[] platforms;
     private String[] adTypes;
@@ -46,6 +49,8 @@ public class HomeFragment extends Fragment {
 
     private ConfigurationManager.PLATFORM mPlatform;
     private ConfigurationManager.AD_TYPE mAdType;
+
+    private Dialog mDialog;
 
     private View mLoadAd;
 
@@ -64,22 +69,16 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
 
-        mSpinnerPlatform = (Spinner) rootView.findViewById(R.id.home_spinner_platform);
-        mSpinnerAdType = (Spinner) rootView.findViewById(R.id.home_spinner_ad_type);
+        mPlatformSelector = (TextView) rootView.findViewById(R.id.home_platform);
+        mAdTypeSelector = (TextView) rootView.findViewById(R.id.home_ad_type);
 
         platforms = new String[] {"Mocean", "PubMatic"};
         adTypes = new String[] {"Banner", "Interstitial", "Native"};
 
-        mPlatformAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, platforms);
-        mSpinnerPlatform.setAdapter(mPlatformAdapter);
-        mSpinnerPlatform.setSelection(0);
-        mSpinnerPlatform.setOnItemSelectedListener(onPlatformSelected);
+        mPlatformSelector.setOnClickListener(onPlatformChooserSelected);
         mPlatform = ConfigurationManager.PLATFORM.MOCEAN;
 
-        mAdTypeAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, adTypes);
-        mSpinnerAdType.setAdapter(mAdTypeAdapter);
-        mSpinnerAdType.setSelection(0);
-        mSpinnerAdType.setOnItemSelectedListener(onAdTypeSelected);
+        mAdTypeSelector.setOnClickListener(onAdTypeChooserSelected);
         mAdType = ConfigurationManager.AD_TYPE.BANNER;
 
         mSettingsParent = (LinearLayout) rootView.findViewById(R.id.home_settings_parent);
@@ -99,6 +98,8 @@ public class HomeFragment extends Fragment {
                 }
             }
         }, 500);
+
+        refreshSettings();
 
         return rootView;
     }
@@ -153,19 +154,34 @@ public class HomeFragment extends Fragment {
         return v;
     }
 
-    private AdapterView.OnItemSelectedListener onPlatformSelected = new AdapterView.OnItemSelectedListener() {
+    private View.OnClickListener onPlatformChooserSelected = new View.OnClickListener() {
+
         @Override
-        public void onItemSelected(AdapterView<?> parent, View view, int i, long l) {
+        public void onClick(View view) {
 
-            TextView selectedText = (TextView) parent.getChildAt(0);
-            if (selectedText != null) {
-                selectedText.setTextColor(Color.BLACK);
-            }
+            mDialog = new Dialog(getActivity());
+            mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-            String platform = "";
+            mDialog.setContentView(R.layout.dialog_platform);
 
-            if(selectedText != null)
-                platform = selectedText.getText().toString();
+            View moceanPlatform = mDialog.findViewById(R.id.dialog_platform_mocean);
+            moceanPlatform.setOnClickListener(onPlatformSelected);
+
+            View pubmaticPlatform = mDialog.findViewById(R.id.dialog_platform_pubmatic);
+            pubmaticPlatform.setOnClickListener(onPlatformSelected);
+
+            mDialog.show();
+
+        }
+    };
+
+    private View.OnClickListener onPlatformSelected = new View.OnClickListener() {
+
+        @Override
+        public void onClick(View view) {
+
+            String platform = ((TextView)view).getText().toString();
+            mPlatformSelector.setText(platform);
 
             if(platform.equals("Mocean"))
                 mPlatform = ConfigurationManager.PLATFORM.MOCEAN;
@@ -178,28 +194,43 @@ public class HomeFragment extends Fragment {
 
             if(ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
                 refreshSettings();
+
+            if(mDialog != null)
+                mDialog.dismiss();
         }
+    };
+
+    private View.OnClickListener onAdTypeChooserSelected = new View.OnClickListener() {
 
         @Override
-        public void onNothingSelected(AdapterView<?> adapterView) {
+        public void onClick(View view) {
+
+            mDialog = new Dialog(getActivity());
+            mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+            mDialog.setContentView(R.layout.dialog_ad_type);
+
+            View bannerAdType = mDialog.findViewById(R.id.dialog_ad_type_banner);
+            bannerAdType.setOnClickListener(onAdTypeSelected);
+
+            View interstitialAdType = mDialog.findViewById(R.id.dialog_ad_type_interstitial);
+            interstitialAdType.setOnClickListener(onAdTypeSelected);
+
+            View nativeAdType = mDialog.findViewById(R.id.dialog_ad_type_native);
+            nativeAdType.setOnClickListener(onAdTypeSelected);
+
+            mDialog.show();
 
         }
     };
 
-    private AdapterView.OnItemSelectedListener onAdTypeSelected = new AdapterView.OnItemSelectedListener() {
+    private View.OnClickListener onAdTypeSelected = new View.OnClickListener() {
 
         @Override
-        public void onItemSelected(AdapterView<?> parent, View view, int i, long l) {
+        public void onClick(View view) {
 
-            TextView selectedText = (TextView) parent.getChildAt(0);
-            if (selectedText != null) {
-                selectedText.setTextColor(Color.BLACK);
-            }
-
-            String adType = "";
-
-            if(selectedText != null)
-                adType = selectedText.getText().toString();
+            String adType = ((TextView)view).getText().toString();
+            mAdTypeSelector.setText(adType);
 
             if(adType.equals("Banner"))
                 mAdType = ConfigurationManager.AD_TYPE.BANNER;
@@ -212,10 +243,9 @@ public class HomeFragment extends Fragment {
 
             if(ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
                 refreshSettings();
-        }
 
-        @Override
-        public void onNothingSelected(AdapterView<?> adapterView) {
+            if(mDialog != null)
+                mDialog.dismiss();
 
         }
     };

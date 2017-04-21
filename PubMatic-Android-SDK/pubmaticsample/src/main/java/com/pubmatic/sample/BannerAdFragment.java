@@ -24,11 +24,12 @@ import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Created by Sagar on 12/29/2016.
  */
-public class BannerAdFragment extends DialogFragment {
+public class BannerAdFragment extends DialogFragment implements PMBannerAdView.BannerAdViewDelegate.RequestListener {
 
     private AlertDialog.Builder mBuilder;
     private LayoutInflater mInflater;
@@ -81,7 +82,7 @@ public class BannerAdFragment extends DialogFragment {
         Dialog dialog = mBuilder.create();
 
         Drawable drawable = new ColorDrawable(Color.BLACK);
-        drawable.setAlpha(120);
+        drawable.setAlpha(220);
 
         dialog.getWindow().setBackgroundDrawable(drawable);
 
@@ -377,5 +378,20 @@ public class BannerAdFragment extends DialogFragment {
     public static int pxToDp(int px)
     {
         return (int) (px / Resources.getSystem().getDisplayMetrics().density) * 3;
+    }
+
+    @Override
+    public void onFailedToReceiveAd(PMBannerAdView adView, Exception ex) {
+
+    }
+
+    @Override
+    public void onReceivedAd(PMBannerAdView adView) {
+
+    }
+
+    @Override
+    public void onReceivedThirdPartyRequest(PMBannerAdView adView, Map<String, String> properties, Map<String, String> parameters) {
+
     }
 }
