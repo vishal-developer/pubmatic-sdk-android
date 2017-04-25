@@ -1,5 +1,5 @@
 /*
- * PubMatic Inc. ("PubMatic") CONFIDENTIAL Unpublished Copyright (c) 2006-2016
+ * PubMatic Inc. ("PubMatic") CONFIDENTIAL Unpublished Copyright (c) 2006-2017
  * PubMatic, All Rights Reserved.
  *
  * NOTICE: All information contained herein is, and remains the property of
@@ -30,7 +30,7 @@ package com.pubmatic.sdk.headerbidding;
 import java.util.List;
 
 /**
- * Created by Sagar on 10/5/2016.
+ *
  */
 
 public class PMBannerImpression extends PMImpression {

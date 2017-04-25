@@ -9,7 +9,7 @@ import android.widget.Button;
 import com.google.android.gms.ads.doubleclick.PublisherInterstitialAd;
 
 /**
- * Created by shrawangupta on 08/09/16.
+ *
  */
 public class HomeScreen extends Activity implements View.OnClickListener{
 

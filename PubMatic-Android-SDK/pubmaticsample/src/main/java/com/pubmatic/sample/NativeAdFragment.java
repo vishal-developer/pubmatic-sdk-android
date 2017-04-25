@@ -44,9 +44,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by Sagar on 4/19/2017.
+ *
  */
-
 public class NativeAdFragment extends DialogFragment {
 
     private AlertDialog.Builder mBuilder;

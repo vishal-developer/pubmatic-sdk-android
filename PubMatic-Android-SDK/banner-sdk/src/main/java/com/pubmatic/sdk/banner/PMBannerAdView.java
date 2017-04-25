@@ -1,5 +1,5 @@
 /*
- * PubMatic Inc. ("PubMatic") CONFIDENTIAL Unpublished Copyright (c) 2006-2014
+ * PubMatic Inc. ("PubMatic") CONFIDENTIAL Unpublished Copyright (c) 2006-2017
  * PubMatic, All Rights Reserved.
  *
  * NOTICE: All information contained herein is, and remains the property of
@@ -113,8 +113,6 @@ import java.util.Observer;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-@SuppressWarnings("unused")
-@SuppressLint("NewApi")
 public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
     public interface BannerAdViewDelegate {
@@ -2634,7 +2632,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             int minX = 0;
             int minY = statusBarHeightDp();
 
-            if (allowOffscreen == false) {
+            if (!allowOffscreen) {
                 int desiredScreenX = x;
                 int desiredScreenY = y;
                 int resultingScreenX = desiredScreenX;

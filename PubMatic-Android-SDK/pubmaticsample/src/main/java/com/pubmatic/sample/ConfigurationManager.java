@@ -18,7 +18,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 
 /**
- * Created by Sagar on 12/28/2016.
+ *
  */
 public final class ConfigurationManager {
 

@@ -1,9 +1,8 @@
 package com.pubmatic.sample;
 
 /**
- * Created by Sagar on 12/30/2016.
+ *
  */
-
 public class PMConstants {
 
     public static final String SETTINGS_HEADING_AD_TAG = "Ad Tag";

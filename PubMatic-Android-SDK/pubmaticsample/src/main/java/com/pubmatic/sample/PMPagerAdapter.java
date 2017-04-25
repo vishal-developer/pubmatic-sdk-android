@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 /**
- * Created by Sagar on 12/20/2016.
+ *
  */
 
 public class PMPagerAdapter extends FragmentStatePagerAdapter {

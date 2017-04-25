@@ -1,3 +1,29 @@
+/*
+ * PubMatic Inc. ("PubMatic") CONFIDENTIAL Unpublished Copyright (c) 2006-2017
+ * PubMatic, All Rights Reserved.
+ *
+ * NOTICE: All information contained herein is, and remains the property of
+ * PubMatic. The intellectual and technical concepts contained herein are
+ * proprietary to PubMatic and may be covered by U.S. and Foreign Patents,
+ * patents in process, and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material is
+ * strictly forbidden unless prior written permission is obtained from PubMatic.
+ * Access to the source code contained herein is hereby forbidden to anyone
+ * except current PubMatic employees, managers or contractors who have executed
+ * Confidentiality and Non-disclosure agreements explicitly covering such
+ * access.
+ *
+ * The copyright notice above does not evidence any actual or intended
+ * publication or disclosure of this source code, which includes information
+ * that is confidential and/or proprietary, and is a trade secret, of PubMatic.
+ * ANY REPRODUCTION, MODIFICATION, DISTRIBUTION, PUBLIC PERFORMANCE, OR PUBLIC
+ * DISPLAY OF OR THROUGH USE OF THIS SOURCE CODE WITHOUT THE EXPRESS WRITTEN
+ * CONSENT OF PubMatic IS STRICTLY PROHIBITED, AND IN VIOLATION OF APPLICABLE
+ * LAWS AND INTERNATIONAL TREATIES. THE RECEIPT OR POSSESSION OF THIS SOURCE
+ * CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS TO
+ * REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR
+ * SELL ANYTHING THAT IT MAY DESCRIBE, IN WHOLE OR IN PART.
+ */
 package com.pubmatic.sdk.common.pubmatic;
 
 import android.app.Activity;
@@ -478,19 +504,15 @@ public abstract class PubMaticAdRequest extends AdRequest {
     }
 
     //PubMatic specific enums
-    public enum AD_TYPE { TEXT, IMAGE, IMAGE_TEXT, RICHMEDIA, NATIVE, VIDEO, AUDIO }
+    protected enum AD_TYPE { TEXT, IMAGE, IMAGE_TEXT, RICHMEDIA, NATIVE, VIDEO, AUDIO }
 
-    public enum OVER18 { DEFAULT_DENY, DENY, ONLY_OVER18, ALLOW_ALL }
+    private enum OPERID { HTML, JAVA_SCRIPT, JSON, JSON_MOBILE }
 
-    public enum OPERID { HTML, JAVA_SCRIPT, JSON, JSON_MOBILE }
-
-    public enum RS { PURE_JSON, JSON_CALLBACK, JS_VAR}
+    private enum RS { PURE_JSON, JSON_CALLBACK, JS_VAR}
 
     public enum AWT_OPTION { DEFAULT, WRAPPED_IN_IFRAME, WRAPPED_IN_JS }
 
-    public enum AD_VISIBILITY { CAN_NOT_DETERMINE, ABOVE_FOLD, BELOW_FOLD, PARTIAL }
-
-    public enum LOCATION_SOURCE { UNKOWN, GPS_OR_SERVICES, IP, UCER_PROVIDED }
+    private enum AD_VISIBILITY { CAN_NOT_DETERMINE, ABOVE_FOLD, BELOW_FOLD, PARTIAL }
 
     public enum ETHNICITY { HISPANIC, AFRICAN_AMERICAN, CAUCASIAN, ASIAN_AMERICAN, OTHER }
 
@@ -498,33 +520,33 @@ public abstract class PubMaticAdRequest extends AdRequest {
     public enum FORMAT_KEY { HTML, XML, JSON, JSONP, GENERIC, VAST, DAAST, OFFLINE_XML }
 
     protected Context         mContext;
-    protected OPERID          mOperId;
+    private OPERID          mOperId;
     protected String          mPubId;
     protected String          mSiteId;
     protected String          mAdId;
     protected AD_TYPE         mAdType;
-    protected int             mAdHeight;
-    protected int             mAdWidth;
-    protected boolean         mInIFrame;
-    protected String          mAdNetwork;
-    protected AD_VISIBILITY   mAdVisibility;
-    protected String          mIABCategory;
-    protected String          mPMZoneId;
-    protected String          mAppName;
-    protected String          mStoreURL;
-    protected String          mAid;
-    protected String          mAppCategory;
-    protected String          mAppDomain;
+    private int               mAdHeight;
+    private int             mAdWidth;
+    private boolean         mInIFrame;
+    private String          mAdNetwork;
+    private AD_VISIBILITY   mAdVisibility;
+    private String          mIABCategory;
+    private String          mPMZoneId;
+    private String          mAppName;
+    private String          mStoreURL;
+    private String          mAid;
+    private String          mAppCategory;
+    private String          mAppDomain;
     protected boolean         mPaid;
     protected int             mAdRefreshRate;
-    protected int             mOrmmaComplianceLevel;
-    protected String          mAdOrientation;
-    protected String          mLanguage;
-    protected String 		  mNetworkType;
+    private int             mOrmmaComplianceLevel;
+    private String          mAdOrientation;
+    private String          mLanguage;
+    private String 		  mNetworkType;
     private boolean			  mDoNotTrack;
     private boolean			  mCoppa;
     private PubMaticAdRequest.AWT_OPTION mAWT;
-    protected RS              mRs;
+    private RS              mRs;
 
     //Common for Mocean & PubMatic Useser info params
     private String mCity = null;
@@ -563,11 +585,11 @@ public abstract class PubMaticAdRequest extends AdRequest {
         mZip = zip;
     }
 
-    public String getmZip() {
+    protected String getZip() {
         return mZip;
     }
 
-    public String getDMA() {
+    protected String getDMA() {
         return mDMA;
     }
 
@@ -577,15 +599,15 @@ public abstract class PubMaticAdRequest extends AdRequest {
 
     /**
      *
-     * @return
+     * @return Returns city parameter
      */
-    public String getCity() {
+    protected String getCity() {
         return mCity;
     }
 
     /**
-     *
-     * @param city
+     * Sets city parameter
+     * @param city User's city
      */
     public void setCity(String city) {
         this.mCity = city;

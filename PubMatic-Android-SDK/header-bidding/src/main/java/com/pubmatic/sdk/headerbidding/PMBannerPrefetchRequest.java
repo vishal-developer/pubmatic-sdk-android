@@ -1,5 +1,5 @@
 /*
- * PubMatic Inc. ("PubMatic") CONFIDENTIAL Unpublished Copyright (c) 2006-2016
+ * PubMatic Inc. ("PubMatic") CONFIDENTIAL Unpublished Copyright (c) 2006-2017
  * PubMatic, All Rights Reserved.
  *
  * NOTICE: All information contained herein is, and remains the property of
@@ -417,8 +417,8 @@ public class PMBannerPrefetchRequest extends PubMaticBannerAdRequest {
             if(getDMA() != null && !getDMA().equals(""))
                 geoJsonObject.put("metro", getDMA());
 
-            if(getmZip() != null && !getmZip().equals(""))
-                geoJsonObject.put("zip", getmZip());
+            if(getZip() != null && !getZip().equals(""))
+                geoJsonObject.put("zip", getZip());
 
         }
         catch (Exception exception)
