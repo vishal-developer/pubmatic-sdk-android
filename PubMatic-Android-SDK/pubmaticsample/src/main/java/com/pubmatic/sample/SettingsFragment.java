@@ -9,9 +9,8 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 
 /**
- * Created by Sagar on 12/20/2016.
+ *
  */
-
 public class SettingsFragment extends Fragment {
 
     Switch useInternalBrowser;

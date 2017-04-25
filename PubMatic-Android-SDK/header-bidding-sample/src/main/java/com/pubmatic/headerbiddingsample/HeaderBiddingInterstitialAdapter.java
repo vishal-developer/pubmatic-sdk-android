@@ -31,7 +31,7 @@ import java.util.Set;
 import static android.content.Context.WINDOW_SERVICE;
 
 /**
- * Created by Sagar on 10/12/2016.
+ *
  */
 
 public class HeaderBiddingInterstitialAdapter {
