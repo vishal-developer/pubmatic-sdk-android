@@ -1,7 +1,6 @@
-Welcome to the PubMatic Mobile SDK package for Android, version 5.0.3
 /*
  * PubMatic Inc. ("PubMatic") CONFIDENTIAL
- * Unpublished Copyright (c) 2006-2016 PubMatic, All Rights Reserved.
+ * Unpublished Copyright (c) 2006-2017 PubMatic, All Rights Reserved.
  *
  * NOTICE:  All information contained herein is, and remains the property of PubMatic. The intellectual and technical concepts contained
  * herein are proprietary to PubMatic and may be covered by U.S. and Foreign Patents, patents in process, and are protected by trade secret or copyright law.
@@ -239,3 +238,23 @@ Enabled multi-pixel tracking for SDK.
 -------
 
 - Handled the SSL error callback in case of any untrusted web page load inside the internal browser of SDK.
+API Training Shop Blog About
+© 2017 GitHub, Inc. Help Support
+
+-------
+ 5.1.1
+-------
+
+- Published the SDK library to JitPack central repository for public distribution.
+
+-------
+ 5.2.0
+-------
+
+- Revised Sample application
+- Automatic Location detection
+- Hashing of UDID parameter
+- Support of multisize feature for banner ad
+- Support of Header-Biding via DFP for Banner
+- Bug fixes
+	Multiple adtype parameter in ad request
