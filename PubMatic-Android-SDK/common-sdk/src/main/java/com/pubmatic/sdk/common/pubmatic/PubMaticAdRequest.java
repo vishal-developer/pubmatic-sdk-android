@@ -135,7 +135,7 @@ public abstract class PubMaticAdRequest extends AdRequest {
             putPostData(PubMaticConstants.AD_TYPE_PARAM, String.valueOf(2));
         else if(mAdType == AD_TYPE.IMAGE_TEXT)
             putPostData(PubMaticConstants.AD_TYPE_PARAM, String.valueOf(3));
-        else if(mAdType == AD_TYPE.RICHMEDIA)
+        else if(mAdType == AD_TYPE.BANNER)
             putPostData(PubMaticConstants.AD_TYPE_PARAM, String.valueOf(11));
         else if(mAdType == AD_TYPE.NATIVE)
             putPostData(PubMaticConstants.AD_TYPE_PARAM, String.valueOf(12));
@@ -456,9 +456,9 @@ public abstract class PubMaticAdRequest extends AdRequest {
     }
 
     //PubMatic specific enums
-    protected enum AD_TYPE { TEXT, IMAGE, IMAGE_TEXT, RICHMEDIA, NATIVE, VIDEO, AUDIO }
+    protected enum AD_TYPE { TEXT, IMAGE, IMAGE_TEXT, BANNER, NATIVE, VIDEO, AUDIO }
 
-    private enum OPERID { HTML, JAVA_SCRIPT, JSON, JSON_MOBILE }
+    protected enum OPERID { HTML, JAVA_SCRIPT, JSON, JSON_MOBILE }
 
     private enum RS { PURE_JSON, JSON_CALLBACK, JS_VAR}
 

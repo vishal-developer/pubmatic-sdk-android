@@ -130,7 +130,7 @@ public class PMBannerPrefetchRequest extends PubMaticBannerAdRequest {
     }
 
     public void createRequest(Context context) {
-        setAdType(AD_TYPE.RICHMEDIA);
+        setAdType(AD_TYPE.BANNER);
         setAdServerURL(PMConstants.PUBMATIC_DM_SERVER_URL_PRODUCTION);
         setUpUrlParams();
         setupPostData();
@@ -453,7 +453,7 @@ public class PMBannerPrefetchRequest extends PubMaticBannerAdRequest {
                 asJsonObject.put("adtype", String.valueOf(2));
             else if(mAdType == AD_TYPE.IMAGE_TEXT)
                 asJsonObject.put("adtype", String.valueOf(3));
-            else if(mAdType == AD_TYPE.RICHMEDIA)
+            else if(mAdType == AD_TYPE.BANNER)
                 asJsonObject.put("adtype", String.valueOf(11));
             else if(mAdType == AD_TYPE.NATIVE)
                 asJsonObject.put("adtype", String.valueOf(12));

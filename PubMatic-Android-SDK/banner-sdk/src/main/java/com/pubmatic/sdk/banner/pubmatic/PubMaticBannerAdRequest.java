@@ -91,7 +91,7 @@ public class PubMaticBannerAdRequest extends PubMaticAdRequest {
 			putPostData(PubMaticConstants.AD_HEIGHT_PARAM, String.valueOf(getHeight()));
 		}
 
-		mAdType = AD_TYPE.RICHMEDIA;
+		mAdType = AD_TYPE.BANNER;
 
 		//Send multisize parameter seperated by comma. Max 4 sizes would be considered at server
 		if(mMultiAdSizes!=null && mMultiAdSizes.length>0) {

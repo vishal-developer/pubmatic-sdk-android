@@ -182,7 +182,7 @@ public class PubMaticNativeAdRequest  extends PubMaticAdRequest {
 		if(getHeight()>0)
 			putPostData(CommonConstants.SIZE_Y_PARAM, String.valueOf(getHeight()));
 
-		mOperId = OPERID.JSON_MOBILE;
+		setOperId(OPERID.JSON_MOBILE);
 		mAdType = AD_TYPE.NATIVE;
 
 		super.setUpPostParams();
