@@ -156,7 +156,7 @@ public class MoceanNativeAdRequest extends MoceanAdRequest {
 	protected void setupPostData() {
 
 		super.setupPostData();
-		putPostData(CommonConstants.REQUESTPARAM_ZONE, String.valueOf(this.mZoneId));
+
 		if(getWidth()>0)
 			putPostData(CommonConstants.SIZE_X_PARAM, String.valueOf(getWidth()));
 		if(getHeight()>0)

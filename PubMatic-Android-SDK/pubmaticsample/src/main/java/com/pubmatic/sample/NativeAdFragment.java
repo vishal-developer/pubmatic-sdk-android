@@ -145,8 +145,6 @@ public class NativeAdFragment extends DialogFragment {
         // Enable device id detection
         ad.setAndroidaidEnabled(true);
 
-        // ad.setTest(true); // Uncomment to serve ads in test mode
-
         AdRequest adRequest;
 
         if(mPlatform == ConfigurationManager.PLATFORM.MOCEAN) {
@@ -177,7 +175,7 @@ public class NativeAdFragment extends DialogFragment {
                     location.setLatitude(Double.parseDouble(latitude));
                     location.setLongitude(Double.parseDouble(longitude));
 
-                    ((MoceanNativeAdRequest)adRequest).setLocation(location);
+                    adRequest.setLocation(location);
                 }
 
                 String city = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_CITY);
@@ -260,9 +258,6 @@ public class NativeAdFragment extends DialogFragment {
             adRequest = PubMaticNativeAdRequest.createPubMaticNativeAdRequest(getActivity(), pubId, siteId, adId, getAssetRequests());
 
             // Configuration Parameters
-            String doNotTrack = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_DO_NOT_TRACK);
-            ((PubMaticNativeAdRequest)adRequest).setDoNotTrack(Boolean.parseBoolean(doNotTrack));
-
             String androidAidEnabled = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED);
             ((PubMaticNativeAdRequest)adRequest).setAndroidAidEnabled(Boolean.parseBoolean(androidAidEnabled));
 
@@ -282,7 +277,7 @@ public class NativeAdFragment extends DialogFragment {
                     location.setLatitude(Double.parseDouble(latitude));
                     location.setLongitude(Double.parseDouble(longitude));
 
-                    ((PubMaticNativeAdRequest)adRequest).setLocation(location);
+                    adRequest.setLocation(location);
                 }
 
                 String city = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_CITY);
@@ -357,7 +352,7 @@ public class NativeAdFragment extends DialogFragment {
                 String paid = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_PAID);
 
                 if(!paid.equals("") && paid != null)
-                    ((PubMaticNativeAdRequest)adRequest).isApplicationPaid(Boolean.parseBoolean(paid));
+                    ((PubMaticNativeAdRequest)adRequest).setApplicationPaid(Boolean.parseBoolean(paid));
 
                 String country = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_COUNTRY);
 
@@ -382,6 +377,9 @@ public class NativeAdFragment extends DialogFragment {
 
                 if(!ormaCompliance.equals("") && ormaCompliance != null)
                     ((PubMaticNativeAdRequest)adRequest).setOrmmaComplianceLevel(Integer.parseInt(ormaCompliance));
+
+                boolean isDoNotTrackChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_DO_NOT_TRACK);
+                ((PubMaticAdRequest)adRequest).setDoNotTrack(isDoNotTrackChecked);
             }
             catch (Exception exception)
             {
@@ -403,19 +401,6 @@ public class NativeAdFragment extends DialogFragment {
         }
         else
             adRequest = MoceanBannerAdRequest.createMoceanBannerAdRequest(getActivity(), "88269");
-
-        try
-        {
-            String width = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_WIDTH);
-            adRequest.setWidth(Integer.parseInt(width));
-
-            String height = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_HEIGHT);
-            adRequest.setHeight(Integer.parseInt(height));
-        }
-        catch(Exception exception)
-        {
-            exception.printStackTrace();
-        }
 
         boolean isUseInternalBrowserChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_USE_INTERNAL_BROWSER);
         ad.setUseInternalBrowser(isUseInternalBrowserChecked);

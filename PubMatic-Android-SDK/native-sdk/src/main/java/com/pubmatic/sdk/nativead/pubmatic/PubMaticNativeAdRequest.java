@@ -149,16 +149,17 @@ public class PubMaticNativeAdRequest  extends PubMaticAdRequest {
 	}
 
 	@Override
-	protected void setupPostData() {
+	protected void setUpPostParams() {
 
-		super.setupPostData();
 		if(getWidth()>0)
 			putPostData(CommonConstants.SIZE_X_PARAM, String.valueOf(getWidth()));
 		if(getHeight()>0)
 			putPostData(CommonConstants.SIZE_Y_PARAM, String.valueOf(getHeight()));
 
-		putPostData(PubMaticConstants.OPER_ID_PARAM, "201");
-		putPostData(PubMaticConstants.AD_TYPE_PARAM, String.valueOf(12));
+		mOperId = OPERID.JSON_MOBILE;
+		mAdType = AD_TYPE.NATIVE;
+
+		super.setUpPostParams();
 
 		//attach the Native asset request data
 		setupAssetData();

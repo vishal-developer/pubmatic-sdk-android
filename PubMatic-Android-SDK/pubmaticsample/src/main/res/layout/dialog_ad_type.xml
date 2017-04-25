@@ -13,6 +13,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
             android:layout_centerHorizontal="true"
             android:background="@android:color/holo_blue_dark"
             android:padding="10dp"
@@ -24,6 +25,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/dialog_ad_type_relative_layout_header"
+        android:background="@color/grey_800"
         android:orientation="vertical"
         android:paddingTop="10dp">
 
@@ -31,6 +33,7 @@
             android:id="@+id/dialog_ad_type_banner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
             android:padding="10dp"
             android:textSize="16dp"
             android:text="Banner" />
@@ -39,6 +42,7 @@
             android:id="@+id/dialog_ad_type_interstitial"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
             android:padding="10dp"
             android:textSize="16dp"
             android:text="Interstitial" />
@@ -47,6 +51,7 @@
             android:id="@+id/dialog_ad_type_native"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
             android:padding="10dp"
             android:textSize="16dp"
             android:text="Native" />

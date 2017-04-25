@@ -2,6 +2,13 @@ package com.pubmatic.sdk.common.pubmatic;
 
 public class PubMaticConstants {
 
+    public static final String HASHING_RAW = "1";
+    public static final String HASHING_SHA1= "2";
+    public static final String HASHING_MD5 = "3";
+
+    public static final String ADVERTISEMENT_ID = "9";
+    public static final String ANDROID_ID = "3";
+
     public enum CONTENT_TYPE{
         JSON,
         XML,

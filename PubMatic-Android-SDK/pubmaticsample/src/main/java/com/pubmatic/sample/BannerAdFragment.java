@@ -22,7 +22,6 @@ import com.pubmatic.sdk.banner.phoenix.PhoenixBannerAdRequest;
 import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest;
 import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest;
-import com.pubmatic.sdk.common.pubmatic.PubMaticConstants;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -95,12 +94,35 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
         PMBannerAdView banner = new PMBannerAdView(getActivity());
         RelativeLayout layout = (RelativeLayout) rootView.findViewById(R.id.banner_parent);
 
+        AdRequest adRequest = null;
+        int widthInt = 0;
+        int heightInt = 0;
+
+        try
+        {
+            String width = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_WIDTH);
+            widthInt = Integer.parseInt(width);
+            adRequest.setWidth(widthInt);
+
+            String height = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_HEIGHT);
+            heightInt = Integer.parseInt(height);
+            adRequest.setHeight(heightInt);
+        }
+        catch(Exception exception)
+        {
+            exception.printStackTrace();
+        }
+
+        RelativeLayout.LayoutParams params;
+
         // Set layout height & width in pixels for banner ad view as per requirement
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(dpToPx(320), dpToPx(50));
+        if(widthInt != 0 && heightInt != 0)
+            params = new RelativeLayout.LayoutParams(dpToPx(widthInt), dpToPx(heightInt));
+        else
+            params = new RelativeLayout.LayoutParams(dpToPx(320), dpToPx(50));
+
         params.setLayoutDirection(RelativeLayout.CENTER_IN_PARENT);
         layout.addView(banner, params);
-
-        AdRequest adRequest;
 
         if(mPlatform == ConfigurationManager.PLATFORM.MOCEAN) {
 
@@ -130,7 +152,7 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
                     location.setLatitude(Double.parseDouble(latitude));
                     location.setLongitude(Double.parseDouble(longitude));
 
-                    ((MoceanBannerAdRequest)adRequest).setLocation(location);
+                    adRequest.setLocation(location);
                 }
 
                 String city = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_CITY);
@@ -213,11 +235,8 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
             adRequest = PubMaticBannerAdRequest.createPubMaticBannerAdRequest(getActivity(), pubId, siteId, adId);
 
             // Configuration Parameters
-            String doNotTrack = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_DO_NOT_TRACK);
-            ((PubMaticBannerAdRequest)adRequest).setDoNotTrack(Boolean.parseBoolean(doNotTrack));
-
             String androidAidEnabled = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED);
-            ((PubMaticBannerAdRequest)adRequest).setAndroidAidEnabled(Boolean.parseBoolean(androidAidEnabled));
+            adRequest.setAndroidAidEnabled(Boolean.parseBoolean(androidAidEnabled));
 
             String coppa = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_COPPA);
             ((PubMaticBannerAdRequest)adRequest).setCoppa(Boolean.parseBoolean(coppa));
@@ -235,7 +254,7 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
                     location.setLatitude(Double.parseDouble(latitude));
                     location.setLongitude(Double.parseDouble(longitude));
 
-                    ((PubMaticBannerAdRequest)adRequest).setLocation(location);
+                    adRequest.setLocation(location);
                 }
 
                 String city = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_CITY);
@@ -310,7 +329,7 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
                 String paid = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_PAID);
 
                 if(!paid.equals("") && paid != null)
-                    ((PubMaticBannerAdRequest)adRequest).isApplicationPaid(Boolean.parseBoolean(paid));
+                    ((PubMaticBannerAdRequest)adRequest).setApplicationPaid(Boolean.parseBoolean(paid));
 
                 String country = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_COUNTRY);
 
@@ -335,6 +354,10 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
 
                 if(!ormaCompliance.equals("") && ormaCompliance != null)
                     ((PubMaticBannerAdRequest)adRequest).setOrmmaComplianceLevel(Integer.parseInt(ormaCompliance));
+
+                boolean isDoNotTrackChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_DO_NOT_TRACK);
+                ((PubMaticAdRequest)adRequest).setDoNotTrack(isDoNotTrackChecked);
+
             }
             catch (Exception exception)
             {
@@ -356,19 +379,6 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
         }
         else
             adRequest = MoceanBannerAdRequest.createMoceanBannerAdRequest(getActivity(), "88269");
-
-        try
-        {
-            String width = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_WIDTH);
-            adRequest.setWidth(Integer.parseInt(width));
-
-            String height = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_HEIGHT);
-            adRequest.setHeight(Integer.parseInt(height));
-        }
-        catch(Exception exception)
-        {
-            exception.printStackTrace();
-        }
 
         boolean isUseInternalBrowserChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_USE_INTERNAL_BROWSER);
         banner.setUseInternalBrowser(isUseInternalBrowserChecked);

@@ -1,23 +1,17 @@
 package com.pubmatic.sample;
 
 import android.app.ActionBar;
-import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import android.widget.Toast;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 
-import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.Map;
-
-/**
- * Created by Sagar on 12/20/2016.
- */
-public class HomeActivity extends FragmentActivity  {
+public class HomeActivity extends FragmentActivity implements
+        ActionBar.TabListener{
 
     PMPagerAdapter mPMPagerAdapter;
     ViewPager mViewPager;
@@ -30,38 +24,21 @@ public class HomeActivity extends FragmentActivity  {
 
         final ActionBar actionBar = getActionBar();
 
+        actionBar.setHomeButtonEnabled(false);
         actionBar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(android.R.color.holo_blue_dark)));
 
         // Specify that tabs should be displayed in the action bar.
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
-        // Create a tab listener that is called when the user changes tabs.
-        ActionBar.TabListener tabListener = new ActionBar.TabListener() {
-            @Override
-            public void onTabSelected(ActionBar.Tab tab, android.app.FragmentTransaction fragmentTransaction) {
-                mViewPager.setCurrentItem(tab.getPosition());
-            }
-
-            @Override
-            public void onTabUnselected(ActionBar.Tab tab, android.app.FragmentTransaction fragmentTransaction) {
-
-            }
-
-            @Override
-            public void onTabReselected(ActionBar.Tab tab, android.app.FragmentTransaction fragmentTransaction) {
-
-            }
-        };
-
         actionBar.addTab(actionBar.newTab()
-                .setContentDescription("home")
+                .setContentDescription("Home")
                 .setIcon(getResources().getDrawable(R.drawable.home))
-                .setTabListener(tabListener));
+                .setTabListener(this));
 
         actionBar.addTab(actionBar.newTab()
-                .setContentDescription("settings")
+                .setContentDescription("Settings")
                 .setIcon(getResources().getDrawable(R.drawable.settings))
-                .setTabListener(tabListener));
+                .setTabListener(this));
 
         mPMPagerAdapter = new PMPagerAdapter(getSupportFragmentManager());
 
@@ -73,5 +50,47 @@ public class HomeActivity extends FragmentActivity  {
                         getActionBar().setSelectedNavigationItem(position);
                     }
                 });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_home, menu);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+
+            case R.id.action_info:
+
+                HelpDialogFragment helpDialogFragment = new HelpDialogFragment();
+                helpDialogFragment.show(HomeActivity.this.getFragmentManager(), "HelpFragment");
+
+                return true;
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onTabSelected(ActionBar.Tab tab, android.app.FragmentTransaction fragmentTransaction) {
+        mViewPager.setCurrentItem(tab.getPosition());
+    }
+
+    @Override
+    public void onTabUnselected(ActionBar.Tab tab, android.app.FragmentTransaction fragmentTransaction) {
+
+    }
+
+    @Override
+    public void onTabReselected(ActionBar.Tab tab, android.app.FragmentTransaction fragmentTransaction) {
+
     }
 }

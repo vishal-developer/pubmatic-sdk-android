@@ -8,18 +8,17 @@ public class PMConstants {
 
     public static final String SETTINGS_HEADING_AD_TAG = "Ad Tag";
 
-    public static final String SETTINGS_AD_TAG_ZONE = "zone";
+    public static final String SETTINGS_AD_TAG_ZONE = "Zone";
 
-    public static final String SETTINGS_AD_TAG_PUB_ID = "pubId";
-    public static final String SETTINGS_AD_TAG_SITE_ID = "siteId";
-    public static final String SETTINGS_AD_TAG_AD_ID = "adId";
+    public static final String SETTINGS_AD_TAG_PUB_ID = "PubId";
+    public static final String SETTINGS_AD_TAG_SITE_ID = "SiteId";
+    public static final String SETTINGS_AD_TAG_AD_ID = "AdId";
 
     public static final String SETTINGS_AD_TAG_AD_UNIT_ID = "adUnitId";
 
     public static final String SETTINGS_HEADING_CONFIGURATION = "Configuration";
-    public static final String SETTINGS_CONFIGURATION_WIDTH = "width";
-    public static final String SETTINGS_CONFIGURATION_HEIGHT = "height";
-    public static final String SETTINGS_CONFIGURATION_DO_NOT_TRACK = "Do Not Track";
+    public static final String SETTINGS_CONFIGURATION_WIDTH = "Width";
+    public static final String SETTINGS_CONFIGURATION_HEIGHT = "Height";
     public static final String SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED = "Android Aid Enabled";
     public static final String SETTINGS_CONFIGURATION_COPPA = "Coppa";
     public static final String SETTINGS_CONFIGURATION_TIME_OUT_INTERVAL = "Time Out Interval";

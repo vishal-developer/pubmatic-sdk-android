@@ -16,6 +16,7 @@ import android.support.v4.content.ContextCompat;
 import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -32,20 +33,10 @@ import android.widget.Toast;
 import java.security.Permission;
 import java.util.LinkedHashMap;
 
-/**
- * Created by Sagar on 12/20/2016.
- */
-
 public class HomeFragment extends Fragment {
 
     private TextView mPlatformSelector;
     private TextView mAdTypeSelector;
-
-    private String[] platforms;
-    private String[] adTypes;
-
-    private ArrayAdapter<String> mPlatformAdapter;
-    private ArrayAdapter<String> mAdTypeAdapter;
 
     private ConfigurationManager.PLATFORM mPlatform;
     private ConfigurationManager.AD_TYPE mAdType;
@@ -57,6 +48,7 @@ public class HomeFragment extends Fragment {
     private final Handler handler = new Handler();
 
     public static final int MY_PERMISSIONS_READ_EXTERNAL_STORAGE = 112;
+    public static final int MY_PERMISSIONS_ACCESS_FINE_LOCATION = 113;
 
     LinkedHashMap<String, LinkedHashMap<String, String>> mSettings;
 
@@ -72,11 +64,8 @@ public class HomeFragment extends Fragment {
         mPlatformSelector = (TextView) rootView.findViewById(R.id.home_platform);
         mAdTypeSelector = (TextView) rootView.findViewById(R.id.home_ad_type);
 
-        platforms = new String[] {"Mocean", "PubMatic"};
-        adTypes = new String[] {"Banner", "Interstitial", "Native"};
-
         mPlatformSelector.setOnClickListener(onPlatformChooserSelected);
-        mPlatform = ConfigurationManager.PLATFORM.MOCEAN;
+        mPlatform = ConfigurationManager.PLATFORM.PUBMATIC;
 
         mAdTypeSelector.setOnClickListener(onAdTypeChooserSelected);
         mAdType = ConfigurationManager.AD_TYPE.BANNER;
@@ -95,6 +84,11 @@ public class HomeFragment extends Fragment {
 
                     if(readExternalStoragePermissionCheck != PackageManager.PERMISSION_GRANTED)
                         requestPermissions(new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_READ_EXTERNAL_STORAGE);
+
+                    int accessFineLocationPermissionCheck = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION);
+
+                    if(accessFineLocationPermissionCheck != PackageManager.PERMISSION_GRANTED)
+                        requestPermissions(new String[]{ Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_ACCESS_FINE_LOCATION);
                 }
             }
         }, 500);
@@ -149,6 +143,27 @@ public class HomeFragment extends Fragment {
         {
             if(mPlatform == ConfigurationManager.PLATFORM.MOCEAN || mPlatform == ConfigurationManager.PLATFORM.PUBMATIC)
                 editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+        }
+
+        if(settingsHeader.equals((PMConstants.SETTINGS_HEADING_CONFIGURATION)))
+        {
+            if(setting.equals(PMConstants.SETTINGS_CONFIGURATION_WIDTH) || setting.equals(PMConstants.SETTINGS_CONFIGURATION_HEIGHT ))
+            {
+                editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+            }
+        }
+
+        if(settingsHeader.equals(PMConstants.SETTINGS_HEADING_TARGETTING))
+        {
+            if (setting.equals(PMConstants.SETTINGS_TARGETTING_LATITUDE)
+                    || setting.equals(PMConstants.SETTINGS_TARGETTING_LONGITUDE)
+                    || setting.equals(PMConstants.SETTINGS_TARGETTING_ZIP)
+                    || setting.equals(PMConstants.SETTINGS_TARGETTING_AGE)
+                    || setting.equals(PMConstants.SETTINGS_TARGETTING_INCOME)
+                    || setting.equals(PMConstants.SETTINGS_TARGETTING_YEAR_OF_BIRTH))
+            {
+                editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+            }
         }
 
         return v;
@@ -419,6 +434,15 @@ public class HomeFragment extends Fragment {
 
                 return;
             }
+            case MY_PERMISSIONS_ACCESS_FINE_LOCATION: {
+
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                    refreshSettings();
+                else
+                    Toast.makeText(getActivity(), "Permissions denied", Toast.LENGTH_SHORT).show();
+
+                return;
+            }
         }
     }
 
@@ -626,12 +650,8 @@ public class HomeFragment extends Fragment {
 
     private void getPubMaticConfigurationParameters()
     {
-        EditText dntEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_CONFIGURATION + ":" + PMConstants.SETTINGS_CONFIGURATION_DO_NOT_TRACK);
-        String dnt = dntEt.getText().toString();
-        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_CONFIGURATION_DO_NOT_TRACK, dnt);
-
         EditText androidAidEnabledEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_CONFIGURATION + ":" + PMConstants.SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED);
         String androidAidEnabled = androidAidEnabledEt.getText().toString();
-        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED, androidAidEnabled);
+        mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).put(PMConstants.SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED, androidAidEnabled);
     }
 }

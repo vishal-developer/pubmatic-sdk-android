@@ -32,7 +32,10 @@ public class PubMaticUtils {
     public static String getUdidFromContext(Context context) {
         String deviceId = Settings.Secure.getString(
                 context.getContentResolver(), Settings.Secure.ANDROID_ID);
-        deviceId = (deviceId == null) ? "" : sha1(deviceId);
+
+        if(deviceId == null)
+            deviceId = "";
+
         return deviceId;
 
     }
@@ -56,4 +59,24 @@ public class PubMaticUtils {
             return "";
         }
     }
+
+    public static String md5(String string) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        try {
+            MessageDigest digest = MessageDigest.getInstance("MD5");
+            byte[] bytes = string.getBytes("UTF-8");
+            digest.update(bytes, 0, bytes.length);
+            bytes = digest.digest();
+
+            for (final byte b : bytes) {
+                stringBuilder.append(String.format("%02X", b));
+            }
+
+            return stringBuilder.toString().toLowerCase();
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
 }

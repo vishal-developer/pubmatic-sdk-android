@@ -207,9 +207,6 @@ public class InterstitialAdFragment extends DialogFragment {
             adRequest = PubMaticBannerAdRequest.createPubMaticBannerAdRequest(getActivity(), pubId, siteId, adId);
 
             // Configuration Parameters
-            String doNotTrack = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_DO_NOT_TRACK);
-            ((PubMaticBannerAdRequest)adRequest).setDoNotTrack(Boolean.parseBoolean(doNotTrack));
-
             String androidAidEnabled = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED);
             ((PubMaticBannerAdRequest)adRequest).setAndroidAidEnabled(Boolean.parseBoolean(androidAidEnabled));
 
@@ -304,7 +301,7 @@ public class InterstitialAdFragment extends DialogFragment {
                 String paid = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_PAID);
 
                 if(!paid.equals("") && paid != null)
-                    ((PubMaticBannerAdRequest)adRequest).isApplicationPaid(Boolean.parseBoolean(paid));
+                    ((PubMaticBannerAdRequest)adRequest).setApplicationPaid(Boolean.parseBoolean(paid));
 
                 String country = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_COUNTRY);
 
@@ -329,6 +326,9 @@ public class InterstitialAdFragment extends DialogFragment {
 
                 if(!ormaCompliance.equals("") && ormaCompliance != null)
                     ((PubMaticBannerAdRequest)adRequest).setOrmmaComplianceLevel(Integer.parseInt(ormaCompliance));
+
+                boolean isDoNotTrackChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_DO_NOT_TRACK);
+                ((PubMaticAdRequest)adRequest).setDoNotTrack(isDoNotTrackChecked);
             }
             catch (Exception exception)
             {
@@ -388,6 +388,24 @@ public class InterstitialAdFragment extends DialogFragment {
 
         boolean isAutoLocationDetectionChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_AUTO_LOCATION_DETECTION);
         interstitialAdView.setLocationDetectionEnabled(isAutoLocationDetectionChecked);
+
+        interstitialAdView.setActivityListener(new PMBannerAdView.BannerAdViewDelegate.ActivityListener() {
+            @Override
+            public boolean onOpenUrl(PMBannerAdView adView, String url) {
+                return false;
+            }
+
+            @Override
+            public void onLeavingApplication(PMBannerAdView adView) {
+
+            }
+
+            @Override
+            public boolean onCloseButtonClick(PMBannerAdView adView) {
+                dismiss();
+                return false;
+            }
+        });
 
         // Make the ad request to Server banner.execute(adRequest);
         interstitialAdView.execute(adRequest);

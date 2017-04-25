@@ -2,12 +2,12 @@
   "Mocean": {
     "Banner": {
       "Ad Tag": {
-        "zone": ""
+        "Zone": "88269"
       },
       "Configuration": {
-        "width": "",
-        "height": "",
-        "test": ""
+        "Width": "320",
+        "Height": "50",
+        "Test": "true"
       },
       "Targetting": {
         "Latitude":"3.8",
@@ -28,10 +28,10 @@
     },
     "Interstitial": {
       "Ad Tag": {
-        "zone": ""
+        "Zone": "88269"
       },
       "Configuration": {
-        "test": ""
+        "Test": "true"
       },
       "Targetting": {
         "Latitude":"3.8",
@@ -52,10 +52,10 @@
     },
     "Native": {
       "Ad Tag": {
-        "zone": "179492"
+        "Zone": "179492"
       },
       "Configuration": {
-        "test": ""
+        "Test": ""
       },
       "Targetting": {
         "Latitude":"3.8",
@@ -78,14 +78,13 @@
   "PubMatic": {
     "Banner": {
       "Ad Tag": {
-        "pubId": "31400",
-        "siteId": "32504",
-        "adId": "439662"
+        "PubId": "31400",
+        "SiteId": "32504",
+        "AdId": "439662"
       },
       "Configuration": {
-        "width": "",
-        "height": "",
-        "Do Not Track": "false",
+        "Width": "320",
+        "Height": "50",
         "Android Aid Enabled": "true",
         "Coppa": "true",
         "Time Out Interval": "",
@@ -117,12 +116,11 @@
     },
     "Interstitial": {
       "Ad Tag": {
-        "pubId": "",
-        "siteId": "",
-        "adId": ""
+        "PubId": "31400",
+        "SiteId": "32504",
+        "AdId": "1059651"
       },
       "Configuration": {
-        "Do Not Track": "false",
         "Android Aid Enabled": "true",
         "Coppa": "true",
         "Time Out Interval": "",
@@ -154,12 +152,11 @@
     },
     "Native": {
       "Ad Tag": {
-        "pubId": "31400",
-        "siteId": "52368",
-        "adId": "383372"
+        "PubId": "31400",
+        "SiteId": "52368",
+        "AdId": "383372"
       },
       "Configuration": {
-        "Do Not Track": "false",
         "Android Aid Enabled": "true",
         "Coppa": "true",
         "Time Out Interval": "",
@@ -187,42 +184,6 @@
         "Orma Compliance": "1",
         "Paid": "True",
         "AWT": "0"
-      }
-    }
-  },
-  "Phoenix": {
-    "Banner": {
-      "Ad Tag": {
-        "adUnitId": "555:fe29119e-894e-4122-8dcd-b5cb7350352a"
-      },
-      "Configuration": {
-        "width": "320",
-        "height": "50"
-      },
-      "Targetting": {
-        "City": "",
-        "Zip": ""
-      }
-    },
-    "Interstitial": {
-      "Ad Tag": {
-        "adUnitId": "555:fe29119e-894e-4122-8dcd-b5cb7350352a"
-      },
-      "Targetting": {
-        "City": "",
-        "Zip": ""
-      }
-    },
-    "Native": {
-      "Ad Tag": {
-        "zone": ""
-      },
-      "Configuration": {
-        "test": ""
-      },
-      "Targetting": {
-        "City": "",
-        "Zip": ""
       }
     }
   }

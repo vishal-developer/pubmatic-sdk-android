@@ -1,9 +1,5 @@
 package com.pubmatic.sample;
 
-/**
- * Created by Sagar on 1/4/2017.
- */
-
 public class PMUtils {
 
     public static int getId(String settingsHeader, String setting)
@@ -27,8 +23,6 @@ public class PMUtils {
                 id = R.id.configuration_width;
             else if(setting.equals(PMConstants.SETTINGS_CONFIGURATION_HEIGHT))
                 id = R.id.configuration_height;
-            else if(setting.equals(PMConstants.SETTINGS_CONFIGURATION_DO_NOT_TRACK))
-                id = R.id.configuration_do_not_track;
             else if(setting.equals(PMConstants.SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED))
                 id = R.id.configuration_android_aid_enabled;
             else if(setting.equals(PMConstants.SETTINGS_CONFIGURATION_COPPA))

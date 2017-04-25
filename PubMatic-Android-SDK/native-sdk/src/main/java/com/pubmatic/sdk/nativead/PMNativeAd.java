@@ -156,7 +156,7 @@ public final class PMNativeAd {
     private boolean isAndroidaidEnabled;
 
     //Controller related objects
-	protected AdRequest 	mAdRequest 		= null;
+	protected AdRequest 	    mAdRequest 		= null;
 	protected RRFormatter 		mRRFormatter 	= null;
 	
     /**

@@ -181,7 +181,6 @@ public abstract class PubMaticAdRequest extends AdRequest {
             putPostData(PubMaticConstants.IN_IFRAME_PARAM, String.valueOf(PUBDeviceInformation.mInIframe));
             putPostData(PubMaticConstants.AD_VISIBILITY_PARAM, String.valueOf(PUBDeviceInformation.mAdVisibility));
             putPostData(PubMaticConstants.APP_CATEGORY_PARAM, mAppCategory);
-            putPostData(PubMaticConstants.DNT_PARAM, String.valueOf(mDoNotTrack ? 1 : 0));
             putPostData(PubMaticConstants.COPPA_PARAM, String.valueOf(mCoppa ? 1 : 0));
 
             if (mAWT != null) {
@@ -217,59 +216,73 @@ public abstract class PubMaticAdRequest extends AdRequest {
                         CommonConstants.URL_ENCODING));
             }
 
-            if (pubDeviceInformation.mPageURL != null) {
-                putPostData(PubMaticConstants.PAGE_URL_PARAM, URLEncoder.encode(
-                        pubDeviceInformation.mPageURL,
-                        CommonConstants.URL_ENCODING));
-            }
-
             // Setting js
-            putPostData(PubMaticConstants.JS_PARAM, String.valueOf(PUBDeviceInformation.mJavaScriptSupport));
-            putPostData(PubMaticConstants.IN_IFRAME_PARAM, String.valueOf(PUBDeviceInformation.mInIframe));
-            putPostData(PubMaticConstants.AD_VISIBILITY_PARAM, String.valueOf(PUBDeviceInformation.mAdVisibility));
             putPostData(PubMaticConstants.AD_POSITION_PARAM, String.valueOf(PUBDeviceInformation.mAdPosition));
-            putPostData(PubMaticConstants.APP_ID_PARAM, mAid);
-            putPostData(PubMaticConstants.APP_CATEGORY_PARAM, mAppCategory);
             putPostData(PubMaticConstants.NETWORK_TYPE_PARAM, PubMaticUtils.getNetworkType(mContext));
             putPostData(PubMaticConstants.PAID_PARAM, String.valueOf(mPaid ? 1 : 0));
             putPostData(PubMaticConstants.APP_DOMAIN_PARAM, mAppDomain);
 
             // Mobile Application-specific Parameters
-            AdvertisingIdClient.AdInfo adInfo = AdvertisingIdClient.refreshAdvertisingInfo(mContext);
-            if (adInfo != null) {
+            boolean optedOut = AdvertisingIdClient.getLimitedAdTrackingState(mContext, false);
 
-                if (isAndoridAidEnabled() && !TextUtils.isEmpty(adInfo.getId())) {
-                    putPostData(PubMaticConstants.UDID_PARAM, PubMaticUtils.sha1(adInfo.getId()));
-                    putPostData(PubMaticConstants.UDID_TYPE_PARAM, String.valueOf(9));//9 - Android Advertising ID
-                    putPostData(PubMaticConstants.UDID_HASH_PARAM, String.valueOf(1));//1 - raw udid
+            if(isDoNotTrack() || optedOut)
+                putPostData(PubMaticConstants.DNT_PARAM, String.valueOf(1));
+            else
+                putPostData(PubMaticConstants.DNT_PARAM, String.valueOf(0));
+
+            if(!isDoNotTrack()) {
+                AdvertisingIdClient.AdInfo adInfo = AdvertisingIdClient.refreshAdvertisingInfo(mContext);
+
+                if(!AdvertisingIdClient.getLimitedAdTrackingState(mContext, false)) {
+                    if (isAndoridAidEnabled() && adInfo!=null && !TextUtils.isEmpty(adInfo.getId())) {
+
+                        String advertisingId = adInfo.getId();
+
+                        switch (hashing)
+                        {
+                            case RAW:
+                                putPostData(PubMaticConstants.UDID_PARAM, advertisingId);
+                                putPostData(PubMaticConstants.UDID_HASH_PARAM, PubMaticConstants.HASHING_RAW);
+                                break;
+                            case SHA1:
+                                putPostData(PubMaticConstants.UDID_PARAM, PubMaticUtils.sha1(advertisingId));
+                                putPostData(PubMaticConstants.UDID_HASH_PARAM, PubMaticConstants.HASHING_SHA1);
+                                break;
+                            case MD5:
+                                putPostData(PubMaticConstants.UDID_PARAM, PubMaticUtils.md5(advertisingId));
+                                putPostData(PubMaticConstants.UDID_HASH_PARAM, PubMaticConstants.HASHING_MD5);
+                                break;
+                        }
+
+                        putPostData(PubMaticConstants.UDID_TYPE_PARAM, PubMaticConstants.ADVERTISEMENT_ID);
+
+                    }
+                    else {
+
+                        String androidId = PubMaticUtils.getUdidFromContext(mContext);
+
+                        switch (hashing)
+                        {
+                            case RAW:
+                                putPostData(PubMaticConstants.UDID_PARAM, androidId);
+                                putPostData(PubMaticConstants.UDID_HASH_PARAM, PubMaticConstants.HASHING_RAW);
+                                break;
+                            case SHA1:
+                                putPostData(PubMaticConstants.UDID_PARAM, PubMaticUtils.sha1(androidId));
+                                putPostData(PubMaticConstants.UDID_HASH_PARAM, PubMaticConstants.HASHING_SHA1);
+                                break;
+                            case MD5:
+                                putPostData(PubMaticConstants.UDID_PARAM, PubMaticUtils.md5(androidId));
+                                putPostData(PubMaticConstants.UDID_HASH_PARAM, PubMaticConstants.HASHING_MD5);
+                                break;
+                        }
+
+                        putPostData(PubMaticConstants.UDID_TYPE_PARAM, PubMaticConstants.ANDROID_ID);
+                    }
                 }
-            } else if (mContext != null) {
-                //Send Android ID
-                putPostData(PubMaticConstants.UDID_PARAM, PubMaticUtils.getUdidFromContext(mContext));
-                putPostData(PubMaticConstants.UDID_TYPE_PARAM, String.valueOf(3));//9 - Android ID
-                putPostData(PubMaticConstants.UDID_HASH_PARAM, String.valueOf(2));//2 - SHA1
-            }
-
-            // Setting ver
-            if (pubDeviceInformation.mApplicationVersion != null) {
-                putPostData(PubMaticConstants.VER_PARAM, URLEncoder.encode(
-                        pubDeviceInformation.mApplicationVersion,
-                        CommonConstants.URL_ENCODING));
             }
 
             putPostData(PubMaticConstants.AD_REFRESH_RATE_PARAM, String.valueOf(mAdRefreshRate));
-
-            // Mobile-specific Parameters (Web/Application)
-            if (mNetworkType != null)
-                putPostData(PubMaticConstants.NETWORK_TYPE_PARAM, URLEncoder.encode(mNetworkType, CommonConstants.URL_ENCODING));
-            else
-                putPostData(PubMaticConstants.NETWORK_TYPE_PARAM, PubMaticUtils.getNetworkType(mContext));
-
-            if (pubDeviceInformation.mCarrierName != null) {
-                putPostData(PubMaticConstants.CARRIER_PARAM, URLEncoder.encode(
-                        pubDeviceInformation.mCarrierName,
-                        CommonConstants.URL_ENCODING));
-            }
 
             // Setting js
             putPostData(PubMaticConstants.JS_PARAM, String.valueOf(PUBDeviceInformation.mJavaScriptSupport));
@@ -278,13 +291,6 @@ public abstract class PubMaticAdRequest extends AdRequest {
                 putPostData(PubMaticConstants.AD_ORIENTATION_PARAM, mAdOrientation);
 
             putPostData(PubMaticConstants.DEVICE_ORIENTATION_PARAM, String.valueOf(getDeviceOrientation(mContext)));
-
-            // User Information Parameters
-            if (pubDeviceInformation.mDeviceCountryCode != null) {
-                putPostData(PubMaticConstants.COUNTRY_PARAM, URLEncoder.encode(
-                        pubDeviceInformation.mDeviceCountryCode,
-                        CommonConstants.URL_ENCODING));
-            }
 
             if (!TextUtils.isEmpty(mState)) {
                 putPostData(PubMaticConstants.USER_STATE, URLEncoder.encode(
@@ -368,64 +374,10 @@ public abstract class PubMaticAdRequest extends AdRequest {
                         CommonConstants.URL_ENCODING));
             }
 
-            // Setting user city
-            if (!TextUtils.isEmpty(mCity)) {
-                putPostData(PubMaticConstants.USER_CITY, URLEncoder.encode(
-                        mCity,
-                        CommonConstants.URL_ENCODING));
-            }
-
-            // Setting the state
-            if (!TextUtils.isEmpty(mState)) {
-                putPostData(PubMaticConstants.USER_STATE, URLEncoder.encode(
-                        mState,
-                        CommonConstants.URL_ENCODING));
-            }
-
-            if (pubDeviceInformation.mDeviceAcceptLanguage != null) {
-                // Appending did
-                putPostData(PubMaticConstants.LANGUAGE, URLEncoder.encode(
-                        pubDeviceInformation.mDeviceAcceptLanguage,
-                        CommonConstants.URL_ENCODING));
-            }
-
-            // Setting make
-            if (pubDeviceInformation.mDeviceMake != null) {
-                putPostData(PubMaticConstants.MAKE_PARAM, URLEncoder.encode(
-                        pubDeviceInformation.mDeviceMake,
-                        CommonConstants.URL_ENCODING));
-            }
-
-            // Setting model
-            if (pubDeviceInformation.mDeviceModel != null) {
-                putPostData(PubMaticConstants.MODEL_PARAM, URLEncoder.encode(
-                        pubDeviceInformation.mDeviceModel,
-                        CommonConstants.URL_ENCODING));
-            }
-
-            // Setting os
-            if (pubDeviceInformation.mDeviceOSName != null) {
-                putPostData(PubMaticConstants.OS_PARAM, URLEncoder.encode(
-                        pubDeviceInformation.mDeviceOSName,
-                        CommonConstants.URL_ENCODING));
-            }
-
-            // Setting osv
-            if (pubDeviceInformation.mDeviceOSVersion != null) {
-                putPostData(PubMaticConstants.OSV_PARAM, URLEncoder.encode(
-                        pubDeviceInformation.mDeviceOSVersion,
-                        CommonConstants.URL_ENCODING));
-            }
-
             // Setting sdk_ver
             putPostData(PubMaticConstants.SDK_VER_PARAM, URLEncoder.encode(
                     PUBDeviceInformation.msdkVersion,
                     CommonConstants.URL_ENCODING));
-
-            if (mNetworkType != null) {
-                putPostData(PubMaticConstants.NETWORK_TYPE_PARAM, URLEncoder.encode(mNetworkType,
-                        CommonConstants.URL_ENCODING));
-            }
 
             // Send KAdNetwork id if any
             if(mKAdNetworkId != null && !mKAdNetworkId.equals(""))
@@ -905,11 +857,11 @@ public abstract class PubMaticAdRequest extends AdRequest {
         this.mAppCategory = mAppCategory;
     }
 
-    public boolean getIsApplicationPaid() {
+    public boolean isApplicationPaid() {
         return this.mPaid;
     }
 
-    public void isApplicationPaid(boolean paid) {
+    public void setApplicationPaid(boolean paid) {
         this.mPaid = paid;
     }
 

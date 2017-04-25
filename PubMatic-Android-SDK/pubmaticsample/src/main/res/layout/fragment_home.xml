@@ -58,7 +58,8 @@
                     android:drawablePadding="5dp"
                     android:gravity="center"
                     android:padding="7dp"
-                    android:text="Mocean"
+                    android:text="PubMatic"
+                    android:drawableRight="@drawable/pubmatic_drop_down"
                     android:textColor="@android:color/black"
                     android:textSize="15dp" />
 
@@ -93,6 +94,7 @@
                     android:gravity="center"
                     android:padding="7dp"
                     android:text="Banner"
+                    android:drawableRight="@drawable/pubmatic_drop_down"
                     android:textColor="@android:color/black"
                     android:textSize="15dp" />
 
