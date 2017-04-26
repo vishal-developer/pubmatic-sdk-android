@@ -256,5 +256,6 @@ API Training Shop Blog About
 - Hashing of UDID parameter
 - Support of multisize feature for banner ad
 - Support of Header-Biding via DFP for Banner
+- Added Github wiki pages for SDK features
 - Bug fixes
 	Multiple adtype parameter in ad request
