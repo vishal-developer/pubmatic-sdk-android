@@ -38,6 +38,7 @@ public class HomeFragment extends Fragment {
 
     private final Handler handler = new Handler();
 
+    public static final int MY_PERMISSIONS_ALL = 111;
     public static final int MY_PERMISSIONS_READ_EXTERNAL_STORAGE = 112;
     public static final int MY_PERMISSIONS_ACCESS_FINE_LOCATION = 113;
 
@@ -72,13 +73,13 @@ public class HomeFragment extends Fragment {
                 if(getActivity() != null)
                 {
                     int readExternalStoragePermissionCheck = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE);
-
-                    if(readExternalStoragePermissionCheck != PackageManager.PERMISSION_GRANTED)
-                        requestPermissions(new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_READ_EXTERNAL_STORAGE);
-
                     int accessFineLocationPermissionCheck = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION);
 
-                    if(accessFineLocationPermissionCheck != PackageManager.PERMISSION_GRANTED)
+                    if(readExternalStoragePermissionCheck != PackageManager.PERMISSION_GRANTED && accessFineLocationPermissionCheck != PackageManager.PERMISSION_GRANTED)
+                        requestPermissions(new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_ALL);
+                    else if (readExternalStoragePermissionCheck != PackageManager.PERMISSION_GRANTED)
+                        requestPermissions(new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_READ_EXTERNAL_STORAGE);
+                    else if(accessFineLocationPermissionCheck != PackageManager.PERMISSION_GRANTED)
                         requestPermissions(new String[]{ Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_ACCESS_FINE_LOCATION);
                 }
             }
@@ -416,12 +417,17 @@ public class HomeFragment extends Fragment {
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
         switch (requestCode) {
+            case MY_PERMISSIONS_ALL: {
+
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                    refreshSettings();
+
+                return;
+            }
             case MY_PERMISSIONS_READ_EXTERNAL_STORAGE: {
 
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
                     refreshSettings();
-                 else
-                    Toast.makeText(getActivity(), "Permissions denied", Toast.LENGTH_SHORT).show();
 
                 return;
             }
@@ -429,8 +435,6 @@ public class HomeFragment extends Fragment {
 
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
                     refreshSettings();
-                else
-                    Toast.makeText(getActivity(), "Permissions denied", Toast.LENGTH_SHORT).show();
 
                 return;
             }
@@ -568,7 +572,7 @@ public class HomeFragment extends Fragment {
 
         EditText etGender = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_GENDER);
         String gender = etGender.getText().toString();
-        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_ETHNICITY, gender);
+        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_GENDER, gender);
 
         EditText etDMA = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_DMA);
         String dma = etDMA.getText().toString();

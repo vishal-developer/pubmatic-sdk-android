@@ -396,10 +396,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
     // androidid
     private boolean isAndroidIdEnabled;
 
-    // androidAid
-    private boolean isAndroidAidEnabled;
-    private String androidAid = "";
-
     // Receiver
     private BroadcastReceiver mReceiver;
     private IntentFilter filter;
@@ -1121,17 +1117,21 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             }
         }
 
+        // If User has provided the location set the source as user
+        Location userProvidedLocation = adRequest.getLocation();
+        if(userProvidedLocation != null) {
+            userProvidedLocation.setProvider("user");
+            adRequest.setLocation(userProvidedLocation);
+        }
+
         // Insert the location parameter in ad request,
         // if publisher has enabled location detection
         // and does not provid location
-        if(mRetrieveLocationInfo && location != null)
+        if(mRetrieveLocationInfo && location != null) {
             adRequest.setLocation(location);
+        }
 
         adRequest.createRequest(getContext());
-
-        if(!TextUtils.isEmpty(androidAid)) {
-            //adRequest
-        }
 
         HttpRequest httpRequest = mAdController.getRRFormatter().formatRequest(adRequest);
 

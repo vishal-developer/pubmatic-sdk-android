@@ -35,6 +35,11 @@ public class PubMaticConstants {
     public static final String ADVERTISEMENT_ID = "9";
     public static final String ANDROID_ID = "3";
 
+    public static final String LOCATION_SOURCE_UNKNOWN = "0";
+    public static final String LOCATION_SOURCE_GPS_LOCATION_SERVICES = "1";
+    public static final String LOCATION_SOURCE_IP_ADDRESS = "2";
+    public static final String LOCATION_SOURCE_USER_PROVIDED = "3";
+
     public enum CONTENT_TYPE{
         JSON,
         XML,

@@ -73,14 +73,13 @@ public class PubMaticBannerAdRequest extends PubMaticAdRequest {
 	 */
 	protected void initializeDefaultParams(Context context) {
 		super.initializeDefaultParams(context);
-		putPostData("operId", "201");
+		setOperId(OPERID.JSON_MOBILE);
+		setAdType(AD_TYPE.BANNER);
 	}
 
 	@Override
-	protected void setupPostData() {
-		super.setupPostData();
-		if (mPostData == null)
-			mPostData = new StringBuffer();
+	protected void setUpPostParams() {
+		super.setUpPostParams();
 
 		// Set the Ad size
 		if (mPubAdSize != null) {//Need to confirm AD_HEIGHT_PARAM or SIZE_Y_PARAM
@@ -90,8 +89,6 @@ public class PubMaticBannerAdRequest extends PubMaticAdRequest {
 			putPostData(PubMaticConstants.AD_WIDTH_PARAM, String.valueOf(getWidth()));
 			putPostData(PubMaticConstants.AD_HEIGHT_PARAM, String.valueOf(getHeight()));
 		}
-
-		mAdType = AD_TYPE.BANNER;
 
 		//Send multisize parameter seperated by comma. Max 4 sizes would be considered at server
 		if(mMultiAdSizes!=null && mMultiAdSizes.length>0) {

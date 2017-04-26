@@ -234,6 +234,11 @@ public class InterstitialAdFragment extends DialogFragment {
                 if(!city.equals("") && city != null)
                     ((PubMaticBannerAdRequest)adRequest).setCity(city);
 
+                String state = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_STATE);
+
+                if(!state.equals("") && !state.equals(""))
+                    ((PubMaticBannerAdRequest)adRequest).setState(state);
+
                 String zip = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_ZIP);
 
                 if(!zip.equals("") && zip != null)

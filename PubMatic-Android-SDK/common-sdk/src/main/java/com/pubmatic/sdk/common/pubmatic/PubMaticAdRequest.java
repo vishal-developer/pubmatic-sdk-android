@@ -113,9 +113,10 @@ public abstract class PubMaticAdRequest extends AdRequest {
 
     protected void setUpPostParams() {
 
-        // super.setUpPostParams();
+        putPostData(PubMaticConstants.PUB_ID_PARAM, mPubId);
+        putPostData(PubMaticConstants.SITE_ID_PARAM, String.valueOf(mSiteId));
+        putPostData(PubMaticConstants.AD_ID_PARAM, String.valueOf(mAdId));
 
-        // Append the basic & mandatory parameters
         if(mOperId == OPERID.HTML)
             putPostData(PubMaticConstants.OPER_ID_PARAM, String.valueOf(1));
         else if(mOperId == OPERID.JAVA_SCRIPT)
@@ -124,10 +125,6 @@ public abstract class PubMaticAdRequest extends AdRequest {
             putPostData(PubMaticConstants.OPER_ID_PARAM, String.valueOf(102));
         else if(mOperId == OPERID.JSON_MOBILE)
             putPostData(PubMaticConstants.OPER_ID_PARAM, String.valueOf(201));
-
-        putPostData(PubMaticConstants.PUB_ID_PARAM, mPubId);
-        putPostData(PubMaticConstants.SITE_ID_PARAM, String.valueOf(mSiteId));
-        putPostData(PubMaticConstants.AD_ID_PARAM, String.valueOf(mAdId));
 
         if(mAdType == AD_TYPE.TEXT)
             putPostData(PubMaticConstants.AD_TYPE_PARAM, String.valueOf(1));
@@ -242,8 +239,6 @@ public abstract class PubMaticAdRequest extends AdRequest {
                         CommonConstants.URL_ENCODING));
             }
 
-            // Setting js
-            putPostData(PubMaticConstants.AD_POSITION_PARAM, String.valueOf(PUBDeviceInformation.mAdPosition));
             putPostData(PubMaticConstants.NETWORK_TYPE_PARAM, PubMaticUtils.getNetworkType(mContext));
             putPostData(PubMaticConstants.PAID_PARAM, String.valueOf(mPaid ? 1 : 0));
             putPostData(PubMaticConstants.APP_DOMAIN_PARAM, mAppDomain);
@@ -445,8 +440,14 @@ public abstract class PubMaticAdRequest extends AdRequest {
                 putPostData(PubMaticConstants.LOC_PARAM, mLocation.getLatitude() + ","
                         + mLocation.getLongitude());
 
-                putPostData(PubMaticConstants.LOC_SOURCE_PARAM, URLEncoder.encode(
-                        mLocation.getProvider()));
+                String provider = mLocation.getProvider();
+
+                if(provider.equalsIgnoreCase("network") || provider.equalsIgnoreCase("wifi") || provider.equalsIgnoreCase("gps"))
+                    putPostData(PubMaticConstants.LOC_SOURCE_PARAM, PubMaticConstants.LOCATION_SOURCE_GPS_LOCATION_SERVICES);
+                else if(provider.equalsIgnoreCase("user"))
+                    putPostData(PubMaticConstants.LOC_SOURCE_PARAM, PubMaticConstants.LOCATION_SOURCE_USER_PROVIDED);
+                else
+                    putPostData(PubMaticConstants.LOC_SOURCE_PARAM, PubMaticConstants.LOCATION_SOURCE_UNKNOWN);
             }
 
 
@@ -471,34 +472,34 @@ public abstract class PubMaticAdRequest extends AdRequest {
     //Mocean specific enums
     public enum FORMAT_KEY { HTML, XML, JSON, JSONP, GENERIC, VAST, DAAST, OFFLINE_XML }
 
-    protected Context         mContext;
-    private OPERID          mOperId;
-    protected String          mPubId;
-    protected String          mSiteId;
-    protected String          mAdId;
-    protected AD_TYPE         mAdType;
-    private int               mAdHeight;
-    private int             mAdWidth;
-    private boolean         mInIFrame;
-    private String          mAdNetwork;
-    private AD_VISIBILITY   mAdVisibility;
-    private String          mIABCategory;
-    private String          mPMZoneId;
-    private String          mAppName;
-    private String          mStoreURL;
-    private String          mAid;
-    private String          mAppCategory;
-    private String          mAppDomain;
-    protected boolean         mPaid;
-    protected int             mAdRefreshRate;
-    private int             mOrmmaComplianceLevel;
-    private String          mAdOrientation;
-    private String          mLanguage;
-    private String 		  mNetworkType;
-    private boolean			  mDoNotTrack;
-    private boolean			  mCoppa;
-    private PubMaticAdRequest.AWT_OPTION mAWT;
-    private RS              mRs;
+    protected Context                       mContext;
+    private OPERID                          mOperId;
+    protected String                        mPubId;
+    protected String                        mSiteId;
+    protected String                        mAdId;
+    private AD_TYPE                         mAdType;
+    private int                             mAdHeight;
+    private int                             mAdWidth;
+    private boolean                         mInIFrame;
+    private String                          mAdNetwork;
+    private AD_VISIBILITY                   mAdVisibility;
+    private String                          mIABCategory;
+    private String                          mPMZoneId;
+    private String                          mAppName;
+    private String                          mStoreURL;
+    private String                          mAid;
+    private String                          mAppCategory;
+    private String                          mAppDomain;
+    protected boolean                       mPaid;
+    protected int                           mAdRefreshRate;
+    private int                             mOrmmaComplianceLevel;
+    private String                          mAdOrientation;
+    private String                          mLanguage;
+    private String 		                    mNetworkType;
+    private boolean			                mDoNotTrack;
+    private boolean			                mCoppa;
+    private PubMaticAdRequest.AWT_OPTION    mAWT;
+    private RS                              mRs;
 
     //Common for Mocean & PubMatic Useser info params
     private String mCity = null;

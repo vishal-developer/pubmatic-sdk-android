@@ -454,6 +454,13 @@ public final class PMNativeAd {
             args.put(REQUESTPARAM_ANDROID_ID_SHA1, getUdidFromContext(mContext));
         }
 
+        // If User has provided the location set the source as user
+        Location userProvidedLocation = mAdRequest.getLocation();
+        if(userProvidedLocation != null) {
+            userProvidedLocation.setProvider("user");
+            mAdRequest.setLocation(userProvidedLocation);
+        }
+
         // Insert the location parameter in ad request,
         // if publisher has enabled location detection
         // and does not provid location
