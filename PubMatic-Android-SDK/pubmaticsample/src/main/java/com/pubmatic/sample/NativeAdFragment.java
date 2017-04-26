@@ -19,9 +19,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.pubmatic.sdk.banner.mocean.MoceanBannerAdRequest;
-import com.pubmatic.sdk.banner.phoenix.PhoenixBannerAdRequest;
-import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest;
 import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest;
 import com.pubmatic.sdk.nativead.PMNativeAd;
@@ -287,7 +284,7 @@ public class NativeAdFragment extends DialogFragment {
                 String state = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_STATE);
 
                 if(!state.equals("") && !state.equals(""))
-                    ((PubMaticBannerAdRequest)adRequest).setState(state);
+                    ((PubMaticNativeAdRequest)adRequest).setState(state);
 
                 String zip = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_ZIP);
 
@@ -345,8 +342,15 @@ public class NativeAdFragment extends DialogFragment {
 
                 String gender = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_GENDER);
 
-                if(!gender.equals("") && gender != null)
-                    ((PubMaticNativeAdRequest)adRequest).setGender(gender);
+                if(gender != null && !gender.equals(""))
+                {
+                    if(gender.equalsIgnoreCase("Male") || gender.equalsIgnoreCase("M"))
+                        ((PubMaticNativeAdRequest)adRequest).setGender(PubMaticAdRequest.GENDER.MALE);
+                    else if(gender.equalsIgnoreCase("Female") || gender.equalsIgnoreCase("F"))
+                        ((PubMaticNativeAdRequest)adRequest).setGender(PubMaticAdRequest.GENDER.FEMALE);
+                    else if(gender.equalsIgnoreCase("Others") || gender.equalsIgnoreCase("O"))
+                        ((PubMaticNativeAdRequest)adRequest).setGender(PubMaticAdRequest.GENDER.OTHER);
+                }
 
                 String dma = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_DMA);
 
@@ -391,20 +395,8 @@ public class NativeAdFragment extends DialogFragment {
             }
 
         }
-        else if(mPlatform == ConfigurationManager.PLATFORM.PHEONIX)
-        {
-            String adUnitId = mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).get(PMConstants.SETTINGS_AD_TAG_AD_UNIT_ID);
-
-            if(adUnitId == null || adUnitId.equals(""))
-            {
-                Toast.makeText(getActivity(), "Please enter an ad unit id", Toast.LENGTH_LONG).show();
-                return;
-            }
-
-            adRequest = PhoenixBannerAdRequest.createPhoenixBannerAdRequest(getActivity(), adUnitId, "DIV1");
-        }
         else
-            adRequest = MoceanBannerAdRequest.createMoceanBannerAdRequest(getActivity(), "88269");
+            adRequest = MoceanNativeAdRequest.createMoceanNativeAdRequest(getActivity(), "88269", getAssetRequests());
 
         boolean isUseInternalBrowserChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_USE_INTERNAL_BROWSER);
         ad.setUseInternalBrowser(isUseInternalBrowserChecked);

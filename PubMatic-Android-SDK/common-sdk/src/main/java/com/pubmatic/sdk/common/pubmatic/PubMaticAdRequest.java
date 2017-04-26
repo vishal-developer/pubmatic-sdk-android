@@ -336,9 +336,21 @@ public abstract class PubMaticAdRequest extends AdRequest {
                         CommonConstants.URL_ENCODING));
             }
 
-            if (!TextUtils.isEmpty(mGender)) {
-                putPostData(PubMaticConstants.GENDER_PARAM, URLEncoder.encode(
-                        mGender, CommonConstants.URL_ENCODING));
+            if(getGender() != null) {
+                switch (getGender()) {
+                    case MALE:
+                        putPostData(PubMaticConstants.GENDER_PARAM, "M");
+                        break;
+                    case FEMALE:
+                        putPostData(PubMaticConstants.GENDER_PARAM, "F");
+                        break;
+                    case OTHER:
+                        putPostData(PubMaticConstants.GENDER_PARAM, "O");
+                        break;
+                    default:
+                        putPostData(PubMaticConstants.GENDER_PARAM, "O");
+                        break;
+                }
             }
 
             if (getEthnicity() != null) {
@@ -469,6 +481,8 @@ public abstract class PubMaticAdRequest extends AdRequest {
 
     public enum ETHNICITY { HISPANIC, AFRICAN_AMERICAN, CAUCASIAN, ASIAN_AMERICAN, OTHER }
 
+    public enum GENDER { MALE, FEMALE, OTHER }
+
     //Mocean specific enums
     public enum FORMAT_KEY { HTML, XML, JSON, JSONP, GENERIC, VAST, DAAST, OFFLINE_XML }
 
@@ -506,7 +520,7 @@ public abstract class PubMaticAdRequest extends AdRequest {
     private String mZip = null;
     private String mDMA = null;
     private ETHNICITY mEthnicity = null;
-    private String mGender = null;
+    private GENDER mGender = null;
 
     //PubMatic User info
     private String mCountry = null;
@@ -574,11 +588,11 @@ public abstract class PubMaticAdRequest extends AdRequest {
         this.mCountry = mCountry;
     }
 
-    public String getGender() {
+    public GENDER getGender() {
         return mGender;
     }
 
-    public void setGender(String gender) {
+    public void setGender(GENDER gender) {
         this.mGender = gender;
     }
 

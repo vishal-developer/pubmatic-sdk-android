@@ -295,8 +295,15 @@ public class InterstitialAdFragment extends DialogFragment {
 
                 String gender = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_GENDER);
 
-                if(!gender.equals("") && gender != null)
-                    ((PubMaticBannerAdRequest)adRequest).setGender(gender);
+                if(gender != null && !gender.equals(""))
+                {
+                    if(gender.equalsIgnoreCase("Male") || gender.equalsIgnoreCase("M"))
+                        ((PubMaticBannerAdRequest)adRequest).setGender(PubMaticAdRequest.GENDER.MALE);
+                    else if(gender.equalsIgnoreCase("Female") || gender.equalsIgnoreCase("F"))
+                        ((PubMaticBannerAdRequest)adRequest).setGender(PubMaticAdRequest.GENDER.FEMALE);
+                    else if(gender.equalsIgnoreCase("Others") || gender.equalsIgnoreCase("O"))
+                        ((PubMaticBannerAdRequest)adRequest).setGender(PubMaticAdRequest.GENDER.OTHER);
+                }
 
                 String dma = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_DMA);
 
