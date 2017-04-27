@@ -25,7 +25,7 @@ Supported Ad formats
 For full change log , please go to [CHANGELOG](CHANGELOG.md)
 
 ## Integration
-PubMatic SDK supports various integration methods, please follow [Develper guide](../../wiki) to integrate SDK  to your iOS application
+PubMatic SDK supports various integration methods, please follow [Develper guide](../../wiki) to integrate SDK  to your android application
 
 
 License
