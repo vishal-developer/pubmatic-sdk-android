@@ -484,7 +484,7 @@ public abstract class PubMaticAdRequest extends AdRequest {
     protected String                        mPubId;
     protected String                        mSiteId;
     protected String                        mAdId;
-    private AD_TYPE                         mAdType;
+    protected AD_TYPE                       mAdType;
     private int                             mAdHeight;
     private int                             mAdWidth;
     private boolean                         mInIFrame;
