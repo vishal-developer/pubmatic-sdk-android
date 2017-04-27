@@ -63,6 +63,7 @@ public class HeaderBiddingInterstitialAdapter {
 
     private static final String BID                 = "bid";
     private static final String BID_ID              = "bidid";
+    private static final String WDEAL_ID            = "wdeal";
     private static final String BID_STATUS          = "bidstatus";
     private static final String PUBMATIC_WIN_KEY    = "pubmaticdm";
 
@@ -70,7 +71,7 @@ public class HeaderBiddingInterstitialAdapter {
     private PMPrefetchManager         pmPrefetchManager;
     private List<AdSlotInfo>          adSlotInfoList;
 
-    private static final String       TAG = "HeaderBiddingInterstitialAdapter";
+    private static final String       TAG = "HBInterstitialAdapter";
 
     public HeaderBiddingInterstitialAdapter(Context context, List<HeaderBiddingInterstitialAdapter.AdSlotInfo> adSlotInfoList) {
         this.mContext        = context;
@@ -141,7 +142,7 @@ public class HeaderBiddingInterstitialAdapter {
 
                                                    if (hBResponse != null) {
                                                        // Loop over all those publisherAdViews that participated in Header Bidding i.e. have a valid impressionId mapped to them.
-                                                       for (HeaderBiddingInterstitialAdapter.AdSlotInfo adSlotInfo : adSlotInfoList) {
+                                                       for (AdSlotInfo adSlotInfo : adSlotInfoList) {
                                                            publisherAdView = adSlotInfo.adView;
 
                                                            try {
@@ -151,18 +152,42 @@ public class HeaderBiddingInterstitialAdapter {
                                                                PMBid pubResponse = hBResponse.get(impressionId);
 
                                                                if(pubResponse != null) {
-                                                                   adRequest = new PublisherAdRequest.Builder().addCustomTargeting(BID_ID, pubResponse.getImpressionId())
-                                                                           .addCustomTargeting(BID_STATUS, "1")
-                                                                           .addCustomTargeting(BID, String.valueOf(17.1)).build();
+
+                                                                   PublisherAdRequest.Builder requestBuilder = new PublisherAdRequest.Builder();
+
+                                                                   if(!TextUtils.isEmpty(pubResponse.getDealId())) {
+                                                                       requestBuilder.addCustomTargeting(WDEAL_ID, pubResponse.getDealId());
+                                                                       Log.d(TAG, "DFP custom param [" + WDEAL_ID + "] = " + pubResponse.getDealId());
+                                                                   }
+
+                                                                   if(!TextUtils.isEmpty(pubResponse.getImpressionId())) {
+                                                                       requestBuilder.addCustomTargeting(BID_ID, pubResponse.getImpressionId());
+                                                                       Log.d(TAG, "DFP custom param [" + BID_ID + "] = " + pubResponse.getImpressionId());
+                                                                   }
+
+                                                                   String price = String.valueOf(pubResponse.getPrice());
+
+                                                                   if(!TextUtils.isEmpty(price)) {
+                                                                       double bidPrice = Double.valueOf(price);
+
+                                                                       if(bidPrice > 0.0d) {
+                                                                           requestBuilder.addCustomTargeting(BID, price);
+                                                                           requestBuilder.addCustomTargeting(BID_STATUS, "1");
+                                                                           Log.d(TAG, "DFP custom param [" + BID + "] = " + price + " & [" + BID_STATUS + "] = 1");
+                                                                       } else {
+                                                                           requestBuilder.addCustomTargeting(BID_STATUS, "0");
+                                                                           Log.d(TAG, "DFP custom param [" + BID_STATUS + "] = 0");
+                                                                       }
+                                                                   }
+
+                                                                   adRequest = requestBuilder.build();
 
                                                                    publisherAdView.loadAd(adRequest);
                                                                    adViewsSet.remove(publisherAdView);
                                                                }
                                                                else
                                                                {
-                                                                   adRequest = new PublisherAdRequest.Builder().addCustomTargeting(BID_ID, pubResponse.getImpressionId())
-                                                                           .addCustomTargeting(BID_STATUS, "0")
-                                                                           .addCustomTargeting(BID, String.valueOf(pubResponse.getPrice())).build();
+                                                                   adRequest = new PublisherAdRequest.Builder().build();
 
                                                                    publisherAdView.loadAd(adRequest);
                                                                    adViewsSet.remove(publisherAdView);

@@ -19,7 +19,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.pubmatic.sdk.banner.mocean.MoceanBannerAdRequest;
 import com.pubmatic.sdk.common.AdRequest;
+import com.pubmatic.sdk.common.mocean.MoceanAdRequest;
 import com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest;
 import com.pubmatic.sdk.nativead.PMNativeAd;
 import com.pubmatic.sdk.nativead.bean.PMAssetRequest;
@@ -207,22 +209,45 @@ public class NativeAdFragment extends DialogFragment {
                 String gender = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_GENDER);
 
                 if(!gender.equals("") && !gender.equals(""))
-                    ((MoceanNativeAdRequest)adRequest).setGender(gender);
+                {
+                    if(gender.equalsIgnoreCase("Male") || gender.equalsIgnoreCase("M"))
+                        ((MoceanBannerAdRequest)adRequest).setGender(MoceanAdRequest.GENDER.MALE);
+                    else if(gender.equalsIgnoreCase("Female") || gender.equalsIgnoreCase("F"))
+                        ((MoceanBannerAdRequest)adRequest).setGender(MoceanAdRequest.GENDER.FEMALE);
+                }
 
-                /*String ethnicity = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_ETHNICITY);
-
-                if(!ethnicity.equals("") && ethnicity != null)
-                    ((MoceanBannerAdRequest)adRequest).setEthnicity(ethnicity);*/
-
-                /*String language = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_LANGUAGE);
-
-                if(!language.equals("") && language != null)
-                    ((MoceanBannerAdRequest)adRequest).setLanguage(language);*/
-
-                /*String over18 = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_OVER_18);
+                String over18 = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_OVER_18);
 
                 if(!over18.equals("") && over18 != null)
-                    ((MoceanBannerAdRequest)adRequest).setOver18(over18);*/
+                {
+                    if(over18.equalsIgnoreCase("0"))
+                        ((MoceanBannerAdRequest)adRequest).setOver18(MoceanAdRequest.OVER_18.DENY);
+                    else if(over18.equalsIgnoreCase("2"))
+                        ((MoceanBannerAdRequest)adRequest).setOver18(MoceanAdRequest.OVER_18.ONLY_OVER_18);
+                    else if(over18.equalsIgnoreCase("3"))
+                        ((MoceanBannerAdRequest)adRequest).setOver18(MoceanAdRequest.OVER_18.ALLOW_ALL);
+                }
+
+                String ethnicity = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_ETHNICITY);
+
+                if(!ethnicity.equals("") && ethnicity != null)
+                {
+                    if(ethnicity.equals("0"))
+                        ((MoceanBannerAdRequest)adRequest).setEthnicity(MoceanAdRequest.ETHNICITY.BLACK);
+                    else if(ethnicity.equals("1"))
+                        ((MoceanBannerAdRequest)adRequest).setEthnicity(MoceanAdRequest.ETHNICITY.ASIAN);
+                    else if(ethnicity.equals("2"))
+                        ((MoceanBannerAdRequest)adRequest).setEthnicity(MoceanAdRequest.ETHNICITY.LATINO);
+                    else if(ethnicity.equals("3"))
+                        ((MoceanBannerAdRequest)adRequest).setEthnicity(MoceanAdRequest.ETHNICITY.WHITE);
+                    else if(ethnicity.equals("4"))
+                        ((MoceanBannerAdRequest)adRequest).setEthnicity(MoceanAdRequest.ETHNICITY.EAST_INDIAN);
+                }
+
+                String language = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_LANGUAGE);
+
+                if(!language.equals("") && language != null)
+                    ((MoceanBannerAdRequest)adRequest).setLanguage(language);
 
                 /*String timeout = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_TIMEOUT);
 

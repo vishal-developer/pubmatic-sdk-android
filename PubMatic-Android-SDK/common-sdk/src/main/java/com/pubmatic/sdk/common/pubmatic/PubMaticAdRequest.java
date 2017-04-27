@@ -476,7 +476,6 @@ public abstract class PubMaticAdRequest extends AdRequest {
 
     public enum GENDER { MALE, FEMALE, OTHER }
 
-    //Mocean specific enums
     public enum FORMAT_KEY { HTML, XML, JSON, JSONP, GENERIC, VAST, DAAST, OFFLINE_XML }
 
     protected Context                       mContext;

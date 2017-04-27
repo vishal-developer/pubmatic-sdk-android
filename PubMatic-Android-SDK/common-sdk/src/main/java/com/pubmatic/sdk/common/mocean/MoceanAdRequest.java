@@ -108,15 +108,46 @@ public abstract class MoceanAdRequest extends AdRequest {
 			//======== Setting user specific information ========
 
 			// Setting Gender of user
-			if (!TextUtils.isEmpty(mGender))
-				putPostData(CommonConstants.GENDER_PARAM, URLEncoder.encode(
-						mGender, CommonConstants.URL_ENCODING));
+            if(mGender != null)
+            {
+                switch (mGender)
+                {
+                    case MALE:
+                        putPostData(CommonConstants.GENDER_PARAM, "M");
+                        break;
+                    case FEMALE:
+                        putPostData(CommonConstants.GENDER_PARAM, "F");
+                        break;
+                }
+            }
 
 			// Setting the user ethnicity
-			if (!TextUtils.isEmpty(mEthnicity)) {
-				putPostData(CommonConstants.USER_ETHNICITY, URLEncoder.encode(
-						mEthnicity, CommonConstants.URL_ENCODING));
-			}
+            if(mEthnicity != null)
+            {
+                switch(mEthnicity)
+                {
+                    case BLACK:
+                        putPostData(CommonConstants.USER_ETHNICITY, String.valueOf(0));
+                        break;
+                    case ASIAN:
+                        putPostData(CommonConstants.USER_ETHNICITY, String.valueOf(1));
+                        break;
+                    case LATINO:
+                        putPostData(CommonConstants.USER_ETHNICITY, String.valueOf(2));
+                        break;
+                    case WHITE:
+                        putPostData(CommonConstants.USER_ETHNICITY, String.valueOf(3));
+                        break;
+                    case EAST_INDIAN:
+                    case MIDDLE_EASTERN:
+                    case PACIFIC_ISLANDER:
+                    case NATIVE_AMERICAN:
+                    case MIXED:
+                    case OTHER:
+                        putPostData(CommonConstants.USER_ETHNICITY, String.valueOf(4));
+                        break;
+                }
+            }
 
 			// Setting the income
 			if (!TextUtils.isEmpty(mAge)) {
@@ -175,6 +206,12 @@ public abstract class MoceanAdRequest extends AdRequest {
 								CommonConstants.URL_ENCODING));
 			}
 
+            if (!TextUtils.isEmpty(mLanguage)) {
+                putPostData(CommonConstants.REQUESTPARAM_LANGUAGE,
+                        URLEncoder.encode(mLanguage,
+                                CommonConstants.URL_ENCODING));
+            }
+
 			// Send Advertisement ID
 			if (!TextUtils.isEmpty(mUDID)) {
 				putPostData(CommonConstants.REQUESTPARAM_ANDROID_AID, mUDID);// Android
@@ -216,8 +253,12 @@ public abstract class MoceanAdRequest extends AdRequest {
 	}
 
 	public enum ETHNICITY {
-		HISPANIC, AFRICAN_AMERICAN, CAUCASIAN, ASIAN_AMERICAN, OTHER
+		BLACK, WHITE, EAST_INDIAN, MIDDLE_EASTERN, ASIAN, LATINO, PACIFIC_ISLANDER, NATIVE_AMERICAN, MIXED, OTHER
 	}
+
+	public enum GENDER {
+        MALE, FEMALE
+    }
 
 	// Mocean specific enums
 	public enum FORMAT_KEY {
@@ -234,23 +275,20 @@ public abstract class MoceanAdRequest extends AdRequest {
 		ALLOW_ALL // 3
 	}
 
-	public static final String GENDER_MALE = "M";
-	public static final String GENDER_FEMALE = "F";
-	public static final String GENDER_OTHER = "O";
-
 	// Mocean USer info params
 	private String mAge = null;
-	private String mGender = null;
+	private GENDER mGender = null;
 	private String mAreaCode = null;
 	private OVER_18 mOver18 = OVER_18.NA;
 	private String mBirthDay = null;
 	private String mIsoRegion = null;
+    private String mLanguage = null;
 
 	// Common for Mocean & PubMatic User info params
 	private String mCity = null;
 	private String mZip = null;
 	private String mDMA = null;
-	private String mEthnicity = null;
+	private ETHNICITY mEthnicity = null;
 
 	// PubMatic User info
 	/*
@@ -291,26 +329,22 @@ public abstract class MoceanAdRequest extends AdRequest {
 		mIsoRegion = isoRegion;
 	}
 
-	/**
+    public String getLanguage() {
+        return mLanguage;
+    }
+
+    public void setLanguage(String language) {
+        this.mLanguage = language;
+    }
+
+    /**
 	 * Set the gender of the user.
 	 * 
 	 * @param gender
 	 *            gender of the user
 	 */
-	public void setGender(final String gender) {
-
-		if (gender == null || gender.trim().equals("")) {
-			mGender = null;
-			return;
-		}
-
-		if (gender.equalsIgnoreCase(GENDER_MALE)
-				|| gender.equalsIgnoreCase(GENDER_FEMALE)
-				|| gender.equalsIgnoreCase(GENDER_OTHER)) {
-			mGender = gender.toUpperCase();
-		} else {
-			mGender = null;
-		}
+	public void setGender(GENDER gender) {
+        mGender = gender;
 	}
 
 	/**
@@ -334,7 +368,7 @@ public abstract class MoceanAdRequest extends AdRequest {
 	 * 
 	 * @return the gender
 	 */
-	public String getGender() {
+	public GENDER getGender() {
 		return mGender;
 	}
 
@@ -371,7 +405,7 @@ public abstract class MoceanAdRequest extends AdRequest {
 	 * 
 	 * @return the ethnicity of user
 	 */
-	public String getEthnicity() {
+	public ETHNICITY getEthnicity() {
 		return mEthnicity;
 	}
 
@@ -379,7 +413,7 @@ public abstract class MoceanAdRequest extends AdRequest {
 	 * Sets the ethnicity parameter
 	 * @param mEthnicity
 	 */
-	public void setEthnicity(String mEthnicity) {
+	public void setEthnicity(ETHNICITY mEthnicity) {
 		this.mEthnicity = mEthnicity;
 	}
 	/**

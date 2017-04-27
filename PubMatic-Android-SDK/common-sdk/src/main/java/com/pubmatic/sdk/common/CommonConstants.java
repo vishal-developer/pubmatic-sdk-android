@@ -86,7 +86,6 @@ public class CommonConstants {
 	// Mocean specific common parameters
 	public static final String REQUESTPARAM_AGE = "age";
 	public static final String REQUESTPARAM_BIRTHDAY = "birthday";
-	public static final String REQUESTPARAM_LANGUAGE = "language";
 	public static final String REQUESTPARAM_OVER_18 = "over_18";
 
 	public static final String TELEPHONY_MCC = "mcc";
@@ -106,6 +105,7 @@ public class CommonConstants {
 	public static final String REQUESTPARAM_ZIP = "zip";
 	public static final String REQUESTPARAM_DMA = "dma";
 	public static final String REQUESTPARAM_ISO_REGION = "iso_region";
+	public static final String REQUESTPARAM_LANGUAGE = "language";
 	public static final String REQUEST_HEADER_USER_AGENT = "User-Agent";
 	public static final String REQUEST_HEADER_CONNECTION = "Connection";
 	public static final String REQUEST_HEADER_CONNECTION_VALUE_CLOSE = "close";
@@ -162,7 +162,7 @@ public class CommonConstants {
 
 	// Common params
 	public static final String GENDER_PARAM = "gender";
-	public static final String USER_ETHNICITY = "userEnthnicity";
+	public static final String USER_ETHNICITY = "enthnicity";
 	public static final String SIZE_X_PARAM = "size_x";
 	public static final String SIZE_Y_PARAM = "size_y";
 

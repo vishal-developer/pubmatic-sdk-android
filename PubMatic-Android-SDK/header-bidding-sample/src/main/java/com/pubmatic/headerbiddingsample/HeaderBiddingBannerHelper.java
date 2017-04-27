@@ -64,7 +64,7 @@ public class HeaderBiddingBannerHelper {
     private PMPrefetchManager         pmPrefetchManager;
     private List<AdSlotInfo>          adSlotInfoList;
 
-    private static final String       TAG = "HeaderBiddingBannerHelper";
+    private static final String       TAG = "HBBannerHelper";
 
     public HeaderBiddingBannerHelper(Context context, List<AdSlotInfo> adSlotInfoList) {
         this.mContext        = context;
@@ -282,7 +282,7 @@ public class HeaderBiddingBannerHelper {
         adRequest.setIncome("income");
 
         adRequest.setYearOfBirth("1989");
-        adRequest.setGender("M");
+        adRequest.setGender(PubMaticAdRequest.GENDER.MALE);
 
         adRequest.setCity("Pune");
         adRequest.setZip("411011");

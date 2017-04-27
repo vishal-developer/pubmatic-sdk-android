@@ -31,9 +31,8 @@ import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 
-import com.pubmatic.sdk.common.AdRequest;
-import com.pubmatic.sdk.common.mocean.MoceanAdRequest;
 import com.pubmatic.sdk.common.CommonConstants;
+import com.pubmatic.sdk.common.mocean.MoceanAdRequest;
 
 public class MoceanBannerAdRequest extends MoceanAdRequest {
 
@@ -59,12 +58,14 @@ public class MoceanBannerAdRequest extends MoceanAdRequest {
 	{
 		return TextUtils.isEmpty(mBaseUrl) ? CommonConstants.MOCEAN_AD_NETWORK_URL : mBaseUrl;
 	}
+
 	/**
 	 * This method will initialize all the static parameters which SDK need to set.
 	 * @param context
 	 */
 	protected void initializeDefaultParams(Context context) {
 
+		putPostData("type", "7");
 		putPostData("count", "1");
 		putPostData("key", "3");
 		putPostData("size_required", "1");
