@@ -12,58 +12,22 @@ Supported Ad formats
 * Interstitial
 * Native
 
+## What is new in [latest release](../../releases/latest)?
+
+* Revised Sample application
+* Automatic Location detection
+* Hashing of UDID parameter
+* Support of multisize feature for banner ad
+* Support of Header-Biding via DFP for Banner
+* Bug fixed Multiple adtype parameter in ad request
+* Added Github wiki pages for SDK features ([wiki](../../wiki))
+
+For full change log , please go to [CHANGELOG](CHANGELOG.md)
+
+## Integration
+PubMatic SDK supports various integration methods, please follow [Develper guide](../../wiki) to integrate SDK  to your iOS application
+
+
 License
 -------
-See the LICENSE file.
-
-## Installation
-PubMatic SDK supports multiple methods for installing the library in a project.
-
-#### Integrate via central repository
-
-To integrate PubMatic SDK into your gradle based project via central repository, specify it in your `build.gradle`:
-
-PubMatic SDK is published in JitPack central repository. 
-
-Users of this SDK will need to add the jitpack.io repository in the build.gradle file of the root project.
-
-````java 
-allprojects {
-    repositories {
-        jcenter()
-        maven {
-            url "https://jitpack.io"
-        }
-    }
-}
-````
-
-And, Need to add the following code in the build.gradle of the application module:
-````java 
-compile ‘com.github.PubMatic.pubmatic-sdk-android:common-sdk:5.2.0’
-compile ‘com.github.PubMatic.pubmatic-sdk-android:banner-sdk:5.2.0’
-compile ‘com.github.PubMatic.pubmatic-sdk-android:native-sdk:5.2.0’
-````
-Above snippet is in form of ‘com.github.User.Repo:library:releasetag’
-Where Pubmatic has separate SDK library for banner & native ad. User has an option to include the SDK based on the requirement. 
-
-It is mandatory to include common-sdk along with banner and/or native sdk. 
-
-5.2.0 is a release version of PubMatic SDK. It can be changed as per the requirement. 
-
-User can also choose an option to always get the “tip” of the master branch by using:
-
-_compile ‘com.github.user.Repo:library:-SNAPSHOT’_
-
-For example:
-````java 
-compile 'com.github.PubMatic.pubmatic-sdk-android:common-sdk:-SNAPSHOT'
-compile 'com.github.PubMatic.pubmatic-sdk-android:banner-sdk:-SNAPSHOT'
-compile 'com.github.PubMatic.pubmatic-sdk-android:native-sdk:-SNAPSHOT'
-````
-
-#### Download the source from github
-
-PubMatic SDK is available as Open Source project for download from GitHub. It can be downloaded & used in the android application.
-
-Other installation methods and integration guidelines are provided at [http://developer.pubmatic.com/documentation/introduction](http://developer.pubmatic.com/documentation/introduction)
+See the [LICENSE](LICENSE) file.
