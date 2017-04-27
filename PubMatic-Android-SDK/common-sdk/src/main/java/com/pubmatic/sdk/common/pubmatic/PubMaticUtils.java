@@ -33,6 +33,7 @@ import android.net.NetworkInfo;
 import android.provider.Settings;
 
 import java.security.MessageDigest;
+import java.util.Locale;
 
 public class PubMaticUtils {
 
@@ -99,7 +100,7 @@ public class PubMaticUtils {
                 stringBuilder.append(String.format("%02X", b));
             }
 
-            return stringBuilder.toString().toLowerCase();
+            return stringBuilder.toString().toLowerCase(Locale.getDefault());
         } catch (Exception e) {
             return "";
         }

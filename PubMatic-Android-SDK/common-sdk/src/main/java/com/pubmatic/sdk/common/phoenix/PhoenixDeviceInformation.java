@@ -113,7 +113,7 @@ public class PhoenixDeviceInformation {
     public synchronized static String getCurrentTime() {
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
-                PhoenixConstants.DATE_TIME_FORMAT);
+                PhoenixConstants.DATE_TIME_FORMAT, Locale.getDefault());
         String systemTime = simpleDateFormat.format(cal.getTime());
         return systemTime;
     }
@@ -133,7 +133,7 @@ public class PhoenixDeviceInformation {
             Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"),
                     Locale.getDefault());
             Date currentLocalTime = calendar.getTime();
-            SimpleDateFormat date = new SimpleDateFormat("Z");
+            SimpleDateFormat date = new SimpleDateFormat("Z", Locale.getDefault());
             localTime = date.format(currentLocalTime);
 
             double minute = Double.valueOf(localTime.substring(3, 5));

@@ -169,7 +169,7 @@ public final class PUBDeviceInformation implements LocationListener {
 	public synchronized static String getCurrentTime() {
 		Calendar cal = Calendar.getInstance();
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
-				DeviceConstants.mDateTimeFormat);
+				DeviceConstants.mDateTimeFormat, Locale.getDefault());
 		String systemTime = simpleDateFormat.format(cal.getTime());
 		return systemTime;
 	}
@@ -286,7 +286,7 @@ public final class PUBDeviceInformation implements LocationListener {
 	public static String getCurrentTimeStamp(){
 		try {
 
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 			String currentDateTime = dateFormat.format(new Date()); // Find todays date
 
 			return currentDateTime;

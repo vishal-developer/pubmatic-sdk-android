@@ -137,7 +137,7 @@ public static final class AdInfo {
         SharedPreferences.Editor editor = storage.edit();
         if(editor!=null) {
             editor.putString(PM_AID_KEY, androidAid);
-            editor.commit();
+            editor.apply();
         }
     }
 
@@ -164,7 +164,7 @@ public static final class AdInfo {
         SharedPreferences.Editor editor = storage.edit();
         if(editor!=null) {
             editor.putBoolean(PM_LIMITED_TRACKING_AD_KEY, state);
-            editor.commit();
+            editor.apply();
         }
     }
 
