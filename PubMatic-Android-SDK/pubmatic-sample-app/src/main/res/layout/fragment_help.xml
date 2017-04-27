@@ -9,18 +9,31 @@
         android:id="@+id/dialog_help_relative_layout_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@android:color/holo_blue_dark"
         android:layout_alignParentTop="true">
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:background="@android:color/holo_blue_dark"
+            android:layout_alignParentLeft="true"
             android:padding="10dp"
-            android:text="Info"
+            android:text="Help"
             android:textSize="18sp"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@android:color/white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentRight="true"
+            android:padding="10dp"
+            android:text="PM SDK v5.2.0"
+            android:textSize="18sp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@android:color/white" />
+
     </RelativeLayout>
 
 

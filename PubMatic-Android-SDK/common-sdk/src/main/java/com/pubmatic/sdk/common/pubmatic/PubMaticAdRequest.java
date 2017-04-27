@@ -46,6 +46,68 @@ import java.util.Set;
 
 public abstract class PubMaticAdRequest extends AdRequest {
 
+    protected Context                       mContext;
+    private OPERID                          mOperId;
+    protected String                        mPubId;
+    protected String                        mSiteId;
+    protected String                        mAdId;
+    protected AD_TYPE                       mAdType;
+    private int                             mAdHeight;
+    private int                             mAdWidth;
+    private boolean                         mInIFrame;
+    private String                          mAdNetwork;
+    private AD_VISIBILITY                   mAdVisibility;
+    private String                          mIABCategory;
+    private String                          mPMZoneId;
+    private String                          mAppName;
+    private String                          mStoreURL;
+    private String                          mAid;
+    private String                          mAppCategory;
+    private String                          mAppDomain;
+    protected boolean                       mPaid;
+    protected int                           mAdRefreshRate;
+    private int                             mOrmmaComplianceLevel;
+    private String                          mAdOrientation;
+    private String 		                    mNetworkType;
+    private boolean			                mDoNotTrack;
+    private boolean			                mCoppa;
+    private PubMaticAdRequest.AWT_OPTION    mAWT;
+    private RS                              mRs;
+
+    //Common for Mocean & PubMatic Useser info params
+    private String mCity = null;
+    private String mZip = null;
+    private String mDMA = null;
+    private ETHNICITY mEthnicity = null;
+    private GENDER mGender = null;
+
+    // User info
+    private String mState = null;
+    private String mYearOfBirth = null;
+    private String mIncome = null;
+    protected ArrayList<String> mKeywordsList = null;
+
+    // Passback params
+    private String mKAdNetworkId;
+    private String mLastDefaultedNetworkId;
+    private List<String> mDefaultedCampaignList;
+
+    protected enum AD_TYPE { TEXT, IMAGE, IMAGE_TEXT, BANNER, NATIVE, VIDEO, AUDIO }
+
+    protected enum OPERID { HTML, JAVA_SCRIPT, JSON, JSON_MOBILE }
+
+    private enum RS { PURE_JSON, JSON_CALLBACK, JS_VAR}
+
+    public enum AWT_OPTION { DEFAULT, WRAPPED_IN_IFRAME, WRAPPED_IN_JS }
+
+    private enum AD_VISIBILITY { CAN_NOT_DETERMINE, ABOVE_FOLD, BELOW_FOLD, PARTIAL }
+
+    public enum ETHNICITY { HISPANIC, AFRICAN_AMERICAN, CAUCASIAN, ASIAN_AMERICAN, OTHER }
+
+    public enum GENDER { MALE, FEMALE, OTHER }
+
+    public enum FORMAT_KEY { HTML, XML, JSON, JSONP, GENERIC, VAST, DAAST, OFFLINE_XML }
+
     public enum HASHING_TECHNIQUE {
         SHA1, MD5, RAW
     }
@@ -460,69 +522,6 @@ public abstract class PubMaticAdRequest extends AdRequest {
 
         }
     }
-
-    //PubMatic specific enums
-    protected enum AD_TYPE { TEXT, IMAGE, IMAGE_TEXT, BANNER, NATIVE, VIDEO, AUDIO }
-
-    protected enum OPERID { HTML, JAVA_SCRIPT, JSON, JSON_MOBILE }
-
-    private enum RS { PURE_JSON, JSON_CALLBACK, JS_VAR}
-
-    public enum AWT_OPTION { DEFAULT, WRAPPED_IN_IFRAME, WRAPPED_IN_JS }
-
-    private enum AD_VISIBILITY { CAN_NOT_DETERMINE, ABOVE_FOLD, BELOW_FOLD, PARTIAL }
-
-    public enum ETHNICITY { HISPANIC, AFRICAN_AMERICAN, CAUCASIAN, ASIAN_AMERICAN, OTHER }
-
-    public enum GENDER { MALE, FEMALE, OTHER }
-
-    public enum FORMAT_KEY { HTML, XML, JSON, JSONP, GENERIC, VAST, DAAST, OFFLINE_XML }
-
-    protected Context                       mContext;
-    private OPERID                          mOperId;
-    protected String                        mPubId;
-    protected String                        mSiteId;
-    protected String                        mAdId;
-    protected AD_TYPE                       mAdType;
-    private int                             mAdHeight;
-    private int                             mAdWidth;
-    private boolean                         mInIFrame;
-    private String                          mAdNetwork;
-    private AD_VISIBILITY                   mAdVisibility;
-    private String                          mIABCategory;
-    private String                          mPMZoneId;
-    private String                          mAppName;
-    private String                          mStoreURL;
-    private String                          mAid;
-    private String                          mAppCategory;
-    private String                          mAppDomain;
-    protected boolean                       mPaid;
-    protected int                           mAdRefreshRate;
-    private int                             mOrmmaComplianceLevel;
-    private String                          mAdOrientation;
-    private String 		                    mNetworkType;
-    private boolean			                mDoNotTrack;
-    private boolean			                mCoppa;
-    private PubMaticAdRequest.AWT_OPTION    mAWT;
-    private RS                              mRs;
-
-    //Common for Mocean & PubMatic Useser info params
-    private String mCity = null;
-    private String mZip = null;
-    private String mDMA = null;
-    private ETHNICITY mEthnicity = null;
-    private GENDER mGender = null;
-
-    //PubMatic User info
-    private String mState = null;
-    private String mYearOfBirth = null;
-    private String mIncome = null;
-    protected ArrayList<String> mKeywordsList = null;
-
-    // PubMatic Passback params
-    private String mKAdNetworkId;
-    private String mLastDefaultedNetworkId;
-    private List<String> mDefaultedCampaignList;
 
     protected OPERID getOperId() {
         return mOperId;
