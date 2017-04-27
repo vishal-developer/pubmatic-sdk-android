@@ -57,8 +57,6 @@ public class PMUtils {
                 id = R.id.configuration_time_out_interval;
             else if(setting.equals(PMConstants.SETTINGS_CONFIGURATION_AD_REFRESH_RATE))
                 id = R.id.configuration_ad_refresh_rate;
-            else if(setting.equals(PMConstants.SETTINGS_CONFIGURATION_AD_SERVER_URL))
-                id = R.id.configuration_ad_server_url;
             else if(setting.equals(PMConstants.SETTINGS_CONFIGURATION_TEST))
                 id = R.id.configuration_test;
         }

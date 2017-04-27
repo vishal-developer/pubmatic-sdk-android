@@ -21,6 +21,7 @@ import com.pubmatic.sdk.banner.mocean.MoceanBannerAdRequest;
 import com.pubmatic.sdk.banner.phoenix.PhoenixBannerAdRequest;
 import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest;
 import com.pubmatic.sdk.common.AdRequest;
+import com.pubmatic.sdk.common.pubmatic.PUBAdSize;
 import com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest;
 
 import java.util.LinkedHashMap;
@@ -92,26 +93,12 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
     private void loadAd(View rootView)
     {
         PMBannerAdView banner = new PMBannerAdView(getActivity());
+        banner.setRequestListener(this);
         RelativeLayout layout = (RelativeLayout) rootView.findViewById(R.id.banner_parent);
 
         AdRequest adRequest = null;
         int widthInt = 0;
         int heightInt = 0;
-
-        try
-        {
-            String width = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_WIDTH);
-            widthInt = Integer.parseInt(width);
-            adRequest.setWidth(widthInt);
-
-            String height = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_HEIGHT);
-            heightInt = Integer.parseInt(height);
-            adRequest.setHeight(heightInt);
-        }
-        catch(Exception exception)
-        {
-            exception.printStackTrace();
-        }
 
         RelativeLayout.LayoutParams params;
 
@@ -135,6 +122,21 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
             }
 
             adRequest = MoceanBannerAdRequest.createMoceanBannerAdRequest(getActivity(), zone);
+
+            try
+            {
+                String width = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_WIDTH);
+                widthInt = Integer.parseInt(width);
+                adRequest.setWidth(widthInt);
+
+                String height = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_HEIGHT);
+                heightInt = Integer.parseInt(height);
+                adRequest.setHeight(heightInt);
+            }
+            catch(Exception exception)
+            {
+                exception.printStackTrace();
+            }
 
             String test = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_TEST);
             ((MoceanBannerAdRequest)adRequest).setTest(Boolean.parseBoolean(test));
@@ -233,6 +235,21 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
             }
 
             adRequest = PubMaticBannerAdRequest.createPubMaticBannerAdRequest(getActivity(), pubId, siteId, adId);
+
+            try
+            {
+                String width = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_WIDTH);
+                widthInt = Integer.parseInt(width);
+
+                String height = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_HEIGHT);
+                heightInt = Integer.parseInt(height);
+
+                ((PubMaticBannerAdRequest)adRequest).setAdSize(new PUBAdSize(widthInt, heightInt));
+            }
+            catch(Exception exception)
+            {
+                exception.printStackTrace();
+            }
 
             // Configuration Parameters
             String androidAidEnabled = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED);
@@ -343,11 +360,6 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
                 if(!paid.equals("") && paid != null)
                     ((PubMaticBannerAdRequest)adRequest).setApplicationPaid(Boolean.parseBoolean(paid));
 
-                String country = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_COUNTRY);
-
-                if(!country.equals("") && country != null)
-                    ((PubMaticBannerAdRequest)adRequest).setCountry(country);
-
                 String awt = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_AWT);
 
                 if(!awt.equals("") && awt != null)
@@ -398,8 +410,18 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
         boolean isAutoLocationDetectionChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_AUTO_LOCATION_DETECTION);
         banner.setLocationDetectionEnabled(isAutoLocationDetectionChecked);
 
-        // Make the ad request to Server banner.execute(adRequest);
-        banner.execute(adRequest);
+        try
+        {
+            // Make the ad request to Server banner.execute(adRequest);
+            banner.execute(adRequest);
+        }
+        catch(IllegalArgumentException illegalArgumentException)
+        {
+            dismiss();
+            illegalArgumentException.printStackTrace();
+            Toast.makeText(getActivity(), "Please verify the mandatory ad request parameters", Toast.LENGTH_LONG).show();
+        }
+
     }
 
     public static int dpToPx(int dp)
@@ -413,8 +435,15 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
     }
 
     @Override
-    public void onFailedToReceiveAd(PMBannerAdView adView, Exception ex) {
+    public void onFailedToReceiveAd(PMBannerAdView adView, int errorCode, final String msg) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
 
+                Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
+                dismiss();
+            }
+        });
     }
 
     @Override

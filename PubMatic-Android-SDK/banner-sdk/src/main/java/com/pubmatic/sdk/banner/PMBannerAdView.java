@@ -43,9 +43,7 @@ import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -77,27 +75,23 @@ import com.pubmatic.sdk.banner.ui.ImageView;
 import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.AdResponse;
 import com.pubmatic.sdk.common.CommonConstants;
-import com.pubmatic.sdk.common.PMAdRendered;
-import com.pubmatic.sdk.common.PMLogger.LogLevel;
-import com.pubmatic.sdk.common.LocationDetector;
-import com.pubmatic.sdk.common.PMLogger;
 import com.pubmatic.sdk.common.CommonConstants.CHANNEL;
-import com.pubmatic.sdk.common.RRFormatter;
+import com.pubmatic.sdk.common.LocationDetector;
+import com.pubmatic.sdk.common.PMAdRendered;
+import com.pubmatic.sdk.common.PMLogger;
+import com.pubmatic.sdk.common.PMLogger.LogLevel;
 import com.pubmatic.sdk.common.ResponseGenerator;
 import com.pubmatic.sdk.common.network.AdTracking;
 import com.pubmatic.sdk.common.network.HttpHandler;
 import com.pubmatic.sdk.common.network.HttpHandler.HttpRequestListener;
 import com.pubmatic.sdk.common.network.HttpRequest;
 import com.pubmatic.sdk.common.network.HttpResponse;
-import com.pubmatic.sdk.common.pubmatic.PubMaticConstants;
 import com.pubmatic.sdk.common.ui.BrowserDialog;
 
 import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
@@ -123,9 +117,10 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
              * Failed to receive ad content (network or other related error).
              *
              * @param adView
-             * @param ex Exception, if any, encountered while attempting to reqest an ad.
+             * @param errorCode, if any, encountered while attempting to reqest an ad.
+             * @param errorMessage, error message if any
              */
-            public void onFailedToReceiveAd(PMBannerAdView adView, Exception ex);
+            public void onFailedToReceiveAd(PMBannerAdView adView, int errorCode, String errorMessage);
 
             /**
              * Ad received and rendered.
@@ -506,13 +501,13 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
         String channel = attrs.getAttributeValue(null,
                 CommonConstants.xml_layout_attribute_channel);
-        if ("pubmatic".equalsIgnoreCase(channel)) {
-            setChannel(CHANNEL.PUBMATIC);
+        if ("mocean".equalsIgnoreCase(channel)) {
+            setChannel(CHANNEL.MOCEAN);
         } else if ("phoenix".equalsIgnoreCase(channel)) {
             setChannel(CHANNEL.PHOENIX);
         } else {
-            //MOCEAN will be used as default channel, if not mentioned in xml
-            setChannel(CHANNEL.MOCEAN);
+            //PUBMATIC will be used as default channel, if not mentioned in xml
+            setChannel(CHANNEL.PUBMATIC);
         }
     }
 
@@ -535,7 +530,14 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
     }
 
     private boolean checkForMandatoryParams() {
-        return mAdController.checkMandatoryParams();
+        boolean result = mAdController.checkMandatoryParams();
+
+        if(result && mChannel == CHANNEL.PUBMATIC && !isInterstitial())
+        {
+            result = (mAdController.getAdRequest().getWidth()>0 && mAdController.getAdRequest().getHeight()>0);
+        }
+
+        return result;
     }
 
     /**
@@ -551,9 +553,9 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
         mChannel = channel;
 
-        if (checkForMandatoryParams()) {
-            //If case - XML inflated view
-            if (mAttributes != null) {
+        //XML flow - Checking for mandatory parameters
+        if (mAttributes != null) {
+            if (checkForMandatoryParams()) {
                 updateOnLayout = true;
             }
         }
@@ -953,7 +955,8 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         // values from java file
         // If channel is set => adcontroller is initialized correctly
         if (getChannel() == null || !checkForMandatoryParams()) {
-            throw new IllegalStateException("Required parameters are not set.");
+
+            throw new IllegalArgumentException("Required parameters are not set.");
         }
 
         if (adUpdateIntervalFuture != null) {
@@ -1159,6 +1162,10 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                 if (isAdResponseValid(adData)) {
                     renderAdDescriptor(adData.getRenderable());
                 }
+                else if(requestListener!=null)
+                {
+                    requestListener.onFailedToReceiveAd(PMBannerAdView.this, Integer.parseInt(adData.getErrorCode()), adData.getErrorMessage());
+                }
             }
         }
 
@@ -1166,7 +1173,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         public void onErrorOccured(int errorType, int errorCode, String requestURL) {
 
             if (requestListener != null) {
-                requestListener.onFailedToReceiveAd(PMBannerAdView.this, null);
+                requestListener.onFailedToReceiveAd(PMBannerAdView.this, errorCode, null);
             }
         }
 
@@ -1192,28 +1199,12 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         }
 
         String errorCode = adData.getErrorCode();
-        if (errorCode != null) {
+        String errorMessage = adData.getErrorMessage();
 
-            Exception exception = adData.getException();
-            String errorMessage = adData.getErrorMessage();
-
-            if (exception != null) {
-                PMLogger.logEvent("Ad request failed: " + exception, LogLevel.Error);
-
-            } else {
-                if (String.valueOf(404).equals(errorCode)) {
-                    PMLogger.logEvent("Error response from server.  Error code: " + errorCode + ". Error message: " + errorMessage,
-                            LogLevel.Error);
-                }
-            }
-
-            if (requestListener != null) {
-                requestListener.onFailedToReceiveAd(PMBannerAdView.this, exception);
-            }
-
+        if (!TextUtils.isEmpty(errorCode) || !TextUtils.isEmpty(errorMessage))
             return false;
-        }
-        return true;
+        else
+            return true;
     }
 
     public void showInterstitial() {
@@ -1386,7 +1377,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             PMLogger.logEvent("Ad descriptor missing ad content", LogLevel.Error);
 
             if (requestListener != null) {
-                requestListener.onFailedToReceiveAd(this, null);
+                requestListener.onFailedToReceiveAd(this, -1, "Ad content missing");
             }
 
             return;
@@ -1533,8 +1524,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                                 LogLevel.Error);
 
                         if (requestListener != null) {
-                            requestListener.onFailedToReceiveAd(PMBannerAdView.this,
-                                    ex);
+                            requestListener.onFailedToReceiveAd(PMBannerAdView.this, -1, "Failed to load Image");
                         }
                     }
 
@@ -2318,7 +2308,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                     LogLevel.Error);
 
             if (requestListener != null) {
-                requestListener.onFailedToReceiveAd(PMBannerAdView.this, null);
+                requestListener.onFailedToReceiveAd(PMBannerAdView.this, errorCode, description);
             }
 
             removeContent();
@@ -3309,98 +3299,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         if (mraidBridge != null) {
             mraidBridge.setViewable(isViewable);
         }
-    }
-
-    //Ad Controller related
-    protected AdRequest 		mAdRequest 		= null;
-    protected RRFormatter mRRFormatter 	= null;
-
-
-    //TODO :: Need to verify this method
-    private void createDefaultAdRequest(AttributeSet attr) {
-
-        String adRequestName = null;
-        Class  className     = null;
-        Method m			 = null;
-        try {
-
-            switch (mChannel) {
-                case MOCEAN:
-                    adRequestName = "com.pubmatic.sdk.banner.mocean.MoceanBannerAdRequest";
-                    className = Class.forName(adRequestName);
-                    m = className.getMethod("createMoceanBannerAdRequest", Context.class, String.class);
-                    mAdRequest = (AdRequest)m.invoke(null, getContext(), null);
-                    //Call setAttributes()
-                    m = className.getMethod("setAttributes", AttributeSet.class);
-                    m.invoke(mAdRequest, attr);
-
-                    break;
-                case PUBMATIC:
-                    adRequestName = "com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest";
-                    className = Class.forName(adRequestName);
-                    m = className.getMethod("createPubMaticBannerAdRequest",
-                            Context.class, String.class, String.class, String.class);
-                    mAdRequest = (AdRequest)m.invoke(null, getContext(), null, null, null);
-                    //Call setAttributes()
-                    m = className.getMethod("setAttributes", AttributeSet.class);
-                    m.invoke(mAdRequest, attr);
-                    break;
-
-                default:
-                    break;
-            }
-
-            createRRFormatter();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (ClassCastException ex) {
-
-        }
-    }
-
-    public void setAdRequest(AdRequest adRequest) {
-
-        if (adRequest == null)
-            throw new IllegalArgumentException("AdRequest object is null");
-
-        mAdRequest = adRequest;
-        //Create RRFormater
-        createRRFormatter();
-    }
-
-    private void createRRFormatter() {
-        if(mAdRequest != null)
-        {
-            //Create RRFormater
-            String rrFormaterName = mAdRequest.getFormatter();
-
-            try {
-                Class className = Class.forName(rrFormaterName);
-                mRRFormatter = (RRFormatter) className.newInstance();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (ClassCastException ex) {
-
-            }
-        }
-    }
-
-    public RRFormatter getRRFormatter() {
-        return mRRFormatter;
-    }
-
-    public boolean checkMandatoryParams() {
-        return mAdRequest==null ? false : mAdRequest.checkMandatoryParams();
     }
 
     /**

@@ -47,7 +47,8 @@ public class BannerAdController {
 	public BannerAdController(CHANNEL channel, Context cnt, AttributeSet attr) {
 		mChannel = channel;
 		mContext = cnt;
-		createDefaultAdRequest(attr);
+		if(attr!=null)
+			createDefaultAdRequest(attr);
 	}
 	public AdRequest getAdRequest() {
 		return mAdRequest;

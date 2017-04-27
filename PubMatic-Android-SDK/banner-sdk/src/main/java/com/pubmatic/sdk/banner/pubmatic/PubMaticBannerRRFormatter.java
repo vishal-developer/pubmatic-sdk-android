@@ -43,6 +43,8 @@ import com.pubmatic.sdk.common.CommonConstants.CONTENT_TYPE;
 import com.pubmatic.sdk.common.RRFormatter;
 import com.pubmatic.sdk.common.network.HttpRequest;
 import com.pubmatic.sdk.common.network.HttpResponse;
+import com.pubmatic.sdk.common.pubmatic.PUBDeviceInformation;
+import com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -81,6 +83,7 @@ public class PubMaticBannerRRFormatter implements RRFormatter {
         httpRequest.setRequestMethod(CommonConstants.HTTPMETHODPOST);
         httpRequest.setRequestType(CommonConstants.AD_REQUEST_TYPE.PUB_BANNER);
         httpRequest.setPostData(adRequest.getPostData());
+        httpRequest.setRLNClientIPAddress(adRequest.getIPAddress());
         return httpRequest;
     }
 
@@ -134,11 +137,10 @@ public class PubMaticBannerRRFormatter implements RRFormatter {
             // Check if json contains the creative_tag and tracking_url.
             // If these are missing then the ad is invalid. Return null else
             // return valid adInfo object.
-            if (!TextUtils.isEmpty(response.optString(kcreative_tag))
-                    && !TextUtils.isEmpty(response.optString(ktracking_url))) {
+            if (!TextUtils.isEmpty(response.optString(kcreative_tag))) {
 
                 adInfo.put("content", response.getString(kcreative_tag));
-                impressionTrackers.add( URLDecoder.decode(response.getString(ktracking_url), UTF8_CHARSET));
+                impressionTrackers.add( URLDecoder.decode(response.optString(ktracking_url), UTF8_CHARSET));
 
                 // Setting ecpm if not null
                 if (!response.isNull(kecpm)) {

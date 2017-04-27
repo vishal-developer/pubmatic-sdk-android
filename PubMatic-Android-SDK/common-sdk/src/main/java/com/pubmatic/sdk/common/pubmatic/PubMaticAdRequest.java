@@ -81,6 +81,9 @@ public abstract class PubMaticAdRequest extends AdRequest {
 
     @Override
     protected void initializeDefaultParams(Context context) {
+
+        PUBDeviceInformation pubDeviceInformation = PUBDeviceInformation.getInstance(mContext);
+        setIPAddress(pubDeviceInformation.mDeviceIpAddress);
     }
 
     @Override
@@ -146,12 +149,6 @@ public abstract class PubMaticAdRequest extends AdRequest {
 
         try {
 
-            if (pubDeviceInformation.mDeviceAcceptLanguage != null) {
-                // Appending did
-                putPostData(PubMaticConstants.LANGUAGE, URLEncoder.encode(
-                        pubDeviceInformation.mDeviceAcceptLanguage,
-                        CommonConstants.URL_ENCODING));
-            }
             // Setting country
             if (pubDeviceInformation.mDeviceCountryCode != null) {
                 putPostData(PubMaticConstants.COUNTRY_PARAM, URLEncoder.encode(
@@ -213,6 +210,9 @@ public abstract class PubMaticAdRequest extends AdRequest {
                         break;
                     case WRAPPED_IN_JS:
                         putPostData(PubMaticConstants.AWT_PARAM, String.valueOf(2));
+                        break;
+                    case DEFAULT:
+                        putPostData(PubMaticConstants.AWT_PARAM, String.valueOf(0));
                         break;
                 }
             }
@@ -380,13 +380,6 @@ public abstract class PubMaticAdRequest extends AdRequest {
                         CommonConstants.URL_ENCODING));
             }
 
-            // Setting the user entnicity
-            /*if (!TextUtils.isEmpty(mEthnicity)) {
-                putPostData(PubMaticConstants.USER_ETHNICITY, URLEncoder.encode(
-                        mEthnicity,
-                        CommonConstants.URL_ENCODING));
-            }*/
-
             // Setting the iab category
             if (!TextUtils.isEmpty(mIABCategory)) {
                 putPostData(PubMaticConstants.IAB_CATEGORY, URLEncoder.encode(
@@ -508,7 +501,6 @@ public abstract class PubMaticAdRequest extends AdRequest {
     protected int                           mAdRefreshRate;
     private int                             mOrmmaComplianceLevel;
     private String                          mAdOrientation;
-    private String                          mLanguage;
     private String 		                    mNetworkType;
     private boolean			                mDoNotTrack;
     private boolean			                mCoppa;
@@ -523,7 +515,6 @@ public abstract class PubMaticAdRequest extends AdRequest {
     private GENDER mGender = null;
 
     //PubMatic User info
-    private String mCountry = null;
     private String mState = null;
     private String mYearOfBirth = null;
     private String mIncome = null;
@@ -578,14 +569,6 @@ public abstract class PubMaticAdRequest extends AdRequest {
      */
     public void setCity(String city) {
         this.mCity = city;
-    }
-
-    public String getCountry() {
-        return mCountry;
-    }
-
-    public void setCountry(String mCountry) {
-        this.mCountry = mCountry;
     }
 
     public GENDER getGender() {
@@ -981,14 +964,6 @@ public abstract class PubMaticAdRequest extends AdRequest {
 
     public void setLocation(Location mLocation) {
         this.mLocation = mLocation;
-    }
-
-    public String getLanguage() {
-        return mLanguage;
-    }
-
-    public void setLanguage(String mLanguage) {
-        this.mLanguage = mLanguage;
     }
 
     public void resetPassbackParameters()

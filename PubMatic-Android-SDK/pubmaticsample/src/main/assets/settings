@@ -88,8 +88,7 @@
         "Android Aid Enabled": "true",
         "Coppa": "true",
         "Time Out Interval": "",
-        "Ad Refresh Rate": "",
-        "Ad Server Url": ""
+        "Ad Refresh Rate": ""
       },
       "Targetting": {
         "Latitude": "3.5",
@@ -101,14 +100,12 @@
         "App Domain": "appdomain",
         "City": "Pune",
         "Zip": "41007",
-        "Country": "india",
         "State": "Maharashtra",
         "Year of Birth": "02111989",
         "Income": "5000",
         "Ethnicity": "ASIAN_AMERICAN",
         "Gender": "Male",
         "DMA": "41107",
-        "Language": "kan",
         "Orma Compliance": "1",
         "Paid": "True",
         "AWT": "0"
@@ -124,8 +121,7 @@
         "Android Aid Enabled": "true",
         "Coppa": "true",
         "Time Out Interval": "",
-        "Ad Refresh Rate": "",
-        "Ad Server Url": ""
+        "Ad Refresh Rate": ""
       },
       "Targetting": {
         "Latitude": "",
@@ -137,14 +133,12 @@
         "App Domain": "appdomain",
         "City": "",
         "Zip": "",
-        "Country": "india",
         "State": "Maharashtra",
         "Year of Birth": "",
         "Income": "",
         "Ethnicity": "ASIAN_AMERICAN",
         "Gender": "",
         "DMA": "",
-        "Language": "kan",
         "Orma Compliance": "1",
         "Paid": "",
         "AWT": "0"
@@ -160,8 +154,7 @@
         "Android Aid Enabled": "true",
         "Coppa": "true",
         "Time Out Interval": "",
-        "Ad Refresh Rate": "",
-        "Ad Server Url": ""
+        "Ad Refresh Rate": ""
       },
       "Targetting": {
         "Latitude": "3.5",
@@ -173,14 +166,12 @@
         "App Domain": "appdomain",
         "City": "Pune",
         "Zip": "41007",
-        "Country": "india",
         "State": "Maharashtra",
         "Year of Birth": "02111989",
         "Income": "5000",
         "Ethnicity": "ASIAN_AMERICAN",
         "Gender": "Male",
         "DMA": "41107",
-        "Language": "kan",
         "Orma Compliance": "1",
         "Paid": "True",
         "AWT": "0"

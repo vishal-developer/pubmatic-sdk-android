@@ -315,12 +315,7 @@ public class InterstitialAdFragment extends DialogFragment {
                 if(!paid.equals("") && paid != null)
                     ((PubMaticBannerAdRequest)adRequest).setApplicationPaid(Boolean.parseBoolean(paid));
 
-                String country = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_COUNTRY);
-
-                if(!country.equals("") && country != null)
-                    ((PubMaticBannerAdRequest)adRequest).setCountry(country);
-
-                String awt = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_COUNTRY);
+                String awt = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_AWT);
 
                 if(!awt.equals("") && awt != null)
                 {
@@ -378,8 +373,9 @@ public class InterstitialAdFragment extends DialogFragment {
 
         interstitialAdView.setRequestListener(new PMBannerAdView.BannerAdViewDelegate.RequestListener() {
             @Override
-            public void onFailedToReceiveAd(PMBannerAdView adView, Exception ex) {
-                Toast.makeText(getActivity(), "Ad failed to load!", Toast.LENGTH_SHORT).show();
+            public void onFailedToReceiveAd(PMBannerAdView adView, int errorCode, String msg) {
+                dismiss();
+                Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
             }
 
             @Override

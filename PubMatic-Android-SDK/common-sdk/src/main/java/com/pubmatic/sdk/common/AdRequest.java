@@ -86,6 +86,17 @@ public abstract class AdRequest {
 	 * Publisher can set his own custom defined Ad request parameters via Map
 	 */
 	protected Map<String, List<String>> mCustomParams;
+
+	private String IPAddress;
+
+	public String getIPAddress() {
+		return IPAddress;
+	}
+
+	public void setIPAddress(String IPAddress) {
+		this.IPAddress = IPAddress;
+	}
+
 	/**
 	 *
 	 * @return

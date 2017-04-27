@@ -550,10 +550,6 @@ public class HomeFragment extends Fragment {
         String zip = etZip.getText().toString();
         mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_ZIP, zip);
 
-        EditText etCountry = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_COUNTRY);
-        String country = etCountry.getText().toString();
-        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_COUNTRY, country);
-
         EditText etState = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_STATE);
         String state = etState.getText().toString();
         mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_STATE, state);
@@ -577,10 +573,6 @@ public class HomeFragment extends Fragment {
         EditText etDMA = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_DMA);
         String dma = etDMA.getText().toString();
         mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_DMA, dma);
-
-        EditText etLanguage = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_LANGUAGE);
-        String language = etLanguage.getText().toString();
-        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_LANGUAGE, language);
 
         EditText etOrmaCompliance = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_ORMA_COMPLIANCE);
         String ormaCompliance = etOrmaCompliance.getText().toString();

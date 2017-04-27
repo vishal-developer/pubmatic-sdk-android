@@ -8,6 +8,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
+import android.widget.Toast;
 
 import com.pubmatic.sampleapp.R;
 import com.pubmatic.sdk.banner.PMBannerAdView;
@@ -93,8 +94,8 @@ public class PubRuntimeBannerActivity extends Activity {
             }
 
             @Override
-            public void onFailedToReceiveAd(PMBannerAdView arg0, Exception arg1) {
-                Log.d("Test", "Ad falied");
+            public void onFailedToReceiveAd(PMBannerAdView arg0,  int errorCode, String msg) {
+                Toast.makeText(PubRuntimeBannerActivity.this, msg, Toast.LENGTH_LONG).show();
             }
         };
 

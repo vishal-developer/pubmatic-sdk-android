@@ -362,11 +362,6 @@ public class NativeAdFragment extends DialogFragment {
                 if(!paid.equals("") && paid != null)
                     ((PubMaticNativeAdRequest)adRequest).setApplicationPaid(Boolean.parseBoolean(paid));
 
-                String country = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_COUNTRY);
-
-                if(!country.equals("") && country != null)
-                    ((PubMaticNativeAdRequest)adRequest).setCountry(country);
-
                 String awt = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_AWT);
 
                 if(!awt.equals("") && awt != null)

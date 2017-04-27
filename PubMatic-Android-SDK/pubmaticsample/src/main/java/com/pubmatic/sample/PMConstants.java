@@ -22,7 +22,6 @@ public class PMConstants {
     public static final String SETTINGS_CONFIGURATION_COPPA = "Coppa";
     public static final String SETTINGS_CONFIGURATION_TIME_OUT_INTERVAL = "Time Out Interval";
     public static final String SETTINGS_CONFIGURATION_AD_REFRESH_RATE = "Ad Refresh Rate";
-    public static final String SETTINGS_CONFIGURATION_AD_SERVER_URL = "Ad Server Url";
     public static final String SETTINGS_CONFIGURATION_TEST = "Test";
 
     public static final String SETTINGS_HEADING_TARGETTING = "Targetting";

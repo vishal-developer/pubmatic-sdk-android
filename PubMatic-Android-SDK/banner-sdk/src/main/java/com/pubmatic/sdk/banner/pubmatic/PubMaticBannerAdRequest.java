@@ -125,12 +125,19 @@ public class PubMaticBannerAdRequest extends PubMaticAdRequest {
 		mAdRefreshRate = adRefreshRate;
 	}
 
-	/**
+    /**
 	 * @param pubAdSize the pubAdSize to set
 	 */
 	public void setAdSize(PUBAdSize pubAdSize) {
-		setPubAdSize(pubAdSize);
+        this.mPubAdSize = pubAdSize;
 	}
+
+    /**
+     * @Return mPubAdSize Returns ad size
+     */
+    public PUBAdSize getAdSize() {
+        return this.mPubAdSize;
+    }
 
 	public int getDefaultedAdNetworkId() {
 		return mDefaultedAdNetworkId;
@@ -150,8 +157,7 @@ public class PubMaticBannerAdRequest extends PubMaticAdRequest {
 
 	@Override
 	public boolean checkMandatoryParams() {
-		// TODO Auto-generated method stub
-		return !TextUtils.isEmpty(mAdId) && !TextUtils.isEmpty(mSiteId) && !TextUtils.isEmpty(mPubId);
+		return super.checkMandatoryParams();
 	}
 
 	@Override
@@ -175,14 +181,13 @@ public class PubMaticBannerAdRequest extends PubMaticAdRequest {
 			String width = attr.getAttributeValue(null,
 					CommonConstants.AD_WIDTH);
 
-			if (!TextUtils.isEmpty(width))
-				setWidth(Integer.parseInt(width));
-
-			String height = attr.getAttributeValue(null,
-					CommonConstants.AD_HEIGHT);
-
-			if (!TextUtils.isEmpty(height))
-				setHeight(Integer.parseInt(height));
+            String height = attr.getAttributeValue(null,
+                    CommonConstants.AD_HEIGHT);
+			if (!TextUtils.isEmpty(width) && !TextUtils.isEmpty(height)) {
+                int widthInt = Integer.parseInt(width);
+                int heightInt = Integer.parseInt(height);
+                setAdSize(new PUBAdSize(widthInt, heightInt));
+            }
 
 
 		} catch (Exception ex) {
@@ -190,21 +195,19 @@ public class PubMaticBannerAdRequest extends PubMaticAdRequest {
 		}
 	}
 
-	/**
-	 * @return the mPubAdSize
-	 */
-	public PUBAdSize getPubAdSize() {
-		return mPubAdSize;
-	}
+    public int getWidth() {
+        if(mPubAdSize==null)
+            return  super.getWidth();
+        return mPubAdSize.getAdWidth();
+    }
 
-	/**
-	 * @param mPubAdSize the mPubAdSize to set
-	 */
-	public void setPubAdSize(PUBAdSize mPubAdSize) {
-		this.mPubAdSize = mPubAdSize;
-	}
+    public int getHeight() {
+        if(mPubAdSize==null)
+            return  super.getHeight();
+        return mPubAdSize.getAdHeight();
+    }
 
-	/**
+    /**
 	 * Returns the Ad size array for banner ad
 	 * @return
 	 */
