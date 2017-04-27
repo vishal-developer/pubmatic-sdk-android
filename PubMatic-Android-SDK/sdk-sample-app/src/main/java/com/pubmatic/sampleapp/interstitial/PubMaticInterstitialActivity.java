@@ -60,7 +60,7 @@ public class PubMaticInterstitialActivity extends Activity {
 
         interstitialAdView.setRequestListener(new PMBannerAdView.BannerAdViewDelegate.RequestListener() {
             @Override
-            public void onFailedToReceiveAd(PMBannerAdView adView, Exception ex) {
+            public void onFailedToReceiveAd(PMBannerAdView adView, int errorcode, String errorMessage) {
                 Toast.makeText(PubMaticInterstitialActivity.this,
                                "Ad failed to load!",
                                Toast.LENGTH_SHORT).show();
