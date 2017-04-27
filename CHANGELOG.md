@@ -238,8 +238,6 @@ Enabled multi-pixel tracking for SDK.
 -------
 
 - Handled the SSL error callback in case of any untrusted web page load inside the internal browser of SDK.
-API Training Shop Blog About
-© 2017 GitHub, Inc. Help Support
 
 -------
  5.1.1
