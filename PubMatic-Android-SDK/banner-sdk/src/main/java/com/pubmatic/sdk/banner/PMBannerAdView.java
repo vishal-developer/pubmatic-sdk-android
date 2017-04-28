@@ -40,6 +40,7 @@ import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -1590,6 +1591,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
         addContentView(textView, layoutParams);
 
+        textView.setTextColor(Color.BLUE);
         textView.setText(text);
 
         this.mAdDescriptor = adDescriptor;
