@@ -18,7 +18,6 @@ package com.pubmatic.sampleapp.banner;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.location.Location;
 import android.os.Bundle;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
@@ -59,8 +58,8 @@ public class MoceanRuntimeBannerActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         if (banner != null) {
-            // Note: It is mandatory to call reset() method before activity gets destroyed
-            banner.reset();
+            // Note: It is mandatory to call destroy() method before activity gets destroyed
+            banner.destroy();
         }
     }
 }

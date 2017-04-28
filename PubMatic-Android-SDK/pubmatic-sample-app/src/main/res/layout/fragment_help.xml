@@ -61,33 +61,6 @@
                     android:textSize="17sp" />
             </LinearLayout>
         </ScrollView>
-        <!--
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/help_step_2"
-                android:padding="10dp"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/white"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/help_step_3"
-                android:padding="10dp"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/white"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/help_step_4"
-                android:padding="10dp"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/white"/>-->
     </LinearLayout>
 
 </RelativeLayout>

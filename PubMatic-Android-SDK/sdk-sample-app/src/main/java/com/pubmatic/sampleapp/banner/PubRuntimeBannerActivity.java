@@ -108,8 +108,8 @@ public class PubRuntimeBannerActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         if (banner != null) {
-            // Note: It is mandatory to call reset() method before activity gets destroyed
-            banner.reset();
+            // Note: It is mandatory to call destroy() method before activity gets destroyed
+            banner.destroy();
         }
     }
 

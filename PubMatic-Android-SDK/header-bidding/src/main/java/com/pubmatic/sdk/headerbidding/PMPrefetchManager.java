@@ -29,10 +29,8 @@ package com.pubmatic.sdk.headerbidding;
 
 import android.content.Context;
 import android.text.TextUtils;
-import android.view.ViewGroup;
 import android.webkit.WebView;
 
-import com.google.android.gms.ads.doubleclick.PublisherAdView;
 import com.pubmatic.sdk.banner.BannerAdDescriptor;
 import com.pubmatic.sdk.banner.PMBannerAdView;
 import com.pubmatic.sdk.banner.PMInterstitialAdView;
@@ -172,7 +170,7 @@ public class PMPrefetchManager implements ResponseGenerator {
         if(pubmaticAdViews!=null) {
             if(pubmaticAdViews.size()>0) {
                 for(WeakReference<PMAdRendered> adRendered : pubmaticAdViews) {
-                    ((PMBannerAdView)adRendered.get()).reset();
+                    ((PMBannerAdView)adRendered.get()).destroy();
                 }
             }
             pubmaticAdViews = null;
@@ -394,7 +392,7 @@ public class PMPrefetchManager implements ResponseGenerator {
     };
 
     /**
-     * Release resources, clear maps and reset the adViews used.
+     * Release resources, clear maps and destroy the adViews used.
      */
     public void destroy() {
         publisherHBResponse.clear();
@@ -403,7 +401,7 @@ public class PMPrefetchManager implements ResponseGenerator {
         if (pubmaticAdViews != null && pubmaticAdViews.size() != 0) {
             for (WeakReference adView : pubmaticAdViews) {
                 if (adView.get() != null)
-                    ((PMBannerAdView) adView.get()).reset();
+                    ((PMBannerAdView) adView.get()).destroy();
             }
             pubmaticAdViews.clear();
         }
@@ -412,7 +410,7 @@ public class PMPrefetchManager implements ResponseGenerator {
         if (pubmaticInterstitialAdViews != null && pubmaticInterstitialAdViews.size() != 0) {
             for (WeakReference adView : pubmaticInterstitialAdViews) {
                 if (adView.get() != null)
-                    ((PMInterstitialAdView) adView.get()).reset();
+                    ((PMInterstitialAdView) adView.get()).destroy();
             }
             pubmaticInterstitialAdViews.clear();
         }

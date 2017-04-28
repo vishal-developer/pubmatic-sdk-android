@@ -3,6 +3,7 @@ package com.pubmatic.sample;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.pubmatic.sdk.banner.mocean.MoceanBannerAdRequest;
+import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest;
 import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.mocean.MoceanAdRequest;
 import com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest;
@@ -282,9 +284,6 @@ public class NativeAdFragment extends DialogFragment {
             String androidAidEnabled = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED);
             ((PubMaticNativeAdRequest)adRequest).setAndroidAidEnabled(Boolean.parseBoolean(androidAidEnabled));
 
-            String coppa = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_COPPA);
-            ((PubMaticNativeAdRequest)adRequest).setCoppa(Boolean.parseBoolean(coppa));
-
             try
             {
                 // Targetting Parameters
@@ -400,6 +399,9 @@ public class NativeAdFragment extends DialogFragment {
                     else if(awtOption == 2)
                         ((PubMaticNativeAdRequest)adRequest).setAWT(PubMaticAdRequest.AWT_OPTION.WRAPPED_IN_JS);
                 }
+
+                String coppa = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_COPPA);
+                ((PubMaticBannerAdRequest)adRequest).setCoppa(Boolean.parseBoolean(coppa));
 
                 String ormaCompliance = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_ORMA_COMPLIANCE);
 
@@ -614,5 +616,13 @@ public class NativeAdFragment extends DialogFragment {
     public static int pxToDp(int px)
     {
         return (int) (px / Resources.getSystem().getDisplayMetrics().density) * 3;
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
+
+        ad.destroy();
+        ad = null;
     }
 }

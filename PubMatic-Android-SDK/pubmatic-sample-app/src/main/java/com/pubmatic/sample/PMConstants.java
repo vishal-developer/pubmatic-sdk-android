@@ -19,9 +19,8 @@ public class PMConstants {
     public static final String SETTINGS_CONFIGURATION_WIDTH = "Width";
     public static final String SETTINGS_CONFIGURATION_HEIGHT = "Height";
     public static final String SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED = "Android Aid Enabled";
-    public static final String SETTINGS_CONFIGURATION_COPPA = "Coppa";
     public static final String SETTINGS_CONFIGURATION_TIME_OUT_INTERVAL = "Time Out Interval";
-    public static final String SETTINGS_CONFIGURATION_AD_REFRESH_RATE = "Ad Refresh Rate";
+    public static final String SETTINGS_CONFIGURATION_AD_REFRESH_RATE = "Ad Refresh Rate (Sec)";
     public static final String SETTINGS_CONFIGURATION_TEST = "Test";
 
     public static final String SETTINGS_HEADING_TARGETTING = "Targetting";
@@ -45,6 +44,7 @@ public class PMConstants {
     public static final String SETTINGS_TARGETTING_ORMA_COMPLIANCE = "Orma Compliance";
     public static final String SETTINGS_TARGETTING_IP = "IP";
     public static final String SETTINGS_TARGETTING_AWT = "AWT";
+    public static final String SETTINGS_TARGETTING_COPPA = "Coppa";
     public static final String SETTINGS_TARGETTING_AGE = "Age";
     public static final String SETTINGS_TARGETTING_GENDER = "Gender";
     public static final String SETTINGS_TARGETTING_OVER_18 = "Over 18";

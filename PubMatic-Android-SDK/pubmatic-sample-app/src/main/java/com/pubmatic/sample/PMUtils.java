@@ -51,7 +51,7 @@ public class PMUtils {
                 id = R.id.configuration_height;
             else if(setting.equals(PMConstants.SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED))
                 id = R.id.configuration_android_aid_enabled;
-            else if(setting.equals(PMConstants.SETTINGS_CONFIGURATION_COPPA))
+            else if(setting.equals(PMConstants.SETTINGS_TARGETTING_COPPA))
                 id = R.id.configuration_coppa;
             else if(setting.equals(PMConstants.SETTINGS_CONFIGURATION_TIME_OUT_INTERVAL))
                 id = R.id.configuration_time_out_interval;

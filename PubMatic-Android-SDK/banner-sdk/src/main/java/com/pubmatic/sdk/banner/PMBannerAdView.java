@@ -1009,13 +1009,13 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
 
     /**
-     * Resets instance state to it's default (doesn't reset configured parameters). Stops update
+     * Resets instance state to it's default (doesn't destroy configured parameters). Stops update
      * interval timer, closes internal browser if open, disables location detection.
      * <p/>
      * Invoke this method to stop any ad processing. This should be done for ads that have a update
      * time interval set with setUpdateInterval() before the owning context/activity is destroyed.
      */
-    public void reset() {
+    public void destroy() {
         deferredUpdate = false;
         mImpressionTrackerSent = false;
         mClickTrackerSent = false;
@@ -2424,7 +2424,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                             mraidExpandDialog = null;
 
                             // For normal or two part expand the original bridge
-                            // gets reset back to the default state.
+                            // gets destroy back to the default state.
                             updateMRAIDLayoutForState(mraidBridge, State.Default);
                             mraidBridge.setState(State.Default);
 

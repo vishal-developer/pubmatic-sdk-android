@@ -139,7 +139,7 @@ public class HomeFragment extends Fragment {
 
         if(settingsHeader.equals((PMConstants.SETTINGS_HEADING_CONFIGURATION)))
         {
-            if(setting.equals(PMConstants.SETTINGS_CONFIGURATION_WIDTH) || setting.equals(PMConstants.SETTINGS_CONFIGURATION_HEIGHT ))
+            if(setting.equals(PMConstants.SETTINGS_CONFIGURATION_WIDTH) || setting.equals(PMConstants.SETTINGS_CONFIGURATION_HEIGHT ) || setting.equals(PMConstants.SETTINGS_CONFIGURATION_AD_REFRESH_RATE))
             {
                 editText.setInputType(InputType.TYPE_CLASS_NUMBER);
             }
@@ -147,14 +147,17 @@ public class HomeFragment extends Fragment {
 
         if(settingsHeader.equals(PMConstants.SETTINGS_HEADING_TARGETTING))
         {
-            if (setting.equals(PMConstants.SETTINGS_TARGETTING_LATITUDE)
-                    || setting.equals(PMConstants.SETTINGS_TARGETTING_LONGITUDE)
-                    || setting.equals(PMConstants.SETTINGS_TARGETTING_ZIP)
+            if (setting.equals(PMConstants.SETTINGS_TARGETTING_ZIP)
                     || setting.equals(PMConstants.SETTINGS_TARGETTING_AGE)
                     || setting.equals(PMConstants.SETTINGS_TARGETTING_INCOME)
                     || setting.equals(PMConstants.SETTINGS_TARGETTING_YEAR_OF_BIRTH))
             {
                 editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+            }
+            else if(setting.equals(PMConstants.SETTINGS_TARGETTING_LATITUDE)
+                || setting.equals(PMConstants.SETTINGS_TARGETTING_LONGITUDE))
+            {
+                editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
             }
         }
 
@@ -301,8 +304,6 @@ public class HomeFragment extends Fragment {
                 String settingKey = tag.split(":")[1];
 
                 mSettings.get(headerKey).put(settingKey, value);
-
-                // Toast.makeText(getActivity(), tag + " : " + value, Toast.LENGTH_LONG).show();
             }
         }
     };
@@ -318,6 +319,7 @@ public class HomeFragment extends Fragment {
                 {
                     if(checkMoceanAdTag())
                     {
+                        getMoceanConfigurationParameters();
                         getMoceanTargettingParameters();
 
                         BannerAdFragment bannerAdDialogFragment = new BannerAdFragment(mPlatform, mSettings);
@@ -339,20 +341,6 @@ public class HomeFragment extends Fragment {
                     else
                         Toast.makeText(getActivity(), "Please enter pubId, siteId and adId", Toast.LENGTH_LONG).show();
                 }
-                /*else if(mPlatform == ConfigurationManager.PLATFORM.PHEONIX)
-                {
-                    EditText adUnitIdEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_AD_TAG + ":" + PMConstants.SETTINGS_AD_TAG_AD_UNIT_ID);
-                    String adUnitId = adUnitIdEt.getText().toString();
-                    mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).put(PMConstants.SETTINGS_AD_TAG_AD_UNIT_ID, adUnitId);
-
-                    if(adUnitId != null && !adUnitId.equals(""))
-                    {
-                        BannerAdFragment bannerAdDialogFragment = new BannerAdFragment(mPlatform, mSettings);
-                        bannerAdDialogFragment.show(getActivity().getFragmentManager(), "BannerAdFragment");
-                    }
-                    else
-                        Toast.makeText(getActivity(), "Please enter adUnitId", Toast.LENGTH_LONG).show();
-                }*/
             }
             else if(mAdType == ConfigurationManager.AD_TYPE.INTERSTITIAL)
             {
@@ -441,6 +429,77 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    private boolean checkMoceanAdTag()
+    {
+        String zone = "";
+
+        try
+        {
+            EditText et = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_AD_TAG + ":" + PMConstants.SETTINGS_AD_TAG_ZONE);
+            zone = et.getText().toString();
+            mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).put(PMConstants.SETTINGS_AD_TAG_ZONE, zone);
+        }
+        catch(Exception exception)
+        {
+            Log.i("CheckMoceanAdTag : ", exception.toString());
+        }
+
+        if(zone != null && !zone.equals(""))
+            return true;
+        else
+            return false;
+    }
+
+    private boolean checkPubMaticAdTag()
+    {
+        String pubId = "";
+        String siteId = "";
+        String adId = "";
+
+        try
+        {
+            EditText pubEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_AD_TAG + ":" + PMConstants.SETTINGS_AD_TAG_PUB_ID);
+            pubId = pubEt.getText().toString();
+            mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).put(PMConstants.SETTINGS_AD_TAG_PUB_ID, pubId);
+
+            EditText siteEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_AD_TAG + ":" + PMConstants.SETTINGS_AD_TAG_SITE_ID);
+            siteId = siteEt.getText().toString();
+            mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).put(PMConstants.SETTINGS_AD_TAG_SITE_ID, siteId);
+
+            EditText adEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_AD_TAG + ":" + PMConstants.SETTINGS_AD_TAG_AD_ID);
+            adId = adEt.getText().toString();
+            mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).put(PMConstants.SETTINGS_AD_TAG_AD_ID, adId);
+        }
+        catch(Exception exception)
+        {
+            Log.i("CheckPubMaticAdTag : ", exception.toString());
+        }
+
+        if(pubId != null && !pubId.equals("") && siteId != null && !siteId.equals("") && adId != null & !adId.equals(""))
+            return true;
+        else
+            return false;
+    }
+
+    private void getMoceanConfigurationParameters()
+    {
+        EditText widthEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_CONFIGURATION + ":" + PMConstants.SETTINGS_CONFIGURATION_WIDTH);
+        String width = widthEt.getText().toString();
+        mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).put(PMConstants.SETTINGS_CONFIGURATION_WIDTH, width);
+
+        EditText heightEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_CONFIGURATION + ":" + PMConstants.SETTINGS_CONFIGURATION_HEIGHT);
+        String height = heightEt.getText().toString();
+        mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).put(PMConstants.SETTINGS_CONFIGURATION_HEIGHT, height);
+
+        EditText adRefreshRateEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_CONFIGURATION + ":" + PMConstants.SETTINGS_CONFIGURATION_AD_REFRESH_RATE);
+        String adRefreshRate = adRefreshRateEt.getText().toString();
+        mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).put(PMConstants.SETTINGS_CONFIGURATION_AD_REFRESH_RATE, adRefreshRate);
+
+        EditText testEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_CONFIGURATION + ":" + PMConstants.SETTINGS_CONFIGURATION_TEST);
+        String test = testEt.getText().toString();
+        mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).put(PMConstants.SETTINGS_CONFIGURATION_TEST, test);
+    }
+
     private void getMoceanTargettingParameters()
     {
         EditText etLatitude = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_LATITUDE);
@@ -502,6 +561,25 @@ public class HomeFragment extends Fragment {
         EditText etKeywords = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_KEYWORDS);
         String keywords = etKeywords.getText().toString();
         mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_KEYWORDS, keywords);
+    }
+
+    private void getPubMaticConfigurationParameters()
+    {
+        EditText widthEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_CONFIGURATION + ":" + PMConstants.SETTINGS_CONFIGURATION_WIDTH);
+        String width = widthEt.getText().toString();
+        mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).put(PMConstants.SETTINGS_CONFIGURATION_WIDTH, width);
+
+        EditText heightEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_CONFIGURATION + ":" + PMConstants.SETTINGS_CONFIGURATION_HEIGHT);
+        String height = heightEt.getText().toString();
+        mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).put(PMConstants.SETTINGS_CONFIGURATION_HEIGHT, height);
+
+        EditText androidAidEnabledEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_CONFIGURATION + ":" + PMConstants.SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED);
+        String androidAidEnabled = androidAidEnabledEt.getText().toString();
+        mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).put(PMConstants.SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED, androidAidEnabled);
+
+        EditText adRefreshRateEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_CONFIGURATION + ":" + PMConstants.SETTINGS_CONFIGURATION_AD_REFRESH_RATE);
+        String adRefreshRate = adRefreshRateEt.getText().toString();
+        mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).put(PMConstants.SETTINGS_CONFIGURATION_AD_REFRESH_RATE, adRefreshRate);
     }
 
     private void getPubmaticTargettingParameters()
@@ -583,62 +661,4 @@ public class HomeFragment extends Fragment {
         mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_PAID, paid);
     }
 
-    private boolean checkMoceanAdTag()
-    {
-        String zone = "";
-
-        try
-        {
-            EditText et = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_AD_TAG + ":" + PMConstants.SETTINGS_AD_TAG_ZONE);
-            zone = et.getText().toString();
-            mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).put(PMConstants.SETTINGS_AD_TAG_ZONE, zone);
-        }
-        catch(Exception exception)
-        {
-            Log.i("CheckMoceanAdTag : ", exception.toString());
-        }
-
-        if(zone != null && !zone.equals(""))
-            return true;
-        else
-            return false;
-    }
-
-    private boolean checkPubMaticAdTag()
-    {
-        String pubId = "";
-        String siteId = "";
-        String adId = "";
-
-        try
-        {
-            EditText pubEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_AD_TAG + ":" + PMConstants.SETTINGS_AD_TAG_PUB_ID);
-            pubId = pubEt.getText().toString();
-            mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).put(PMConstants.SETTINGS_AD_TAG_PUB_ID, pubId);
-
-            EditText siteEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_AD_TAG + ":" + PMConstants.SETTINGS_AD_TAG_SITE_ID);
-            siteId = siteEt.getText().toString();
-            mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).put(PMConstants.SETTINGS_AD_TAG_SITE_ID, siteId);
-
-            EditText adEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_AD_TAG + ":" + PMConstants.SETTINGS_AD_TAG_AD_ID);
-            adId = adEt.getText().toString();
-            mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).put(PMConstants.SETTINGS_AD_TAG_AD_ID, adId);
-        }
-        catch(Exception exception)
-        {
-            Log.i("CheckPubMaticAdTag : ", exception.toString());
-        }
-
-        if(pubId != null && !pubId.equals("") && siteId != null && !siteId.equals("") && adId != null & !adId.equals(""))
-            return true;
-        else
-            return false;
-    }
-
-    private void getPubMaticConfigurationParameters()
-    {
-        EditText androidAidEnabledEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_CONFIGURATION + ":" + PMConstants.SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED);
-        String androidAidEnabled = androidAidEnabledEt.getText().toString();
-        mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).put(PMConstants.SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED, androidAidEnabled);
-    }
 }

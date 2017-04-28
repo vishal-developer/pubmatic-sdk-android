@@ -9,10 +9,8 @@ import android.widget.RelativeLayout.LayoutParams;
 import com.pubmatic.sampleapp.R;
 import com.pubmatic.sdk.banner.PMBannerAdView;
 import com.pubmatic.sdk.banner.phoenix.PhoenixBannerAdRequest;
-import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest;
 import com.pubmatic.sdk.common.PMLogger;
 import com.pubmatic.sdk.common.phoenix.PhoenixAdRequest;
-import com.pubmatic.sdk.common.pubmatic.PUBAdSize;
 
 public class PhoenixRuntimeBannerActivity extends Activity {
 
@@ -60,8 +58,8 @@ public class PhoenixRuntimeBannerActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         if (banner != null) {
-            // Note: It is mandatory to call reset() method before activity gets destroyed
-            banner.reset();
+            // Note: It is mandatory to call destroy() method before activity gets destroyed
+            banner.destroy();
         }
     }
 

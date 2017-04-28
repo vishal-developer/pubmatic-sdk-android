@@ -7,6 +7,7 @@
       "Configuration": {
         "Width": "320",
         "Height": "50",
+        "Ad Refresh Rate (Sec)": "",
         "Test": "true"
       },
       "Targetting": {
@@ -86,15 +87,13 @@
         "Width": "320",
         "Height": "50",
         "Android Aid Enabled": "true",
-        "Coppa": "true",
-        "Time Out Interval": "",
-        "Ad Refresh Rate": ""
+        "Ad Refresh Rate (Sec)": ""
       },
       "Targetting": {
         "Latitude": "3.5",
         "Longitude": "3.5",
-        "App Category": "appcat",
-        "IAB Category": "iabcat",
+        "App Category": "Tools",
+        "IAB Category": "IAB3-1",
         "Store Url": "storeurl",
         "App Name": "appname",
         "App Domain": "appdomain",
@@ -108,7 +107,8 @@
         "DMA": "41107",
         "Orma Compliance": "1",
         "Paid": "True",
-        "AWT": "0"
+        "AWT": "0",
+        "Coppa": "true"
       }
     },
     "Interstitial": {
@@ -119,15 +119,13 @@
       },
       "Configuration": {
         "Android Aid Enabled": "true",
-        "Coppa": "true",
-        "Time Out Interval": "",
-        "Ad Refresh Rate": ""
+        "Ad Refresh Rate (Sec)": ""
       },
       "Targetting": {
         "Latitude": "",
         "Longitude": "",
-        "App Category": "appcat",
-        "IAB Category": "iabcat",
+        "App Category": "Tools",
+        "IAB Category": "IAB3-1",
         "Store Url": "storeurl",
         "App Name": "appname",
         "App Domain": "appdomain",
@@ -141,7 +139,8 @@
         "DMA": "",
         "Orma Compliance": "1",
         "Paid": "",
-        "AWT": "0"
+        "AWT": "0",
+        "Coppa": "true"
       }
     },
     "Native": {
@@ -151,16 +150,13 @@
         "AdId": "383372"
       },
       "Configuration": {
-        "Android Aid Enabled": "true",
-        "Coppa": "true",
-        "Time Out Interval": "",
-        "Ad Refresh Rate": ""
+        "Android Aid Enabled": "true"
       },
       "Targetting": {
         "Latitude": "3.5",
         "Longitude": "3.5",
-        "App Category": "appcat",
-        "IAB Category": "iabcat",
+        "App Category": "Tools",
+        "IAB Category": "IAB3-1",
         "Store Url": "storeurl",
         "App Name": "appname",
         "App Domain": "appdomain",
@@ -174,7 +170,8 @@
         "DMA": "41107",
         "Orma Compliance": "1",
         "Paid": "True",
-        "AWT": "0"
+        "AWT": "0",
+        "Coppa": "true"
       }
     }
   }

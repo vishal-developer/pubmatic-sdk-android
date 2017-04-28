@@ -3,6 +3,7 @@ package com.pubmatic.sample;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -42,6 +43,8 @@ public class InterstitialAdFragment extends DialogFragment {
     private LinkedHashMap<String, LinkedHashMap<String, String>> mSettings;
 
     private AdRequest adRequest;
+
+    private PMInterstitialAdView mInterstitialAdView;
 
     public InterstitialAdFragment() {}
 
@@ -124,7 +127,7 @@ public class InterstitialAdFragment extends DialogFragment {
                     location.setLatitude(Double.parseDouble(latitude));
                     location.setLongitude(Double.parseDouble(longitude));
 
-                    ((MoceanBannerAdRequest)adRequest).setLocation(location);
+                    adRequest.setLocation(location);
                 }
 
                 String city = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_CITY);
@@ -234,7 +237,7 @@ public class InterstitialAdFragment extends DialogFragment {
             String androidAidEnabled = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED);
             ((PubMaticBannerAdRequest)adRequest).setAndroidAidEnabled(Boolean.parseBoolean(androidAidEnabled));
 
-            String coppa = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_COPPA);
+            String coppa = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_TARGETTING_COPPA);
             ((PubMaticBannerAdRequest)adRequest).setCoppa(Boolean.parseBoolean(coppa));
 
             try
@@ -250,7 +253,7 @@ public class InterstitialAdFragment extends DialogFragment {
                     location.setLatitude(Double.parseDouble(latitude));
                     location.setLongitude(Double.parseDouble(longitude));
 
-                    ((PubMaticBannerAdRequest)adRequest).setLocation(location);
+                    adRequest.setLocation(location);
                 }
 
                 String city = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_CITY);
@@ -381,7 +384,7 @@ public class InterstitialAdFragment extends DialogFragment {
         else
             adRequest = MoceanBannerAdRequest.createMoceanBannerAdRequest(getActivity(), "88269");
 
-        final PMInterstitialAdView interstitialAdView = new PMInterstitialAdView(getActivity());
+        mInterstitialAdView = new PMInterstitialAdView(getActivity());
 
         RelativeLayout layout = (RelativeLayout) rootView.findViewById(R.id.banner_parent);
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
@@ -391,11 +394,9 @@ public class InterstitialAdFragment extends DialogFragment {
             params.setLayoutDirection(RelativeLayout.ALIGN_PARENT_TOP);
         }
 
-        layout.addView(interstitialAdView, params);
+        layout.addView(mInterstitialAdView, params);
 
-        interstitialAdView.setUseInternalBrowser(true);
-
-        interstitialAdView.setRequestListener(new PMBannerAdView.BannerAdViewDelegate.RequestListener() {
+        mInterstitialAdView.setRequestListener(new PMBannerAdView.BannerAdViewDelegate.RequestListener() {
             @Override
             public void onFailedToReceiveAd(PMBannerAdView adView, int errorCode, String msg) {
                 dismiss();
@@ -404,7 +405,7 @@ public class InterstitialAdFragment extends DialogFragment {
 
             @Override
             public void onReceivedAd(PMBannerAdView adView) {
-                interstitialAdView.showInterstitial();
+                mInterstitialAdView.showInterstitial();
             }
 
             @Override
@@ -416,12 +417,12 @@ public class InterstitialAdFragment extends DialogFragment {
         });
 
         boolean isUseInternalBrowserChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_USE_INTERNAL_BROWSER);
-        interstitialAdView.setUseInternalBrowser(isUseInternalBrowserChecked);
+        mInterstitialAdView.setUseInternalBrowser(isUseInternalBrowserChecked);
 
         boolean isAutoLocationDetectionChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_AUTO_LOCATION_DETECTION);
-        interstitialAdView.setLocationDetectionEnabled(isAutoLocationDetectionChecked);
+        mInterstitialAdView.setLocationDetectionEnabled(isAutoLocationDetectionChecked);
 
-        interstitialAdView.setActivityListener(new PMBannerAdView.BannerAdViewDelegate.ActivityListener() {
+        mInterstitialAdView.setActivityListener(new PMBannerAdView.BannerAdViewDelegate.ActivityListener() {
             @Override
             public boolean onOpenUrl(PMBannerAdView adView, String url) {
                 return false;
@@ -440,6 +441,14 @@ public class InterstitialAdFragment extends DialogFragment {
         });
 
         // Make the ad request to Server banner.execute(adRequest);
-        interstitialAdView.execute(adRequest);
+        mInterstitialAdView.execute(adRequest);
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
+
+        mInterstitialAdView.destroy();
+        mInterstitialAdView = null;
     }
 }

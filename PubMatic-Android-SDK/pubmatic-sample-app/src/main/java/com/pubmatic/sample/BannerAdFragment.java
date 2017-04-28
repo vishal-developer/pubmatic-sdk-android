@@ -3,12 +3,14 @@ package com.pubmatic.sample;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,9 +30,6 @@ import com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/**
- *
- */
 public class BannerAdFragment extends DialogFragment implements PMBannerAdView.BannerAdViewDelegate.RequestListener {
 
     private AlertDialog.Builder mBuilder;
@@ -39,6 +38,8 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
     private ConfigurationManager.PLATFORM mPlatform;
 
     private LinkedHashMap<String, LinkedHashMap<String, String>> mSettings;
+
+    PMBannerAdView mBanner;
 
     public BannerAdFragment() {}
 
@@ -93,8 +94,8 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
 
     private void loadAd(View rootView)
     {
-        PMBannerAdView banner = new PMBannerAdView(getActivity());
-        banner.setRequestListener(this);
+        mBanner = new PMBannerAdView(getActivity());
+        mBanner.setRequestListener(this);
         RelativeLayout layout = (RelativeLayout) rootView.findViewById(R.id.banner_parent);
 
         AdRequest adRequest = null;
@@ -110,7 +111,7 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
             params = new RelativeLayout.LayoutParams(dpToPx(320), dpToPx(50));
 
         params.setLayoutDirection(RelativeLayout.CENTER_IN_PARENT);
-        layout.addView(banner, params);
+        layout.addView(mBanner, params);
 
         if(mPlatform == ConfigurationManager.PLATFORM.MOCEAN) {
 
@@ -269,21 +270,11 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
                 heightInt = Integer.parseInt(height);
 
                 ((PubMaticBannerAdRequest)adRequest).setAdSize(new PUBAdSize(widthInt, heightInt));
-            }
-            catch(Exception exception)
-            {
-                exception.printStackTrace();
-            }
 
-            // Configuration Parameters
-            String androidAidEnabled = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED);
-            adRequest.setAndroidAidEnabled(Boolean.parseBoolean(androidAidEnabled));
+                // Configuration Parameters
+                String androidAidEnabled = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED);
+                adRequest.setAndroidAidEnabled(Boolean.parseBoolean(androidAidEnabled));
 
-            String coppa = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_COPPA);
-            ((PubMaticBannerAdRequest)adRequest).setCoppa(Boolean.parseBoolean(coppa));
-
-            try
-            {
                 // Targetting Parameters
                 String latitude = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_LATITUDE);
                 String longitude = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_LONGITUDE);
@@ -398,6 +389,9 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
                         ((PubMaticBannerAdRequest)adRequest).setAWT(PubMaticAdRequest.AWT_OPTION.WRAPPED_IN_JS);
                 }
 
+                String coppa = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_COPPA);
+                ((PubMaticBannerAdRequest)adRequest).setCoppa(Boolean.parseBoolean(coppa));
+
                 String ormaCompliance = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_ORMA_COMPLIANCE);
 
                 if(!ormaCompliance.equals("") && ormaCompliance != null)
@@ -429,15 +423,27 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
             adRequest = MoceanBannerAdRequest.createMoceanBannerAdRequest(getActivity(), "88269");
 
         boolean isUseInternalBrowserChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_USE_INTERNAL_BROWSER);
-        banner.setUseInternalBrowser(isUseInternalBrowserChecked);
+        mBanner.setUseInternalBrowser(isUseInternalBrowserChecked);
 
         boolean isAutoLocationDetectionChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_AUTO_LOCATION_DETECTION);
-        banner.setLocationDetectionEnabled(isAutoLocationDetectionChecked);
+        mBanner.setLocationDetectionEnabled(isAutoLocationDetectionChecked);
+
+        try
+        {
+            String adRefreshRate = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_AD_REFRESH_RATE);
+
+            if(!TextUtils.isEmpty(adRefreshRate))
+                mBanner.setUpdateInterval(Integer.parseInt(adRefreshRate));
+        }
+        catch(Exception exception)
+        {
+
+        }
 
         try
         {
             // Make the ad request to Server banner.execute(adRequest);
-            banner.execute(adRequest);
+            mBanner.execute(adRequest);
         }
         catch(IllegalArgumentException illegalArgumentException)
         {
@@ -478,5 +484,13 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
     @Override
     public void onReceivedThirdPartyRequest(PMBannerAdView adView, Map<String, String> properties, Map<String, String> parameters) {
 
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
+
+        mBanner.destroy();
+        mBanner = null;
     }
 }

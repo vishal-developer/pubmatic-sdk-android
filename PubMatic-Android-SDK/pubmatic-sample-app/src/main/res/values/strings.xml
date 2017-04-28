@@ -3,19 +3,16 @@
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
 
-    <string name="help_text">\nWelcome to the PubMatic’s SDK Sample app.\n\n
-This application helps you to test PubMatic’s ad tag. PubMatic has multiple ad serving platforms mentioned below:\n
-1. Mocean serves direct ads mainly for Mobile devices\n
-2. PubMatic SSP\n\n
-How to use:\n
-1. Please select the Platform\n
-2. Please select the desired ad format\n
-3. Input your ad tag details. By default app is configured with test ad tag details. Please contact PubMatic to get new ad tags for your app.\n
-4. Optionally you can configure other targetting parameters for better monetisation.\n
-5. App also provides Settings screen which allows to apply global settings for all platform and ad type.\n
-6. Logs screen shows the logs for recent ad request.\n
-7. Request-Response screen shows the request and response parameters for recent ad request.\n
-8. Creative test screen allows to test user provided Banner creatives.\n\n
-Contact:\n
-To monetize your app using PubMatic platform, Please contact support@pubmatic.com</string>
+    <string name="help_text">\nWelcome to the PubMatic\'s SDK Sample app.\n\n
+    This application helps you to test PubMatic\'s ad tag. PubMatic has multiple ad serving platforms mentioned below:\n
+    1. Mocean serves direct ads mainly for Mobile devices\n
+    2. PubMatic SSP\n\n
+    How to use:\n
+    1. Please select the Platform\n
+    2. Please select the desired ad format\n
+    3. Input your ad tag details. By default app is configured with test ad tag details. Please contact PubMatic to get new ad tags for your app.\n
+    4. Optionally you can configure other targetting parameters for better monetisation.\n
+    5. App also provides Settings screen which allows to apply global settings for all platform and ad type.\n\n
+    Contact:\n
+    To monetize your app using PubMatic platform, Please contact support@pubmatic.com</string>
 </resources>

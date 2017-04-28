@@ -771,6 +771,12 @@ public final class PMNativeAd {
     public void destroy() {
         reset();
 
+        if (mBrowserDialog != null)
+        {
+            mBrowserDialog.dismiss();
+            mBrowserDialog = null;
+        }
+
         mOverrideAdapter = true;
         mListener = null;
     }
@@ -948,12 +954,21 @@ public final class PMNativeAd {
     }
 
     private void openClickUrlInBrowser() {
-        String url = null;
-        // Open the url in the default/native browser
-        if (mNativeAdDescriptor != null && (url = mNativeAdDescriptor.getClick()) != null) {
-            if (mUseInternalBrowser) {
 
-                if (mBrowserDialog == null) {
+        if(mNativeAdDescriptor != null)
+        {
+            String url = mNativeAdDescriptor.getClick();
+
+            if(url != null)
+            {
+                if (mUseInternalBrowser) {
+
+                    if (mBrowserDialog != null)
+                    {
+                        mBrowserDialog.dismiss();
+                        mBrowserDialog = null;
+                    }
+
                     mBrowserDialog = new BrowserDialog(mContext, url, new BrowserDialog.Handler() {
                         @Override
                         public void browserDialogDismissed(BrowserDialog browserDialog) {
@@ -961,13 +976,13 @@ public final class PMNativeAd {
 
                         @Override
                         public void browserDialogOpenUrl(BrowserDialog browserDialog,
-                                String url,
-                                boolean dismiss) {
-									/*
-									 * Since internal browser is unable to
-									 * handle the url, open the url in native
-									 * browser.
-									 */
+                                                         String url,
+                                                         boolean dismiss) {
+                                /*
+                                 * Since internal browser is unable to
+                                 * handle the url, open the url in native
+                                 * browser.
+                                 */
                             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                             mContext.startActivity(intent);
 
@@ -976,22 +991,19 @@ public final class PMNativeAd {
                             }
                         }
                     });
+
+                    if (mBrowserDialog.isShowing() == false) {
+                        mBrowserDialog.show();
+                    }
+
                 } else {
-                    mBrowserDialog.loadUrl(url);
-                }
-
-                if (mBrowserDialog.isShowing() == false) {
-                    mBrowserDialog.show();
-                }
-
-            } else {
 				/*
 				 * Open the url in native browser.
 				 */
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                mContext.startActivity(intent);
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    mContext.startActivity(intent);
+                }
             }
-
         }
     }
 
