@@ -178,6 +178,9 @@ public abstract class PubMaticAdRequest extends AdRequest {
 
     protected void setUpPostParams() {
 
+        boolean optedOut = AdvertisingIdClient.getLimitedAdTrackingState(mContext, false);
+        PUBDeviceInformation pubDeviceInformation = PUBDeviceInformation.getInstance(mContext);
+
         putPostData(PubMaticConstants.PUB_ID_PARAM, mPubId);
         putPostData(PubMaticConstants.SITE_ID_PARAM, String.valueOf(mSiteId));
         putPostData(PubMaticConstants.AD_ID_PARAM, String.valueOf(mAdId));
@@ -206,50 +209,120 @@ public abstract class PubMaticAdRequest extends AdRequest {
         else if(mAdType == AD_TYPE.AUDIO)
             putPostData(PubMaticConstants.AD_TYPE_PARAM, String.valueOf(14));
 
-        PUBDeviceInformation pubDeviceInformation = PUBDeviceInformation
-                .getInstance(mContext);
+        putPostData(PubMaticConstants.AD_POSITION_PARAM, String.valueOf(PUBDeviceInformation.mAdPosition));
+        putPostData(PubMaticConstants.IN_IFRAME_PARAM, String.valueOf(PUBDeviceInformation.mInIframe));
+        putPostData(PubMaticConstants.AD_VISIBILITY_PARAM, String.valueOf(PUBDeviceInformation.mAdVisibility));
+        putPostData(PubMaticConstants.APP_CATEGORY_PARAM, mAppCategory);
+        putPostData(PubMaticConstants.COPPA_PARAM, String.valueOf(mCoppa ? 1 : 0));
+        putPostData(PubMaticConstants.NETWORK_TYPE_PARAM, PubMaticUtils.getNetworkType(mContext));
+        putPostData(PubMaticConstants.PAID_PARAM, String.valueOf(mPaid ? 1 : 0));
+        putPostData(PubMaticConstants.APP_DOMAIN_PARAM, mAppDomain);
+        putPostData(PubMaticConstants.STORE_URL_PARAM, mStoreURL);
+        putPostData(PubMaticConstants.APP_ID_PARAM, mAid);
+        putPostData(PubMaticConstants.AD_REFRESH_RATE_PARAM, String.valueOf(mAdRefreshRate));
+        putPostData(PubMaticConstants.JS_PARAM, String.valueOf(PUBDeviceInformation.mJavaScriptSupport));
+        putPostData(PubMaticConstants.DEVICE_ORIENTATION_PARAM, String.valueOf(getDeviceOrientation(mContext)));
 
         try {
 
-            // Setting country
+            if(!isDoNotTrack() && !optedOut)
+            {
+                if (pubDeviceInformation.mCarrierName != null) {
+                    putPostData(PubMaticConstants.CARRIER_PARAM, URLEncoder.encode(
+                            pubDeviceInformation.mCarrierName,
+                            CommonConstants.URL_ENCODING));
+                }
+
+                if (pubDeviceInformation.mDeviceMake != null) {
+                    putPostData(PubMaticConstants.MAKE_PARAM, URLEncoder.encode(
+                            pubDeviceInformation.mDeviceMake,
+                            CommonConstants.URL_ENCODING));
+                }
+
+                if (pubDeviceInformation.mDeviceModel != null) {
+                    putPostData(PubMaticConstants.MODEL_PARAM, URLEncoder.encode(
+                            pubDeviceInformation.mDeviceModel,
+                            CommonConstants.URL_ENCODING));
+                }
+
+                if (pubDeviceInformation.mDeviceOSName != null) {
+                    putPostData(PubMaticConstants.OS_PARAM, URLEncoder.encode(
+                            pubDeviceInformation.mDeviceOSName,
+                            CommonConstants.URL_ENCODING));
+                }
+
+                if (pubDeviceInformation.mDeviceOSVersion != null) {
+                    putPostData(PubMaticConstants.OSV_PARAM, URLEncoder.encode(
+                            pubDeviceInformation.mDeviceOSVersion,
+                            CommonConstants.URL_ENCODING));
+                }
+
+                if (!TextUtils.isEmpty(mYearOfBirth)) {
+                    putPostData(PubMaticConstants.YOB_PARAM, URLEncoder.encode(
+                            mYearOfBirth,
+                            CommonConstants.URL_ENCODING));
+                }
+
+                if(getGender() != null) {
+                    switch (getGender()) {
+                        case MALE:
+                            putPostData(PubMaticConstants.GENDER_PARAM, "M");
+                            break;
+                        case FEMALE:
+                            putPostData(PubMaticConstants.GENDER_PARAM, "F");
+                            break;
+                        case OTHER:
+                            putPostData(PubMaticConstants.GENDER_PARAM, "O");
+                            break;
+                        default:
+                            putPostData(PubMaticConstants.GENDER_PARAM, "O");
+                            break;
+                    }
+                }
+
+                //Set the location
+                if (mLocation != null) {
+                    putPostData(PubMaticConstants.LOC_PARAM, mLocation.getLatitude() + ","
+                            + mLocation.getLongitude());
+
+                    String provider = mLocation.getProvider();
+
+                    if(provider.equalsIgnoreCase("network") || provider.equalsIgnoreCase("wifi") || provider.equalsIgnoreCase("gps"))
+                        putPostData(PubMaticConstants.LOC_SOURCE_PARAM, PubMaticConstants.LOCATION_SOURCE_GPS_LOCATION_SERVICES);
+                    else if(provider.equalsIgnoreCase("user"))
+                        putPostData(PubMaticConstants.LOC_SOURCE_PARAM, PubMaticConstants.LOCATION_SOURCE_USER_PROVIDED);
+                    else
+                        putPostData(PubMaticConstants.LOC_SOURCE_PARAM, PubMaticConstants.LOCATION_SOURCE_UNKNOWN);
+                }
+            }
+
+            try
+            {
+                if (!TextUtils.isEmpty(mAdOrientation))
+                    putPostData(PubMaticConstants.AD_ORIENTATION_PARAM, mAdOrientation);
+
+                if (!TextUtils.isEmpty(mState)) {
+                    putPostData(PubMaticConstants.USER_STATE, URLEncoder.encode(
+                            mState,
+                            CommonConstants.URL_ENCODING));
+                }
+
+                if (!TextUtils.isEmpty(mCity)) {
+                    putPostData(PubMaticConstants.USER_CITY, URLEncoder.encode(
+                            mCity,
+                            CommonConstants.URL_ENCODING));
+                }
+
+                if (!TextUtils.isEmpty(mZip)) {
+                    putPostData(PubMaticConstants.ZIP_PARAM, URLEncoder.encode(
+                            mZip, CommonConstants.URL_ENCODING));
+                }
+            }
+            catch(Exception exception) {}
+
             if (pubDeviceInformation.mDeviceCountryCode != null) {
                 putPostData(PubMaticConstants.COUNTRY_PARAM, URLEncoder.encode(
                         pubDeviceInformation.mDeviceCountryCode,
-                        CommonConstants.URL_ENCODING));
-            }
-
-            // Setting carrier
-            if (pubDeviceInformation.mCarrierName != null) {
-                putPostData(PubMaticConstants.CARRIER_PARAM, URLEncoder.encode(
-                        pubDeviceInformation.mCarrierName,
-                        CommonConstants.URL_ENCODING));
-            }
-
-            // Setting make
-            if (pubDeviceInformation.mDeviceMake != null) {
-                putPostData(PubMaticConstants.MAKE_PARAM, URLEncoder.encode(
-                        pubDeviceInformation.mDeviceMake,
-                        CommonConstants.URL_ENCODING));
-            }
-
-            // Setting model
-            if (pubDeviceInformation.mDeviceModel != null) {
-                putPostData(PubMaticConstants.MODEL_PARAM, URLEncoder.encode(
-                        pubDeviceInformation.mDeviceModel,
-                        CommonConstants.URL_ENCODING));
-            }
-
-            // Setting os
-            if (pubDeviceInformation.mDeviceOSName != null) {
-                putPostData(PubMaticConstants.OS_PARAM, URLEncoder.encode(
-                        pubDeviceInformation.mDeviceOSName,
-                        CommonConstants.URL_ENCODING));
-            }
-
-            // Setting osv
-            if (pubDeviceInformation.mDeviceOSVersion != null) {
-                putPostData(PubMaticConstants.OSV_PARAM, URLEncoder.encode(
-                        pubDeviceInformation.mDeviceOSVersion,
                         CommonConstants.URL_ENCODING));
             }
 
@@ -259,11 +332,23 @@ public abstract class PubMaticAdRequest extends AdRequest {
                         CommonConstants.URL_ENCODING));
             }
 
-            putPostData(PubMaticConstants.AD_POSITION_PARAM, String.valueOf(PUBDeviceInformation.mAdPosition));
-            putPostData(PubMaticConstants.IN_IFRAME_PARAM, String.valueOf(PUBDeviceInformation.mInIframe));
-            putPostData(PubMaticConstants.AD_VISIBILITY_PARAM, String.valueOf(PUBDeviceInformation.mAdVisibility));
-            putPostData(PubMaticConstants.APP_CATEGORY_PARAM, mAppCategory);
-            putPostData(PubMaticConstants.COPPA_PARAM, String.valueOf(mCoppa ? 1 : 0));
+            if (pubDeviceInformation.mApplicationName != null) {
+                putPostData(PubMaticConstants.APP_NAME_PARAM, URLEncoder.encode(
+                        pubDeviceInformation.mApplicationName,
+                        CommonConstants.URL_ENCODING));
+            }
+
+            if (pubDeviceInformation.mPackageName != null) {
+                putPostData(PubMaticConstants.APP_BUNDLE_PARAM, URLEncoder.encode(
+                        pubDeviceInformation.mPackageName,
+                        CommonConstants.URL_ENCODING));
+            }
+
+            if (pubDeviceInformation.mApplicationVersion != null) {
+                putPostData(PubMaticConstants.APP_VERSION_PARAM, URLEncoder.encode(
+                        pubDeviceInformation.mApplicationVersion,
+                        CommonConstants.URL_ENCODING));
+            }
 
             if (mAWT != null) {
                 switch (mAWT) {
@@ -278,35 +363,6 @@ public abstract class PubMaticAdRequest extends AdRequest {
                         break;
                 }
             }
-
-            // Mobile Application Profile-specific Parameters
-            if (pubDeviceInformation.mApplicationName != null) {
-                putPostData(PubMaticConstants.APP_NAME_PARAM, URLEncoder.encode(
-                        pubDeviceInformation.mApplicationName,
-                        CommonConstants.URL_ENCODING));
-            }
-
-            putPostData(PubMaticConstants.STORE_URL_PARAM, mStoreURL);
-            putPostData(PubMaticConstants.APP_ID_PARAM, mAid);
-
-            if (pubDeviceInformation.mPackageName != null) {
-                putPostData(PubMaticConstants.APP_BUNDLE_PARAM, URLEncoder.encode(
-                        pubDeviceInformation.mPackageName,
-                        CommonConstants.URL_ENCODING));
-            }
-
-            if (pubDeviceInformation.mApplicationVersion != null) {
-                putPostData(PubMaticConstants.APP_VERSION_PARAM, URLEncoder.encode(
-                        pubDeviceInformation.mApplicationVersion,
-                        CommonConstants.URL_ENCODING));
-            }
-
-            putPostData(PubMaticConstants.NETWORK_TYPE_PARAM, PubMaticUtils.getNetworkType(mContext));
-            putPostData(PubMaticConstants.PAID_PARAM, String.valueOf(mPaid ? 1 : 0));
-            putPostData(PubMaticConstants.APP_DOMAIN_PARAM, mAppDomain);
-
-            // Mobile Application-specific Parameters
-            boolean optedOut = AdvertisingIdClient.getLimitedAdTrackingState(mContext, false);
 
             if(isDoNotTrack() || optedOut)
                 putPostData(PubMaticConstants.DNT_PARAM, String.valueOf(1));
@@ -362,56 +418,6 @@ public abstract class PubMaticAdRequest extends AdRequest {
 
                         putPostData(PubMaticConstants.UDID_TYPE_PARAM, PubMaticConstants.ANDROID_ID);
                     }
-                }
-            }
-
-            putPostData(PubMaticConstants.AD_REFRESH_RATE_PARAM, String.valueOf(mAdRefreshRate));
-
-            // Setting js
-            putPostData(PubMaticConstants.JS_PARAM, String.valueOf(PUBDeviceInformation.mJavaScriptSupport));
-
-            if (!TextUtils.isEmpty(mAdOrientation))
-                putPostData(PubMaticConstants.AD_ORIENTATION_PARAM, mAdOrientation);
-
-            putPostData(PubMaticConstants.DEVICE_ORIENTATION_PARAM, String.valueOf(getDeviceOrientation(mContext)));
-
-            if (!TextUtils.isEmpty(mState)) {
-                putPostData(PubMaticConstants.USER_STATE, URLEncoder.encode(
-                        mState,
-                        CommonConstants.URL_ENCODING));
-            }
-
-            if (!TextUtils.isEmpty(mCity)) {
-                putPostData(PubMaticConstants.USER_CITY, URLEncoder.encode(
-                        mCity,
-                        CommonConstants.URL_ENCODING));
-            }
-
-            if (!TextUtils.isEmpty(mZip)) {
-                putPostData(PubMaticConstants.ZIP_PARAM, URLEncoder.encode(
-                        mZip, CommonConstants.URL_ENCODING));
-            }
-
-            if (!TextUtils.isEmpty(mYearOfBirth)) {
-                putPostData(PubMaticConstants.YOB_PARAM, URLEncoder.encode(
-                        mYearOfBirth,
-                        CommonConstants.URL_ENCODING));
-            }
-
-            if(getGender() != null) {
-                switch (getGender()) {
-                    case MALE:
-                        putPostData(PubMaticConstants.GENDER_PARAM, "M");
-                        break;
-                    case FEMALE:
-                        putPostData(PubMaticConstants.GENDER_PARAM, "F");
-                        break;
-                    case OTHER:
-                        putPostData(PubMaticConstants.GENDER_PARAM, "O");
-                        break;
-                    default:
-                        putPostData(PubMaticConstants.GENDER_PARAM, "O");
-                        break;
                 }
             }
 
@@ -501,22 +507,6 @@ public abstract class PubMaticAdRequest extends AdRequest {
                     }
                 }
             }
-
-            //Set the location
-            if (mLocation != null) {
-                putPostData(PubMaticConstants.LOC_PARAM, mLocation.getLatitude() + ","
-                        + mLocation.getLongitude());
-
-                String provider = mLocation.getProvider();
-
-                if(provider.equalsIgnoreCase("network") || provider.equalsIgnoreCase("wifi") || provider.equalsIgnoreCase("gps"))
-                    putPostData(PubMaticConstants.LOC_SOURCE_PARAM, PubMaticConstants.LOCATION_SOURCE_GPS_LOCATION_SERVICES);
-                else if(provider.equalsIgnoreCase("user"))
-                    putPostData(PubMaticConstants.LOC_SOURCE_PARAM, PubMaticConstants.LOCATION_SOURCE_USER_PROVIDED);
-                else
-                    putPostData(PubMaticConstants.LOC_SOURCE_PARAM, PubMaticConstants.LOCATION_SOURCE_UNKNOWN);
-            }
-
 
         } catch (Exception e) {
 
