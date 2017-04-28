@@ -465,10 +465,19 @@ public class NativeAdFragment extends DialogFragment {
     private class AdRequestListener implements PMNativeAd.NativeRequestListener {
 
         @Override
-        public void onNativeAdFailed(PMNativeAd ad, Exception ex) {
+        public void onNativeAdFailed(PMNativeAd ad, final Exception ex) {
+
             if(ex!=null) {
                 ex.printStackTrace();
             }
+
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(getActivity(), ex.getMessage(), Toast.LENGTH_LONG).show();
+                    dismiss();
+                }
+            });
         }
 
         @Override

@@ -469,7 +469,6 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-
                 Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
                 dismiss();
             }

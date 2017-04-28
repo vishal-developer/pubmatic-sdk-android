@@ -394,9 +394,14 @@ public class InterstitialAdFragment extends DialogFragment {
 
         mInterstitialAdView.setRequestListener(new PMBannerAdView.BannerAdViewDelegate.RequestListener() {
             @Override
-            public void onFailedToReceiveAd(PMBannerAdView adView, int errorCode, String msg) {
-                dismiss();
-                Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
+            public void onFailedToReceiveAd(PMBannerAdView adView, int errorCode, final String msg) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
+                        dismiss();
+                    }
+                });
             }
 
             @Override
