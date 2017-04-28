@@ -29,10 +29,6 @@ import com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/**
- *
- */
-
 public class InterstitialAdFragment extends DialogFragment {
 
     private AlertDialog.Builder mBuilder;

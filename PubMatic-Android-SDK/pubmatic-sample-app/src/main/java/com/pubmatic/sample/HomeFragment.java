@@ -483,17 +483,20 @@ public class HomeFragment extends Fragment {
 
     private void getMoceanConfigurationParameters()
     {
-        EditText widthEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_CONFIGURATION + ":" + PMConstants.SETTINGS_CONFIGURATION_WIDTH);
-        String width = widthEt.getText().toString();
-        mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).put(PMConstants.SETTINGS_CONFIGURATION_WIDTH, width);
+        if(mAdType == ConfigurationManager.AD_TYPE.BANNER)
+        {
+            EditText widthEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_CONFIGURATION + ":" + PMConstants.SETTINGS_CONFIGURATION_WIDTH);
+            String width = widthEt.getText().toString();
+            mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).put(PMConstants.SETTINGS_CONFIGURATION_WIDTH, width);
 
-        EditText heightEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_CONFIGURATION + ":" + PMConstants.SETTINGS_CONFIGURATION_HEIGHT);
-        String height = heightEt.getText().toString();
-        mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).put(PMConstants.SETTINGS_CONFIGURATION_HEIGHT, height);
+            EditText heightEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_CONFIGURATION + ":" + PMConstants.SETTINGS_CONFIGURATION_HEIGHT);
+            String height = heightEt.getText().toString();
+            mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).put(PMConstants.SETTINGS_CONFIGURATION_HEIGHT, height);
 
-        EditText adRefreshRateEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_CONFIGURATION + ":" + PMConstants.SETTINGS_CONFIGURATION_AD_REFRESH_RATE);
-        String adRefreshRate = adRefreshRateEt.getText().toString();
-        mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).put(PMConstants.SETTINGS_CONFIGURATION_AD_REFRESH_RATE, adRefreshRate);
+            EditText adRefreshRateEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_CONFIGURATION + ":" + PMConstants.SETTINGS_CONFIGURATION_AD_REFRESH_RATE);
+            String adRefreshRate = adRefreshRateEt.getText().toString();
+            mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).put(PMConstants.SETTINGS_CONFIGURATION_AD_REFRESH_RATE, adRefreshRate);
+        }
 
         EditText testEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_CONFIGURATION + ":" + PMConstants.SETTINGS_CONFIGURATION_TEST);
         String test = testEt.getText().toString();
@@ -565,21 +568,23 @@ public class HomeFragment extends Fragment {
 
     private void getPubMaticConfigurationParameters()
     {
-        EditText widthEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_CONFIGURATION + ":" + PMConstants.SETTINGS_CONFIGURATION_WIDTH);
-        String width = widthEt.getText().toString();
-        mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).put(PMConstants.SETTINGS_CONFIGURATION_WIDTH, width);
+        if(mAdType == ConfigurationManager.AD_TYPE.BANNER) {
+            EditText widthEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_CONFIGURATION + ":" + PMConstants.SETTINGS_CONFIGURATION_WIDTH);
+            String width = widthEt.getText().toString();
+            mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).put(PMConstants.SETTINGS_CONFIGURATION_WIDTH, width);
 
-        EditText heightEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_CONFIGURATION + ":" + PMConstants.SETTINGS_CONFIGURATION_HEIGHT);
-        String height = heightEt.getText().toString();
-        mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).put(PMConstants.SETTINGS_CONFIGURATION_HEIGHT, height);
+            EditText heightEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_CONFIGURATION + ":" + PMConstants.SETTINGS_CONFIGURATION_HEIGHT);
+            String height = heightEt.getText().toString();
+            mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).put(PMConstants.SETTINGS_CONFIGURATION_HEIGHT, height);
+
+            EditText adRefreshRateEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_CONFIGURATION + ":" + PMConstants.SETTINGS_CONFIGURATION_AD_REFRESH_RATE);
+            String adRefreshRate = adRefreshRateEt.getText().toString();
+            mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).put(PMConstants.SETTINGS_CONFIGURATION_AD_REFRESH_RATE, adRefreshRate);
+        }
 
         EditText androidAidEnabledEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_CONFIGURATION + ":" + PMConstants.SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED);
         String androidAidEnabled = androidAidEnabledEt.getText().toString();
         mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).put(PMConstants.SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED, androidAidEnabled);
-
-        EditText adRefreshRateEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_CONFIGURATION + ":" + PMConstants.SETTINGS_CONFIGURATION_AD_REFRESH_RATE);
-        String adRefreshRate = adRefreshRateEt.getText().toString();
-        mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).put(PMConstants.SETTINGS_CONFIGURATION_AD_REFRESH_RATE, adRefreshRate);
     }
 
     private void getPubmaticTargettingParameters()

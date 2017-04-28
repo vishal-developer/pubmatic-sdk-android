@@ -118,8 +118,7 @@
         "AdId": "1059651"
       },
       "Configuration": {
-        "Android Aid Enabled": "true",
-        "Ad Refresh Rate (Sec)": ""
+        "Android Aid Enabled": "true"
       },
       "Targetting": {
         "Latitude": "",
