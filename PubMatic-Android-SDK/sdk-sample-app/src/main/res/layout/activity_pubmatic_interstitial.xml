@@ -12,13 +12,12 @@
     tools:context="com.pubmatic.sampleapp.interstitial.PubMaticInterstitialActivity">
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/load_ad"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="101dp"
-        android:onClick="loadInterstitialButtonClicked"
         android:text="@string/load_interstitial_ad"/>
 
 </RelativeLayout>

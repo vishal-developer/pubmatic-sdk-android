@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -34,12 +35,23 @@ import java.util.Map;
 public class PubMaticInterstitialActivity extends Activity {
 
     PMInterstitialAdView interstitialAdView;
+    Button loadAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pubmatic_interstitial);
+
+        loadAd = (Button) findViewById(R.id.load_ad);
+        loadAd.setOnClickListener(onLoadAd);
     }
+
+    View.OnClickListener onLoadAd = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            loadInterstitialButtonClicked(v);
+        }
+    };
 
     public void loadInterstitialButtonClicked(View view) {
         PMLogger.setLogLevel(PMLogger.LogLevel.Debug);
@@ -83,7 +95,7 @@ public class PubMaticInterstitialActivity extends Activity {
         });
 
         PubMaticBannerAdRequest adRequest = PubMaticBannerAdRequest.createPubMaticBannerAdRequest(
-                this, "31400", "32504", "884567");
+                this, "31400", "32504", "1059651");
         interstitialAdView.execute(adRequest);
     }
 }
