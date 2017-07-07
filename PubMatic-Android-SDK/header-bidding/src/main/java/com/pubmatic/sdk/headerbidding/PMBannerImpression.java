@@ -63,7 +63,7 @@ public class PMBannerImpression extends PMImpression {
     protected boolean validate()
     {
         if(super.validate()) {
-            if (adSizes.size() == 0)
+            if (adSizes==null || adSizes.size() == 0)
                 return false;
         }
         else
