@@ -48,6 +48,7 @@ import android.location.Location;
 import android.location.LocationProvider;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.MediaStore;
@@ -107,6 +108,8 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
+import static android.R.attr.description;
 
 public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
@@ -1981,7 +1984,8 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             pictureSupported = featureSupportHandler.shouldSupportStorePicture(this);
         }
 
-        if (smsSupported == null) {
+        //Commenting it as SMS, CALL, CALENDAR permissions are not required for MRAID Ads
+        /*if (smsSupported == null) {
             smsSupported = getContext().checkCallingOrSelfPermission(android.Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED;
         }
         if (phoneSupported == null) {
@@ -1990,16 +1994,21 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         if (calendarSupported == null) {
             calendarSupported = ((getContext().checkCallingOrSelfPermission(android.Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED) && (getContext()
                     .checkCallingOrSelfPermission(android.Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED));
-        }
+        }*/
         if (pictureSupported == null) {
             pictureSupported = getContext().checkCallingOrSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
         }
 
-        bridge.setSupportedFeature(Feature.SMS, smsSupported);
-        bridge.setSupportedFeature(Feature.Tel, phoneSupported);
-        bridge.setSupportedFeature(Feature.Calendar, calendarSupported);
-        bridge.setSupportedFeature(Feature.StorePicture, pictureSupported);
-        bridge.setSupportedFeature(Feature.InlineVideo, false);
+        if(smsSupported!=null)
+            bridge.setSupportedFeature(Feature.SMS, smsSupported);
+        if(phoneSupported!=null)
+            bridge.setSupportedFeature(Feature.Tel, phoneSupported);
+        if(calendarSupported!=null)
+            bridge.setSupportedFeature(Feature.Calendar, calendarSupported);
+        if(pictureSupported!=null)
+            bridge.setSupportedFeature(Feature.StorePicture, pictureSupported);
+        if(smsSupported!=null)
+            bridge.setSupportedFeature(Feature.InlineVideo, false);
     }
 
     private void updateMRAIDLayoutForState(Bridge bridge, State state) {
@@ -2911,33 +2920,42 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                         @Override
                         public void imageReceived(ImageRequest request,
                                                   Object imageObject) {
-                            // TODO: android.permission.WRITE_EXTERNAL_STORAGE
                             final Bitmap bitmap = (Bitmap) imageObject;
 
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    String errorMessage = "Error saving picture to device.";
+                                    String errorMessage = "Error saving picture to device through MRAID ad.";
 
                                     try {
-                                        String insertedUrl = MediaStore.Images.Media.insertImage(
-                                                getContext().getContentResolver(),
-                                                bitmap,
-                                                "AdImage",
-                                                "Image created by rich media ad.");
-                                        if (TextUtils.isEmpty(insertedUrl)) {
-                                            bridge.sendErrorMessage(errorMessage,
-                                                    Consts.CommandStorePicture);
+                                        boolean pictureSupported = getContext().checkCallingOrSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+                                        if (pictureSupported == true) {
+                                            // It requires android.permission.WRITE_EXTERNAL_STORAGE
+                                            String insertedUrl = MediaStore.Images.Media.insertImage(
+                                                    getContext().getContentResolver(),
+                                                    bitmap,
+                                                    "AdImage",
+                                                    "Image created by rich media ad.");
+                                            if (TextUtils.isEmpty(insertedUrl)) {
+                                                bridge.sendErrorMessage(errorMessage,
+                                                        Consts.CommandStorePicture);
 
-                                            PMLogger.logEvent(errorMessage, LogLevel.Error);
-                                            return;
+                                                PMLogger.logEvent(errorMessage, LogLevel.Error);
+                                                return;
+                                            }
+
+                                            MediaScannerConnection.scanFile(getContext(),
+                                                    new String[]{
+                                                            insertedUrl},
+                                                    null,
+                                                    null);
+
+
+                                        } else {
+                                            PMLogger.logEvent(errorMessage + " WRITE_EXTERNAL_STORAGE permission is not granted. " +
+                                                            "Please grant this permission to save pictures in storage. ",
+                                                    LogLevel.Error);
                                         }
-
-                                        MediaScannerConnection.scanFile(getContext(),
-                                                new String[]{
-                                                        insertedUrl},
-                                                null,
-                                                null);
                                     } catch (Exception ex) {
                                         bridge.sendErrorMessage(errorMessage,
                                                 Consts.CommandStorePicture);
