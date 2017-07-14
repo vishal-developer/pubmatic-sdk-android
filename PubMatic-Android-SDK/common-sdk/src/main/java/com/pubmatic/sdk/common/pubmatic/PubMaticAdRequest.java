@@ -37,7 +37,6 @@ import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.AdvertisingIdClient;
 import com.pubmatic.sdk.common.CommonConstants;
 
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -228,39 +227,27 @@ public abstract class PubMaticAdRequest extends AdRequest {
             if(!isDoNotTrack() && !optedOut)
             {
                 if (pubDeviceInformation.mCarrierName != null) {
-                    putPostData(PubMaticConstants.CARRIER_PARAM, URLEncoder.encode(
-                            pubDeviceInformation.mCarrierName,
-                            CommonConstants.URL_ENCODING));
+                    putPostData(PubMaticConstants.CARRIER_PARAM, pubDeviceInformation.mCarrierName);
                 }
 
                 if (pubDeviceInformation.mDeviceMake != null) {
-                    putPostData(PubMaticConstants.MAKE_PARAM, URLEncoder.encode(
-                            pubDeviceInformation.mDeviceMake,
-                            CommonConstants.URL_ENCODING));
+                    putPostData(PubMaticConstants.MAKE_PARAM, pubDeviceInformation.mDeviceMake);
                 }
 
                 if (pubDeviceInformation.mDeviceModel != null) {
-                    putPostData(PubMaticConstants.MODEL_PARAM, URLEncoder.encode(
-                            pubDeviceInformation.mDeviceModel,
-                            CommonConstants.URL_ENCODING));
+                    putPostData(PubMaticConstants.MODEL_PARAM, pubDeviceInformation.mDeviceModel);
                 }
 
                 if (pubDeviceInformation.mDeviceOSName != null) {
-                    putPostData(PubMaticConstants.OS_PARAM, URLEncoder.encode(
-                            pubDeviceInformation.mDeviceOSName,
-                            CommonConstants.URL_ENCODING));
+                    putPostData(PubMaticConstants.OS_PARAM, pubDeviceInformation.mDeviceOSName);
                 }
 
                 if (pubDeviceInformation.mDeviceOSVersion != null) {
-                    putPostData(PubMaticConstants.OSV_PARAM, URLEncoder.encode(
-                            pubDeviceInformation.mDeviceOSVersion,
-                            CommonConstants.URL_ENCODING));
+                    putPostData(PubMaticConstants.OSV_PARAM, pubDeviceInformation.mDeviceOSVersion);
                 }
 
                 if (!TextUtils.isEmpty(mYearOfBirth)) {
-                    putPostData(PubMaticConstants.YOB_PARAM, URLEncoder.encode(
-                            mYearOfBirth,
-                            CommonConstants.URL_ENCODING));
+                    putPostData(PubMaticConstants.YOB_PARAM, mYearOfBirth);
                 }
 
                 if(getGender() != null) {
@@ -302,52 +289,37 @@ public abstract class PubMaticAdRequest extends AdRequest {
                     putPostData(PubMaticConstants.AD_ORIENTATION_PARAM, mAdOrientation);
 
                 if (!TextUtils.isEmpty(mState)) {
-                    putPostData(PubMaticConstants.USER_STATE, URLEncoder.encode(
-                            mState,
-                            CommonConstants.URL_ENCODING));
+                    putPostData(PubMaticConstants.USER_STATE, mState);
                 }
 
                 if (!TextUtils.isEmpty(mCity)) {
-                    putPostData(PubMaticConstants.USER_CITY, URLEncoder.encode(
-                            mCity,
-                            CommonConstants.URL_ENCODING));
+                    putPostData(PubMaticConstants.USER_CITY, mCity);
                 }
 
                 if (!TextUtils.isEmpty(mZip)) {
-                    putPostData(PubMaticConstants.ZIP_PARAM, URLEncoder.encode(
-                            mZip, CommonConstants.URL_ENCODING));
+                    putPostData(PubMaticConstants.ZIP_PARAM, mZip);
                 }
             }
             catch(Exception exception) {}
 
             if (pubDeviceInformation.mDeviceCountryCode != null) {
-                putPostData(PubMaticConstants.COUNTRY_PARAM, URLEncoder.encode(
-                        pubDeviceInformation.mDeviceCountryCode,
-                        CommonConstants.URL_ENCODING));
+                putPostData(PubMaticConstants.COUNTRY_PARAM, pubDeviceInformation.mDeviceCountryCode);
             }
 
             if (pubDeviceInformation.mPageURL != null) {
-                putPostData(PubMaticConstants.PAGE_URL_PARAM, URLEncoder.encode(
-                        pubDeviceInformation.mPageURL,
-                        CommonConstants.URL_ENCODING));
+                putPostData(PubMaticConstants.PAGE_URL_PARAM, pubDeviceInformation.mPageURL);
             }
 
             if (pubDeviceInformation.mApplicationName != null) {
-                putPostData(PubMaticConstants.APP_NAME_PARAM, URLEncoder.encode(
-                        pubDeviceInformation.mApplicationName,
-                        CommonConstants.URL_ENCODING));
+                putPostData(PubMaticConstants.APP_NAME_PARAM, pubDeviceInformation.mApplicationName);
             }
 
             if (pubDeviceInformation.mPackageName != null) {
-                putPostData(PubMaticConstants.APP_BUNDLE_PARAM, URLEncoder.encode(
-                        pubDeviceInformation.mPackageName,
-                        CommonConstants.URL_ENCODING));
+                putPostData(PubMaticConstants.APP_BUNDLE_PARAM, pubDeviceInformation.mPackageName);
             }
 
             if (pubDeviceInformation.mApplicationVersion != null) {
-                putPostData(PubMaticConstants.APP_VERSION_PARAM, URLEncoder.encode(
-                        pubDeviceInformation.mApplicationVersion,
-                        CommonConstants.URL_ENCODING));
+                putPostData(PubMaticConstants.APP_VERSION_PARAM, pubDeviceInformation.mApplicationVersion);
             }
 
             if (mAWT != null) {
@@ -443,35 +415,25 @@ public abstract class PubMaticAdRequest extends AdRequest {
             }
 
             if (!TextUtils.isEmpty(mIncome)) {
-                putPostData(PubMaticConstants.USER_INCOME, URLEncoder.encode(
-                        mIncome,
-                        CommonConstants.URL_ENCODING));
+                putPostData(PubMaticConstants.USER_INCOME, mIncome);
             }
 
             // Setting the iab category
             if (!TextUtils.isEmpty(mIABCategory)) {
-                putPostData(PubMaticConstants.IAB_CATEGORY, URLEncoder.encode(
-                        mIABCategory,
-                        CommonConstants.URL_ENCODING));
+                putPostData(PubMaticConstants.IAB_CATEGORY, mIABCategory);
             }
 
             // Setting the DMA
             if (!TextUtils.isEmpty(mDMA)) {
-                putPostData(PubMaticConstants.DMA, URLEncoder.encode(
-                        mDMA,
-                        CommonConstants.URL_ENCODING));
+                putPostData(PubMaticConstants.DMA, mDMA);
             }
 
             if (mKeywordsList != null) {
-                putPostData(PubMaticConstants.KEYWORDS_PARAM, URLEncoder.encode(
-                        getKeywordString(),
-                        CommonConstants.URL_ENCODING));
+                putPostData(PubMaticConstants.KEYWORDS_PARAM, getKeywordString());
             }
 
             // Setting sdk_ver
-            putPostData(PubMaticConstants.SDK_VER_PARAM, URLEncoder.encode(
-                    PUBDeviceInformation.msdkVersion,
-                    CommonConstants.URL_ENCODING));
+            putPostData(PubMaticConstants.SDK_VER_PARAM, PUBDeviceInformation.msdkVersion);
 
             // Send KAdNetwork id if any
             if(mKAdNetworkId != null && !mKAdNetworkId.equals(""))

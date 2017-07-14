@@ -38,6 +38,9 @@ import java.util.Set;
 import android.content.Context;
 import android.location.Location;
 import android.text.TextUtils;
+import android.util.Log;
+
+import static android.content.ContentValues.TAG;
 
 public abstract class AdRequest {
 
@@ -282,8 +285,19 @@ public abstract class AdRequest {
     }
 
     protected void addUrlParam(String key, String value) {
-        if(value != null && !value.equals(""))
-            mUrlParams.put(key, value);
+        if(value != null && !value.equals("")) {
+
+			String encodedValue = null;
+			try{
+				encodedValue = URLEncoder.encode(
+						value,
+						CommonConstants.URL_ENCODING);
+			} catch (UnsupportedEncodingException e) {
+				Log.e(TAG, "Unable to encode ["+key+"]:[+"+value+"] in ad request URL");
+			}
+			if(encodedValue!=null)
+				mUrlParams.put(key, encodedValue);
+		}
     }
 
     public String getRequestUrl() {
@@ -311,24 +325,28 @@ public abstract class AdRequest {
 
 	public void putPostData(String key, String value) {
 		if(!TextUtils.isEmpty(key) && !TextUtils.isEmpty(value)) {
-			try {
-				//append & before 1st parameter else append &
-				if (mPostData == null) {
-					mPostData = new StringBuffer();
 
-				} else
-					mPostData.append(CommonConstants.AMPERSAND);
+			//append & before 1st parameter else append &
+			if (mPostData == null) {
+				mPostData = new StringBuffer();
 
-				//append key=value
-				mPostData.append(URLEncoder.encode(key,
-						CommonConstants.ENCODING_UTF_8));
-				mPostData.append(CommonConstants.EQUAL);
-				mPostData.append(URLEncoder.encode(value,
-						CommonConstants.ENCODING_UTF_8));
+			} else
+				mPostData.append(CommonConstants.AMPERSAND);
 
+			String encodedValue = null;
+			try{
+				encodedValue = URLEncoder.encode(
+						value,
+						CommonConstants.URL_ENCODING);
 			} catch (UnsupportedEncodingException e) {
+				Log.e(TAG, "Unable to encode ["+key+"]:[+"+value+"] in ad request");
 			}
-
+			//append key=value
+			if(encodedValue!=null) {
+				mPostData.append(key);
+				mPostData.append(CommonConstants.EQUAL);
+				mPostData.append(encodedValue);
+			}
 		}
 	}
 

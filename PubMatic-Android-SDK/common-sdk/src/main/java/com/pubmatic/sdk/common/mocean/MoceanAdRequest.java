@@ -26,13 +26,11 @@
  */
 package com.pubmatic.sdk.common.mocean;
 
-import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.provider.Settings;
 import android.text.TextUtils;
@@ -151,15 +149,12 @@ public abstract class MoceanAdRequest extends AdRequest {
 
 			// Setting the income
 			if (!TextUtils.isEmpty(mAge)) {
-				putPostData(CommonConstants.REQUESTPARAM_AGE,
-						URLEncoder.encode(mAge, CommonConstants.URL_ENCODING));
+				putPostData(CommonConstants.REQUESTPARAM_AGE, mAge);
 			}
 
 			// Setting zip code of user
 			if (!TextUtils.isEmpty(mBirthDay)) {
-				putPostData(CommonConstants.REQUESTPARAM_BIRTHDAY,
-						URLEncoder.encode(mBirthDay,
-								CommonConstants.URL_ENCODING));
+				putPostData(CommonConstants.REQUESTPARAM_BIRTHDAY, mBirthDay);
 			}
 
 			// Setting over_18 value
@@ -182,34 +177,25 @@ public abstract class MoceanAdRequest extends AdRequest {
 
 			// Setting the area
 			if (!TextUtils.isEmpty(mAreaCode)) {
-				putPostData(CommonConstants.REQUESTPARAM_AREA,
-						URLEncoder.encode(mAreaCode,
-								CommonConstants.URL_ENCODING));
+				putPostData(CommonConstants.REQUESTPARAM_AREA, mAreaCode);
 			}
 			if (!TextUtils.isEmpty(mCity)) {
-				putPostData(CommonConstants.REQUESTPARAM_CITY,
-						URLEncoder.encode(mCity, CommonConstants.URL_ENCODING));
+				putPostData(CommonConstants.REQUESTPARAM_CITY, mCity);
 			}
 
 			if (!TextUtils.isEmpty(mDMA)) {
-				putPostData(CommonConstants.REQUESTPARAM_DMA,
-						URLEncoder.encode(mDMA, CommonConstants.URL_ENCODING));
+				putPostData(CommonConstants.REQUESTPARAM_DMA, mDMA);
 			}
 			if (!TextUtils.isEmpty(mZip)) {
-				putPostData(CommonConstants.REQUESTPARAM_ZIP,
-						URLEncoder.encode(mZip, CommonConstants.URL_ENCODING));
+				putPostData(CommonConstants.REQUESTPARAM_ZIP,mZip);
 			}
 
 			if (!TextUtils.isEmpty(mIsoRegion)) {
-				putPostData(CommonConstants.REQUESTPARAM_ISO_REGION,
-						URLEncoder.encode(mIsoRegion,
-								CommonConstants.URL_ENCODING));
+				putPostData(CommonConstants.REQUESTPARAM_ISO_REGION, mIsoRegion);
 			}
 
             if (!TextUtils.isEmpty(mLanguage)) {
-                putPostData(CommonConstants.REQUESTPARAM_LANGUAGE,
-                        URLEncoder.encode(mLanguage,
-                                CommonConstants.URL_ENCODING));
+                putPostData(CommonConstants.REQUESTPARAM_LANGUAGE, mLanguage);
             }
 
 			// Send Advertisement ID
@@ -466,7 +452,6 @@ public abstract class MoceanAdRequest extends AdRequest {
 
 	}
 
-	@SuppressLint("DefaultLocale")
 	private static String sha1(String string) {
 		StringBuilder stringBuilder = new StringBuilder();
 

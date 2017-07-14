@@ -568,7 +568,13 @@ public class PMBannerPrefetchRequest extends PubMaticBannerAdRequest {
             if(getAppCategory() != null && !getAppCategory().equals(""))
                 asJsonObject.put("cat", getAppCategory());
 
-            asJsonObject.put("api", URLEncoder.encode("3::4::5"));
+            try {
+                asJsonObject.put("api", URLEncoder.encode(
+                        "3::4::5",
+                        CommonConstants.URL_ENCODING));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
 
             String networkType = PubMaticUtils.getNetworkType(mContext);
             asJsonObject.put("nettype", networkType);
