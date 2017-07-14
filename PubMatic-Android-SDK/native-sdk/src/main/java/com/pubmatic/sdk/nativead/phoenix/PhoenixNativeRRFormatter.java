@@ -47,7 +47,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
