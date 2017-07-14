@@ -39,6 +39,7 @@ public class PubMaticUtils {
 
     public static String getNetworkType(Context context){
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        //It requires ACCESS_NETWORK_STATE permission
         NetworkInfo networkInfo= cm.getActiveNetworkInfo();
 
         if(networkInfo != null)
