@@ -42,6 +42,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.http.SslError;
+import android.os.Build;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -50,6 +51,8 @@ import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.webkit.JavascriptInterface;
 import android.webkit.SslErrorHandler;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -74,6 +77,7 @@ public class BrowserDialog extends Dialog {
     private ProgressBar progressBar;
     private RelativeLayout.LayoutParams webViewLayoutParams;
 
+    @SuppressWarnings("deprecation")
     @SuppressLint("ClickableViewAccessibility")
     public BrowserDialog(Context context, String url, Handler handler) {
         super(context, android.R.style.Theme_Black_NoTitleBar);
@@ -111,7 +115,11 @@ public class BrowserDialog extends Dialog {
         imageButton.setScaleType(imageScaleType);
         imageButton.setImageDrawable(new BitmapDrawable(resources, BrowserDialog.class
                 .getResourceAsStream("/ic_action_cancel.png")));
-        imageButton.setBackgroundColor(getContext().getResources().getColor(android.R.color.background_dark));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            imageButton.setBackgroundColor(getContext().getResources().getColor(android.R.color.background_dark, getContext().getTheme()));
+        } else {
+            imageButton.setBackgroundColor(getContext().getResources().getColor(android.R.color.background_dark));
+        }
         imageButton.setOnTouchListener(mButtonTouchListener);
         imageButton.setOnClickListener(new Button.OnClickListener() {
             @Override
@@ -125,7 +133,11 @@ public class BrowserDialog extends Dialog {
         backButton = new ImageView(getContext());
         backButton.setImageDrawable(new BitmapDrawable(resources, BrowserDialog.class
                 .getResourceAsStream("/ic_action_back.png")));
-        backButton.setBackgroundColor(getContext().getResources().getColor(android.R.color.background_dark));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            backButton.setBackgroundColor(getContext().getResources().getColor(android.R.color.background_dark, getContext().getTheme()));
+        } else {
+            backButton.setBackgroundColor(getContext().getResources().getColor(android.R.color.background_dark));
+        }
         backButton.setScaleType(imageScaleType);
         backButton.setEnabled(true);
         imageButton.setOnTouchListener(mButtonTouchListener);
@@ -149,7 +161,11 @@ public class BrowserDialog extends Dialog {
         forwardButton = new ImageView(getContext());
         forwardButton.setImageDrawable(new BitmapDrawable(resources, BrowserDialog.class
                 .getResourceAsStream("/ic_action_forward.png")));
-        forwardButton.setBackgroundColor(getContext().getResources().getColor(android.R.color.background_dark));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            forwardButton.setBackgroundColor(getContext().getResources().getColor(android.R.color.background_dark, getContext().getTheme()));
+        } else {
+            forwardButton.setBackgroundColor(getContext().getResources().getColor(android.R.color.background_dark));
+        }
         forwardButton.setScaleType(imageScaleType);
         forwardButton.setEnabled(false);
         imageButton.setOnTouchListener(mButtonTouchListener);
@@ -165,7 +181,11 @@ public class BrowserDialog extends Dialog {
         imageButton.setScaleType(imageScaleType);
         imageButton.setImageDrawable(new BitmapDrawable(resources, BrowserDialog.class
                 .getResourceAsStream("/ic_action_refresh.png")));
-        imageButton.setBackgroundColor(getContext().getResources().getColor(android.R.color.background_dark));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            imageButton.setBackgroundColor(getContext().getResources().getColor(android.R.color.background_dark, getContext().getTheme()));
+        } else {
+            imageButton.setBackgroundColor(getContext().getResources().getColor(android.R.color.background_dark));
+        }
         imageButton.setOnTouchListener(mButtonTouchListener);
         imageButton.setOnClickListener(new Button.OnClickListener() {
             @Override
@@ -179,7 +199,11 @@ public class BrowserDialog extends Dialog {
         imageButton.setScaleType(imageScaleType);
         imageButton.setImageDrawable(new BitmapDrawable(resources, BrowserDialog.class
                 .getResourceAsStream("/ic_action_web_site.png")));
-        imageButton.setBackgroundColor(getContext().getResources().getColor(android.R.color.background_dark));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            imageButton.setBackgroundColor(getContext().getResources().getColor(android.R.color.background_dark, getContext().getTheme()));
+        } else {
+            imageButton.setBackgroundColor(getContext().getResources().getColor(android.R.color.background_dark));
+        }
         imageButton.setOnTouchListener(mButtonTouchListener);
         imageButton.setOnClickListener(new Button.OnClickListener() {
             @Override
@@ -193,7 +217,7 @@ public class BrowserDialog extends Dialog {
         webViewLayoutParams = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0);
         webViewLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
         webViewLayoutParams.addRule(RelativeLayout.ABOVE, actionBar.getId());
-        webView = new android.webkit.WebView(getContext());
+        webView = new WebView(getContext());
         webView.setWebViewClient(new Client());
         webView.getSettings().setJavaScriptEnabled(true);
         // To set normal zooming level of webView.
@@ -215,18 +239,29 @@ public class BrowserDialog extends Dialog {
                 android.R.attr.progressBarStyle);
     }
 
+    @SuppressWarnings("deprecation")
     private View.OnTouchListener mButtonTouchListener = new View.OnTouchListener() {
 
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    v.setBackgroundColor(getContext().getResources().getColor(
-                            android.R.color.background_light));
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        v.setBackgroundColor(getContext().getResources().getColor(
+                                android.R.color.background_light, getContext().getTheme()));
+                    } else {
+                        v.setBackgroundColor(getContext().getResources().getColor(
+                                android.R.color.background_light));
+                    }
                     break;
                 default:
-                    v.setBackgroundColor(getContext().getResources().getColor(
-                            android.R.color.background_dark));
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        v.setBackgroundColor(getContext().getResources().getColor(
+                                android.R.color.background_dark, getContext().getTheme()));
+                    } else {
+                        v.setBackgroundColor(getContext().getResources().getColor(
+                                android.R.color.background_dark));
+                    }
                     break;
             }
             return false;
@@ -381,11 +416,19 @@ public class BrowserDialog extends Dialog {
             loadSslErrorPage(handler);
         }
 
+        @SuppressWarnings("deprecation")
         @Override
         public void onReceivedError(WebView view, int errorCode,
                                     String description, String failingUrl) {
             progressBar.setVisibility(View.GONE);
             super.onReceivedError(view, errorCode, description, failingUrl);
+        }
+
+        @Override
+        public void onReceivedError(android.webkit.WebView view, WebResourceRequest request,
+                                    WebResourceError error) {
+            progressBar.setVisibility(View.GONE);
+            super.onReceivedError(view, request, error);
         }
 
         @Override
@@ -399,9 +442,25 @@ public class BrowserDialog extends Dialog {
                 dismiss();
         }
 
-        @SuppressLint("DefaultLocale")
+        @SuppressWarnings("deprecation")
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            try {
+                URI uri = new URI(url);
+                String scheme = uri.getScheme().toLowerCase();
+                if (scheme.startsWith("http")) {
+                    return false;
+                }
+            } catch (URISyntaxException e) {
+                // If it can't be parsed, don't try it.
+            }
+
+            BrowserDialog.this.handler.browserDialogOpenUrl(BrowserDialog.this, url, false);
+            return true;
+        }
+
+        @Override
+        public boolean shouldOverrideUrlLoading(android.webkit.WebView view, WebResourceRequest request) {
             try {
                 URI uri = new URI(url);
                 String scheme = uri.getScheme().toLowerCase();

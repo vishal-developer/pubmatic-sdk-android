@@ -59,6 +59,8 @@ import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -2326,9 +2328,35 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         }
 
         @Override
+        public void webViewReceivedError(android.webkit.WebView view, WebResourceRequest request, WebResourceError error) {
+            resetRichMediaAd();
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && error!=null) {
+                PMLogger.logEvent("Error loading rich media ad content.  Error code:" + String.valueOf(error.getErrorCode()) + " Description:" + description,
+                        LogLevel.Error);
+
+                if (requestListener != null) {
+                    requestListener.onFailedToReceiveAd(PMBannerAdView.this, error.getErrorCode(), error.getDescription()!=null?error.getDescription().toString():null);
+                }
+            }
+
+
+            removeContent();
+        }
+
+        @Override
         public boolean webViewShouldOverrideUrlLoading(WebView view, String url) {
             openUrl(url, false);
             return true;
+        }
+
+        @Override
+        public boolean webViewShouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                openUrl(request.getUrl().toString(), false);
+                return true;
+            }
+            return false;
         }
     }
 
