@@ -71,7 +71,7 @@ public abstract class PubMaticAdRequest extends AdRequest {
     private String 		                    mNetworkType;
     private boolean			                mDoNotTrack;
     private boolean			                mCoppa;
-    private PubMaticAdRequest.AWT_OPTION    mAWT;
+    private PubMaticAdRequest.AWT_OPTION    mAWT = AWT_OPTION.DEFAULT;
     private RS                              mRs;
 
     //Common for Mocean & PubMatic Useser info params
