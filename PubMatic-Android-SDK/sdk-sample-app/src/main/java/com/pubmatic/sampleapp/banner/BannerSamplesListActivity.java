@@ -48,9 +48,6 @@ public class BannerSamplesListActivity extends ListActivity {
 
 		samplesListAdapter = new SamplesListAdapter();
 
-		samplesListAdapter.addItem(new SamplesItem("Mocean Banner", "XML rendering", MoceanStaticBannerActivity.class));
-		samplesListAdapter.addItem(new SamplesItem("Java rendering", MoceanRuntimeBannerActivity.class));
-
 		samplesListAdapter.addItem(new SamplesItem("PubMatic Banner", "XML rendering", PubStaticBannerActivity.class));
 		samplesListAdapter.addItem(new SamplesItem("Java rendering", PubRuntimeBannerActivity.class));
 

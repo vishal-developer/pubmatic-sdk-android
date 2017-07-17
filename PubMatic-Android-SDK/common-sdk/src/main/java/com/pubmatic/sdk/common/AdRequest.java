@@ -76,7 +76,7 @@ public abstract class AdRequest {
 	/**
 	 *
 	 */
-	protected CommonConstants.CHANNEL 	mChannel = CommonConstants.CHANNEL.MOCEAN;
+	protected CommonConstants.CHANNEL 	mChannel = CommonConstants.CHANNEL.PUBMATIC;
 
 	protected static String 			mUDID;
 

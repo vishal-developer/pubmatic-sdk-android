@@ -19,11 +19,9 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.pubmatic.sdk.banner.PMBannerAdView;
-import com.pubmatic.sdk.banner.mocean.MoceanBannerAdRequest;
 import com.pubmatic.sdk.banner.phoenix.PhoenixBannerAdRequest;
 import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest;
 import com.pubmatic.sdk.common.AdRequest;
-import com.pubmatic.sdk.common.mocean.MoceanAdRequest;
 import com.pubmatic.sdk.common.pubmatic.PUBAdSize;
 import com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest;
 
@@ -113,141 +111,7 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
         params.setLayoutDirection(RelativeLayout.CENTER_IN_PARENT);
         layout.addView(mBanner, params);
 
-        if(mPlatform == ConfigurationManager.PLATFORM.MOCEAN) {
-
-            String zone = mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).get(PMConstants.SETTINGS_AD_TAG_ZONE);
-
-            if(zone == null || zone.equals(""))
-            {
-                Toast.makeText(getActivity(), "Please enter a zone", Toast.LENGTH_LONG).show();
-                return;
-            }
-
-            adRequest = MoceanBannerAdRequest.createMoceanBannerAdRequest(getActivity(), zone);
-
-            try
-            {
-                String width = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_WIDTH);
-                widthInt = Integer.parseInt(width);
-                adRequest.setWidth(widthInt);
-
-                String height = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_HEIGHT);
-                heightInt = Integer.parseInt(height);
-                adRequest.setHeight(heightInt);
-            }
-            catch(Exception exception)
-            {
-                exception.printStackTrace();
-            }
-
-            String test = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_TEST);
-            ((MoceanBannerAdRequest)adRequest).setTest(Boolean.parseBoolean(test));
-
-            try
-            {
-                // Targetting Parameters
-                String latitude = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_LATITUDE);
-                String longitude = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_LONGITUDE);
-
-                Location location = new Location("");
-
-                if(!latitude.equals("") && !longitude.equals(""))
-                {
-                    location.setLatitude(Double.parseDouble(latitude));
-                    location.setLongitude(Double.parseDouble(longitude));
-
-                    adRequest.setLocation(location);
-                }
-
-                String city = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_CITY);
-
-                if(!city.equals("") && !city.equals(""))
-                    ((MoceanBannerAdRequest)adRequest).setCity(city);
-
-                String zip = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_ZIP);
-
-                if(!zip.equals("") && !zip.equals(""))
-                    ((MoceanBannerAdRequest)adRequest).setZip(zip);
-
-                String dma = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_DMA);
-
-                if(!dma.equals("") && !dma.equals(""))
-                    ((MoceanBannerAdRequest)adRequest).setDMA(dma);
-
-                String area = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_AREA);
-
-                if(!area.equals("") && area != null)
-                    ((MoceanBannerAdRequest)adRequest).setAreaCode(area);
-
-                String age = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_AGE);
-
-                if(!age.equals("") && !age.equals(""))
-                    ((MoceanBannerAdRequest)adRequest).setAge(age);
-
-                String birthday = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_BIRTHDAY);
-
-                if(!birthday.equals("") && birthday != null)
-                    ((MoceanBannerAdRequest)adRequest).setBirthDay(birthday);
-
-                String gender = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_GENDER);
-
-                if(!gender.equals("") && !gender.equals(""))
-                {
-                    if(gender.equalsIgnoreCase("Male") || gender.equalsIgnoreCase("M"))
-                        ((MoceanBannerAdRequest)adRequest).setGender(MoceanAdRequest.GENDER.MALE);
-                    else if(gender.equalsIgnoreCase("Female") || gender.equalsIgnoreCase("F"))
-                        ((MoceanBannerAdRequest)adRequest).setGender(MoceanAdRequest.GENDER.FEMALE);
-                }
-
-                String over18 = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_OVER_18);
-
-                if(!over18.equals("") && over18 != null)
-                {
-                    if(over18.equalsIgnoreCase("0"))
-                        ((MoceanBannerAdRequest)adRequest).setOver18(MoceanAdRequest.OVER_18.DENY);
-                    else if(over18.equalsIgnoreCase("2"))
-                        ((MoceanBannerAdRequest)adRequest).setOver18(MoceanAdRequest.OVER_18.ONLY_OVER_18);
-                    else if(over18.equalsIgnoreCase("3"))
-                        ((MoceanBannerAdRequest)adRequest).setOver18(MoceanAdRequest.OVER_18.ALLOW_ALL);
-                }
-
-                String ethnicity = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_ETHNICITY);
-
-                if(!ethnicity.equals("") && ethnicity != null)
-                {
-                    if(ethnicity.equals("0"))
-                        ((MoceanBannerAdRequest)adRequest).setEthnicity(MoceanAdRequest.ETHNICITY.BLACK);
-                    else if(ethnicity.equals("1"))
-                        ((MoceanBannerAdRequest)adRequest).setEthnicity(MoceanAdRequest.ETHNICITY.ASIAN);
-                    else if(ethnicity.equals("2"))
-                        ((MoceanBannerAdRequest)adRequest).setEthnicity(MoceanAdRequest.ETHNICITY.LATINO);
-                    else if(ethnicity.equals("3"))
-                        ((MoceanBannerAdRequest)adRequest).setEthnicity(MoceanAdRequest.ETHNICITY.WHITE);
-                    else if(ethnicity.equals("4"))
-                        ((MoceanBannerAdRequest)adRequest).setEthnicity(MoceanAdRequest.ETHNICITY.EAST_INDIAN);
-                }
-
-                String language = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_LANGUAGE);
-
-                if(!language.equals("") && language != null)
-                    ((MoceanBannerAdRequest)adRequest).setLanguage(language);
-
-                /*String timeout = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_TIMEOUT);
-
-                if(!timeout.equals("") && timeout != null)
-                    ((MoceanBannerAdRequest)adRequest).setTimeout(Integer.parseInt(timeout));*/
-
-                /*String keywords = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_KEYWORDS);
-
-                if(!keywords.equals("") && keywords != null)
-                    ((MoceanBannerAdRequest)adRequest).setKeywords(keywords);*/
-            }
-            catch (Exception exception)
-            {
-                Log.e("Parse Error", exception.toString());
-            }
-        }
-        else if(mPlatform == ConfigurationManager.PLATFORM.PUBMATIC) {
+        if(mPlatform == ConfigurationManager.PLATFORM.PUBMATIC) {
 
             String pubId = mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).get(PMConstants.SETTINGS_AD_TAG_PUB_ID);
             String siteId = mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).get(PMConstants.SETTINGS_AD_TAG_SITE_ID);
@@ -418,9 +282,9 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
             }
 
             adRequest = PhoenixBannerAdRequest.createPhoenixBannerAdRequest(getActivity(), adUnitId, "DIV1");
-        }
+        }/*
         else
-            adRequest = MoceanBannerAdRequest.createMoceanBannerAdRequest(getActivity(), "88269");
+            adRequest = PubMaticBannerAdRequest.createPubMaticBannerAdRequest(getActivity(), pubId, siteId, adId);*/
 
         boolean isUseInternalBrowserChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_USE_INTERNAL_BROWSER);
         mBanner.setUseInternalBrowser(isUseInternalBrowserChecked);

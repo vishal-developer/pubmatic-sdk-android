@@ -5,8 +5,7 @@
 
     <string name="help_text">\nWelcome to the PubMatic\'s SDK Sample app.\n\n
     This application helps you to test PubMatic\'s ad tag. PubMatic has multiple ad serving platforms mentioned below:\n
-    1. Mocean serves direct ads mainly for Mobile devices\n
-    2. PubMatic SSP\n\n
+    1. PubMatic SSP\n\n
     How to use:\n
     1. Please select the Platform\n
     2. Please select the desired ad format\n

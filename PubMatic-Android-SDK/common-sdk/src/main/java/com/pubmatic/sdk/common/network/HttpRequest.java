@@ -39,7 +39,7 @@ public class HttpRequest {
 
         HttpRequest request = new HttpRequest();
         request.setRequestUrl(requestUrl);
-        request.setRequestType(channel == CHANNEL.PUBMATIC ? AD_REQUEST_TYPE.PUB_TRACKER : channel == CHANNEL.MOCEAN ? AD_REQUEST_TYPE.MOCEAN_TRACKER : AD_REQUEST_TYPE.PHOENIX_TRACKER);
+        request.setRequestType(channel == CHANNEL.PUBMATIC ? AD_REQUEST_TYPE.PUB_TRACKER : AD_REQUEST_TYPE.PHOENIX_TRACKER);
         request.setRequestMethod(CommonConstants.HTTPMETHODGET);
         return request;
     }

@@ -267,40 +267,6 @@ public class PubMaticNativeActivity extends Activity {
 		}
 
 		@Override
-		public void onReceivedThirdPartyRequest(PMNativeAd mastNativeAd,
-				Map<String, String> properties, Map<String, String> parameters) {
-
-			appendOutput("Third Party Ad Received. \n Properties : \n "
-					+ properties + " Parameters : \n " + parameters);
-			MediationData mediationData = mastNativeAd.getMediationData();
-			if (mediationData != null) {
-				appendOutput("Name: " + mediationData.getMediationNetworkName());
-				appendOutput("NetworkId: "
-						+ mediationData.getMediationNetworkId());
-				appendOutput("Source: " + mediationData.getMediationSource());
-				appendOutput("AdId: " + mediationData.getMediationAdId());
-			}
-
-			// ---------------------------------------------------------
-			// Write Code to initialize third party SDK and request ads.
-			// ---------------------------------------------------------
-
-			// Test sending impression tracker and click trackers.
-
-			// Note: This method should be called only when ad from third party
-			// SDK is rendered.
-			// mastNativeAd.sendImpression(); // Method added here only for
-			// testing
-			// purpose
-
-			// Note: This method should be called only when ad clicked callback
-			// is received from third party SDK.
-			// mastNativeAd.sendClickTracker(); // Method added here only for
-			// testing purpose
-
-		}
-
-		@Override
 		public void onNativeAdClicked(PMNativeAd ad) {
 			appendOutput("Ad is clicked.");
 		}

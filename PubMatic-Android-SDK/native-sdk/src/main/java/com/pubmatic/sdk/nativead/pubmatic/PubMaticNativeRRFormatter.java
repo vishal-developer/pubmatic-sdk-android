@@ -36,10 +36,8 @@ import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_IMG;
 import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_IMPTRACKERS;
 import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_JSTRACKER;
 import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_LINK;
-import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_MEDIATION;
 import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_NATIVE_STRING;
 import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_TEXT;
-import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_THIRDPARTY_STRING;
 import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_TITLE;
 import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_URL;
 import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_VALUE;
@@ -109,15 +107,8 @@ public class PubMaticNativeRRFormatter implements RRFormatter {
 				String feedId = null;
 				String type = "native";
 				String subType = null;
-				JSONObject mediationObj = null;
 				JSONObject nativeObj = null;
 				int nativeVersion = 0;
-				String mediationPartnerName = null;
-				String mediationId = null;
-				JSONObject mediationData = null;
-				String adUnitId = null;
-				String errorMessage = null;
-				String mediationSource = null;
 				String[] clickTrackersStringArray = null;
 				String[] impressionTrackerStringArray = null;
 				String jsTrackerString = null;
@@ -251,40 +242,13 @@ public class PubMaticNativeRRFormatter implements RRFormatter {
 				}
 				//Native parsing ends
 
-				/**
-				 * Valid native ad should contain click url, at least one asset
-				 * element from the list (main image, icon image, logo image,
-				 * title, description), optionally rating, zero or more
-				 * impression and click trackers.
-				 */
-				// @formatter:off
-				if ((TextUtils.equals(RESPONSE_NATIVE_STRING, type) || (TextUtils
-						.equals(RESPONSE_THIRDPARTY_STRING, type) && TextUtils
-						.equals(RESPONSE_NATIVE_STRING, subType)))
-						&& !TextUtils.isEmpty(clickUrl)
-						&& nativeAssetList != null
-						&& nativeAssetList.size() > 0) {
-					nativeAdDescriptor = new NativeAdDescriptor(type,
-							nativeVersion, clickUrl, fallbackUrl,
-							impressionTrackerStringArray,
-							clickTrackersStringArray, jsTrackerString,
-							nativeAssetList);
+				nativeAdDescriptor = new NativeAdDescriptor(
+						nativeVersion, clickUrl, fallbackUrl,
+						impressionTrackerStringArray,
+						clickTrackersStringArray, jsTrackerString,
+						nativeAssetList);
 
-					nativeAdDescriptor.setNativeAdJSON(httpResponse.getResponseData());
-				} else if ((TextUtils.equals(RESPONSE_THIRDPARTY_STRING, type) && TextUtils
-						.equals(RESPONSE_MEDIATION, subType))
-						&& !TextUtils.isEmpty(mediationPartnerName)
-						&& (!TextUtils.isEmpty(mediationId) || !TextUtils
-								.isEmpty(creativeId))
-						&& !TextUtils.isEmpty(adUnitId)
-						&& !TextUtils.isEmpty(mediationSource)) {
-					nativeAdDescriptor = new NativeAdDescriptor(type,
-							creativeId, mediationPartnerName, mediationId,
-							adUnitId, mediationSource,
-							impressionTrackerStringArray,
-							clickTrackersStringArray, jsTrackerString, feedId);
-					nativeAdDescriptor.setNativeAdJSON(httpResponse.getResponseData());
-				}
+				nativeAdDescriptor.setNativeAdJSON(httpResponse.getResponseData());
 				// @formatter:on
 			}
 		} catch (JSONException e) {

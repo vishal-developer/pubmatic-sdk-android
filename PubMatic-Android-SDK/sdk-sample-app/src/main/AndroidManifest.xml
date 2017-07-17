@@ -48,23 +48,11 @@
             android:label="@string/banner_ad_demo">
         </activity>
         <activity
-            android:name=".banner.MoceanStaticBannerActivity"
-            android:label="@string/banner_ad_demo">
-        </activity>
-        <activity
-            android:name=".banner.MoceanRuntimeBannerActivity"
-            android:label="@string/banner_ad_demo">
-        </activity>
-        <activity
             android:name=".banner.BannerSamplesListActivity"
             android:label="@string/banner_ad_demo">
         </activity>
         <activity
             android:name=".nativead.NativeSamplesListActivity"
-            android:label="@string/native_ad_demo">
-        </activity>
-        <activity
-            android:name=".nativead.MoceanNativeActivity"
             android:label="@string/native_ad_demo">
         </activity>
         <activity
@@ -76,9 +64,6 @@
             android:label="@string/native_ad_demo">
         </activity>
         <activity android:name=".interstitial.InterstitialSamplesListActivity"
-                  android:label="@string/interstitial_ad_demo">
-        </activity>
-        <activity android:name=".interstitial.MoceanInterstitialActivity"
                   android:label="@string/interstitial_ad_demo">
         </activity>
         <activity android:name=".interstitial.PubMaticInterstitialActivity"

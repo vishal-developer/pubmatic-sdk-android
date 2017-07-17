@@ -63,16 +63,6 @@ public class BannerAdController {
 		try {
 
 			switch (mChannel) {
-				case MOCEAN:
-					adRequestName = "com.pubmatic.sdk.banner.mocean.MoceanBannerAdRequest";
-					className = Class.forName(adRequestName);
-					m = className.getMethod("createMoceanBannerAdRequest", Context.class, String.class);
-					mAdRequest = (AdRequest)m.invoke(null, mContext, null);
-					//Call setAttributes()
-					m = className.getMethod("setAttributes", AttributeSet.class);
-					m.invoke(mAdRequest, attr);
-
-					break;
 				case PUBMATIC:
 					adRequestName = "com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest";
 					className = Class.forName(adRequestName);

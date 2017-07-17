@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 /**
- * This class is used for parsing ad response JSON/XML from Mocean ad server.
+ * This class is used for parsing ad response JSON/XML from PubMatic ad server.
  */
 public class AdDescriptor {
 

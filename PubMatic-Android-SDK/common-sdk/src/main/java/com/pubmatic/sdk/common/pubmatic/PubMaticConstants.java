@@ -40,53 +40,6 @@ public class PubMaticConstants {
     public static final String LOCATION_SOURCE_IP_ADDRESS = "2";
     public static final String LOCATION_SOURCE_USER_PROVIDED = "3";
 
-    public enum CONTENT_TYPE{
-        JSON,
-        XML,
-        URL_ENCODED,
-        INVALID
-    }
-
-    public static enum Method {GET , POST};
-
-    //All type of network request
-    public static enum AD_REQUEST_TYPE{
-
-        PUB_BANNER,
-        PUB_NATIVE,
-        PUB_INTERSTITIAL,
-        PUB_RICH_MEDIA,
-        PUB_PRIMARY_VIDEO,
-        PUB_WRAPPER_VIDEO,
-        PUB_PASSBACK_VIDEO,
-        PUB_TRACKER,
-
-        MOCEAN_BANNER,
-        MOCEAN_NATIVE,
-        MOCEAN_INTERSTITIAL,
-        MOCEAN_RICH_MEDIA,
-        MOCEAN_PRIMARY_VIDEO,
-        MOCEAN_WRAPPER_VIDEO,
-        MOCEAN_PASSBACK_VIDEO,
-        MOCEAN_TRACKER,
-
-        PHOENIX_BANNER,
-        PHOENIX_NATIVE,
-        PHOENIX_INTERSTITIAL,
-        PHOENIX_RICH_MEDIA,
-        PHOENIX_PRIMARY_VIDEO,
-        PHOENIX_WRAPPER_VIDEO,
-        PHOENIX_PASSBACK_VIDEO,
-        PHOENIX_TRACKER
-    }
-
-    public enum CHANNEL {
-        NA,
-        PUBMATIC,
-        MOCEAN,
-        PHOENIX
-    }
-
     //PubMatic specific common parameters for GET Parameters
     public static final String PUB_ID_PARAM 			= "pubId";
     public static final String SITE_ID_PARAM 			= "siteId";

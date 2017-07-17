@@ -73,7 +73,6 @@ public abstract class PubMaticAdRequest extends AdRequest {
     private PubMaticAdRequest.AWT_OPTION    mAWT = AWT_OPTION.DEFAULT;
     private RS                              mRs;
 
-    //Common for Mocean & PubMatic Useser info params
     private String mCity = null;
     private String mZip = null;
     private String mDMA = null;

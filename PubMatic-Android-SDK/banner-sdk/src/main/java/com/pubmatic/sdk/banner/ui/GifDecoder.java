@@ -32,8 +32,8 @@ import java.util.Vector;
  * License (per Google Code project page above):
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Modifications Copyright 2013, Mocean Mobile
- * http://www.moceanmobile.com/
+ * Modifications Copyright 2017, PubMatic Mobile
+ * https://pubmatic.com/
  */
 public class GifDecoder {
 	/**

@@ -42,7 +42,6 @@ public class InterstitialSamplesListActivity extends ListActivity {
         samplesListAdapter = new SamplesListAdapter();
 
         // @formatter:off
-		samplesListAdapter.addItem(new SamplesItem("Mocean Interstitial Ad", MoceanInterstitialActivity.class));
 		samplesListAdapter.addItem(new SamplesItem("PubMatic Interstitial Ad", PubMaticInterstitialActivity.class));
 		// @formatter:on
 
