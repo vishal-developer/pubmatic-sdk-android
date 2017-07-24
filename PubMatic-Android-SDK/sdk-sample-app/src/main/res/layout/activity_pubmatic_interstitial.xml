@@ -9,15 +9,12 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:id="@+id/parent"
-    tools:context="com.pubmatic.sampleapp.interstitial.PubMaticInterstitialActivity">
+    tools:context="com.pubmatic.sampleapp.interstitial.InterstitialDemoActivity">
 
-    <Button
-        android:id="@+id/load_ad"
-        android:layout_width="wrap_content"
+
+    <include layout="@layout/ad_tag_entry_layout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="101dp"
-        android:text="@string/load_interstitial_ad"/>
+        />
 
 </RelativeLayout>

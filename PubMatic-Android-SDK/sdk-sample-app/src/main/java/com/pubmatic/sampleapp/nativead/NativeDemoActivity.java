@@ -3,13 +3,15 @@ package com.pubmatic.sampleapp.nativead;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Map;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.RelativeLayout;
@@ -17,7 +19,6 @@ import android.widget.TextView;
 
 import com.pubmatic.sampleapp.R;
 import com.pubmatic.sdk.common.PMLogger;
-import com.pubmatic.sdk.nativead.MediationData;
 import com.pubmatic.sdk.nativead.PMNativeAd;
 import com.pubmatic.sdk.nativead.bean.PMAssetRequest;
 import com.pubmatic.sdk.nativead.bean.PMAssetResponse;
@@ -31,9 +32,9 @@ import com.pubmatic.sdk.nativead.bean.PMTitleAssetRequest;
 import com.pubmatic.sdk.nativead.bean.PMTitleAssetResponse;
 import com.pubmatic.sdk.nativead.pubmatic.PubMaticNativeAdRequest;
 
-public class PubMaticNativeActivity extends Activity {
+public class NativeDemoActivity extends Activity {
 
-	private static final String LOG_TAG = PubMaticNativeActivity.class.getSimpleName();
+	private static final String LOG_TAG = NativeDemoActivity.class.getSimpleName();
 	private PMNativeAd ad = null;
 	private ImageView imgLogo = null;
 	private ImageView imgMain = null;
@@ -48,6 +49,7 @@ public class PubMaticNativeActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.nativead_activity);
+		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
 		mLayout = (RelativeLayout) findViewById(R.id.layout);
 		imgLogo = (ImageView) findViewById(R.id.imgLogo);
@@ -58,6 +60,47 @@ public class PubMaticNativeActivity extends Activity {
 		ratingBar = (RatingBar) findViewById(R.id.ratingbar);
 		txtLogView = (TextView) findViewById(R.id.textView);
 
+		setPrefetchIds("31400", "52368", "383372");
+	}
+
+	private void setPrefetchIds(String pubId, String siteId, String adId) {
+		final EditText pubIdET = (EditText)findViewById(R.id.pubIdET);
+		if(pubIdET!=null) {
+			pubIdET.setText(pubId);
+		}
+		final EditText siteIdET = (EditText)findViewById(R.id.siteIdET);
+		if(siteIdET!=null) {
+			siteIdET.setText(siteId);
+		}
+		final EditText adIdET = (EditText)findViewById(R.id.adIdET);
+		if(adIdET!=null) {
+			adIdET.setText(adId);
+		}
+
+		//Handle click of load ad button
+		Button loadAdBtn = (Button)findViewById(R.id.loadAdBtn);
+		loadAdBtn.setText("Load Native Ad");
+		loadAdBtn.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				String pubId = null, siteId = null, adId = null;
+				if(pubIdET!=null) {
+					pubId = pubIdET.getText().toString();
+				}
+				if(siteIdET!=null) {
+					siteId = siteIdET.getText().toString();
+				}
+				if(adIdET!=null) {
+					adId = adIdET.getText().toString();
+				}
+
+				loadAd(pubId, siteId, adId, v);
+			}
+		});
+	}
+
+	private void loadAd(String pubId, String siteId, String adId, View view) {
+
 		// Initialize the adview
 		ad = new PMNativeAd(this);
 		ad.setRequestListener(new AdRequestListener());
@@ -67,19 +110,18 @@ public class PubMaticNativeActivity extends Activity {
 		 * default browser, to open ads when clicked
 		 */
 		ad.setUseInternalBrowser(true);
-		
+
 		// Enable device id detection
 		ad.setAndroidaidEnabled(true);
 
 		// ad.setTest(true); // Uncomment to serve ads in test mode
 
 		PubMaticNativeAdRequest adRequest = PubMaticNativeAdRequest
-				.createPubMaticNativeAdRequest(this, "31400", "52368", "383372", getAssetRequests());
+				.createPubMaticNativeAdRequest(this, pubId, siteId, adId, getAssetRequests());
 
 		// Request for ads
 		ad.execute(adRequest);
 	}
-
 	private List<PMAssetRequest> getAssetRequests() {
 		List<PMAssetRequest> assets = new ArrayList<PMAssetRequest>();
 
@@ -117,7 +159,8 @@ public class PubMaticNativeActivity extends Activity {
 		super.onDestroy();
 
 		resetViews();
-		ad.destroy();
+		if(ad!=null)
+			ad.destroy();
 	}
 
 	public void onReloadAdClicked(View v) {

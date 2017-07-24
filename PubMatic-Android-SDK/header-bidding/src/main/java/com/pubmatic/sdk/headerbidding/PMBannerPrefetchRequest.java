@@ -41,8 +41,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -568,13 +566,7 @@ public class PMBannerPrefetchRequest extends PubMaticBannerAdRequest {
             if(getAppCategory() != null && !getAppCategory().equals(""))
                 asJsonObject.put("cat", getAppCategory());
 
-            try {
-                asJsonObject.put("api", URLEncoder.encode(
-                        "3::4::5",
-                        CommonConstants.URL_ENCODING));
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+            asJsonObject.put("api", "3::4::5");
 
             String networkType = PubMaticUtils.getNetworkType(mContext);
             asJsonObject.put("nettype", networkType);

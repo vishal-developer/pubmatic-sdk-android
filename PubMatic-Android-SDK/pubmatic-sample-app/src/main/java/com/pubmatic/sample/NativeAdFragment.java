@@ -457,11 +457,6 @@ public class NativeAdFragment extends DialogFragment {
         }
 
         @Override
-        public void onReceivedThirdPartyRequest(PMNativeAd mastNativeAd,
-                                                Map<String, String> properties, Map<String, String> parameters) {
-        }
-
-        @Override
         public void onNativeAdClicked(PMNativeAd ad) {
         }
     }

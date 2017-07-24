@@ -5,7 +5,6 @@
 
     <!--Normal Permissions-->
     <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <!--Dangerous Permissions-->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
@@ -32,41 +31,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".banner.PhoenixStaticBannerActivity"
+            android:name=".banner.BannerDemoActivity"
             android:label="@string/banner_ad_demo">
         </activity>
         <activity
-            android:name=".banner.PhoenixRuntimeBannerActivity"
-            android:label="@string/banner_ad_demo">
-        </activity>
-        <activity
-            android:name=".banner.PubStaticBannerActivity"
-            android:label="@string/banner_ad_demo">
-        </activity>
-        <activity
-            android:name=".banner.PubRuntimeBannerActivity"
-            android:label="@string/banner_ad_demo">
-        </activity>
-        <activity
-            android:name=".banner.BannerSamplesListActivity"
-            android:label="@string/banner_ad_demo">
-        </activity>
-        <activity
-            android:name=".nativead.NativeSamplesListActivity"
+            android:name=".nativead.NativeDemoActivity"
             android:label="@string/native_ad_demo">
         </activity>
-        <activity
-            android:name=".nativead.PubMaticNativeActivity"
-            android:label="@string/native_ad_demo">
-        </activity>
-        <activity
-            android:name=".nativead.PhoenixNativeActivity"
-            android:label="@string/native_ad_demo">
-        </activity>
-        <activity android:name=".interstitial.InterstitialSamplesListActivity"
-                  android:label="@string/interstitial_ad_demo">
-        </activity>
-        <activity android:name=".interstitial.PubMaticInterstitialActivity"
+        <activity android:name=".interstitial.InterstitialDemoActivity"
                   android:label="@string/interstitial_ad_demo">
         </activity>
         <!--

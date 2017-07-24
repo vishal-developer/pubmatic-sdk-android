@@ -393,7 +393,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
     private CHANNEL mChannel;
 
-    private void setAdrequest(AdRequest adRequest) {
+    private void setAdrequest(AdRequest adRequest) throws IllegalArgumentException {
         if (adRequest == null) {
             throw new IllegalArgumentException("AdRequest object is null");
         }
@@ -905,7 +905,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
     /**
      * @param adrequest
      */
-    public void execute(AdRequest adrequest) {
+    public void execute(AdRequest adrequest) throws IllegalArgumentException {
         setAdrequest(adrequest);
         update();
     }

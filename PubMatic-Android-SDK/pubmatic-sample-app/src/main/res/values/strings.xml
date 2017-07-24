@@ -4,8 +4,7 @@
     <string name="section_format">Hello World from section: %1$d</string>
 
     <string name="help_text">\nWelcome to the PubMatic\'s SDK Sample app.\n\n
-    This application helps you to test PubMatic\'s ad tag. PubMatic has multiple ad serving platforms mentioned below:\n
-    1. PubMatic SSP\n\n
+    This application helps you to test PubMatic\'s ad tag.
     How to use:\n
     1. Please select the Platform\n
     2. Please select the desired ad format\n

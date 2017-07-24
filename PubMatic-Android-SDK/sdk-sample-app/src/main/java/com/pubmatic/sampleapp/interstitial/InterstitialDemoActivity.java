@@ -20,7 +20,9 @@ import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -32,29 +34,57 @@ import com.pubmatic.sdk.common.PMLogger;
 
 import java.util.Map;
 
-public class PubMaticInterstitialActivity extends Activity {
+public class InterstitialDemoActivity extends Activity {
 
     PMInterstitialAdView interstitialAdView;
-    Button loadAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pubmatic_interstitial);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        PMLogger.setLogLevel(PMLogger.LogLevel.Debug);
 
-        loadAd = (Button) findViewById(R.id.load_ad);
-        loadAd.setOnClickListener(onLoadAd);
+        setPrefetchIds("31400", "32504", "1059651");
     }
 
-    View.OnClickListener onLoadAd = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            loadInterstitialButtonClicked(v);
+    private void setPrefetchIds(String pubId, String siteId, String adId) {
+        final EditText pubIdET = (EditText)findViewById(R.id.pubIdET);
+        if(pubIdET!=null) {
+            pubIdET.setText(pubId);
         }
-    };
+        final EditText siteIdET = (EditText)findViewById(R.id.siteIdET);
+        if(siteIdET!=null) {
+            siteIdET.setText(siteId);
+        }
+        final EditText adIdET = (EditText)findViewById(R.id.adIdET);
+        if(adIdET!=null) {
+            adIdET.setText(adId);
+        }
 
-    public void loadInterstitialButtonClicked(View view) {
-        PMLogger.setLogLevel(PMLogger.LogLevel.Debug);
+        //Handle click of load ad button
+        Button loadAdBtn = (Button)findViewById(R.id.loadAdBtn);
+        loadAdBtn.setText("Load Interstitial Ad");
+        loadAdBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String pubId = null, siteId = null, adId = null;
+                if(pubIdET!=null) {
+                    pubId = pubIdET.getText().toString();
+                }
+                if(siteIdET!=null) {
+                    siteId = siteIdET.getText().toString();
+                }
+                if(adIdET!=null) {
+                    adId = adIdET.getText().toString();
+                }
+
+                loadAd(pubId, siteId, adId, v);
+            }
+        });
+    }
+
+    private void loadAd(String pubId, String siteId, String adId, View view) {
 
         if (interstitialAdView == null) {
             interstitialAdView = new PMInterstitialAdView(this);
@@ -73,14 +103,14 @@ public class PubMaticInterstitialActivity extends Activity {
         interstitialAdView.setRequestListener(new PMBannerAdView.BannerAdViewDelegate.RequestListener() {
             @Override
             public void onFailedToReceiveAd(PMBannerAdView adView, int errorcode, String errorMessage) {
-                Toast.makeText(PubMaticInterstitialActivity.this,
+                Toast.makeText(InterstitialDemoActivity.this,
                                "Ad failed to load!",
                                Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onReceivedAd(PMBannerAdView adView) {
-                Toast.makeText(PubMaticInterstitialActivity.this,
+                Toast.makeText(InterstitialDemoActivity.this,
                         "Ad loaded!",
                         Toast.LENGTH_SHORT).show();
                 interstitialAdView.showInterstitial();
@@ -95,7 +125,19 @@ public class PubMaticInterstitialActivity extends Activity {
         });
 
         PubMaticBannerAdRequest adRequest = PubMaticBannerAdRequest.createPubMaticBannerAdRequest(
-                this, "31400", "32504", "1059651");
+                this, pubId, siteId, adId);
         interstitialAdView.execute(adRequest);
+    }
+
+    private void destroyAd() {
+        if(interstitialAdView!=null)
+            interstitialAdView.destroy();
+        interstitialAdView = null;
+    }
+
+    @Override
+    protected void onDestroy() {
+        destroyAd();
+        super.onDestroy();
     }
 }

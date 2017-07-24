@@ -41,6 +41,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.telephony.TelephonyManager;
+import android.view.Display;
 import android.view.WindowManager;
 import android.webkit.WebView;
 
@@ -67,6 +68,7 @@ public final class PUBDeviceInformation {
 	public String mDeviceUserAgent = null;
 	public String mCarrierName = null;
 	public String mDeviceAcceptLanguage = null;
+	public String mDeviceScreenResolution = null;
 
     public String mDeviceTimeStamp = "";
 	public double mDeviceTimeZone = 0.0;
@@ -94,6 +96,9 @@ public final class PUBDeviceInformation {
 		// Get the device screen resolution
 		WindowManager window = (WindowManager) mApplicationContext
 				.getSystemService(Context.WINDOW_SERVICE);
+		Display display = window.getDefaultDisplay();
+		mDeviceScreenResolution = display.getWidth() + "x"
+								+ display.getHeight();
 
 		// Get the system time and time zone
 		Calendar cal = Calendar.getInstance();

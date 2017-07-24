@@ -28,6 +28,7 @@ import com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+
 public class BannerAdFragment extends DialogFragment implements PMBannerAdView.BannerAdViewDelegate.RequestListener {
 
     private AlertDialog.Builder mBuilder;
@@ -39,17 +40,20 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
 
     PMBannerAdView mBanner;
 
-    public BannerAdFragment() {}
+    public BannerAdFragment() {
 
-    public BannerAdFragment(ConfigurationManager.PLATFORM platform, LinkedHashMap<String, LinkedHashMap<String, String>> settings)
-    {
-        mPlatform = platform;
-        mSettings = settings;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Bundle b = this.getArguments();
+        if(b.getSerializable("Settings") != null)
+            mSettings = (LinkedHashMap<String, LinkedHashMap<String, String>>)b.getSerializable("Settings");
+
+        if(b.getSerializable("Platform") != null)
+            mPlatform = (ConfigurationManager.PLATFORM)b.getSerializable("Platform");
     }
 
     @Override
@@ -90,27 +94,55 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
         return dialog;
     }
 
-    private void loadAd(View rootView)
-    {
+    private void loadAd(View rootView) {
+
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(dpToPx(320), dpToPx(50));
+        params.setLayoutDirection(RelativeLayout.CENTER_IN_PARENT);
+
         mBanner = new PMBannerAdView(getActivity());
         mBanner.setRequestListener(this);
+
         RelativeLayout layout = (RelativeLayout) rootView.findViewById(R.id.banner_parent);
-
-        AdRequest adRequest = null;
-        int widthInt = 0;
-        int heightInt = 0;
-
-        RelativeLayout.LayoutParams params;
-
-        // Set layout height & width in pixels for banner ad view as per requirement
-        if(widthInt != 0 && heightInt != 0)
-            params = new RelativeLayout.LayoutParams(dpToPx(widthInt), dpToPx(heightInt));
-        else
-            params = new RelativeLayout.LayoutParams(dpToPx(320), dpToPx(50));
-
-        params.setLayoutDirection(RelativeLayout.CENTER_IN_PARENT);
         layout.addView(mBanner, params);
 
+        //Optionally, Set banner properties
+        setProperties();
+
+        //Create Adrequest object and sets targeting parameters
+        AdRequest adRequest = buildAdRequest();
+
+        try
+        {
+            // Make the ad request to Server
+            if(adRequest!=null)
+                mBanner.execute(adRequest);
+        } catch(IllegalArgumentException illegalArgumentException)
+        {
+            dismiss();
+            illegalArgumentException.printStackTrace();
+            Toast.makeText(getActivity(), "Please verify the mandatory ad request parameters", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void setProperties()
+    {
+
+        boolean isUseInternalBrowserChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_USE_INTERNAL_BROWSER);
+        mBanner.setUseInternalBrowser(isUseInternalBrowserChecked);
+
+        boolean isAutoLocationDetectionChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_AUTO_LOCATION_DETECTION);
+        mBanner.setLocationDetectionEnabled(isAutoLocationDetectionChecked);
+
+    }
+
+    /**
+     * This method creates an Adrequest object based on platform selection in UI. And it also sets
+     * targeting parameters (provided from UI) in ad request object
+     * @return
+     */
+    private AdRequest buildAdRequest()
+    {
+        AdRequest adRequest = null;
         if(mPlatform == ConfigurationManager.PLATFORM.PUBMATIC) {
 
             String pubId = mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).get(PMConstants.SETTINGS_AD_TAG_PUB_ID);
@@ -120,7 +152,7 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
             if(pubId == null || pubId.equals("") || siteId == null || siteId.equals("") || adId == null || adId.equals(""))
             {
                 Toast.makeText(getActivity(), "Please enter pubId, siteId and adId", Toast.LENGTH_LONG).show();
-                return;
+                return null;
             }
 
             adRequest = PubMaticBannerAdRequest.createPubMaticBannerAdRequest(getActivity(), pubId, siteId, adId);
@@ -128,10 +160,10 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
             try
             {
                 String width = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_WIDTH);
-                widthInt = Integer.parseInt(width);
+                int widthInt = Integer.parseInt(width);
 
                 String height = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_HEIGHT);
-                heightInt = Integer.parseInt(height);
+                int heightInt = Integer.parseInt(height);
 
                 ((PubMaticBannerAdRequest)adRequest).setAdSize(new PUBAdSize(widthInt, heightInt));
 
@@ -278,7 +310,7 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
             if(adUnitId == null || adUnitId.equals(""))
             {
                 Toast.makeText(getActivity(), "Please enter an ad unit id", Toast.LENGTH_LONG).show();
-                return;
+                return null;
             }
 
             adRequest = PhoenixBannerAdRequest.createPhoenixBannerAdRequest(getActivity(), adUnitId, "DIV1");
@@ -286,35 +318,18 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
         else
             adRequest = PubMaticBannerAdRequest.createPubMaticBannerAdRequest(getActivity(), pubId, siteId, adId);*/
 
-        boolean isUseInternalBrowserChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_USE_INTERNAL_BROWSER);
-        mBanner.setUseInternalBrowser(isUseInternalBrowserChecked);
-
-        boolean isAutoLocationDetectionChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_AUTO_LOCATION_DETECTION);
-        mBanner.setLocationDetectionEnabled(isAutoLocationDetectionChecked);
-
         try
         {
             String adRefreshRate = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_AD_REFRESH_RATE);
 
             if(!TextUtils.isEmpty(adRefreshRate))
                 mBanner.setUpdateInterval(Integer.parseInt(adRefreshRate));
-        }
-        catch(Exception exception)
+        } catch(Exception exception)
         {
 
         }
 
-        try
-        {
-            // Make the ad request to Server banner.execute(adRequest);
-            mBanner.execute(adRequest);
-        }
-        catch(IllegalArgumentException illegalArgumentException)
-        {
-            dismiss();
-            illegalArgumentException.printStackTrace();
-            Toast.makeText(getActivity(), "Please verify the mandatory ad request parameters", Toast.LENGTH_LONG).show();
-        }
+        return adRequest;
 
     }
 

@@ -31,6 +31,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.provider.Settings;
+import android.util.Log;
 
 import java.security.MessageDigest;
 import java.util.Locale;
@@ -38,22 +39,26 @@ import java.util.Locale;
 public class PubMaticUtils {
 
     public static String getNetworkType(Context context){
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        //It requires ACCESS_NETWORK_STATE permission
-        NetworkInfo networkInfo= cm.getActiveNetworkInfo();
 
-        if(networkInfo != null)
-        {
-            switch (networkInfo.getType()) {
-                case ConnectivityManager.TYPE_MOBILE:
-                    return "cellular";
-                case ConnectivityManager.TYPE_WIFI:
-                    return  "wifi";
-                default:
-                    return null;
+        try {
+            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            //It requires ACCESS_NETWORK_STATE permission
+            NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+
+            if (networkInfo != null) {
+                switch (networkInfo.getType()) {
+                    case ConnectivityManager.TYPE_MOBILE:
+                        return "cellular";
+                    case ConnectivityManager.TYPE_WIFI:
+                        return "wifi";
+                    default:
+                        return null;
+                }
             }
-        }
 
+        } catch (Exception e) {
+            Log.e("PubMaticUtils", "ACCESS_NETWORK_STATE permission is not granted.");
+        }
         return null;
     }
 

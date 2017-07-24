@@ -36,9 +36,9 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.pubmatic.sampleapp.banner.BannerSamplesListActivity;
-import com.pubmatic.sampleapp.interstitial.InterstitialSamplesListActivity;
-import com.pubmatic.sampleapp.nativead.NativeSamplesListActivity;
+import com.pubmatic.sampleapp.banner.BannerDemoActivity;
+import com.pubmatic.sampleapp.interstitial.InterstitialDemoActivity;
+import com.pubmatic.sampleapp.nativead.NativeDemoActivity;
 
 public class SamplesListActivity extends ListActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
 	SamplesListAdapter samplesListAdapter = null;
@@ -56,9 +56,9 @@ public class SamplesListActivity extends ListActivity implements ActivityCompat.
 		samplesListAdapter = new SamplesListAdapter();
 
 		// @formatter:off
-		samplesListAdapter.addItem(new SamplesItem("Banner Demo", BannerSamplesListActivity.class));
-        samplesListAdapter.addItem(new SamplesItem("Interstitial Demo", InterstitialSamplesListActivity.class));
-		samplesListAdapter.addItem(new SamplesItem("Native Demo", NativeSamplesListActivity.class));
+		samplesListAdapter.addItem(new SamplesItem("Banner Demo", BannerDemoActivity.class));
+        samplesListAdapter.addItem(new SamplesItem("Interstitial Demo", InterstitialDemoActivity.class));
+		samplesListAdapter.addItem(new SamplesItem("Native Demo", NativeDemoActivity.class));
 
 		super.setListAdapter(samplesListAdapter);
 

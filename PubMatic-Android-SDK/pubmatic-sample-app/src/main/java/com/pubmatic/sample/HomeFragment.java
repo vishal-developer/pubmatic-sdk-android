@@ -22,6 +22,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+
 import java.util.LinkedHashMap;
 
 public class HomeFragment extends Fragment {
@@ -56,7 +58,7 @@ public class HomeFragment extends Fragment {
         mPlatformSelector = (TextView) rootView.findViewById(R.id.home_platform);
         mAdTypeSelector = (TextView) rootView.findViewById(R.id.home_ad_type);
 
-        mPlatformSelector.setOnClickListener(onPlatformChooserSelected);
+        //mPlatformSelector.setOnClickListener(onPlatformChooserSelected);
         mPlatform = ConfigurationManager.PLATFORM.PUBMATIC;
 
         mAdTypeSelector.setOnClickListener(onAdTypeChooserSelected);
@@ -148,6 +150,9 @@ public class HomeFragment extends Fragment {
         if(settingsHeader.equals(PMConstants.SETTINGS_HEADING_TARGETTING))
         {
             if (setting.equals(PMConstants.SETTINGS_TARGETTING_ZIP)
+                    || setting.equals(PMConstants.SETTINGS_TARGETTING_DMA)
+                    || setting.equals(PMConstants.SETTINGS_TARGETTING_ORMA_COMPLIANCE)
+                    || setting.equals(PMConstants.SETTINGS_TARGETTING_AWT)
                     || setting.equals(PMConstants.SETTINGS_TARGETTING_AGE)
                     || setting.equals(PMConstants.SETTINGS_TARGETTING_INCOME)
                     || setting.equals(PMConstants.SETTINGS_TARGETTING_YEAR_OF_BIRTH))
@@ -315,7 +320,12 @@ public class HomeFragment extends Fragment {
                         getPubMaticConfigurationParameters();
                         getPubmaticTargettingParameters();
 
-                        BannerAdFragment bannerAdDialogFragment = new BannerAdFragment(mPlatform, mSettings);
+                        BannerAdFragment bannerAdDialogFragment = new BannerAdFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("Settings",mSettings);
+                        bundle.putSerializable("Platform", mPlatform);
+                        bannerAdDialogFragment.setArguments(bundle);
+
                         bannerAdDialogFragment.show(getActivity().getFragmentManager(), "BannerAdFragment");
                     }
                     else
