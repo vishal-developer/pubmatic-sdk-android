@@ -389,7 +389,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
     private BroadcastReceiver mReceiver;
     private IntentFilter filter;
 
-    private AttributeSet mAttributes;
+//    private AttributeSet mAttributes;
 
     private CHANNEL mChannel;
 
@@ -448,7 +448,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
      */
     public PMBannerAdView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        applyAttributeSet(attrs);
         init(false);
     }
 
@@ -461,46 +460,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
      */
     public PMBannerAdView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        applyAttributeSet(attrs);
         init(false);
-    }
-
-    protected void applyAttributeSet(AttributeSet attrs) {
-
-        mAttributes = attrs;
-        String logLevelStr = attrs.getAttributeValue(null,
-                CommonConstants.xml_layout_attribute_logLevel);
-        if(!TextUtils.isEmpty(logLevelStr)){
-            if("error".equalsIgnoreCase(logLevelStr)){
-                PMLogger.setLogLevel(LogLevel.Error);
-            }else if("debug".equalsIgnoreCase(logLevelStr)){
-                PMLogger.setLogLevel(LogLevel.Error);
-            }else{
-                PMLogger.setLogLevel(LogLevel.None);
-            }
-        }
-
-        String updateIntStr = attrs.getAttributeValue(null,
-                CommonConstants.xml_layout_attribute_update_interval);
-        if (!TextUtils.isEmpty(updateIntStr)) {
-            try {
-                int updateInt = Integer.parseInt(updateIntStr);
-                setUpdateInterval(updateInt);
-            } catch (NumberFormatException ne) {
-                PMLogger.logEvent(
-                        "Invalid value of updateInterval set in XML. Valid range is 12 to 120 seconds. Eg: updateInterval=\"12\"",
-                        LogLevel.Error);
-            }
-        }
-
-        String channel = attrs.getAttributeValue(null,
-                CommonConstants.xml_layout_attribute_channel);
-        if ("phoenix".equalsIgnoreCase(channel)) {
-            setChannel(CHANNEL.PHOENIX);
-        } else {
-            //PUBMATIC will be used as default channel, if not mentioned in xml
-            setChannel(CHANNEL.PUBMATIC);
-        }
     }
 
     protected void init(boolean interstitial) {
@@ -516,7 +476,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
     protected void initController(CHANNEL channel) {
         if (mAdController == null) {
-            mAdController = new BannerAdController(channel, getContext(), mAttributes);
+            mAdController = new BannerAdController(channel, getContext());
         }
     }
 
@@ -545,11 +505,11 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         mChannel = channel;
 
         //XML flow - Checking for mandatory parameters
-        if (mAttributes != null) {
-            if (checkForMandatoryParams()) {
-                updateOnLayout = true;
-            }
-        }
+//        if (mAttributes != null) {
+//            if (checkForMandatoryParams()) {
+//                updateOnLayout = true;
+//            }
+//        }
 
     }
 
@@ -2991,49 +2951,52 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
     @Override
     public void renderPrefetchedAd(String impressionId, ResponseGenerator responseGenerator) {
 
-        AdResponse pubResponse = new AdResponse();
+        if(responseGenerator!=null && !TextUtils.isEmpty(impressionId)) {
 
-        Map<String, String> adInfo = new HashMap<String, String>();
-        ArrayList<String> impressionTrackers = new ArrayList<String>();
-        ArrayList<String> clickTrackers = new ArrayList<String>();
-        adInfo.put("type", "thirdparty");
+            AdResponse pubResponse = new AdResponse();
 
-        try {
+            Map<String, String> adInfo = new HashMap<String, String>();
+            ArrayList<String> impressionTrackers = new ArrayList<String>();
+            ArrayList<String> clickTrackers = new ArrayList<String>();
+            adInfo.put("type", "thirdparty");
 
-            if (!TextUtils.isEmpty(responseGenerator.getCreative(impressionId))) {
+            try {
 
-                adInfo.put("content", responseGenerator.getCreative(impressionId));
+                if (!TextUtils.isEmpty(responseGenerator.getCreative(impressionId))) {
 
-                // Setting ecpm if not null
-                if (responseGenerator.getPrice(impressionId) != 0) {
-                    adInfo.put("ecpm", String.valueOf(responseGenerator.getPrice(impressionId)));
+                    adInfo.put("content", responseGenerator.getCreative(impressionId));
+
+                    // Setting ecpm if not null
+                    if (responseGenerator.getPrice(impressionId) != 0) {
+                        adInfo.put("ecpm", String.valueOf(responseGenerator.getPrice(impressionId)));
+                    }
+
+                    // Setting tracking url if not null
+                    if (responseGenerator.getTrackingUrl(impressionId) != null && !responseGenerator.getTrackingUrl(impressionId).equals("")) {
+                        impressionTrackers.add( URLDecoder.decode(responseGenerator.getTrackingUrl(impressionId), CommonConstants.ENCODING_UTF_8));
+                    }
+
+                    // Setting click tracking url if not null
+                    if (responseGenerator.getClickTrackingUrl(impressionId) != null && !responseGenerator.getClickTrackingUrl(impressionId).equals("")) {
+                        clickTrackers.add( URLDecoder.decode(responseGenerator.getClickTrackingUrl(impressionId), CommonConstants.ENCODING_UTF_8));
+                    }
                 }
 
-                // Setting tracking url if not null
-                if (responseGenerator.getTrackingUrl(impressionId) != null && !responseGenerator.getTrackingUrl(impressionId).equals("")) {
-                    impressionTrackers.add( URLDecoder.decode(responseGenerator.getTrackingUrl(impressionId), CommonConstants.ENCODING_UTF_8));
-                }
+                BannerAdDescriptor adDescriptor = new BannerAdDescriptor(adInfo);
+                adDescriptor.setImpressionTrackers(impressionTrackers);
+                adDescriptor.setClickTrackers(clickTrackers);
 
-                // Setting click tracking url if not null
-                if (responseGenerator.getClickTrackingUrl(impressionId) != null && !responseGenerator.getClickTrackingUrl(impressionId).equals("")) {
-                    clickTrackers.add( URLDecoder.decode(responseGenerator.getClickTrackingUrl(impressionId), CommonConstants.ENCODING_UTF_8));
-                }
+                pubResponse.setRenderable(adDescriptor);
+
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } finally {
+                //response = null;
             }
 
-            BannerAdDescriptor adDescriptor = new BannerAdDescriptor(adInfo);
-            adDescriptor.setImpressionTrackers(impressionTrackers);
-            adDescriptor.setClickTrackers(clickTrackers);
+            if (isAdResponseValid(pubResponse))
+                renderAdDescriptor(pubResponse.getRenderable());
 
-            pubResponse.setRenderable(adDescriptor);
-
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } finally {
-            //response = null;
         }
-
-        if (isAdResponseValid(pubResponse))
-            renderAdDescriptor(pubResponse.getRenderable());
-
     }
 }

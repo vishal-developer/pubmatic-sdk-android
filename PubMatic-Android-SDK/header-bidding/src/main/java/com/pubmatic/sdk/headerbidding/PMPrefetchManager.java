@@ -106,7 +106,9 @@ public class PMPrefetchManager implements ResponseGenerator {
         mContext = context;
         this.pmPreFetchListener = pmPrefetchListener;
 
-        userAgent = new WebView(context).getSettings().getUserAgentString();
+        WebView webView = new WebView(context);
+        userAgent = webView.getSettings().getUserAgentString();
+        webView = null;
     }
 
     public PMPrefetchListener getPrefetchListener() {
@@ -115,22 +117,25 @@ public class PMPrefetchManager implements ResponseGenerator {
 
     public void prefetchCreatives(PMBannerPrefetchRequest adRequest) {
 
-        // Sanitise request. Remove any ad tag detail.
-        adRequest.setSiteId("");
-        adRequest.setAdId("");
+        if(adRequest!=null) {
 
-        if(validateHeaderBiddingRequest(adRequest))
-        {
-            adRequest.createRequest(mContext);
+            // Sanitise request. Remove any ad tag detail.
+            adRequest.setSiteId("");
+            adRequest.setAdId("");
 
-            HttpRequest httpRequest = formatHeaderBiddingRequest(adRequest);
-            PMLogger.logEvent("Request Url : " + httpRequest.getRequestUrl() + "\n body : " + httpRequest.getPostData(),
-                    PMLogger.LogLevel.Debug);
+            if(validateHeaderBiddingRequest(adRequest))
+            {
+                adRequest.createRequest(mContext);
 
-            HttpHandler requestProcessor = new HttpHandler(networkListener, httpRequest);
+                HttpRequest httpRequest = formatHeaderBiddingRequest(adRequest);
+                PMLogger.logEvent("Request Url : " + httpRequest.getRequestUrl() + "\n body : " + httpRequest.getPostData(),
+                        PMLogger.LogLevel.Debug);
 
-            ExecutorService executor = Executors.newSingleThreadExecutor();
-            executor.execute(requestProcessor);
+                HttpHandler requestProcessor = new HttpHandler(networkListener, httpRequest);
+
+                ExecutorService executor = Executors.newSingleThreadExecutor();
+                executor.execute(requestProcessor);
+            }
         }
     }
 
@@ -153,11 +158,11 @@ public class PMPrefetchManager implements ResponseGenerator {
      */
     public void renderPubMaticAd(String impressionId, PMAdRendered pmAdRendered) {
 
-        //AdResponse adData = formatHeaderBiddingResponse(publisherHBResponse.get(impressionId));
-        //adView.renderHeaderBiddingCreative(adData);
+        if(pmAdRendered!=null)
+            pmAdRendered.renderPrefetchedAd(impressionId, this);
 
-        pmAdRendered.renderPrefetchedAd(impressionId, this);
-        publisherHBResponse.remove(impressionId);
+        if(publisherHBResponse!=null)
+            publisherHBResponse.remove(impressionId);
 
         // Save a weak reference to this view. To be used in destroy method later.
         if (pubmaticAdViews == null)
@@ -177,63 +182,6 @@ public class PMPrefetchManager implements ResponseGenerator {
         }
     }
 
-    private AdResponse formatHeaderBiddingResponse(PMBid bid)
-    {
-        AdResponse pubResponse = new AdResponse();
-
-        Map<String, String> adInfo = new HashMap<String, String>();
-        ArrayList<String> impressionTrackers = new ArrayList<String>();
-        ArrayList<String> clickTrackers = new ArrayList<String>();
-        adInfo.put("type", "thirdparty");
-
-        try {
-            // If there is an error from the server which happens when provided
-            // wrong ad parameters, return the error with error code and error
-            // message.
-            String errorCode;
-            /*if (!TextUtils.isEmpty(errorCode = response.optString(kerror_code))) {
-
-                pubResponse.setErrorCode(errorCode);
-                pubResponse.setErrorMessage(response.getString(kerror_message));
-                return pubResponse;
-            }*/
-
-            // Check if json contains the creative_tag and tracking_url.
-            // If these are missing then the ad is invalid. Return null else
-            // return valid adInfo object.
-            if (bid != null && !TextUtils.isEmpty(bid.getCreative())) {
-
-                adInfo.put("content", URLDecoder.decode(bid.getCreative(), UTF8_CHARSET));
-                impressionTrackers.add( URLDecoder.decode(bid.getTrackingUrl(), UTF8_CHARSET));
-
-                // Setting ecpm if not null
-                if (bid.getPrice() != 0) {
-                    adInfo.put("ecpm", String.valueOf(bid.getPrice()));
-                }
-                // Setting click_tracking_url if not null
-                if (bid.getTrackingUrl() != null && bid.getTrackingUrl() != "") {
-                    // clickTrackers.add(URLDecoder.decode(bid.getTrackingUrl(), UTF8_CHARSET));
-                }
-                // Setting landing_page if not null
-                /*if (!response.isNull(klanding_page)) {
-                    adInfo.put("url", URLDecoder.decode(response.getString(klanding_page), UTF8_CHARSET));
-                }*/
-            }
-
-            BannerAdDescriptor adDescriptor = new BannerAdDescriptor(adInfo);
-            adDescriptor.setImpressionTrackers(impressionTrackers);
-            adDescriptor.setClickTrackers(clickTrackers);
-            pubResponse.setRenderable(adDescriptor);
-
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } finally {
-            //response = null;
-        }
-
-        return pubResponse;
-    }
-
     /**
      * Provide the rendered adView from PubMatic cached creative.
      * This creative is the header bidding winner for the provided adSlotId.
@@ -241,8 +189,11 @@ public class PMPrefetchManager implements ResponseGenerator {
      */
     public void renderedPMInterstitialAd(String impressionId, PMAdRendered pmAdRendered) {
 
-        pmAdRendered.renderPrefetchedAd(impressionId, this);
-        publisherHBResponse.remove(impressionId);
+        if(pmAdRendered!=null)
+            pmAdRendered.renderPrefetchedAd(impressionId, this);
+
+        if(publisherHBResponse!=null)
+            publisherHBResponse.remove(impressionId);
 
         // Save a weak reference to this view. To be used in destroy method later.
         if (pubmaticInterstitialAdViews == null)
@@ -393,7 +344,8 @@ public class PMPrefetchManager implements ResponseGenerator {
      * Release resources, clear maps and destroy the adViews used.
      */
     public void destroy() {
-        publisherHBResponse.clear();
+        if(publisherHBResponse!=null)
+            publisherHBResponse.clear();
 
         // Reset all PMBannerAdViews.
         if (pubmaticAdViews != null && pubmaticAdViews.size() != 0) {

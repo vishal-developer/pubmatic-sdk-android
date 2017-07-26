@@ -44,62 +44,13 @@ public class BannerAdController {
 	protected RRFormatter 		mRRFormatter 	= null;
 	
 	
-	public BannerAdController(CHANNEL channel, Context cnt, AttributeSet attr) {
+	public BannerAdController(CHANNEL channel, Context cnt) {
 		mChannel = channel;
 		mContext = cnt;
-		if(attr!=null)
-			createDefaultAdRequest(attr);
 	}
+
 	public AdRequest getAdRequest() {
 		return mAdRequest;
-	}
-
-	//TODO :: Need to verify this method
-	private void createDefaultAdRequest(AttributeSet attr) {
-
-		String adRequestName = null;
-		Class  className     = null;
-		Method m			 = null;
-		try {
-
-			switch (mChannel) {
-				case PUBMATIC:
-					adRequestName = "com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest";
-					className = Class.forName(adRequestName);
-					m = className.getMethod("createPubMaticBannerAdRequest",
-											Context.class, String.class, String.class, String.class);
-					mAdRequest = (AdRequest)m.invoke(null, mContext, null, null, null);
-					//Call setAttributes()
-					m = className.getMethod("setAttributes", AttributeSet.class);
-					m.invoke(mAdRequest, attr);
-					break;
-				case PHOENIX:
-					adRequestName = "com.pubmatic.sdk.banner.phoenix.PhoenixBannerAdRequest";
-					className = Class.forName(adRequestName);
-					m = className.getMethod("createPhoenixBannerAdRequest", Context.class, String.class, String.class);
-					mAdRequest = (AdRequest)m.invoke(null, mContext, null, null);
-					//Call setAttributes()
-					m = className.getMethod("setAttributes", AttributeSet.class);
-					m.invoke(mAdRequest, attr);
-
-					break;
-
-				default:
-					break;
-			}
-
-			createRRFormatter();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		} catch (ClassCastException ex) {
-
-		}
 	}
 
 	public void setAdRequest(AdRequest adRequest) {
