@@ -2193,11 +2193,12 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             }
         }
 
-        if (closeButtonDelay < 0) {
-            return;
-        }
+//        if (closeButtonDelay < 0) {
+//            return;
+//        }
 
-        if (closeButtonDelay == 0) {
+        //If close delay <= 0 then show close button immediately
+        if (closeButtonDelay <= 0) {
             showCloseButton();
             return;
         }
@@ -2231,12 +2232,20 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             return;
         }
 
+        final Drawable closeCustomButtonDrawable = closeButtonDrawable;
+
         if (mraidBridge != null) {
             switch (mraidBridge.getState()) {
                 case Loading:
                 case Default:
                     if (placementType == PlacementType.Interstitial) {
-                        interstitialDialog.setCloseImage(closeButtonDrawable);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                interstitialDialog.setCloseImage(closeCustomButtonDrawable);
+                            }
+                        });
                         return;
                     }
                 case Hidden:
@@ -3103,7 +3112,8 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         }
 
         public void setCloseImage(Drawable image) {
-            closeArea.removeAllViews();
+            if(closeArea!=null && closeArea.getChildCount()>0)
+                closeArea.removeAllViews();
 
             if (image != null) {
                 RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(

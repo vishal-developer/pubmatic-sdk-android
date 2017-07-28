@@ -31,6 +31,8 @@ import com.pubmatic.sdk.common.CommonConstants.AD_REQUEST_TYPE;
 import com.pubmatic.sdk.common.CommonConstants.CHANNEL;
 import com.pubmatic.sdk.common.CommonConstants.CONTENT_TYPE;
 
+import java.util.Locale;
+
 public class HttpRequest {
 
 
@@ -49,11 +51,11 @@ public class HttpRequest {
 	private String			mPostData	= null;
 	
 	// Headers
-	String mContentLanguage = "en";
-	String mAcceptCharset 	= "utf-8";
-	String mConnection 		= "close";
-	String mCacheControl 	= "no-cache";
-	String mAccept 			= "text/plain";
+	String mContentLanguage;
+	String mAcceptCharset;
+	String mConnection;
+	String mCacheControl;
+	String mAccept;
 	String mContentTypeHeader= null;
 	String mContentLength 	= null;
 	String mContentMd5 		= null;
@@ -68,11 +70,16 @@ public class HttpRequest {
 	private String mUserAgent 		= null;
 	
 	public HttpRequest() {
-		
+		mContentLanguage 	= Locale.getDefault().getLanguage();
+		mAcceptCharset 		= "utf-8";
+		mConnection 		= "close";
+		mCacheControl 		= "no-cache";
+		mAccept 			= "text/plain";
 	}
 	
 	public HttpRequest(CONTENT_TYPE contentType)
 	{
+		this();
 		this.mContentType 	= contentType;
 	}
 
