@@ -146,9 +146,10 @@ public class PhoenixNativeAdRequest extends PhoenixAdRequest {
         return "com.pubmatic.sdk.nativead.phoenix.PhoenixNativeRRFormatter";
     }
 
-    @Override
-    public void createRequest(Context context) {
-        initializeDefaultParams(context);
+    void createRequest() {
+        mPostData		= null;
+        initializeDefaultParams();
+        setupPostData();
         setUpUrlParams();
     }
 
@@ -169,9 +170,7 @@ public class PhoenixNativeAdRequest extends PhoenixAdRequest {
     }
 
     @Override
-    protected void initializeDefaultParams(Context context) {
-        super.initializeDefaultParams(context);
-
+    protected void initializeDefaultParams() {
         setRequestType(REQUEST_TYPE.NATIVE);
         setResponseFormat(RESPONSE_TYPE.JSON);
     }
@@ -179,8 +178,6 @@ public class PhoenixNativeAdRequest extends PhoenixAdRequest {
     public void setUserAgent(String userAgent) {
         super.setUserAgent(userAgent);
     }
-
-    public void setAttributes(AttributeSet attr){}
 
     public String getNativeTemplateID() {
         return mNativeTemplateID;

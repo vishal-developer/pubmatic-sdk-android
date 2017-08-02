@@ -67,6 +67,7 @@ import com.pubmatic.sdk.banner.mraid.ExpandProperties;
 import com.pubmatic.sdk.banner.mraid.OrientationProperties;
 import com.pubmatic.sdk.banner.mraid.ResizeProperties;
 import com.pubmatic.sdk.banner.mraid.WebView;
+import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest;
 import com.pubmatic.sdk.banner.ui.ImageView;
 import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.AdResponse;
@@ -74,8 +75,10 @@ import com.pubmatic.sdk.common.CommonConstants;
 import com.pubmatic.sdk.common.CommonConstants.CHANNEL;
 import com.pubmatic.sdk.common.LocationDetector;
 import com.pubmatic.sdk.common.PMAdRendered;
+import com.pubmatic.sdk.common.PMAdSize;
 import com.pubmatic.sdk.common.PMLogger;
 import com.pubmatic.sdk.common.PMLogger.LogLevel;
+import com.pubmatic.sdk.common.RRFormatter;
 import com.pubmatic.sdk.common.ResponseGenerator;
 import com.pubmatic.sdk.common.network.AdTracking;
 import com.pubmatic.sdk.common.network.HttpHandler;
@@ -103,6 +106,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import static android.R.attr.description;
+import static android.R.attr.height;
+import static android.R.attr.width;
 
 public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
@@ -313,8 +318,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
     private static final String TAG = PMBannerAdView.class.getSimpleName();
 
-    private BannerAdController mAdController;
-
     final private int CloseAreaSizeDp = 50;
     final private int OrientationReset = Short.MIN_VALUE;
 
@@ -389,6 +392,8 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
     private BroadcastReceiver mReceiver;
     private IntentFilter filter;
 
+    private AdRequest 		mAdRequest 		= null;
+    private RRFormatter 	mRRFormatter 	= null;
 //    private AttributeSet mAttributes;
 
     private CHANNEL mChannel;
@@ -401,9 +406,10 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         // Since banneradRequest is class is abstract now, we will always have
         // correct channel value here.
         // and hence the controller. No need for null check.
-        // mAdRequest = adRequest;
-        setChannel(adRequest.getChannel());
-        mAdController.setAdRequest(adRequest);
+        mAdRequest = adRequest;
+        mChannel = adRequest.getChannel();
+
+        createRRFormatter();
 
         //Start the location update if Publisher has enabled location detection
         if(mRetrieveLocationInfo) {
@@ -412,8 +418,29 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         }
     }
 
+    private void createRRFormatter() {
+        if(mAdRequest != null && mRRFormatter==null)
+        {
+            //Create RRFormater
+            String rrFormaterName = mAdRequest.getFormatter();
+
+            try {
+                Class className = Class.forName(rrFormaterName);
+                mRRFormatter = (RRFormatter) className.newInstance();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (ClassCastException ex) {
+
+            }
+        }
+    }
+
     public AdRequest getAdRequest() {
-        return mAdController != null ? mAdController.mAdRequest : null;
+        return mAdRequest;
     }
 
     /**
@@ -470,56 +497,21 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             placementType = PlacementType.Interstitial;
             interstitialDialog = new ExpandDialog(getContext());
         }
-
-        initUserAgent();
-    }
-
-    protected void initController(CHANNEL channel) {
-        if (mAdController == null) {
-            mAdController = new BannerAdController(channel, getContext());
-        }
     }
 
     private boolean checkForMandatoryParams() {
-        boolean result = mAdController.checkMandatoryParams();
+        boolean result = mAdRequest.checkMandatoryParams();
 
         if(result && mChannel == CHANNEL.PUBMATIC && !isInterstitial())
         {
-            result = (mAdController.getAdRequest().getWidth()>0 && mAdController.getAdRequest().getHeight()>0);
+            PMAdSize adSize = mAdRequest.getAdSize();
+            if(adSize!=null)
+                result = (adSize.getAdWidth()>0 && adSize.getAdHeight()>0);
+            else
+                result = false;
         }
 
         return result;
-    }
-
-    /**
-     * Sets the ad network channel.
-     * <p/>
-     * REQUIRED - If not set updates will fail.
-     *
-     * @param channel Ad network channel.
-     */
-    private void setChannel(CHANNEL channel) {
-        // If channel is changed, controller needs to be re-initialized.
-        initController(channel);
-
-        mChannel = channel;
-
-        //XML flow - Checking for mandatory parameters
-//        if (mAttributes != null) {
-//            if (checkForMandatoryParams()) {
-//                updateOnLayout = true;
-//            }
-//        }
-
-    }
-
-    /**
-     * Returns the currently configured ad network channel.
-     *
-     * @return Ad network channel.
-     */
-    public CHANNEL getChannel() {
-        return mChannel;
     }
 
     private void updateOnLayout() {
@@ -533,20 +525,12 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
     private void initUserAgent() {
         if (TextUtils.isEmpty(userAgent)) {
             userAgent = getWebView().getSettings().getUserAgentString();
+//            userAgent = System.getProperty("http.agent");
 
             if (TextUtils.isEmpty(userAgent)) {
                 userAgent = CommonConstants.USER_AGENT_VALUE;
             }
         }
-    }
-
-    /**
-     * Accessor to the User-Agent header value the SDK will send to the ad network.
-     *
-     * @return
-     */
-    public String getUserAgent() {
-        return userAgent;
     }
 
     /**
@@ -830,16 +814,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         mRetrieveLocationInfo = locationDetectionEnabled;
     }
 
-    private Observer locationObserver = new Observer() {
-        @Override
-        public void update(Observable observable, Object data) {
-
-            if(data instanceof Location) {
-                location = (Location) data;
-            }
-        }
-    };
-
     /**
      * Executes the Banner ad request.
      * <p/>
@@ -860,7 +834,36 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         return isAndroidIdEnabled;
     }
 
+    /**
+     * Resets instance state to it's default (doesn't destroy configured parameters). Stops update
+     * interval timer, closes internal browser if open, disables location detection.
+     * <p/>
+     * Invoke this method to stop any ad processing. This should be done for ads that have a update
+     * time interval set with setUpdateInterval() before the owning context/activity is destroyed.
+     */
+    public void destroy() {
+        deferredUpdate = false;
+        mImpressionTrackerSent = false;
+        mClickTrackerSent = false;
 
+        removeContent();
+
+        if (adUpdateIntervalFuture != null) {
+            adUpdateIntervalFuture.cancel(true);
+            adUpdateIntervalFuture = null;
+        }
+
+        if (interstitialDelayFuture != null) {
+            interstitialDelayFuture.cancel(true);
+            interstitialDelayFuture = null;
+        }
+
+        closeInternalBrowser();
+        browserDialog = null;
+
+        //findLocation();
+        unregisterReceiver();
+    }
 
     /**
      * @param adrequest
@@ -893,7 +896,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         // This will be the case if Publisher added the view in xml & sets the
         // values from java file
         // If channel is set => adcontroller is initialized correctly
-        if (getChannel() == null || !checkForMandatoryParams()) {
+        if (mChannel == null || !checkForMandatoryParams()) {
 
             throw new IllegalArgumentException("Required parameters are not set.");
         }
@@ -946,42 +949,20 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         }
     }
 
+    private Observer locationObserver = new Observer() {
+        @Override
+        public void update(Observable observable, Object data) {
 
-    /**
-     * Resets instance state to it's default (doesn't destroy configured parameters). Stops update
-     * interval timer, closes internal browser if open, disables location detection.
-     * <p/>
-     * Invoke this method to stop any ad processing. This should be done for ads that have a update
-     * time interval set with setUpdateInterval() before the owning context/activity is destroyed.
-     */
-    public void destroy() {
-        deferredUpdate = false;
-        mImpressionTrackerSent = false;
-        mClickTrackerSent = false;
-
-        removeContent();
-
-        if (adUpdateIntervalFuture != null) {
-            adUpdateIntervalFuture.cancel(true);
-            adUpdateIntervalFuture = null;
+            if(data instanceof Location) {
+                location = (Location) data;
+            }
         }
-
-        if (interstitialDelayFuture != null) {
-            interstitialDelayFuture.cancel(true);
-            interstitialDelayFuture = null;
-        }
-
-        closeInternalBrowser();
-        browserDialog = null;
-
-        //findLocation();
-        unregisterReceiver();
-    }
+    };
 
     /**
      * Removes any displayed ad content.
      */
-    public void removeContent() {
+    private void removeContent() {
         deferredUpdate = false;
 
         resetRichMediaAd();
@@ -995,8 +976,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                 interstitialDialog.removeAllViews();
         }
 
-        //		mAdRequest = null;
-        mAdController = null;
+        mAdRequest = null;
     }
 
     private void internalUpdate() {
@@ -1035,45 +1015,38 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             }
         }
 
-        // Make a fresh adRequest
-        AdRequest adRequest = (AdRequest) mAdController.getAdRequest();
-        adRequest.setUserAgent(getUserAgent());
+        //Fetch user-agent, if publisher has not explicitly provided
+        if(TextUtils.isEmpty(mAdRequest.getUserAgent())) {
+            initUserAgent();
+            mAdRequest.setUserAgent(userAgent);
+        } else {
+            //Set the publisher provided user-agent.
+            // It also requied for other http calls.
+            userAgent = mAdRequest.getUserAgent();
+        }
 
         // Set common width/height param to all platforms.
         // Respective AdRequest implementation will send them as per their key name.
-        int width = getWidth();
-        int height = getHeight();
         if (isInterstitial()) {
             DisplayMetrics displayMetrics = Resources.getSystem().getDisplayMetrics();
-            adRequest.setWidth(displayMetrics.widthPixels);
-            adRequest.setHeight(displayMetrics.heightPixels);
-        } else {
-            if (width != 0 && adRequest.getWidth() <= 0) {
-                adRequest.setWidth(width);
-            }
-
-            if (height != 0 && adRequest.getHeight() <= 0) {
-                adRequest.setHeight(height);
-            }
+            mAdRequest.setAdSize(new PMAdSize(displayMetrics.widthPixels, displayMetrics.heightPixels));
         }
 
         // If User has provided the location set the source as user
-        Location userProvidedLocation = adRequest.getLocation();
+        Location userProvidedLocation = mAdRequest.getLocation();
         if(userProvidedLocation != null) {
             userProvidedLocation.setProvider("user");
-            adRequest.setLocation(userProvidedLocation);
+            mAdRequest.setLocation(userProvidedLocation);
         }
 
         // Insert the location parameter in ad request,
         // if publisher has enabled location detection
         // and does not provid location
         if(mRetrieveLocationInfo && location != null) {
-            adRequest.setLocation(location);
+            mAdRequest.setLocation(location);
         }
 
-        adRequest.createRequest(getContext());
-
-        HttpRequest httpRequest = mAdController.getRRFormatter().formatRequest(adRequest);
+        HttpRequest httpRequest = mRRFormatter.formatRequest(mAdRequest);
 
         PMLogger.logEvent("Ad request:" + httpRequest.getRequestUrl(), LogLevel.Debug);
         PMLogger.logEvent("Ad request body:" + httpRequest.getPostData(), LogLevel.Debug);
@@ -1088,11 +1061,10 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         @Override
         public void onRequestComplete(HttpResponse response, String requestURL) {
 
-            if (response != null) {
-                AdRequest adRequest = (AdRequest) mAdController.getAdRequest();
+            if (response != null && mRRFormatter!=null) {
 
-                AdResponse adData = mAdController.getRRFormatter().formatResponse(response);
-                if (adData.getRequest() != adRequest) {
+                AdResponse adData = mRRFormatter.formatResponse(response);
+                if (adData.getRequest() != mAdRequest) {
                     return;
                 }
 
@@ -1279,7 +1251,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
      * rendered ad using third-party SDK. User should call this method when successful ad load
      * complete callback is received from third party SDK.
      */
-    public void sendImpression() {
+    private void sendImpression() {
         if (!mImpressionTrackerSent && mAdDescriptor != null && "thirdparty".equals(mAdDescriptor.getType())) {
             if (mAdDescriptor.getImpressionTrackers() != null && mAdDescriptor.getImpressionTrackers()
                     .size() > 0) {
@@ -1297,7 +1269,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
      * Call this method whenever ad received from client side thirdparty SDK is clicked. User should
      * call this method when ad clicked callback is received from third party SDK.
      */
-    public void sendClickTracker() {
+    private void sendClickTracker() {
         if (!mClickTrackerSent && mAdDescriptor != null && "thirdparty".equals(mAdDescriptor.getType())) {
             if (mAdDescriptor.getClickTrackers() != null && mAdDescriptor.getClickTrackers()
                     .size() > 0) {
@@ -1342,7 +1314,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         String creative = adDescriptor.getContent();
         String url = "";
         if (getAdRequest() != null)
-            url = getAdRequest().getAdServerURL();
+            url = getAdRequest().getRequestUrl();
 
         webView.loadFragment(creative, mraidBridge, url);
 
@@ -2617,7 +2589,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
             ImageRequest.create(CommonConstants.NETWORK_TIMEOUT_SECONDS,
                     url,
-                    getUserAgent(),
+                    userAgent,
                     false,
                     new ImageRequest.Handler() {
                         @Override

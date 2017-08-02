@@ -15,12 +15,16 @@ import com.pubmatic.sampleapp.R;
 import com.pubmatic.sdk.banner.PMBannerAdView;
 import com.pubmatic.sdk.banner.PMBannerAdView.BannerAdViewDelegate.RequestListener;
 import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest;
+import com.pubmatic.sdk.common.PMAdSize;
 import com.pubmatic.sdk.common.PMLogger;
-import com.pubmatic.sdk.common.pubmatic.PUBAdSize;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import static com.pubmatic.sdk.common.pubmatic.PUBAdSize.PUBBANNER_SIZE_300x250;
+import static android.R.id.list;
+import static com.pubmatic.sdk.common.PMAdSize.PUBBANNER_SIZE_300x250;
 
 public class BannerDemoActivity extends Activity {
 
@@ -95,12 +99,28 @@ public class BannerDemoActivity extends Activity {
                 BannerDemoActivity.this,
                 pubId, siteId, adId);
 
-        adRequest.setAdSize(PUBAdSize.PUBBANNER_SIZE_320x50);
+        adRequest.setAdSize(PMAdSize.PUBBANNER_SIZE_320x50);
 
-        PUBAdSize size1 = new PUBAdSize(300,50);
-        PUBAdSize size2 = new PUBAdSize(640,100);
-        PUBAdSize arr[]= {size1, size2, PUBBANNER_SIZE_300x250, PUBAdSize.PUBBANNER_SIZE_320x100};
+        PMAdSize size1 = new PMAdSize(300,50);
+        PMAdSize size2 = new PMAdSize(640,100);
+        PMAdSize arr[]= {size1, size2, PUBBANNER_SIZE_300x250, PMAdSize.PUBBANNER_SIZE_320x100};
         adRequest.setOptionalAdSizes(arr);
+
+        //------ Setting custom parameters using 3 different methods ------
+        List<String> list2 = new ArrayList<String>(3);
+        list2.add("value21");
+        list2.add("value22");
+        list2.add("value23");
+
+        List<String> list1 = new ArrayList<String>(1);
+        list1.add("value1");
+
+        Map<String, List<String>> map = new HashMap<>(2);
+        map.put("key1", list1);
+        map.put("key2", list2);
+        adRequest.setCustomParams(map);
+        adRequest.addCustomParam("key3", "value3");
+        //-------- End of custom parameter ---------
 
         banner.setUseInternalBrowser(true);
         banner.setUpdateInterval(15);

@@ -29,90 +29,83 @@
  * TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.                
 
  */
-package com.pubmatic.sdk.common.pubmatic;
+package com.pubmatic.sdk.common;
 
 /**
  * Class provides the different Ad sizes for Banner Ads.
- * This class is deprecated, use PMAdSize class instead.
+ * 
  */
-@Deprecated
-public final class PUBAdSize {
+public final class PMAdSize {
 
 	private int adWidth;
 	private int adHeight;
 
 	// Supported Banner Ad Size for both android phone and tablet
-	public static final PUBAdSize PUBBANNER_SIZE_320x50 = new PUBAdSize(320, 50);
-	public static final PUBAdSize PUBBANNER_SIZE_300x50 = new PUBAdSize(300, 50);
-	public static final PUBAdSize PUBBANNER_SIZE_300x250 = new PUBAdSize(300,
+	public static final PMAdSize PUBBANNER_SIZE_320x50 = new PMAdSize(320, 50);
+	public static final PMAdSize PUBBANNER_SIZE_300x50 = new PMAdSize(300, 50);
+	public static final PMAdSize PUBBANNER_SIZE_300x250 = new PMAdSize(300,
 			250);
-	public static final PUBAdSize PUBBANNER_SIZE_38x38 = new PUBAdSize(38, 38);
+	public static final PMAdSize PUBBANNER_SIZE_38x38 = new PMAdSize(38, 38);
 
 	// Banner Ad Size for android phone
-	public static final PUBAdSize PUBBANNER_SIZE_320x416 = new PUBAdSize(320,
+	public static final PMAdSize PUBBANNER_SIZE_320x416 = new PMAdSize(320,
 			416);
-	public static final PUBAdSize PUBBANNER_SIZE_320x100 = new PUBAdSize(320,
+	public static final PMAdSize PUBBANNER_SIZE_320x100 = new PMAdSize(320,
 			100);
-	public static final PUBAdSize PUBBANNER_SIZE_320x53 = new PUBAdSize(320, 53);
-	public static final PUBAdSize PUBBANNER_SIZE_480x32 = new PUBAdSize(480, 32);
+	public static final PMAdSize PUBBANNER_SIZE_320x53 = new PMAdSize(320, 53);
+	public static final PMAdSize PUBBANNER_SIZE_480x32 = new PMAdSize(480, 32);
 
 	// Banner Ad Size for android tablet
-	public static final PUBAdSize PUBBANNER_SIZE_768x66 = new PUBAdSize(768, 66);
-	public static final PUBAdSize PUBBANNER_SIZE_768x90 = new PUBAdSize(768, 90);
-	public static final PUBAdSize PUBBANNER_SIZE_728x90 = new PUBAdSize(728, 90);
-	public static final PUBAdSize PUBBANNER_SIZE_1024x90 = new PUBAdSize(1024,
+	public static final PMAdSize PUBBANNER_SIZE_768x66 = new PMAdSize(768, 66);
+	public static final PMAdSize PUBBANNER_SIZE_768x90 = new PMAdSize(768, 90);
+	public static final PMAdSize PUBBANNER_SIZE_728x90 = new PMAdSize(728, 90);
+	public static final PMAdSize PUBBANNER_SIZE_1024x90 = new PMAdSize(1024,
 			90);
-	public static final PUBAdSize PUBBANNER_SIZE_1024x66 = new PUBAdSize(1024,
+	public static final PMAdSize PUBBANNER_SIZE_1024x66 = new PMAdSize(1024,
 			66);
-	public static final PUBAdSize PUBBANNER_SIZE_160x600 = new PUBAdSize(160,
+	public static final PMAdSize PUBBANNER_SIZE_160x600 = new PMAdSize(160,
 			600);
-	public static final PUBAdSize PUBBANNER_SIZE_120x60 = new PUBAdSize(120, 60);
-	public static final PUBAdSize PUBBANNER_SIZE_555x206 = new PUBAdSize(555,
+	public static final PMAdSize PUBBANNER_SIZE_120x60 = new PMAdSize(120, 60);
+	public static final PMAdSize PUBBANNER_SIZE_555x206 = new PMAdSize(555,
 			206);
-	public static final PUBAdSize PUBBANNER_SIZE_500x500 = new PUBAdSize(500,
+	public static final PMAdSize PUBBANNER_SIZE_500x500 = new PMAdSize(500,
 			500);
-	public static final PUBAdSize PUBBANNER_SIZE_250x250 = new PUBAdSize(250,
+	public static final PMAdSize PUBBANNER_SIZE_250x250 = new PMAdSize(250,
 			250);
-	public static final PUBAdSize PUBBANNER_SIZE_216x36 = new PUBAdSize(216, 36);
-	public static final PUBAdSize PUBBANNER_SIZE_210x175 = new PUBAdSize(210,
+	public static final PMAdSize PUBBANNER_SIZE_216x36 = new PMAdSize(216, 36);
+	public static final PMAdSize PUBBANNER_SIZE_210x175 = new PMAdSize(210,
 			175);
-	public static final PUBAdSize PUBBANNER_SIZE_200x120 = new PUBAdSize(200,
+	public static final PMAdSize PUBBANNER_SIZE_200x120 = new PMAdSize(200,
 			120);
-	public static final PUBAdSize PUBBANNER_SIZE_185x30 = new PUBAdSize(185, 30);
-	public static final PUBAdSize PUBBANNER_SIZE_168x28 = new PUBAdSize(168, 28);
-	public static final PUBAdSize PUBBANNER_SIZE_120x20 = new PUBAdSize(120, 20);
+	public static final PMAdSize PUBBANNER_SIZE_185x30 = new PMAdSize(185, 30);
+	public static final PMAdSize PUBBANNER_SIZE_168x28 = new PMAdSize(168, 28);
+	public static final PMAdSize PUBBANNER_SIZE_120x20 = new PMAdSize(120, 20);
 
 	// Making the constructors private so that to avoid
 	// the creation of the PUBAdSize object.
-	private PUBAdSize() {
+	private PMAdSize() {
 
 	}
 
 	/**
-	 * Use PMAdSize class instead.
 	 * @param adWidth
 	 * @param adHeight
 	 */
-	@Deprecated
-	public PUBAdSize(int adWidth, int adHeight) {
+	public PMAdSize(int adWidth, int adHeight) {
 		this.adWidth = adWidth;
 		this.adHeight = adHeight;
 	}
 
 	/**
-	 * Use PMAdSize class instead.
 	 * @return the adWidth
 	 */
-	@Deprecated
 	public int getAdWidth() {
 		return adWidth;
 	}
 
 	/**
-	 * Use PMAdSize class instead.
 	 * @return the adHeight
 	 */
-	@Deprecated
 	public int getAdHeight() {
 		return adHeight;
 	}

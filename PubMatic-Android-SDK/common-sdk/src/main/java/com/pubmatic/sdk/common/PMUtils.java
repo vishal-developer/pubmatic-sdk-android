@@ -24,19 +24,21 @@
  * REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR
  * SELL ANYTHING THAT IT MAY DESCRIBE, IN WHOLE OR IN PART.
  */
-package com.pubmatic.sdk.common.pubmatic;
+package com.pubmatic.sdk.common;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.provider.Settings;
+import android.text.TextUtils;
 import android.util.Log;
+import android.webkit.WebView;
 
 import java.security.MessageDigest;
 import java.util.Locale;
 
-public class PubMaticUtils {
+public class PMUtils {
 
     public static String getNetworkType(Context context){
 
@@ -57,7 +59,7 @@ public class PubMaticUtils {
             }
 
         } catch (Exception e) {
-            Log.e("PubMaticUtils", "ACCESS_NETWORK_STATE permission is not granted.");
+            Log.e("PMUtils", "ACCESS_NETWORK_STATE permission is not granted.");
         }
         return null;
     }

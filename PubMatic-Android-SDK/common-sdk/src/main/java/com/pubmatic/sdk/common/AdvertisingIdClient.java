@@ -100,6 +100,14 @@ public static final class AdInfo {
         return adInfo;
     }
 
+    /**
+     * Fetch the advertising info object synchronously and returns,
+     * it saves the advertisement id and Opt-out state in shared preference of the application.
+     * Execution of this method may take sometime as it is synchronous call.
+     * @param context
+     * @return
+     * @throws Exception
+     */
     public static AdInfo getAdvertisingIdInfo(Context context) throws Exception {
         if(Looper.myLooper() == Looper.getMainLooper()) throw new IllegalStateException("Cannot be called from the main thread");
 

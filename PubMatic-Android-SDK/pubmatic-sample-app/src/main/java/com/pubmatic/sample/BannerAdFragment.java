@@ -22,7 +22,7 @@ import com.pubmatic.sdk.banner.PMBannerAdView;
 import com.pubmatic.sdk.banner.phoenix.PhoenixBannerAdRequest;
 import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest;
 import com.pubmatic.sdk.common.AdRequest;
-import com.pubmatic.sdk.common.pubmatic.PUBAdSize;
+import com.pubmatic.sdk.common.PMAdSize;
 import com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest;
 
 import java.util.LinkedHashMap;
@@ -165,7 +165,7 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
                 String height = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_HEIGHT);
                 int heightInt = Integer.parseInt(height);
 
-                ((PubMaticBannerAdRequest)adRequest).setAdSize(new PUBAdSize(widthInt, heightInt));
+                ((PubMaticBannerAdRequest)adRequest).setAdSize(new PMAdSize(widthInt, heightInt));
 
                 // Configuration Parameters
                 String androidAidEnabled = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED);
@@ -219,11 +219,6 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
 
                 if(!storeUrl.equals("") && storeUrl != null)
                     ((PubMaticBannerAdRequest)adRequest).setStoreURL(storeUrl);
-
-                String appName = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_APP_NAME);
-
-                if(!appName.equals("") && appName != null)
-                    ((PubMaticBannerAdRequest)adRequest).setAppName(appName);
 
                 String yearOfBirth = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_YEAR_OF_BIRTH);
 

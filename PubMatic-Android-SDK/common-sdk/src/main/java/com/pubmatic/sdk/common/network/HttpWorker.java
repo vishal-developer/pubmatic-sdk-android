@@ -103,12 +103,6 @@ public class HttpWorker {
 					httpRequest.getUserAgent());
 		}
 
-		if (httpRequest.getRLNClientIPAddress() != null) {
-			httpUrlConnection.setRequestProperty(
-					CommonConstants.RLNCLIENT_IP_ADDR,
-					httpRequest.getRLNClientIPAddress());
-		}
-
 		if (httpRequest.mAccept != null) {
 			httpUrlConnection.setRequestProperty(
 					CommonConstants.ACCEPT,

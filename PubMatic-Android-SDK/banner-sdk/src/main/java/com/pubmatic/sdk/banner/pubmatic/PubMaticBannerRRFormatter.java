@@ -56,6 +56,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static android.R.attr.name;
+import static java.security.AccessController.getContext;
 
 public class PubMaticBannerRRFormatter implements RRFormatter {
 
@@ -75,11 +76,12 @@ public class PubMaticBannerRRFormatter implements RRFormatter {
     public HttpRequest formatRequest(AdRequest request) {
         mRequest = request;
         PubMaticBannerAdRequest adRequest = (PubMaticBannerAdRequest) request;
-        HttpRequest httpRequest = new HttpRequest(CONTENT_TYPE.URL_ENCODED);
+        adRequest.createRequest();
 
+        HttpRequest httpRequest = new HttpRequest(CONTENT_TYPE.URL_ENCODED);
         httpRequest.setUserAgent(adRequest.getUserAgent());
         httpRequest.setConnection("close");
-        httpRequest.setRequestUrl(request.getAdServerURL());
+        httpRequest.setRequestUrl(request.getRequestUrl());
         httpRequest.setRequestMethod(CommonConstants.HTTPMETHODPOST);
         httpRequest.setRequestType(CommonConstants.AD_REQUEST_TYPE.PUB_BANNER);
         httpRequest.setPostData(adRequest.getPostData());

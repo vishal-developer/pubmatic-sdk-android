@@ -274,7 +274,6 @@ public class HeaderBiddingBannerHelper {
         adRequest.setStoreURL("http://www.financialexpress.com");
         adRequest.setAppDomain("www.financialexpress.com");
         adRequest.setApplicationPaid(false);
-        adRequest.setAWT(PubMaticAdRequest.AWT_OPTION.WRAPPED_IN_IFRAME);
         adRequest.setPMZoneId("1");
         adRequest.addKeyword("entertainment");
         adRequest.addKeyword("sports");

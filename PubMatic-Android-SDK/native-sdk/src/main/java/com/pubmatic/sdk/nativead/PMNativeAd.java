@@ -322,7 +322,6 @@ public final class PMNativeAd {
     private void internalUpdate(boolean defaulted) {
 
         reset();
-        initUserAgent();
 
         // If User has provided the location set the source as user
         Location userProvidedLocation = mAdRequest.getLocation();
@@ -337,10 +336,15 @@ public final class PMNativeAd {
         if(mRetrieveLocationInfo && location != null)
             mAdRequest.setLocation(location);
 
-        // Make a fresh adRequest
-        mAdRequest.setUserAgent(getUserAgent());
-
-        mAdRequest.createRequest(mContext);
+        //Fetch user-agent, if publisher has not explicitly provided
+        if(TextUtils.isEmpty(mAdRequest.getUserAgent())) {
+            initUserAgent();
+            mAdRequest.setUserAgent(mUserAgent);
+        } else {
+            //Set the publisher provided user-agent.
+            // It also requied for other http calls.
+            mUserAgent = mAdRequest.getUserAgent();
+        }
 
         HttpRequest httpRequest = mRRFormatter.formatRequest(mAdRequest);
 
@@ -654,7 +658,7 @@ public final class PMNativeAd {
      *
      * @return
      */
-    public String getUserAgent() {
+    private String getUserAgent() {
         return mUserAgent;
     }
 
@@ -918,7 +922,6 @@ public final class PMNativeAd {
 		if (adRequest == null)
 			throw new IllegalArgumentException("AdRequest object is null");
 
-        adRequest.copyRequestParams(mAdRequest);
         mAdRequest = adRequest;
 
         //Need to call copy parameters

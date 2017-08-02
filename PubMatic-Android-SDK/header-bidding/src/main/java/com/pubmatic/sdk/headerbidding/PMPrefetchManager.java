@@ -120,8 +120,6 @@ public class PMPrefetchManager implements ResponseGenerator {
         if(adRequest!=null) {
 
             // Sanitise request. Remove any ad tag detail.
-            adRequest.setSiteId("");
-            adRequest.setAdId("");
 
             if(validateHeaderBiddingRequest(adRequest))
             {

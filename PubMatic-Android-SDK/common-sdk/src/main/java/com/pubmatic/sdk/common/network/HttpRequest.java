@@ -63,7 +63,7 @@ public class HttpRequest {
 	String mDate 			= null;
 	
 	private String mRequestMethod 		= null;//GET/POST
-	private String mRLNClientIPAddress 	= null;
+//	private String mRLNClientIPAddress 	= null;
 	private CONTENT_TYPE 	mContentType = CONTENT_TYPE.INVALID;
 	private String mUserAgent 		= null;
 	
@@ -192,11 +192,11 @@ public class HttpRequest {
 		this.mRequestMethod = mRequestMethod;
 	}
 
-	public String getRLNClientIPAddress() {
-		return mRLNClientIPAddress;
-	}
-
-	public void setRLNClientIPAddress(String mRLNClientIPAddress) {
-		this.mRLNClientIPAddress = mRLNClientIPAddress;
-	}
+//	public String getRLNClientIPAddress() {
+//		return mRLNClientIPAddress;
+//	}
+//
+//	public void setRLNClientIPAddress(String mRLNClientIPAddress) {
+//		this.mRLNClientIPAddress = mRLNClientIPAddress;
+//	}
 }

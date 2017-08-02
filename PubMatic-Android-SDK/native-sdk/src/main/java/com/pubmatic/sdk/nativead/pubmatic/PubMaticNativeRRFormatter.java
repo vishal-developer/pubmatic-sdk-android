@@ -79,14 +79,15 @@ public class PubMaticNativeRRFormatter implements RRFormatter {
 	public HttpRequest formatRequest(AdRequest request) {
 		mRequest = request;
 		PubMaticNativeAdRequest adRequest = (PubMaticNativeAdRequest) request;
+		adRequest.createRequest();
+
 		HttpRequest httpRequest = new HttpRequest(CONTENT_TYPE.URL_ENCODED);
 		httpRequest.setUserAgent(adRequest.getUserAgent());
 		httpRequest.setConnection("close");
-		httpRequest.setRequestUrl(request.getAdServerURL());
+		httpRequest.setRequestUrl(request.getRequestUrl());
 		httpRequest.setRequestType(AD_REQUEST_TYPE.PUB_NATIVE);
 		httpRequest.setRequestMethod(CommonConstants.HTTPMETHODPOST);
 		httpRequest.setPostData(adRequest.getPostData());
-		httpRequest.setRLNClientIPAddress(adRequest.getIPAddress());
 		return httpRequest;
 	}
 

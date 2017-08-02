@@ -126,6 +126,7 @@ public class InterstitialDemoActivity extends Activity {
 
         PubMaticBannerAdRequest adRequest = PubMaticBannerAdRequest.createPubMaticBannerAdRequest(
                 this, pubId, siteId, adId);
+        adRequest.setInterstitial(true);
         interstitialAdView.execute(adRequest);
     }
 

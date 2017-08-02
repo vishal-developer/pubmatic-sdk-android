@@ -77,6 +77,8 @@ public class PhoenixNativeRRFormatter implements RRFormatter {
     public HttpRequest formatRequest(AdRequest request) {
         mRequest = request;
         PhoenixNativeAdRequest adRequest = (PhoenixNativeAdRequest) request;
+        adRequest.createRequest();
+
         HttpRequest httpRequest = new HttpRequest(CONTENT_TYPE.URL_ENCODED);
         httpRequest.setUserAgent(adRequest.getUserAgent());
         httpRequest.setConnection("close");

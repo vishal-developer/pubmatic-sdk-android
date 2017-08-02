@@ -29,13 +29,12 @@ package com.pubmatic.sdk.common.phoenix;
 import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
-import android.util.AttributeSet;
 import android.view.Surface;
 
 import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.AdvertisingIdClient;
 import com.pubmatic.sdk.common.CommonConstants;
-import com.pubmatic.sdk.common.pubmatic.PubMaticUtils;
+import com.pubmatic.sdk.common.PMUtils;
 
 import java.util.Iterator;
 import java.util.List;
@@ -132,40 +131,23 @@ public abstract class PhoenixAdRequest extends AdRequest {
         public static final int NATIVE     = 3;
     }
 
-    public abstract void setAttributes(AttributeSet attr);
-
     protected PhoenixAdRequest(Context context) {
         super(CommonConstants.CHANNEL.PHOENIX, context);
         mContext = context;
     }
 
-    @Override
-    public String getAdServerURL() {
-        return TextUtils.isEmpty(mBaseUrl) ? CommonConstants.PHOENIX_AD_NETWORK_URL : mBaseUrl;
+    /**
+     * Returns the base/host name URL
+     * @return
+     */
+    public String getAdServerURL()
+    {
+        return CommonConstants.PHOENIX_AD_NETWORK_URL;
     }
 
     @Override
     public boolean checkMandatoryParams() {
         return false;
-    }
-
-    @Override
-    protected void initializeDefaultParams(Context context) {
-
-    }
-
-    @Override
-    public void copyRequestParams(AdRequest adRequest) {
-        if (adRequest != null && adRequest instanceof PhoenixAdRequest) {
-            if (TextUtils.isEmpty(mAdUnitId))
-                this.mAdUnitId = ((PhoenixAdRequest) adRequest).mAdUnitId;
-            if (TextUtils.isEmpty(mImpressionId))
-                this.mImpressionId = ((PhoenixAdRequest) adRequest).mImpressionId;
-            if (getWidth() <= 0)
-                setWidth(adRequest.getWidth());
-            if (getHeight() <= 0)
-                setHeight(adRequest.getHeight());
-        }
     }
 
     @Override
@@ -228,7 +210,7 @@ public abstract class PhoenixAdRequest extends AdRequest {
         if(adInfo!=null) {
 
             if (isAndoridAidEnabled() && !TextUtils.isEmpty(adInfo.getId())) {
-                addUrlParam(PhoenixConstants.UDID_PARAM, PubMaticUtils.sha1(adInfo.getId()));
+                addUrlParam(PhoenixConstants.UDID_PARAM, PMUtils.sha1(adInfo.getId()));
                 addUrlParam(PhoenixConstants.UDID_TYPE_PARAM, String.valueOf(9));//9 - Android Advertising ID
                 addUrlParam(PhoenixConstants.UDID_HASH_PARAM, String.valueOf(0));//0 - raw udid
             }
@@ -248,8 +230,8 @@ public abstract class PhoenixAdRequest extends AdRequest {
         addUrlParam(PhoenixConstants.JS_PARAM, String.valueOf(1));
         addUrlParam(PhoenixConstants.APP_API_PARAM, "3::4::5");
 
-        if(PubMaticUtils.getNetworkType(mContext) != null)
-            addUrlParam(PhoenixConstants.NETWORK_TYPE_PARAM, PubMaticUtils.getNetworkType(mContext));
+        if(PMUtils.getNetworkType(mContext) != null)
+            addUrlParam(PhoenixConstants.NETWORK_TYPE_PARAM, PMUtils.getNetworkType(mContext));
 
         if(!TextUtils.isEmpty(mStoreURL))
             addUrlParam(PhoenixConstants.STORE_URL_PARAM, mStoreURL);
@@ -432,7 +414,7 @@ public abstract class PhoenixAdRequest extends AdRequest {
             if(adInfo!=null) {
 
                 if (isAndoridAidEnabled() && !TextUtils.isEmpty(adInfo.getId())) {
-                    putPostData(PhoenixConstants.UDID_PARAM, PubMaticUtils.sha1(adInfo.getId()));
+                    putPostData(PhoenixConstants.UDID_PARAM, PMUtils.sha1(adInfo.getId()));
                     putPostData(PhoenixConstants.UDID_TYPE_PARAM, String.valueOf(9));//9 - Android Advertising ID
                     putPostData(PhoenixConstants.UDID_HASH_PARAM, String.valueOf(0));//0 - raw udid
                 }
@@ -451,7 +433,7 @@ public abstract class PhoenixAdRequest extends AdRequest {
             // Setting js
             putPostData(PhoenixConstants.JS_PARAM, String.valueOf(1));
             putPostData(PhoenixConstants.APP_API_PARAM, "3::4::5");
-            putPostData(PhoenixConstants.NETWORK_TYPE_PARAM, PubMaticUtils.getNetworkType(mContext));
+            putPostData(PhoenixConstants.NETWORK_TYPE_PARAM, PMUtils.getNetworkType(mContext));
 
             if(!TextUtils.isEmpty(mStoreURL))
                 putPostData(PhoenixConstants.STORE_URL_PARAM, mStoreURL);
@@ -531,15 +513,6 @@ public abstract class PhoenixAdRequest extends AdRequest {
 
         }
     }
-
-
-    @Override
-    public void createRequest(Context context) {
-        mPostData		= null;
-        initializeDefaultParams(context);
-        setupPostData();
-    }
-
 
     public int getDeviceOrientation(Context context) {
         int rotation = ((Activity) context).getWindowManager().getDefaultDisplay().getRotation();

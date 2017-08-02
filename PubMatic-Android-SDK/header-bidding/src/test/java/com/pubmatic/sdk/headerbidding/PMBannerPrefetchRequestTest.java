@@ -13,7 +13,6 @@ public class PMBannerPrefetchRequestTest {
 
     private static final int FAKE_HEIGHT       = 320;
     private static final int FAKE_WIDTH        = 480;
-    private static final int FAKE_TIMEOUT      = 60000;
     private static final String FAKE_PUBID     = "31400";
 
     private static final String FAKE_ID      = "1234";
@@ -34,13 +33,10 @@ public class PMBannerPrefetchRequestTest {
         //assertEquals(FAKE_HEIGHT, request.getHeight());
         //assertEquals(FAKE_WIDTH, request.getWidth());
 
-        request.setHeight(0);
-        assertEquals(0, request.getHeight());
+        request.setAdSize(new com.pubmatic.sdk.common.PMAdSize(FAKE_WIDTH, FAKE_HEIGHT));
+        assertEquals(FAKE_HEIGHT, request.getAdSize().getAdHeight());
 
-        request.setWidth(0);
-        assertEquals(0, request.getWidth());
+        assertEquals(FAKE_WIDTH, request.getAdSize().getAdWidth());
 
-        request.setTimeoutInterval(FAKE_TIMEOUT);
-        assertEquals(FAKE_TIMEOUT, request.getTimeoutInterval());
     }
 }
