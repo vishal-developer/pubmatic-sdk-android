@@ -45,7 +45,6 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -65,11 +64,13 @@ public class PhoenixBannerRRFormatter  implements RRFormatter {
 	public HttpRequest formatRequest(AdRequest request) {
 		mRequest = request;
 		PhoenixBannerAdRequest adRequest = (PhoenixBannerAdRequest) request;
+		adRequest.createRequest();
+
 		HttpRequest httpRequest = new HttpRequest(CONTENT_TYPE.URL_ENCODED);
 
 		httpRequest.setUserAgent(adRequest.getUserAgent());
 		httpRequest.setConnection("close");
-		httpRequest.setRequestUrl(request.getAdServerURL());
+		httpRequest.setRequestUrl(request.getRequestUrl());
 		httpRequest.setRequestMethod(CommonConstants.HTTPMETHODGET);
 		httpRequest.setRequestType(CommonConstants.AD_REQUEST_TYPE.PHOENIX_BANNER);
 		httpRequest.setPostData(adRequest.getPostData());

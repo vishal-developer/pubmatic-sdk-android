@@ -29,16 +29,13 @@ package com.pubmatic.sdk.common.phoenix;
 import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
-import android.util.AttributeSet;
 import android.view.Surface;
 
 import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.AdvertisingIdClient;
 import com.pubmatic.sdk.common.CommonConstants;
-import com.pubmatic.sdk.common.pubmatic.PubMaticUtils;
+import com.pubmatic.sdk.common.PMUtils;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -134,16 +131,18 @@ public abstract class PhoenixAdRequest extends AdRequest {
         public static final int NATIVE     = 3;
     }
 
-    public abstract void setAttributes(AttributeSet attr);
-
     protected PhoenixAdRequest(Context context) {
         super(CommonConstants.CHANNEL.PHOENIX, context);
         mContext = context;
     }
 
-    @Override
-    public String getAdServerURL() {
-        return TextUtils.isEmpty(mBaseUrl) ? CommonConstants.PHOENIX_AD_NETWORK_URL : mBaseUrl;
+    /**
+     * Returns the base/host name URL
+     * @return
+     */
+    public String getAdServerURL()
+    {
+        return CommonConstants.PHOENIX_AD_NETWORK_URL;
     }
 
     @Override
@@ -152,29 +151,8 @@ public abstract class PhoenixAdRequest extends AdRequest {
     }
 
     @Override
-    protected void initializeDefaultParams(Context context) {
-
-    }
-
-    @Override
-    public void copyRequestParams(AdRequest adRequest) {
-        if (adRequest != null && adRequest instanceof PhoenixAdRequest) {
-            if (TextUtils.isEmpty(mAdUnitId))
-                this.mAdUnitId = ((PhoenixAdRequest) adRequest).mAdUnitId;
-            if (TextUtils.isEmpty(mImpressionId))
-                this.mImpressionId = ((PhoenixAdRequest) adRequest).mImpressionId;
-            if (getWidth() <= 0)
-                setWidth(adRequest.getWidth());
-            if (getHeight() <= 0)
-                setHeight(adRequest.getHeight());
-        }
-    }
-
-    @Override
     protected void setUpUrlParams() {
         super.setUpUrlParams();
-
-        PhoenixDeviceInformation deviceInfo = PhoenixDeviceInformation.getInstance(mContext);
 
         addUrlParam(PhoenixConstants.REQUEST_TYPE_PARAM, String.valueOf(mRequestType));
         addUrlParam(PhoenixConstants.RESPONSE_FORMAT_PARAM, String.valueOf(mResponseFormat));
@@ -183,22 +161,10 @@ public abstract class PhoenixAdRequest extends AdRequest {
         addUrlParam(PhoenixConstants.IMPRESSION_ID_PARAM, mImpressionId);
         addUrlParam(PhoenixConstants.RANDOM_NUMBER_PARAM, String.valueOf(PhoenixDeviceInformation.getRandomNumber()));
 
-        try {
-            addUrlParam(PhoenixConstants.TIME_STAMP_PARAM, URLEncoder.encode(String.valueOf(PhoenixDeviceInformation.getCurrentTime()),"utf-8"));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        addUrlParam(PhoenixConstants.TIME_STAMP_PARAM, String.valueOf(PhoenixDeviceInformation.getCurrentTime()));
 
-        if (deviceInfo.mPageURL != null) {
-            try {
-                addUrlParam(PhoenixConstants.PAGE_URL_PARAM, URLEncoder.encode(deviceInfo.mPageURL, PhoenixConstants.URL_ENCODING));
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+        addUrlParam(PhoenixConstants.TIME_ZONE_PARAM, PhoenixDeviceInformation.getTimeZoneOffset());
 
-            addUrlParam(PhoenixConstants.SCREEN_PARAM, deviceInfo.mDeviceScreenResolution);
-            addUrlParam(PhoenixConstants.TIME_ZONE_PARAM, PhoenixDeviceInformation.getTimeZoneOffset());
-        }
 
         addUrlParam(PhoenixConstants.IN_IFRAME_PARAM, String.valueOf(PhoenixDeviceInformation.mInIframe));
 
@@ -216,46 +182,35 @@ public abstract class PhoenixAdRequest extends AdRequest {
         if(!TextUtils.isEmpty(mAid))
             addUrlParam(PhoenixConstants.APP_ID_PARAM, mAid);
 
+        PhoenixDeviceInformation deviceInfo = PhoenixDeviceInformation.getInstance(mContext);
+        if (deviceInfo.mPageURL != null) {
+            addUrlParam(PhoenixConstants.PAGE_URL_PARAM, deviceInfo.mPageURL);
+            addUrlParam(PhoenixConstants.SCREEN_PARAM, deviceInfo.mDeviceScreenResolution);
+        }
+
         // Setting carrier
         if (deviceInfo.mCarrierName != null) {
-            try {
-                addUrlParam(PhoenixConstants.CARRIER_PARAM, URLEncoder.encode(deviceInfo.mCarrierName, PhoenixConstants.URL_ENCODING));
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+            addUrlParam(PhoenixConstants.CARRIER_PARAM, deviceInfo.mCarrierName);
         }
 
         if (deviceInfo.mApplicationName != null) {
-            try {
-                addUrlParam(PhoenixConstants.APP_NAME_PARAM, URLEncoder.encode(deviceInfo.mApplicationName, PhoenixConstants.URL_ENCODING));
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+            addUrlParam(PhoenixConstants.APP_NAME_PARAM, deviceInfo.mApplicationName);
         }
 
         if (deviceInfo.mPackageName != null) {
-            try {
-                addUrlParam(PhoenixConstants.BUNDLE_PARAM, URLEncoder.encode(deviceInfo.mPackageName, PhoenixConstants.URL_ENCODING));
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+            addUrlParam(PhoenixConstants.BUNDLE_PARAM, deviceInfo.mPackageName);
         }
 
         if (deviceInfo.mApplicationVersion != null) {
-            try {
-                addUrlParam(PhoenixConstants.APP_VERSION_PARAM, URLEncoder.encode(deviceInfo.mApplicationVersion, PhoenixConstants.URL_ENCODING));
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+            addUrlParam(PhoenixConstants.APP_VERSION_PARAM, deviceInfo.mApplicationVersion);
         }
 
-        //
         //Send Advertisement ID
         AdvertisingIdClient.AdInfo adInfo = AdvertisingIdClient.refreshAdvertisingInfo(mContext);
         if(adInfo!=null) {
 
             if (isAndoridAidEnabled() && !TextUtils.isEmpty(adInfo.getId())) {
-                addUrlParam(PhoenixConstants.UDID_PARAM, PubMaticUtils.sha1(adInfo.getId()));
+                addUrlParam(PhoenixConstants.UDID_PARAM, PMUtils.sha1(adInfo.getId()));
                 addUrlParam(PhoenixConstants.UDID_TYPE_PARAM, String.valueOf(9));//9 - Android Advertising ID
                 addUrlParam(PhoenixConstants.UDID_HASH_PARAM, String.valueOf(0));//0 - raw udid
             }
@@ -275,8 +230,8 @@ public abstract class PhoenixAdRequest extends AdRequest {
         addUrlParam(PhoenixConstants.JS_PARAM, String.valueOf(1));
         addUrlParam(PhoenixConstants.APP_API_PARAM, "3::4::5");
 
-        if(PubMaticUtils.getNetworkType(mContext) != null)
-            addUrlParam(PhoenixConstants.NETWORK_TYPE_PARAM, PubMaticUtils.getNetworkType(mContext));
+        if(PMUtils.getNetworkType(mContext) != null)
+            addUrlParam(PhoenixConstants.NETWORK_TYPE_PARAM, PMUtils.getNetworkType(mContext));
 
         if(!TextUtils.isEmpty(mStoreURL))
             addUrlParam(PhoenixConstants.STORE_URL_PARAM, mStoreURL);
@@ -410,9 +365,7 @@ public abstract class PhoenixAdRequest extends AdRequest {
             putPostData(PhoenixConstants.TIME_STAMP_PARAM,      String.valueOf(PhoenixDeviceInformation.getCurrentTime()));
 
             if (deviceInfo.mPageURL != null) {
-                putPostData(PhoenixConstants.PAGE_URL_PARAM,    URLEncoder.encode(
-                                                                deviceInfo.mPageURL,
-                                                                PhoenixConstants.URL_ENCODING));
+                putPostData(PhoenixConstants.PAGE_URL_PARAM,    deviceInfo.mPageURL);
                 putPostData(PhoenixConstants.SCREEN_PARAM,      deviceInfo.mDeviceScreenResolution);
                 putPostData(PhoenixConstants.TIME_ZONE_PARAM,   PhoenixDeviceInformation.getTimeZoneOffset());
 
@@ -440,36 +393,27 @@ public abstract class PhoenixAdRequest extends AdRequest {
 
             // Setting carrier
             if (deviceInfo.mCarrierName != null) {
-                putPostData(PhoenixConstants.CARRIER_PARAM, URLEncoder.encode(
-                        deviceInfo.mCarrierName,
-                        PhoenixConstants.URL_ENCODING));
+                putPostData(PhoenixConstants.CARRIER_PARAM, deviceInfo.mCarrierName);
             }
 
             if (deviceInfo.mApplicationName != null) {
-                putPostData(PhoenixConstants.APP_NAME_PARAM, URLEncoder.encode(
-                        deviceInfo.mApplicationName,
-                        PhoenixConstants.URL_ENCODING));
+                putPostData(PhoenixConstants.APP_NAME_PARAM, deviceInfo.mApplicationName);
             }
 
             if (deviceInfo.mPackageName != null) {
-                putPostData(PhoenixConstants.BUNDLE_PARAM, URLEncoder.encode(
-                        deviceInfo.mPackageName,
-                        PhoenixConstants.URL_ENCODING));
+                putPostData(PhoenixConstants.BUNDLE_PARAM, deviceInfo.mPackageName);
             }
 
             if (deviceInfo.mApplicationVersion != null) {
-                putPostData(PhoenixConstants.APP_VERSION_PARAM, URLEncoder.encode(
-                        deviceInfo.mApplicationVersion,
-                        PhoenixConstants.URL_ENCODING));
+                putPostData(PhoenixConstants.APP_VERSION_PARAM, deviceInfo.mApplicationVersion);
             }
 
-            //
             //Send Advertisement ID
             AdvertisingIdClient.AdInfo adInfo = AdvertisingIdClient.refreshAdvertisingInfo(mContext);
             if(adInfo!=null) {
 
                 if (isAndoridAidEnabled() && !TextUtils.isEmpty(adInfo.getId())) {
-                    putPostData(PhoenixConstants.UDID_PARAM, PubMaticUtils.sha1(adInfo.getId()));
+                    putPostData(PhoenixConstants.UDID_PARAM, PMUtils.sha1(adInfo.getId()));
                     putPostData(PhoenixConstants.UDID_TYPE_PARAM, String.valueOf(9));//9 - Android Advertising ID
                     putPostData(PhoenixConstants.UDID_HASH_PARAM, String.valueOf(0));//0 - raw udid
                 }
@@ -488,11 +432,10 @@ public abstract class PhoenixAdRequest extends AdRequest {
             // Setting js
             putPostData(PhoenixConstants.JS_PARAM, String.valueOf(1));
             putPostData(PhoenixConstants.APP_API_PARAM, "3::4::5");
-            putPostData(PhoenixConstants.NETWORK_TYPE_PARAM, PubMaticUtils.getNetworkType(mContext));
+            putPostData(PhoenixConstants.NETWORK_TYPE_PARAM, PMUtils.getNetworkType(mContext));
 
             if(!TextUtils.isEmpty(mStoreURL))
                 putPostData(PhoenixConstants.STORE_URL_PARAM, mStoreURL);
-
 
             //Set the awt parameter
             if (mAWT != null) {
@@ -568,15 +511,6 @@ public abstract class PhoenixAdRequest extends AdRequest {
 
         }
     }
-
-
-    @Override
-    public void createRequest(Context context) {
-        mPostData		= null;
-        initializeDefaultParams(context);
-        setupPostData();
-    }
-
 
     public int getDeviceOrientation(Context context) {
         int rotation = ((Activity) context).getWindowManager().getDefaultDisplay().getRotation();

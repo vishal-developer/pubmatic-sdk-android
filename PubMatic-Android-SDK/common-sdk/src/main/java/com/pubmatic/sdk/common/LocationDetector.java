@@ -188,7 +188,7 @@ public class LocationDetector extends Observable {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
                         {
 
-                            int permissionCheck = context.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION);
+                            int permissionCheck = context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION);
 
                             if(permissionCheck == PackageManager.PERMISSION_GRANTED)
                             {
@@ -211,7 +211,7 @@ public class LocationDetector extends Observable {
 
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
-                                int permissionCheck = context.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION);
+                                int permissionCheck = context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION);
 
                                 if(permissionCheck == PackageManager.PERMISSION_GRANTED)
                                 {
@@ -267,7 +267,7 @@ public class LocationDetector extends Observable {
                     {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
                         {
-                            int permissionCheck = context.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION);
+                            int permissionCheck = context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION);
 
                             if (permissionCheck == PackageManager.PERMISSION_GRANTED)
                             {
@@ -286,7 +286,7 @@ public class LocationDetector extends Observable {
                     {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
                         {
-                            int permissionCheck = context.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION);
+                            int permissionCheck = context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION);
 
                             if (permissionCheck == PackageManager.PERMISSION_GRANTED)
                             {

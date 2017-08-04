@@ -53,16 +53,13 @@ public class CommonConstants {
 		PHOENIX_RICH_MEDIA, PHOENIX_PRIMARY_VIDEO, PHOENIX_WRAPPER_VIDEO,
 		PHOENIX_PASSBACK_VIDEO,
 
-		MOCEAN_BANNER, MOCEAN_INTERSTITIAL, MOCEAN_RICH_MEDIA,
-		MOCEAN_PRIMARY_VIDEO, MOCEAN_WRAPPER_VIDEO, MOCEAN_PASSBACK_VIDEO,
-
-		PUB_TRACKER, MOCEAN_NATIVE, MOCEAN_TRACKER,
+		PUB_TRACKER,
 
 		PHOENIX_TRACKER
 	}
 
 	public enum CHANNEL {
-		NA, MOCEAN, PUBMATIC, PHOENIX
+		NA, PUBMATIC, PHOENIX
 	}
 
 	public static final String ENCODING_UTF_8 = "UTF-8";
@@ -75,6 +72,8 @@ public class CommonConstants {
 	public static final String xml_layout_attribute_logLevel 		= "logLevel";
 	public static final String xml_layout_attribute_channel 		= "channel";
 	public static final String xml_layout_attribute_update_interval = "updateInterval";
+	public static final String AMPERSAND = "&";
+	public static final String EQUAL = "=";
 
 	// Phoenix specific parameters
 	public static final String REQUESTPARAM_AD_UNIT_ID 		= "adUnitId";
@@ -83,13 +82,11 @@ public class CommonConstants {
 	public static final String REQUESTPARAM_AD_WIDTH 		= "adWidth";
 	public static final String REQUESTPARAM_AD_HEIGHT 		= "adHeight";
 
-	// Mocean specific common parameters
+	// Common parameters
 	public static final String REQUESTPARAM_AGE = "age";
 	public static final String REQUESTPARAM_BIRTHDAY = "birthday";
 	public static final String REQUESTPARAM_OVER_18 = "over_18";
 
-	public static final String TELEPHONY_MCC = "mcc";
-	public static final String TELEPHONY_MNC = "mnc";
 	public static final String REQUESTPARAM_UA = "ua";
 	public static final String REQUESTPARAM_SDK_VERSION = "version";
 	public static final String REQUESTPARAM_COUNT = "count";
@@ -111,7 +108,6 @@ public class CommonConstants {
 	public static final String REQUEST_HEADER_CONNECTION_VALUE_CLOSE = "close";
 	public static final String REQUEST_HEADER_CONTENT_TYPE = "Content-Type";
 	public static final String REQUEST_HEADER_CONTENT_TYPE_VALUE = "application/x-www-form-urlencoded;charset=UTF-8";
-	public static final String REQUESTPARAM_ANDROID_ID_SHA1 = "androidid_sha1";
 	public static final String REQUESTPARAM_ANDROID_AID = "androidaid";
 	public static final String REQUESTPARAM_ANDROID_ID = "androidid";
 
@@ -126,13 +122,9 @@ public class CommonConstants {
 	public static final String REQUEST_MIMES = "mimes";
 	public static final String REQUEST_DATA = "data";
 	public static final String NATIVE_ASSETS_STRING = "assets";
-	public static final String NATIVE_IMAGE_W = "w";
-	public static final String NATIVE_IMAGE_H = "h";
 
 	public static final String NEWLINE = "\n";
 	public static final String QUESTIONMARK = "?";
-	public static final String AMPERSAND = "&";
-	public static final String EQUAL = "=";
 
 	public static final String RESPONSE_HEADER_CONTENT_TYPE_JSON = "application/json";
 
@@ -143,7 +135,6 @@ public class CommonConstants {
 	public static final String RESPONSE_SUBTYPE = "subtype";
 	public static final String RESPONSE_CREATIVEID = "creativeid";
 	public static final String RESPONSE_FEEDID = "feedid";
-	public static final String RESPONSE_MEDIATION = "mediation";
 	public static final String RESPONSE_MEDIATION_NAME = "name";
 	public static final String RESPONSE_MEDIATION_SOURCE = "source";
 	public static final String ID_STRING = "id";
@@ -153,12 +144,14 @@ public class CommonConstants {
 	public static final String RESPONSE_JSTRACKER = "jstracker";
 	public static final String RESPONSE_CLICKTRACKERS = "clicktrackers";
 	public static final String RESPONSE_VER = "ver";
-	public static final String RESPONSE_NATIVE_STRING = "native";
-	public static final String RESPONSE_THIRDPARTY_STRING = "thirdparty";
-	public static final String RESPONSE_DIRECT_STRING = "direct";
 	public static final String RESPONSE_LINK = "link";
-	public static final String RESPONSE_URL = "url";
 	public static final String RESPONSE_FALLBACK = "fallback";
+
+	public static final String REQUESTPARAM_ANDROID_ID_SHA1 = "androidid_sha1";
+	public static final String RESPONSE_NATIVE_STRING = "native";
+	public static final String RESPONSE_URL = "url";
+	public static final String NATIVE_IMAGE_W = "w";
+	public static final String NATIVE_IMAGE_H = "h";
 
 	// Common params
 	public static final String GENDER_PARAM = "gender";
@@ -192,7 +185,6 @@ public class CommonConstants {
 	public static final String REQUEST_CONTENT_TYPE = "text/plain";
 	public static final String REQUEST_CONTENT_LANG_EN = "en";
 
-	public static final String MOCEAN_AD_NETWORK_URL = "http://ads.moceanads.com/ad";
 	public static final String PHOENIX_AD_NETWORK_URL = "http://192.82.243.85:8090/ad";//http://ae.pubmatic.com/ad";
 	public static final String PUBMATIC_AD_NETWORK_URL = "http://showads.pubmatic.com/AdServer/AdServerServlet";
 

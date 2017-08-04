@@ -30,15 +30,6 @@
         android:paddingTop="10dp" >
 
         <TextView
-            android:id="@+id/dialog_platform_mocean"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@android:color/white"
-            android:padding="10dp"
-            android:textSize="16dp"
-            android:text="Mocean" />
-
-        <TextView
             android:id="@+id/dialog_platform_pubmatic"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

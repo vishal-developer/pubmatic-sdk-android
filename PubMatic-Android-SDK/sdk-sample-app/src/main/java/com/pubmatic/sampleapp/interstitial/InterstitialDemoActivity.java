@@ -20,31 +20,73 @@ import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.pubmatic.sampleapp.R;
 import com.pubmatic.sdk.banner.PMBannerAdView;
 import com.pubmatic.sdk.banner.PMInterstitialAdView;
-import com.pubmatic.sdk.banner.mocean.MoceanBannerAdRequest;
+import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest;
 import com.pubmatic.sdk.common.PMLogger;
 
 import java.util.Map;
 
-public class MoceanInterstitialActivity extends Activity {
+public class InterstitialDemoActivity extends Activity {
 
     PMInterstitialAdView interstitialAdView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_mocean_interstitial);
-    }
-
-    public void loadInterstitialButtonClicked(View view){
+        setContentView(R.layout.activity_pubmatic_interstitial);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         PMLogger.setLogLevel(PMLogger.LogLevel.Debug);
 
-        if(interstitialAdView ==null) {
+        setPrefetchIds("31400", "32504", "1059651");
+    }
+
+    private void setPrefetchIds(String pubId, String siteId, String adId) {
+        final EditText pubIdET = (EditText)findViewById(R.id.pubIdET);
+        if(pubIdET!=null) {
+            pubIdET.setText(pubId);
+        }
+        final EditText siteIdET = (EditText)findViewById(R.id.siteIdET);
+        if(siteIdET!=null) {
+            siteIdET.setText(siteId);
+        }
+        final EditText adIdET = (EditText)findViewById(R.id.adIdET);
+        if(adIdET!=null) {
+            adIdET.setText(adId);
+        }
+
+        //Handle click of load ad button
+        Button loadAdBtn = (Button)findViewById(R.id.loadAdBtn);
+        loadAdBtn.setText("Load Interstitial Ad");
+        loadAdBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String pubId = null, siteId = null, adId = null;
+                if(pubIdET!=null) {
+                    pubId = pubIdET.getText().toString();
+                }
+                if(siteIdET!=null) {
+                    siteId = siteIdET.getText().toString();
+                }
+                if(adIdET!=null) {
+                    adId = adIdET.getText().toString();
+                }
+
+                loadAd(pubId, siteId, adId, v);
+            }
+        });
+    }
+
+    private void loadAd(String pubId, String siteId, String adId, View view) {
+
+        if (interstitialAdView == null) {
             interstitialAdView = new PMInterstitialAdView(this);
 
             RelativeLayout layout = (RelativeLayout) findViewById(R.id.parent);
@@ -55,20 +97,22 @@ public class MoceanInterstitialActivity extends Activity {
             }
             layout.addView(interstitialAdView, params);
 
-
             interstitialAdView.setUseInternalBrowser(true);
         }
 
         interstitialAdView.setRequestListener(new PMBannerAdView.BannerAdViewDelegate.RequestListener() {
             @Override
             public void onFailedToReceiveAd(PMBannerAdView adView, int errorcode, String errorMessage) {
-                Toast.makeText(MoceanInterstitialActivity.this,
+                Toast.makeText(InterstitialDemoActivity.this,
                                "Ad failed to load!",
                                Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onReceivedAd(PMBannerAdView adView) {
+                Toast.makeText(InterstitialDemoActivity.this,
+                        "Ad loaded!",
+                        Toast.LENGTH_SHORT).show();
                 interstitialAdView.showInterstitial();
             }
 
@@ -80,8 +124,21 @@ public class MoceanInterstitialActivity extends Activity {
             }
         });
 
-        MoceanBannerAdRequest adRequest = MoceanBannerAdRequest
-                .createMoceanBannerAdRequest(this, "88269");
+        PubMaticBannerAdRequest adRequest = PubMaticBannerAdRequest.createPubMaticBannerAdRequest(
+                this, pubId, siteId, adId);
+        adRequest.setInterstitial(true);
         interstitialAdView.execute(adRequest);
+    }
+
+    private void destroyAd() {
+        if(interstitialAdView!=null)
+            interstitialAdView.destroy();
+        interstitialAdView = null;
+    }
+
+    @Override
+    protected void onDestroy() {
+        destroyAd();
+        super.onDestroy();
     }
 }

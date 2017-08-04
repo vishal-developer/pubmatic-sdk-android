@@ -48,7 +48,6 @@ public class HttpWorker {
 	private boolean mIsCancelled 					= false;
 	
 	public interface HttpRedirectListener {
-
 		public abstract boolean overrideRedirection();
 	}
 	
@@ -103,12 +102,6 @@ public class HttpWorker {
 					httpRequest.getUserAgent());
 		}
 
-		if (httpRequest.getRLNClientIPAddress() != null) {
-			httpUrlConnection.setRequestProperty(
-					CommonConstants.RLNCLIENT_IP_ADDR,
-					httpRequest.getRLNClientIPAddress());
-		}
-
 		if (httpRequest.mAccept != null) {
 			httpUrlConnection.setRequestProperty(
 					CommonConstants.ACCEPT,
@@ -143,7 +136,6 @@ public class HttpWorker {
 					CommonConstants.CONNECTION, httpRequest.mConnection);
 		}
 
-		// Setting requestBody i.e. POST data
 		switch (httpRequest.getContentType()) {
 			case URL_ENCODED:
 				httpUrlConnection.setRequestProperty(
@@ -160,7 +152,6 @@ public class HttpWorker {
 			default:
 				break;
 		}
-	
 	}
 
 	public HttpResponse execute(HttpRequest httpRequest, HttpRedirectListener redirectListener) {
@@ -380,7 +371,7 @@ public class HttpWorker {
 		}
 	
 	}
-	
+
 
 	public void cancelRequest() {
 		mIsCancelled = true;

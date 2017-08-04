@@ -19,16 +19,15 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.pubmatic.sdk.banner.PMBannerAdView;
-import com.pubmatic.sdk.banner.mocean.MoceanBannerAdRequest;
 import com.pubmatic.sdk.banner.phoenix.PhoenixBannerAdRequest;
 import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest;
 import com.pubmatic.sdk.common.AdRequest;
-import com.pubmatic.sdk.common.mocean.MoceanAdRequest;
-import com.pubmatic.sdk.common.pubmatic.PUBAdSize;
+import com.pubmatic.sdk.common.PMAdSize;
 import com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+
 
 public class BannerAdFragment extends DialogFragment implements PMBannerAdView.BannerAdViewDelegate.RequestListener {
 
@@ -41,17 +40,20 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
 
     PMBannerAdView mBanner;
 
-    public BannerAdFragment() {}
+    public BannerAdFragment() {
 
-    public BannerAdFragment(ConfigurationManager.PLATFORM platform, LinkedHashMap<String, LinkedHashMap<String, String>> settings)
-    {
-        mPlatform = platform;
-        mSettings = settings;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Bundle b = this.getArguments();
+        if(b.getSerializable("Settings") != null)
+            mSettings = (LinkedHashMap<String, LinkedHashMap<String, String>>)b.getSerializable("Settings");
+
+        if(b.getSerializable("Platform") != null)
+            mPlatform = (ConfigurationManager.PLATFORM)b.getSerializable("Platform");
     }
 
     @Override
@@ -92,162 +94,56 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
         return dialog;
     }
 
-    private void loadAd(View rootView)
-    {
+    private void loadAd(View rootView) {
+
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(dpToPx(320), dpToPx(50));
+        params.setLayoutDirection(RelativeLayout.CENTER_IN_PARENT);
+
         mBanner = new PMBannerAdView(getActivity());
         mBanner.setRequestListener(this);
+
         RelativeLayout layout = (RelativeLayout) rootView.findViewById(R.id.banner_parent);
-
-        AdRequest adRequest = null;
-        int widthInt = 0;
-        int heightInt = 0;
-
-        RelativeLayout.LayoutParams params;
-
-        // Set layout height & width in pixels for banner ad view as per requirement
-        if(widthInt != 0 && heightInt != 0)
-            params = new RelativeLayout.LayoutParams(dpToPx(widthInt), dpToPx(heightInt));
-        else
-            params = new RelativeLayout.LayoutParams(dpToPx(320), dpToPx(50));
-
-        params.setLayoutDirection(RelativeLayout.CENTER_IN_PARENT);
         layout.addView(mBanner, params);
 
-        if(mPlatform == ConfigurationManager.PLATFORM.MOCEAN) {
+        //Optionally, Set banner properties
+        setProperties();
 
-            String zone = mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).get(PMConstants.SETTINGS_AD_TAG_ZONE);
+        //Create Adrequest object and sets targeting parameters
+        AdRequest adRequest = buildAdRequest();
 
-            if(zone == null || zone.equals(""))
-            {
-                Toast.makeText(getActivity(), "Please enter a zone", Toast.LENGTH_LONG).show();
-                return;
-            }
-
-            adRequest = MoceanBannerAdRequest.createMoceanBannerAdRequest(getActivity(), zone);
-
-            try
-            {
-                String width = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_WIDTH);
-                widthInt = Integer.parseInt(width);
-                adRequest.setWidth(widthInt);
-
-                String height = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_HEIGHT);
-                heightInt = Integer.parseInt(height);
-                adRequest.setHeight(heightInt);
-            }
-            catch(Exception exception)
-            {
-                exception.printStackTrace();
-            }
-
-            String test = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_TEST);
-            ((MoceanBannerAdRequest)adRequest).setTest(Boolean.parseBoolean(test));
-
-            try
-            {
-                // Targetting Parameters
-                String latitude = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_LATITUDE);
-                String longitude = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_LONGITUDE);
-
-                Location location = new Location("");
-
-                if(!latitude.equals("") && !longitude.equals(""))
-                {
-                    location.setLatitude(Double.parseDouble(latitude));
-                    location.setLongitude(Double.parseDouble(longitude));
-
-                    adRequest.setLocation(location);
-                }
-
-                String city = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_CITY);
-
-                if(!city.equals("") && !city.equals(""))
-                    ((MoceanBannerAdRequest)adRequest).setCity(city);
-
-                String zip = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_ZIP);
-
-                if(!zip.equals("") && !zip.equals(""))
-                    ((MoceanBannerAdRequest)adRequest).setZip(zip);
-
-                String dma = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_DMA);
-
-                if(!dma.equals("") && !dma.equals(""))
-                    ((MoceanBannerAdRequest)adRequest).setDMA(dma);
-
-                String area = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_AREA);
-
-                if(!area.equals("") && area != null)
-                    ((MoceanBannerAdRequest)adRequest).setAreaCode(area);
-
-                String age = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_AGE);
-
-                if(!age.equals("") && !age.equals(""))
-                    ((MoceanBannerAdRequest)adRequest).setAge(age);
-
-                String birthday = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_BIRTHDAY);
-
-                if(!birthday.equals("") && birthday != null)
-                    ((MoceanBannerAdRequest)adRequest).setBirthDay(birthday);
-
-                String gender = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_GENDER);
-
-                if(!gender.equals("") && !gender.equals(""))
-                {
-                    if(gender.equalsIgnoreCase("Male") || gender.equalsIgnoreCase("M"))
-                        ((MoceanBannerAdRequest)adRequest).setGender(MoceanAdRequest.GENDER.MALE);
-                    else if(gender.equalsIgnoreCase("Female") || gender.equalsIgnoreCase("F"))
-                        ((MoceanBannerAdRequest)adRequest).setGender(MoceanAdRequest.GENDER.FEMALE);
-                }
-
-                String over18 = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_OVER_18);
-
-                if(!over18.equals("") && over18 != null)
-                {
-                    if(over18.equalsIgnoreCase("0"))
-                        ((MoceanBannerAdRequest)adRequest).setOver18(MoceanAdRequest.OVER_18.DENY);
-                    else if(over18.equalsIgnoreCase("2"))
-                        ((MoceanBannerAdRequest)adRequest).setOver18(MoceanAdRequest.OVER_18.ONLY_OVER_18);
-                    else if(over18.equalsIgnoreCase("3"))
-                        ((MoceanBannerAdRequest)adRequest).setOver18(MoceanAdRequest.OVER_18.ALLOW_ALL);
-                }
-
-                String ethnicity = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_ETHNICITY);
-
-                if(!ethnicity.equals("") && ethnicity != null)
-                {
-                    if(ethnicity.equals("0"))
-                        ((MoceanBannerAdRequest)adRequest).setEthnicity(MoceanAdRequest.ETHNICITY.BLACK);
-                    else if(ethnicity.equals("1"))
-                        ((MoceanBannerAdRequest)adRequest).setEthnicity(MoceanAdRequest.ETHNICITY.ASIAN);
-                    else if(ethnicity.equals("2"))
-                        ((MoceanBannerAdRequest)adRequest).setEthnicity(MoceanAdRequest.ETHNICITY.LATINO);
-                    else if(ethnicity.equals("3"))
-                        ((MoceanBannerAdRequest)adRequest).setEthnicity(MoceanAdRequest.ETHNICITY.WHITE);
-                    else if(ethnicity.equals("4"))
-                        ((MoceanBannerAdRequest)adRequest).setEthnicity(MoceanAdRequest.ETHNICITY.EAST_INDIAN);
-                }
-
-                String language = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_LANGUAGE);
-
-                if(!language.equals("") && language != null)
-                    ((MoceanBannerAdRequest)adRequest).setLanguage(language);
-
-                /*String timeout = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_TIMEOUT);
-
-                if(!timeout.equals("") && timeout != null)
-                    ((MoceanBannerAdRequest)adRequest).setTimeout(Integer.parseInt(timeout));*/
-
-                /*String keywords = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_KEYWORDS);
-
-                if(!keywords.equals("") && keywords != null)
-                    ((MoceanBannerAdRequest)adRequest).setKeywords(keywords);*/
-            }
-            catch (Exception exception)
-            {
-                Log.e("Parse Error", exception.toString());
-            }
+        try
+        {
+            // Make the ad request to Server
+            if(adRequest!=null)
+                mBanner.execute(adRequest);
+        } catch(IllegalArgumentException illegalArgumentException)
+        {
+            dismiss();
+            illegalArgumentException.printStackTrace();
+            Toast.makeText(getActivity(), "Please verify the mandatory ad request parameters", Toast.LENGTH_LONG).show();
         }
-        else if(mPlatform == ConfigurationManager.PLATFORM.PUBMATIC) {
+    }
+
+    private void setProperties()
+    {
+
+        boolean isUseInternalBrowserChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_USE_INTERNAL_BROWSER);
+        mBanner.setUseInternalBrowser(isUseInternalBrowserChecked);
+
+        boolean isAutoLocationDetectionChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_AUTO_LOCATION_DETECTION);
+        mBanner.setLocationDetectionEnabled(isAutoLocationDetectionChecked);
+
+    }
+
+    /**
+     * This method creates an Adrequest object based on platform selection in UI. And it also sets
+     * targeting parameters (provided from UI) in ad request object
+     * @return
+     */
+    private AdRequest buildAdRequest()
+    {
+        AdRequest adRequest = null;
+        if(mPlatform == ConfigurationManager.PLATFORM.PUBMATIC) {
 
             String pubId = mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).get(PMConstants.SETTINGS_AD_TAG_PUB_ID);
             String siteId = mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).get(PMConstants.SETTINGS_AD_TAG_SITE_ID);
@@ -256,7 +152,7 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
             if(pubId == null || pubId.equals("") || siteId == null || siteId.equals("") || adId == null || adId.equals(""))
             {
                 Toast.makeText(getActivity(), "Please enter pubId, siteId and adId", Toast.LENGTH_LONG).show();
-                return;
+                return null;
             }
 
             adRequest = PubMaticBannerAdRequest.createPubMaticBannerAdRequest(getActivity(), pubId, siteId, adId);
@@ -264,12 +160,12 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
             try
             {
                 String width = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_WIDTH);
-                widthInt = Integer.parseInt(width);
+                int widthInt = Integer.parseInt(width);
 
                 String height = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_HEIGHT);
-                heightInt = Integer.parseInt(height);
+                int heightInt = Integer.parseInt(height);
 
-                ((PubMaticBannerAdRequest)adRequest).setAdSize(new PUBAdSize(widthInt, heightInt));
+                ((PubMaticBannerAdRequest)adRequest).setAdSize(new PMAdSize(widthInt, heightInt));
 
                 // Configuration Parameters
                 String androidAidEnabled = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED);
@@ -324,11 +220,6 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
                 if(!storeUrl.equals("") && storeUrl != null)
                     ((PubMaticBannerAdRequest)adRequest).setStoreURL(storeUrl);
 
-                String appName = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_APP_NAME);
-
-                if(!appName.equals("") && appName != null)
-                    ((PubMaticBannerAdRequest)adRequest).setAppName(appName);
-
                 String yearOfBirth = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_YEAR_OF_BIRTH);
 
                 if(!yearOfBirth.equals("") && yearOfBirth != null)
@@ -375,20 +266,6 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
                 if(!paid.equals("") && paid != null)
                     ((PubMaticBannerAdRequest)adRequest).setApplicationPaid(Boolean.parseBoolean(paid));
 
-                String awt = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_AWT);
-
-                if(!awt.equals("") && awt != null)
-                {
-                    int awtOption = Integer.parseInt(awt);
-
-                    if(awtOption == 0)
-                        ((PubMaticBannerAdRequest)adRequest).setAWT(PubMaticAdRequest.AWT_OPTION.DEFAULT);
-                    else if(awtOption == 1)
-                        ((PubMaticBannerAdRequest)adRequest).setAWT(PubMaticAdRequest.AWT_OPTION.WRAPPED_IN_IFRAME);
-                    else if(awtOption == 2)
-                        ((PubMaticBannerAdRequest)adRequest).setAWT(PubMaticAdRequest.AWT_OPTION.WRAPPED_IN_JS);
-                }
-
                 String coppa = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_COPPA);
                 ((PubMaticBannerAdRequest)adRequest).setCoppa(Boolean.parseBoolean(coppa));
 
@@ -414,19 +291,13 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
             if(adUnitId == null || adUnitId.equals(""))
             {
                 Toast.makeText(getActivity(), "Please enter an ad unit id", Toast.LENGTH_LONG).show();
-                return;
+                return null;
             }
 
             adRequest = PhoenixBannerAdRequest.createPhoenixBannerAdRequest(getActivity(), adUnitId, "DIV1");
-        }
+        }/*
         else
-            adRequest = MoceanBannerAdRequest.createMoceanBannerAdRequest(getActivity(), "88269");
-
-        boolean isUseInternalBrowserChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_USE_INTERNAL_BROWSER);
-        mBanner.setUseInternalBrowser(isUseInternalBrowserChecked);
-
-        boolean isAutoLocationDetectionChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_AUTO_LOCATION_DETECTION);
-        mBanner.setLocationDetectionEnabled(isAutoLocationDetectionChecked);
+            adRequest = PubMaticBannerAdRequest.createPubMaticBannerAdRequest(getActivity(), pubId, siteId, adId);*/
 
         try
         {
@@ -434,23 +305,12 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
 
             if(!TextUtils.isEmpty(adRefreshRate))
                 mBanner.setUpdateInterval(Integer.parseInt(adRefreshRate));
-        }
-        catch(Exception exception)
+        } catch(Exception exception)
         {
 
         }
 
-        try
-        {
-            // Make the ad request to Server banner.execute(adRequest);
-            mBanner.execute(adRequest);
-        }
-        catch(IllegalArgumentException illegalArgumentException)
-        {
-            dismiss();
-            illegalArgumentException.printStackTrace();
-            Toast.makeText(getActivity(), "Please verify the mandatory ad request parameters", Toast.LENGTH_LONG).show();
-        }
+        return adRequest;
 
     }
 

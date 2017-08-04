@@ -37,29 +37,21 @@ import static com.pubmatic.sdk.common.CommonConstants.REQUEST_NATIVE_EQ_WRAPPER;
 import static com.pubmatic.sdk.common.CommonConstants.REQUEST_REQUIRED;
 import static com.pubmatic.sdk.common.CommonConstants.REQUEST_TITLE;
 import static com.pubmatic.sdk.common.CommonConstants.REQUEST_TYPE;
-import static com.pubmatic.sdk.common.CommonConstants.REQUEST_VER;
-import static com.pubmatic.sdk.common.CommonConstants.REQUEST_VER_VALUE_1;
-
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
-import android.telephony.TelephonyManager;
 import android.text.TextUtils;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.webkit.WebView;
 
 import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.CommonConstants;
 import com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest;
-import com.pubmatic.sdk.common.pubmatic.PubMaticConstants;
 import com.pubmatic.sdk.nativead.PMNativeAd;
 import com.pubmatic.sdk.nativead.bean.PMAssetRequest;
 import com.pubmatic.sdk.nativead.bean.PMDataAssetRequest;
@@ -87,9 +79,6 @@ public class PubMaticNativeAdRequest  extends PubMaticAdRequest {
 	 */
 	public static PubMaticNativeAdRequest createPubMaticNativeAdRequest(Context context, String pubId, String siteId, String adId, List<PMAssetRequest> requestedAssets){
 
-		WebView webView = new WebView(context);
-		String userAgent = webView.getSettings().getUserAgentString();
-
 		PubMaticNativeAdRequest adRequest = new PubMaticNativeAdRequest(context,
 				CommonConstants.PUBMATIC_AD_NETWORK_URL, requestedAssets);
 		adRequest.setPubId(pubId);
@@ -113,31 +102,18 @@ public class PubMaticNativeAdRequest  extends PubMaticAdRequest {
 		}
 	}
 
-	/**
-	 * Returns the base/host name URL
-	 * @return
-	 */
-	public String getAdServerURL()
-	{
-		return TextUtils.isEmpty(mBaseUrl) ? CommonConstants.PUBMATIC_AD_NETWORK_URL : mBaseUrl;
+	void createRequest() {
+		initializeDefaultParams();
+		setUpUrlParams();
+		setUpPostParams();
 	}
 
 	/**
 	 * This method will initialize all the static parameters which SDK need to set.
-	 * @param context
 	 */
-	protected void initializeDefaultParams(Context context) {
-		super.initializeDefaultParams(context);
+	protected void initializeDefaultParams() {
 		setOperId(OPERID.JSON_MOBILE);
 		setAdType(AD_TYPE.NATIVE);
-	}
-
-	public void setWidth(int width) {
-		super.setWidth(width);
-	}
-
-	public void setHeight(int height) {
-		super.setHeight(height);
 	}
 
 	public void setUserAgent(String userAgent) {
@@ -180,11 +156,6 @@ public class PubMaticNativeAdRequest  extends PubMaticAdRequest {
 	protected void setUpPostParams() {
 		super.setUpPostParams();
 
-		if(getWidth()>0)
-			putPostData(CommonConstants.SIZE_X_PARAM, String.valueOf(getWidth()));
-		if(getHeight()>0)
-			putPostData(CommonConstants.SIZE_Y_PARAM, String.valueOf(getHeight()));
-
 		//attach the Native asset request data
 		setupAssetData();
 
@@ -193,10 +164,6 @@ public class PubMaticNativeAdRequest  extends PubMaticAdRequest {
 	@Override
 	public String getFormatter() {
 		return "com.pubmatic.sdk.nativead.pubmatic.PubMaticNativeRRFormatter";
-	}
-
-	@Override
-	public void setAttributes(AttributeSet attr) {
 	}
 
 	private void setupAssetData() {

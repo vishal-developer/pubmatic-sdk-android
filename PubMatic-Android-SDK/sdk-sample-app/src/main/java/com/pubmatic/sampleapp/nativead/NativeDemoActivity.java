@@ -3,22 +3,22 @@ package com.pubmatic.sampleapp.nativead;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Map;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.pubmatic.sampleapp.R;
-import com.pubmatic.sdk.common.CommonConstants;
 import com.pubmatic.sdk.common.PMLogger;
-import com.pubmatic.sdk.nativead.MediationData;
 import com.pubmatic.sdk.nativead.PMNativeAd;
 import com.pubmatic.sdk.nativead.bean.PMAssetRequest;
 import com.pubmatic.sdk.nativead.bean.PMAssetResponse;
@@ -32,9 +32,9 @@ import com.pubmatic.sdk.nativead.bean.PMTitleAssetRequest;
 import com.pubmatic.sdk.nativead.bean.PMTitleAssetResponse;
 import com.pubmatic.sdk.nativead.pubmatic.PubMaticNativeAdRequest;
 
-public class PubMaticNativeActivity extends Activity {
+public class NativeDemoActivity extends Activity {
 
-	private static final String LOG_TAG = MoceanNativeActivity.class.getSimpleName();
+	private static final String LOG_TAG = NativeDemoActivity.class.getSimpleName();
 	private PMNativeAd ad = null;
 	private ImageView imgLogo = null;
 	private ImageView imgMain = null;
@@ -49,6 +49,7 @@ public class PubMaticNativeActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.nativead_activity);
+		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
 		mLayout = (RelativeLayout) findViewById(R.id.layout);
 		imgLogo = (ImageView) findViewById(R.id.imgLogo);
@@ -59,6 +60,47 @@ public class PubMaticNativeActivity extends Activity {
 		ratingBar = (RatingBar) findViewById(R.id.ratingbar);
 		txtLogView = (TextView) findViewById(R.id.textView);
 
+		setPrefetchIds("31400", "52368", "383372");
+	}
+
+	private void setPrefetchIds(String pubId, String siteId, String adId) {
+		final EditText pubIdET = (EditText)findViewById(R.id.pubIdET);
+		if(pubIdET!=null) {
+			pubIdET.setText(pubId);
+		}
+		final EditText siteIdET = (EditText)findViewById(R.id.siteIdET);
+		if(siteIdET!=null) {
+			siteIdET.setText(siteId);
+		}
+		final EditText adIdET = (EditText)findViewById(R.id.adIdET);
+		if(adIdET!=null) {
+			adIdET.setText(adId);
+		}
+
+		//Handle click of load ad button
+		Button loadAdBtn = (Button)findViewById(R.id.loadAdBtn);
+		loadAdBtn.setText("Load Native Ad");
+		loadAdBtn.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				String pubId = null, siteId = null, adId = null;
+				if(pubIdET!=null) {
+					pubId = pubIdET.getText().toString();
+				}
+				if(siteIdET!=null) {
+					siteId = siteIdET.getText().toString();
+				}
+				if(adIdET!=null) {
+					adId = adIdET.getText().toString();
+				}
+
+				loadAd(pubId, siteId, adId, v);
+			}
+		});
+	}
+
+	private void loadAd(String pubId, String siteId, String adId, View view) {
+
 		// Initialize the adview
 		ad = new PMNativeAd(this);
 		ad.setRequestListener(new AdRequestListener());
@@ -68,36 +110,35 @@ public class PubMaticNativeActivity extends Activity {
 		 * default browser, to open ads when clicked
 		 */
 		ad.setUseInternalBrowser(true);
-		
+
 		// Enable device id detection
 		ad.setAndroidaidEnabled(true);
 
 		// ad.setTest(true); // Uncomment to serve ads in test mode
 
 		PubMaticNativeAdRequest adRequest = PubMaticNativeAdRequest
-				.createPubMaticNativeAdRequest(this, "31400", "52368", "383372", getAssetRequests());
+				.createPubMaticNativeAdRequest(this, pubId, siteId, adId, getAssetRequests());
 
 		// Request for ads
 		ad.execute(adRequest);
 	}
-
 	private List<PMAssetRequest> getAssetRequests() {
 		List<PMAssetRequest> assets = new ArrayList<PMAssetRequest>();
 
-		PMTitleAssetRequest titleAsset = new PMTitleAssetRequest(1);// Unique assetId is mandatory for each asset
+		PMTitleAssetRequest titleAsset = new PMTitleAssetRequest(3);// Unique assetId is mandatory for each asset
 		titleAsset.setLength(50);
 		titleAsset.setRequired(true); // Optional (Default: false)
 		assets.add(titleAsset);
 
-		PMImageAssetRequest imageAssetIcon = new PMImageAssetRequest(2);
+		PMImageAssetRequest imageAssetIcon = new PMImageAssetRequest(1);
 		imageAssetIcon.setImageType(PMImageAssetTypes.icon);
 		assets.add(imageAssetIcon);
 
-		PMImageAssetRequest imageAssetMainImage = new PMImageAssetRequest(3);
+		PMImageAssetRequest imageAssetMainImage = new PMImageAssetRequest(5);
 		imageAssetMainImage.setImageType(PMImageAssetTypes.main);
 		assets.add(imageAssetMainImage);
 
-		PMDataAssetRequest dataAssetDesc = new PMDataAssetRequest(5);
+		PMDataAssetRequest dataAssetDesc = new PMDataAssetRequest(2);
 		dataAssetDesc.setDataAssetType(PMDataAssetTypes.desc);
 		dataAssetDesc.setLength(25);
 		assets.add(dataAssetDesc);
@@ -118,7 +159,8 @@ public class PubMaticNativeActivity extends Activity {
 		super.onDestroy();
 
 		resetViews();
-		ad.destroy();
+		if(ad!=null)
+			ad.destroy();
 	}
 
 	public void onReloadAdClicked(View v) {
@@ -185,11 +227,11 @@ public class PubMaticNativeActivity extends Activity {
 								 * must match that of in request.
 								 */
 								switch (asset.getAssetId()) {
-								case 1:
+								case 3:
 									txtTitle.setText(((PMTitleAssetResponse) asset)
 											.getTitleText());
 									break;
-								case 2:
+								case 1:
 									PMNativeAd.Image iconImage = ((PMImageAssetResponse) asset)
 											.getImage();
 									if (iconImage != null) {
@@ -198,7 +240,7 @@ public class PubMaticNativeActivity extends Activity {
 												iconImage.getUrl());
 									}
 									break;
-								case 3:
+								case 5:
 									PMNativeAd.Image mainImage = ((PMImageAssetResponse) asset)
 											.getImage();
 									if (mainImage != null) {
@@ -207,7 +249,7 @@ public class PubMaticNativeActivity extends Activity {
 												mainImage.getUrl());
 									}
 									break;
-								case 5:
+								case 2:
 									txtDescription
 											.setText(((PMDataAssetResponse) asset)
 													.getValue());
@@ -242,6 +284,7 @@ public class PubMaticNativeActivity extends Activity {
 								}
 							} catch (Exception ex) {
 								appendOutput("ERROR in rendering asset. Skipping asset.");
+								ex.printStackTrace();
 							}
 						}
 					}
@@ -263,40 +306,6 @@ public class PubMaticNativeActivity extends Activity {
 				 */
 				ad.trackViewForInteractions(mLayout);
 			}
-
-		}
-
-		@Override
-		public void onReceivedThirdPartyRequest(PMNativeAd mastNativeAd,
-				Map<String, String> properties, Map<String, String> parameters) {
-
-			appendOutput("Third Party Ad Received. \n Properties : \n "
-					+ properties + " Parameters : \n " + parameters);
-			MediationData mediationData = mastNativeAd.getMediationData();
-			if (mediationData != null) {
-				appendOutput("Name: " + mediationData.getMediationNetworkName());
-				appendOutput("NetworkId: "
-						+ mediationData.getMediationNetworkId());
-				appendOutput("Source: " + mediationData.getMediationSource());
-				appendOutput("AdId: " + mediationData.getMediationAdId());
-			}
-
-			// ---------------------------------------------------------
-			// Write Code to initialize third party SDK and request ads.
-			// ---------------------------------------------------------
-
-			// Test sending impression tracker and click trackers.
-
-			// Note: This method should be called only when ad from third party
-			// SDK is rendered.
-			// mastNativeAd.sendImpression(); // Method added here only for
-			// testing
-			// purpose
-
-			// Note: This method should be called only when ad clicked callback
-			// is received from third party SDK.
-			// mastNativeAd.sendClickTracker(); // Method added here only for
-			// testing purpose
 
 		}
 

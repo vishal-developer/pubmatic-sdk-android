@@ -38,18 +38,18 @@ import java.util.Set;
 import android.content.Context;
 import android.location.Location;
 import android.text.TextUtils;
+import android.util.Log;
+
+import com.pubmatic.sdk.common.pubmatic.PUBAdSize;
+
+import static android.content.ContentValues.TAG;
 
 public abstract class AdRequest {
 
 	/**
-	 * This parameter will be used to save the base URL
-	 */
-	protected String					mBaseUrl;
-	/**
 	 *
 	 */
 	protected StringBuffer 				mPostData;
-
 	/**
 	 *
 	 */
@@ -57,15 +57,7 @@ public abstract class AdRequest {
 	/**
 	 *
 	 */
-	protected int 						mWidth;
-	/**
-	 *
-	 */
-	protected int 						mHeight;
-	/**
-	 *
-	 */
-	protected int 						mTimeout = CommonConstants.NETWORK_TIMEOUT_SECONDS;
+	protected PMAdSize 					mPMAdSize = null;
 	/**
 	 *
 	 */
@@ -73,30 +65,27 @@ public abstract class AdRequest {
 	/**
 	 *
 	 */
-	protected CommonConstants.CHANNEL 	mChannel = CommonConstants.CHANNEL.MOCEAN;
-
-	protected static String 			mUDID;
+	protected CommonConstants.CHANNEL 	mChannel = CommonConstants.CHANNEL.PUBMATIC;
 
 	/**
 	 * Request Url Params
 	 */
-	protected Map<String, String> mUrlParams;
+	protected Map<String, String> 		mUrlParams;
 
 	/**
 	 * Publisher can set his own custom defined Ad request parameters via Map
 	 */
 	protected Map<String, List<String>> mCustomParams;
 
-	private String IPAddress;
+	// androidAid
+	protected boolean isAndroidAidEnabled= true;
 
-	public String getIPAddress() {
-		return IPAddress;
+	protected AdRequest(CommonConstants.CHANNEL channel, Context context) {
+		mChannel = channel;
+		mUrlParams = new HashMap<>(0);
 	}
 
-	public void setIPAddress(String IPAddress) {
-		this.IPAddress = IPAddress;
-	}
-
+	//------------------------- All Abstract methods -------------------------
 	/**
 	 *
 	 * @return
@@ -107,7 +96,12 @@ public abstract class AdRequest {
 	 * Returns the base/host name URL
 	 * @return
 	 */
-	public abstract String getAdServerURL();
+	protected abstract String getAdServerURL();
+
+	/**
+	 *
+	 */
+	protected abstract void initializeDefaultParams();
 
 	/**
 	 *
@@ -115,11 +109,16 @@ public abstract class AdRequest {
      */
 	public abstract boolean checkMandatoryParams();
 
+	//------------------------- All protected methods -------------------------
+
     /**
      *
      */
     protected void setUpUrlParams() {
 
+		if(mUrlParams!=null) {
+			mUrlParams.clear();
+		}
     }
 
 	/**
@@ -127,21 +126,60 @@ public abstract class AdRequest {
 	 */
 	protected void setupPostData() {
 
+		if(mPostData!=null)
+			mPostData =null;
 	}
 
-	/**
-	 *
-	 * @param adRequestParams
-     */
-	public abstract void copyRequestParams(AdRequest adRequestParams);
-	/**
-	 *
-	 * @param context
-     */
-	protected abstract void initializeDefaultParams(Context context);
+	protected void setUrlParams(Map<String, String> urlParams) {
+		mUrlParams = urlParams;
+	}
 
+	protected void addUrlParam(String key, String value) {
+		if(value != null && !value.equals("")) {
+
+			String encodedValue = null;
+			try{
+				encodedValue = URLEncoder.encode(
+						value,
+						CommonConstants.URL_ENCODING);
+			} catch (UnsupportedEncodingException e) {
+				Log.e(TAG, "Unable to encode ["+key+"]:[+"+value+"] in ad request URL");
+			}
+			if(encodedValue!=null)
+				mUrlParams.put(key, encodedValue);
+		}
+	}
+
+	protected void putPostData(String key, String value) {
+		if(!TextUtils.isEmpty(key) && !TextUtils.isEmpty(value)) {
+
+			if (mPostData == null) {
+				mPostData = new StringBuffer();
+
+			} else
+				mPostData.append(CommonConstants.AMPERSAND);
+
+			String encodedValue = null;
+			try{
+				encodedValue = URLEncoder.encode(
+						value,
+						CommonConstants.URL_ENCODING);
+			} catch (UnsupportedEncodingException e) {
+				Log.e(TAG, "Unable to encode ["+key+"]:[+"+value+"] in ad request");
+			}
+
+			if(encodedValue!=null) {
+				mPostData.append(key);
+				mPostData.append(CommonConstants.EQUAL);
+				mPostData.append(encodedValue);
+			}
+		}
+	}
+
+	//------------------------- All public Getter/Setter -------------------------
 	/**
-	 *
+	 * Set the list of custom key-value pair. There could be more than 1 possible value for 1 key.
+	 * In this case values will be send with comma separated for same key like key=value1,value2,...valuen
 	 * @param customParams
      */
 	public void setCustomParams(Map<String, List<String>> customParams) {
@@ -150,7 +188,7 @@ public abstract class AdRequest {
 
 	/**
 	 * It sets the list of multiple values for same key. Set values will be send
-	 * with comma separation in post body data like: interest=cricket,football,tennis
+	 * with comma separation in ad request like: interest=cricket,football,tennis
 	 * @param key
 	 * @param value
 	 */
@@ -167,7 +205,8 @@ public abstract class AdRequest {
 	}
 
 	/**
-	 *
+	 * It sets the key and value pair. Key value pair will be send
+	 * in ad request like: interest=cricket
 	 * @param key
 	 * @param value
 	 *
@@ -188,21 +227,9 @@ public abstract class AdRequest {
 	}
 
 	/**
-	 *
-	 */
-	public abstract void createRequest(Context context);
-
-	protected AdRequest(CommonConstants.CHANNEL channel, Context context) {
-		mChannel = channel;
-        mUrlParams = new HashMap<>(0);
-		retrieveAndroidAid(context);
-	}
-
-	// androidAid
-	private boolean isAndroidAidEnabled= true;
-
-	/**
-	 * add androidaid as request param.
+	 * Set to true if Android Advertisement ID to be used for udid parameter instead set false if Android device ID needs to be used.
+	 * If it is true and user opt-out for ad from device settings then user's decision will be honored and
+	 * Android device ID would be send as a udid
 	 *
 	 * @param isAndroidAidEnabled
 	 */
@@ -210,89 +237,59 @@ public abstract class AdRequest {
 		this.isAndroidAidEnabled = isAndroidAidEnabled;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public boolean isAndoridAidEnabled() {
 		return isAndroidAidEnabled;
 	}
 
 	/**
-	 * add androidaid as request param.
-	 *
-	 * @param context
+	 * Returns the ad size set from setAdSize()
+	 * @return size of banner ad
 	 */
-	public void retrieveAndroidAid(final Context context) {
-
-		new Thread(new Runnable() {
-			public void run() {
-				try {
-					AdvertisingIdClient.AdInfo adInfo = AdvertisingIdClient.getAdvertisingIdInfo(context);
-					mUDID = adInfo.getId();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}).start();
-
+	public PMAdSize getAdSize() {
+		return mPMAdSize;
 	}
 
-	public int getWidth() {
-		return mWidth;
+	/**
+	 * Sets the banner ad size in ad request with provided size.
+	 * @return Size of banner ad
+	 */
+	public void setAdSize(PMAdSize adSize) {
+		mPMAdSize = adSize;
 	}
 
-	public int getHeight() {
-		return mHeight;
-	}
-
-	public void setHeight(int mHeight) {
-		this.mHeight = mHeight;
-	}
-
-	public void setWidth(int mWidth) {
-		this.mWidth = mWidth;
+	/**
+	 * PUBAdSize is deprecated, use PMAdSize class instead.
+	 * @return
+	 */
+	@Deprecated
+	public void setAdSize(PUBAdSize adSize) {
+		mPMAdSize = new PMAdSize(adSize.getAdWidth(), adSize.getAdHeight());
 	}
 
 	public String getUserAgent() {
 		return mUserAgent;
 	}
 
-	public void setUserAgent(String mUserAgent) {
-		this.mUserAgent = mUserAgent;
-	}
-
-	/**
-	 * Sets the base/host name URL
-	 * @param baseUrl
-	 */
-	public void setAdServerURL(String baseUrl) {
-		if(!TextUtils.isEmpty(baseUrl)) {
-			if(baseUrl.startsWith("http://") || baseUrl.startsWith("https://"))
-				this.mBaseUrl = baseUrl;
-			else if(baseUrl.startsWith("//"))
-				this.mBaseUrl = "http:"+baseUrl;
-			else
-				this.mBaseUrl = "http://"+baseUrl;
-		}
+	public void setUserAgent(String userAgent) {
+		this.mUserAgent = userAgent;
 	}
 
     public Map<String, String> getUrlParams() {
         return mUrlParams;
     }
 
-    protected void setUrlParam(Map<String, String> urlParams) {
-        mUrlParams = urlParams;
-    }
+    public final String getRequestUrl() {
 
-    protected void addUrlParam(String key, String value) {
-        if(value != null && !value.equals(""))
-            mUrlParams.put(key, value);
-    }
-
-    public String getRequestUrl() {
-
-        StringBuffer requestUrl = new StringBuffer(getAdServerURL());
-
-        if(mUrlParams.size() != 0)
+        if(mUrlParams!=null && mUrlParams.size() != 0)
         {
-            requestUrl.append("?");
+
+			StringBuffer requestUrl = new StringBuffer(getAdServerURL());
+
+			requestUrl.append(CommonConstants.QUESTIONMARK);
 
             for (Map.Entry param : mUrlParams.entrySet())
             {
@@ -300,38 +297,17 @@ public abstract class AdRequest {
             }
 
             requestUrl.setLength(requestUrl.length() - 1);
-        }
 
-        return  requestUrl.toString();
+			return  requestUrl.toString();
+        } else {
+			return getAdServerURL();
+		}
+
     }
 
 	public String getPostData() {
 		return mPostData!=null ? mPostData.toString() : null;
 	}
-
-	public void putPostData(String key, String value) {
-		if(!TextUtils.isEmpty(key) && !TextUtils.isEmpty(value)) {
-			try {
-				//append & before 1st parameter else append &
-				if (mPostData == null) {
-					mPostData = new StringBuffer();
-
-				} else
-					mPostData.append(CommonConstants.AMPERSAND);
-
-				//append key=value
-				mPostData.append(URLEncoder.encode(key,
-						CommonConstants.ENCODING_UTF_8));
-				mPostData.append(CommonConstants.EQUAL);
-				mPostData.append(URLEncoder.encode(value,
-						CommonConstants.ENCODING_UTF_8));
-
-			} catch (UnsupportedEncodingException e) {
-			}
-
-		}
-	}
-
 
 	public Map<String, List<String>> getCustomParams() {
 		return mCustomParams;
@@ -358,10 +334,6 @@ public abstract class AdRequest {
 
 	public CommonConstants.CHANNEL getChannel() {
 		return mChannel;
-	}
-
-	public void setChannel(CommonConstants.CHANNEL mChannel) {
-		this.mChannel = mChannel;
 	}
 
 }

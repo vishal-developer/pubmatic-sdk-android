@@ -24,35 +24,44 @@
  * REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR
  * SELL ANYTHING THAT IT MAY DESCRIBE, IN WHOLE OR IN PART.
  */
-package com.pubmatic.sdk.common.pubmatic;
+package com.pubmatic.sdk.common;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.provider.Settings;
+import android.text.TextUtils;
+import android.util.Log;
+import android.webkit.WebView;
 
 import java.security.MessageDigest;
 import java.util.Locale;
 
-public class PubMaticUtils {
+public class PMUtils {
 
     public static String getNetworkType(Context context){
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo= cm.getActiveNetworkInfo();
 
-        if(networkInfo != null)
-        {
-            switch (networkInfo.getType()) {
-                case ConnectivityManager.TYPE_MOBILE:
-                    return "cellular";
-                case ConnectivityManager.TYPE_WIFI:
-                    return  "wifi";
-                default:
-                    return null;
+        try {
+            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+            // It requires ACCESS_NETWORK_STATE permission
+            NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+
+            if (networkInfo != null) {
+                switch (networkInfo.getType()) {
+                    case ConnectivityManager.TYPE_MOBILE:
+                        return "cellular";
+                    case ConnectivityManager.TYPE_WIFI:
+                        return "wifi";
+                    default:
+                        return null;
+                }
             }
-        }
 
+        } catch (Exception e) {
+            Log.e("PMUtils", "ACCESS_NETWORK_STATE permission is not granted.");
+        }
         return null;
     }
 
@@ -67,7 +76,6 @@ public class PubMaticUtils {
 
     }
 
-    @SuppressLint("DefaultLocale")
     public static String sha1(String string) {
         StringBuilder stringBuilder = new StringBuilder();
 
@@ -81,7 +89,7 @@ public class PubMaticUtils {
                 stringBuilder.append(String.format("%02X", b));
             }
 
-            return stringBuilder.toString().toLowerCase();
+            return stringBuilder.toString().toLowerCase(Locale.getDefault());
         } catch (Exception e) {
             return "";
         }

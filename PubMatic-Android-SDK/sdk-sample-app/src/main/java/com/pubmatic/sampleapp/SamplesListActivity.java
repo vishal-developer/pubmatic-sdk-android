@@ -21,11 +21,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
@@ -36,14 +36,14 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.pubmatic.sampleapp.banner.BannerSamplesListActivity;
-import com.pubmatic.sampleapp.interstitial.InterstitialSamplesListActivity;
-import com.pubmatic.sampleapp.nativead.NativeSamplesListActivity;
+import com.pubmatic.sampleapp.banner.BannerDemoActivity;
+import com.pubmatic.sampleapp.interstitial.InterstitialDemoActivity;
+import com.pubmatic.sampleapp.nativead.NativeDemoActivity;
 
-public class SamplesListActivity extends ListActivity {
+public class SamplesListActivity extends ListActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
 	SamplesListAdapter samplesListAdapter = null;
 
-	private static final int MY_PERMISSIONS_REQUEST_LOCATION = 12355;
+	private static final int MULTIPLE_PERMISSIONS_REQUEST_CODE = 12355;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -56,16 +56,21 @@ public class SamplesListActivity extends ListActivity {
 		samplesListAdapter = new SamplesListAdapter();
 
 		// @formatter:off
-		samplesListAdapter.addItem(new SamplesItem("Banner Demo", BannerSamplesListActivity.class));
-        samplesListAdapter.addItem(new SamplesItem("Interstitial Demo", InterstitialSamplesListActivity.class));
-		samplesListAdapter.addItem(new SamplesItem("Native Demo", NativeSamplesListActivity.class));
+		samplesListAdapter.addItem(new SamplesItem("Banner Demo", BannerDemoActivity.class));
+        samplesListAdapter.addItem(new SamplesItem("Interstitial Demo", InterstitialDemoActivity.class));
+		samplesListAdapter.addItem(new SamplesItem("Native Demo", NativeDemoActivity.class));
 
 		super.setListAdapter(samplesListAdapter);
 
         int LocationPermissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
 
         if(LocationPermissionCheck != PackageManager.PERMISSION_GRANTED)
-            ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION }, MY_PERMISSIONS_REQUEST_LOCATION);
+            ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE }, MULTIPLE_PERMISSIONS_REQUEST_CODE);
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 	}
 
 	@Override
@@ -118,7 +123,6 @@ public class SamplesListActivity extends ListActivity {
 			return position;
 		}
 
-		@SuppressLint("ViewHolder")
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View view = LayoutInflater.from(getBaseContext()).inflate(

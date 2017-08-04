@@ -41,19 +41,16 @@ import com.pubmatic.sdk.nativead.bean.PMAssetResponse;
 import com.pubmatic.sdk.nativead.bean.PMDataAssetResponse;
 import com.pubmatic.sdk.nativead.bean.PMImageAssetResponse;
 import com.pubmatic.sdk.nativead.bean.PMTitleAssetResponse;
-import com.pubmatic.sdk.nativead.mocean.MoceanNativeAdRequest;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.pubmatic.sdk.common.CommonConstants.ID_STRING;
 import static com.pubmatic.sdk.common.CommonConstants.NATIVE_ASSETS_STRING;
-import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_ADS;
 import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_CLICKTRACKERS;
 import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_DATA;
 import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_FALLBACK;
@@ -71,7 +68,6 @@ import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_VER;
 /**
  *
  */
-
 public class PhoenixNativeRRFormatter implements RRFormatter {
 
     private AdRequest mRequest;
@@ -80,6 +76,8 @@ public class PhoenixNativeRRFormatter implements RRFormatter {
     public HttpRequest formatRequest(AdRequest request) {
         mRequest = request;
         PhoenixNativeAdRequest adRequest = (PhoenixNativeAdRequest) request;
+        adRequest.createRequest();
+
         HttpRequest httpRequest = new HttpRequest(CONTENT_TYPE.URL_ENCODED);
         httpRequest.setUserAgent(adRequest.getUserAgent());
         httpRequest.setConnection("close");
@@ -366,7 +364,7 @@ public class PhoenixNativeRRFormatter implements RRFormatter {
                     }
                 }
 
-                nativeAdDescriptor = new NativeAdDescriptor(type,
+                nativeAdDescriptor = new NativeAdDescriptor(
                         nativeVersion, clickUrl, fallbackUrl,
                         impressionTrackerStringArray,
                         clickTrackersStringArray, jsTrackerString,
