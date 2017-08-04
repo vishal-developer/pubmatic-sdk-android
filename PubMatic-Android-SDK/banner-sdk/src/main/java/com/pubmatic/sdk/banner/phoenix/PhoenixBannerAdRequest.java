@@ -60,14 +60,13 @@ public class PhoenixBannerAdRequest extends PhoenixAdRequest {
 
 	@Override
 	public boolean checkMandatoryParams() {
-		// TODO Auto-generated method stub
 		return !TextUtils.isEmpty(mAdUnitId) && !TextUtils.isEmpty(mImpressionId);
 	}
 
 	@Override
 	protected void initializeDefaultParams() {
 		putPostData("o", 		"1");
-		putPostData(PhoenixConstants.RESPONSE_FORMAT_PARAM, "2");//1 - VAST, 2 - JSON, 3 - Native
+		putPostData(PhoenixConstants.RESPONSE_FORMAT_PARAM, "2");
 	}
 
 	@Override
@@ -77,7 +76,7 @@ public class PhoenixBannerAdRequest extends PhoenixAdRequest {
 			mPostData = new StringBuffer();
 
 		// Set the Ad size
-		if (mPMAdSize !=null) {//Need to confirm AD_HEIGHT_PARAM or SIZE_Y_PARAM
+		if (mPMAdSize !=null) {
 			putPostData(PhoenixConstants.AD_SIZE_PARAM, String.valueOf(mPMAdSize.getAdWidth())+"x"+String.valueOf(mPMAdSize.getAdHeight()));
 		}
 		putPostData(PhoenixConstants.REQUEST_TYPE_PARAM, String.valueOf(REQUEST_TYPE.IMAGE|REQUEST_TYPE.TEXT|REQUEST_TYPE.RICH_MEDIA));

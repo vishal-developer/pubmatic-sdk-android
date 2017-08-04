@@ -45,18 +45,10 @@ import java.util.Set;
 
 public abstract class PubMaticAdRequest extends AdRequest {
 
-//    private int                             mAdHeight;
-//    private int                             mAdWidth;
-//    private boolean                         mInIFrame;
-//    private String                          mAdNetwork;
-//    private AD_VISIBILITY                   mAdVisibility;
-//    private String                          mAppName;
-//    private String 		                    mNetworkType;
-
     // Passback params
-//    private String mKAdNetworkId;
-//    private String mLastDefaultedNetworkId;
-//    private List<String> mDefaultedCampaignList;
+    //    private String mKAdNetworkId;
+    //    private String mLastDefaultedNetworkId;
+    //    private List<String> mDefaultedCampaignList;
 
     protected int                           mAdRefreshRate;
     protected int                           mOrmmaComplianceLevel;
@@ -116,7 +108,7 @@ public abstract class PubMaticAdRequest extends AdRequest {
         super(CommonConstants.CHANNEL.PUBMATIC, context);
         mContext = context;
 
-//        mDefaultedCampaignList = new ArrayList<>(0);
+    //  mDefaultedCampaignList = new ArrayList<>(0);
     }
 
     @Override
@@ -517,10 +509,10 @@ public abstract class PubMaticAdRequest extends AdRequest {
     /**
      * Set type of algorithm used for hashing the device identifier provided in the udid parameter mentioned above.
      * Possible values are:
-     * 0 - Unknown
-     * 1 - Raw
-     * 2 - SHA1
-     * 3 - MD5
+     * Unknown
+     * Raw
+     * SHA1
+     * MD5
      * Note: This parameter is mandatory for only Mobile Applications
      * @param hashing type
      */
@@ -583,9 +575,9 @@ public abstract class PubMaticAdRequest extends AdRequest {
 
     /**
      * Gender of the user. Possible values are:
-     * M - Male
-     * F - Female
-     * O - Others
+     * Male
+     * Female
+     * Others
      * @param gender
      */
     public void setGender(GENDER gender) {
@@ -631,12 +623,11 @@ public abstract class PubMaticAdRequest extends AdRequest {
 
     /**
      * Numeric code of ethnicity. Possible options are:
-     *  0 - Hispanic
-     *  1 - African-American
-     *  2 - Caucasian
-     *  3 - Asian-American
-     *  4 –Other
-     *  For example, ethn=1.
+     * Hispanic
+     * African-American
+     * Caucasian
+     * Asian-American
+     * Other
      *
      * @param ethnicity
      *            User ethnicity
@@ -728,46 +719,6 @@ public abstract class PubMaticAdRequest extends AdRequest {
         return mAdId;
     }
 
-//    public int getAdHeight() {
-//        return mAdHeight;
-//    }
-//
-//    public void setAdHeight(int mAdHeight) {
-//        this.mAdHeight = mAdHeight;
-//    }
-//
-//    public int getAdWidth() {
-//        return mAdWidth;
-//    }
-//
-//    public void setAdWidth(int mAdWidth) {
-//        this.mAdWidth = mAdWidth;
-//    }
-//
-//    public boolean isInIFrame() {
-//        return mInIFrame;
-//    }
-//
-//    public void setInIFrame(boolean mInIFrame) {
-//        this.mInIFrame = mInIFrame;
-//    }
-//
-//    public String getAdNetwork() {
-//        return mAdNetwork;
-//    }
-//
-//    public void setAdNetwork(String mAdNetwork) {
-//        this.mAdNetwork = mAdNetwork;
-//    }
-//
-//    public AD_VISIBILITY getAdVisibility() {
-//        return mAdVisibility;
-//    }
-//
-//    public void setAdVisibility(AD_VISIBILITY mAdVisibility) {
-//        this.mAdVisibility = mAdVisibility;
-//    }
-
     public String getIABCategory() {
         return mIABCategory;
     }
@@ -788,9 +739,9 @@ public abstract class PubMaticAdRequest extends AdRequest {
 
     /**
      * Indicates whether the user has opted out of the publisher or not, or whether HTTP_DNT is set or not. Possible values are:
-     *  0 - Either the user has not opted out of the publisher or HTTP_DNT is not set.
-     *  1 - Either the user has opted out of the publisher or HTTP_DNT is set; in this case, PubMatic will not target such users.
-     *  Note: The default value for this parameter is 0
+     *  false - Either the user has not opted out of the publisher or HTTP_DNT is not set.
+     *  true - Either the user has opted out of the publisher or HTTP_DNT is set; in this case, PubMatic will not target such users.
+     *  Note: The default value for this parameter is false
      * @param mDoNotTrack flag for do-not-track
      */
     public void setDoNotTrack(boolean mDoNotTrack) {
@@ -805,8 +756,8 @@ public abstract class PubMaticAdRequest extends AdRequest {
      * Indicates whether the visitor is COPPA-specific or not. For COPPA (Children's Online Privacy Protection Act) compliance,
      * if the visitor's age is below 13, then such visitors should not be served targeted ads.
      * Possible options are:
-     *  0 - Indicates that the visitor is not COPPA-specific and can be served targeted ads.
-     *  1 - Indicates that the visitor is COPPA-specific and should be served only COPPA-compliant ads.
+     *  false - Indicates that the visitor is not COPPA-specific and can be served targeted ads.
+     *  true - Indicates that the visitor is COPPA-specific and should be served only COPPA-compliant ads.
      * The United States Federal Trade Commission has written a comprehensive FAQ on complying with COPPA at http://business.ftc.gov/documents/Complying-with-COPPA-Frequently-Asked-Questions.
      * @param mCoppa
      */
@@ -825,14 +776,6 @@ public abstract class PubMaticAdRequest extends AdRequest {
     public void setPMZoneId(String mPMZoneId) {
         this.mPMZoneId = mPMZoneId;
     }
-//
-//    public String getAppName() {
-//        return mAppName;
-//    }
-//
-//    public void setAppName(String appName) {
-//        mAppName = appName;
-//    }
 
     public String getStoreURL() {
         return mStoreURL;
@@ -869,10 +812,10 @@ public abstract class PubMaticAdRequest extends AdRequest {
 
     /**
      * Indicates the domain of the mobile application
-     * @param mAppDomain domain of app
+     * @param appDomain domain of app
      */
-    public void setAppDomain(String mAppDomain) {
-        this.mAppDomain = mAppDomain;
+    public void setAppDomain(String appDomain) {
+        this.mAppDomain = appDomain;
     }
 
     public String getAppCategory() {
@@ -893,8 +836,8 @@ public abstract class PubMaticAdRequest extends AdRequest {
 
     /**
      * Indicates whether the mobile application is a paid version or not. Possible values are:
-     *  0 - Free version
-     *  1 - Paid version
+     *  false - Free version
+     *  true - Paid version
      * @param paid
      */
     public void setApplicationPaid(boolean paid) {
@@ -920,14 +863,6 @@ public abstract class PubMaticAdRequest extends AdRequest {
     public void setAdRefreshRate(int adRefreshRate) {
         this.mAdRefreshRate = adRefreshRate;
     }
-
-//    public String getNetworkType() {
-//        return mNetworkType;
-//    }
-//
-//    public void setNetworkType(String networkType) {
-//        this.mNetworkType = networkType;
-//    }
 
     public int getOrmmaComplianceLevel() {
         return mOrmmaComplianceLevel;

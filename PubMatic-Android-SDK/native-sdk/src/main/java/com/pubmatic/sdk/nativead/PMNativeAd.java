@@ -130,7 +130,6 @@ public final class PMNativeAd {
     private Location location;
     private boolean mRetrieveLocationInfo = true;
 
-    //private NativeAdController mAdController;
     private CHANNEL mChannel;
 
     protected void setAdrequest(AdRequest adRequest) {
@@ -138,9 +137,6 @@ public final class PMNativeAd {
             throw new IllegalArgumentException("AdRequest object is null");
         }
 
-        // Since banneradRequest is class is abstract now, we will always have
-        // correct channel value here.
-        // and hence the controller. No need for null check.
         // mAdRequest = adRequest;
         setChannel(adRequest.getChannel());
         setAdRequest(adRequest);
@@ -227,7 +223,6 @@ public final class PMNativeAd {
 
     /**
      * Allows setting of extra custom parameters to ad request. Add custom parameter (key-value).
-     *
      */
     public void addCustomParameter(String customParamName, String value) {
         if (mAdRequestParameters != null && customParamName != null) {
@@ -580,8 +575,6 @@ public final class PMNativeAd {
         }
         mListener = null;
     }
-
-    // SDK methods for native ads
 
     /**
      * Get the list of native assets.

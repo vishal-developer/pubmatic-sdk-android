@@ -187,6 +187,7 @@ public abstract class PhoenixAdRequest extends AdRequest {
             addUrlParam(PhoenixConstants.PAGE_URL_PARAM, deviceInfo.mPageURL);
             addUrlParam(PhoenixConstants.SCREEN_PARAM, deviceInfo.mDeviceScreenResolution);
         }
+
         // Setting carrier
         if (deviceInfo.mCarrierName != null) {
             addUrlParam(PhoenixConstants.CARRIER_PARAM, deviceInfo.mCarrierName);
@@ -204,7 +205,6 @@ public abstract class PhoenixAdRequest extends AdRequest {
             addUrlParam(PhoenixConstants.APP_VERSION_PARAM, deviceInfo.mApplicationVersion);
         }
 
-        //
         //Send Advertisement ID
         AdvertisingIdClient.AdInfo adInfo = AdvertisingIdClient.refreshAdvertisingInfo(mContext);
         if(adInfo!=null) {
@@ -408,7 +408,6 @@ public abstract class PhoenixAdRequest extends AdRequest {
                 putPostData(PhoenixConstants.APP_VERSION_PARAM, deviceInfo.mApplicationVersion);
             }
 
-            //
             //Send Advertisement ID
             AdvertisingIdClient.AdInfo adInfo = AdvertisingIdClient.refreshAdvertisingInfo(mContext);
             if(adInfo!=null) {
@@ -437,7 +436,6 @@ public abstract class PhoenixAdRequest extends AdRequest {
 
             if(!TextUtils.isEmpty(mStoreURL))
                 putPostData(PhoenixConstants.STORE_URL_PARAM, mStoreURL);
-
 
             //Set the awt parameter
             if (mAWT != null) {

@@ -33,7 +33,6 @@ import com.pubmatic.sdk.common.CommonConstants.CONTENT_TYPE;
 
 public class HttpRequest {
 
-
     public static HttpRequest getTrackingRequest(final String requestUrl,
             final CommonConstants.CHANNEL channel) {
 
@@ -62,14 +61,11 @@ public class HttpRequest {
 	String mAcceptDateTime 	= null;
 	String mDate 			= null;
 	
-	private String mRequestMethod 		= null;//GET/POST
-//	private String mRLNClientIPAddress 	= null;
+	private String mRequestMethod 		= null;
 	private CONTENT_TYPE 	mContentType = CONTENT_TYPE.INVALID;
 	private String mUserAgent 		= null;
 	
-	public HttpRequest() {
-		
-	}
+	public HttpRequest() {}
 	
 	public HttpRequest(CONTENT_TYPE contentType)
 	{
@@ -192,11 +188,4 @@ public class HttpRequest {
 		this.mRequestMethod = mRequestMethod;
 	}
 
-//	public String getRLNClientIPAddress() {
-//		return mRLNClientIPAddress;
-//	}
-//
-//	public void setRLNClientIPAddress(String mRLNClientIPAddress) {
-//		this.mRLNClientIPAddress = mRLNClientIPAddress;
-//	}
 }

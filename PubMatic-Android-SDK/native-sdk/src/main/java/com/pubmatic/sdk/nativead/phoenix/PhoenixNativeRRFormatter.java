@@ -68,7 +68,6 @@ import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_VER;
 /**
  *
  */
-
 public class PhoenixNativeRRFormatter implements RRFormatter {
 
     private AdRequest mRequest;

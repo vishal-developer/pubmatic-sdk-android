@@ -79,9 +79,6 @@ public class PubMaticNativeAdRequest  extends PubMaticAdRequest {
 	 */
 	public static PubMaticNativeAdRequest createPubMaticNativeAdRequest(Context context, String pubId, String siteId, String adId, List<PMAssetRequest> requestedAssets){
 
-		WebView webView = new WebView(context);
-		String userAgent = webView.getSettings().getUserAgentString();
-
 		PubMaticNativeAdRequest adRequest = new PubMaticNativeAdRequest(context,
 				CommonConstants.PUBMATIC_AD_NETWORK_URL, requestedAssets);
 		adRequest.setPubId(pubId);
@@ -113,7 +110,6 @@ public class PubMaticNativeAdRequest  extends PubMaticAdRequest {
 
 	/**
 	 * This method will initialize all the static parameters which SDK need to set.
-	 *
 	 */
 	protected void initializeDefaultParams() {
 		setOperId(OPERID.JSON_MOBILE);

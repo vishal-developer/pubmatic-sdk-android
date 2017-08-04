@@ -67,7 +67,6 @@ import com.pubmatic.sdk.banner.mraid.ExpandProperties;
 import com.pubmatic.sdk.banner.mraid.OrientationProperties;
 import com.pubmatic.sdk.banner.mraid.ResizeProperties;
 import com.pubmatic.sdk.banner.mraid.WebView;
-import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest;
 import com.pubmatic.sdk.banner.ui.ImageView;
 import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.AdResponse;
@@ -106,8 +105,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import static android.R.attr.description;
-import static android.R.attr.height;
-import static android.R.attr.width;
 
 public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
@@ -394,11 +391,10 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
     private AdRequest 		mAdRequest 		= null;
     private RRFormatter 	mRRFormatter 	= null;
-//    private AttributeSet mAttributes;
 
     private CHANNEL mChannel;
 
-    private void setAdrequest(AdRequest adRequest) throws IllegalArgumentException {
+    private void setAdRequest(AdRequest adRequest) throws IllegalArgumentException {
         if (adRequest == null) {
             throw new IllegalArgumentException("AdRequest object is null");
         }
@@ -450,7 +446,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
      */
     public PMBannerAdView(Context context) {
         super(context);
-        //setChannel(channel);
         init(false);
     }
 
@@ -525,7 +520,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
     private void initUserAgent() {
         if (TextUtils.isEmpty(userAgent)) {
             userAgent = getWebView().getSettings().getUserAgentString();
-//            userAgent = System.getProperty("http.agent");
 
             if (TextUtils.isEmpty(userAgent)) {
                 userAgent = CommonConstants.USER_AGENT_VALUE;
@@ -860,8 +854,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
         closeInternalBrowser();
         browserDialog = null;
-
-        //findLocation();
         unregisterReceiver();
     }
 
@@ -869,7 +861,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
      * @param adrequest
      */
     public void execute(AdRequest adrequest) throws IllegalArgumentException {
-        setAdrequest(adrequest);
+        setAdRequest(adrequest);
         update();
     }
 
@@ -1299,7 +1291,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
     // main thread
     private void renderAd(BannerAdDescriptor adDescriptor) {
-        //invokeTracking = true;
 
         getWebView().stopLoading();
 

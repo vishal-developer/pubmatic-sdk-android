@@ -43,7 +43,6 @@ public class PMConstants {
     public static final String SETTINGS_TARGETTING_LANGUAGE = "Language";
     public static final String SETTINGS_TARGETTING_ORMA_COMPLIANCE = "Orma Compliance (0/1)";
     public static final String SETTINGS_TARGETTING_IP = "IP";
-    public static final String SETTINGS_TARGETTING_AWT = "AWT (0/1)";
     public static final String SETTINGS_TARGETTING_COPPA = "Coppa (true/false)";
     public static final String SETTINGS_TARGETTING_AGE = "Age";
     public static final String SETTINGS_TARGETTING_GENDER = "Gender";

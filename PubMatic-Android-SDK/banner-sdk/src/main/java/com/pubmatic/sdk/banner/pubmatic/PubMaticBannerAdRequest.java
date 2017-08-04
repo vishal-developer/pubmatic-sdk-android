@@ -42,9 +42,9 @@ public class PubMaticBannerAdRequest extends PubMaticAdRequest {
 	protected PMAdSize[] mMultiAdSizes	 = null;
 	protected boolean	 mIsInterstitial = false;
 
-//	//Should not exposed to Publisher, Handled by SDK.
-//	private int mDefaultedAdNetworkId;
-//	private int mDefaultedCampaignId;
+	//	//Should not exposed to Publisher, Handled by SDK.
+	//	private int mDefaultedAdNetworkId;
+	//	private int mDefaultedCampaignId;
 
 	//---------------- Object creational methods ------------------
 	protected PubMaticBannerAdRequest(Context context) {
@@ -59,17 +59,15 @@ public class PubMaticBannerAdRequest extends PubMaticAdRequest {
 		return bannerAdRequest;
 	}
 
-	//Default method: Called from PMBannerRRFormatter i.e. within same package
+	// Default method: Called from PMBannerRRFormatter i.e. within same package
 	void createRequest() {
 		initializeDefaultParams();
 		setUpUrlParams();
 		setUpPostParams();
 	}
 
-	//---------------- protected methods to be used internally ------------------
 	/**
 	 * This method will initialize all the parameters which SDK need to fetch.
-	 *
 	 */
 	protected void initializeDefaultParams() {
 		setOperId(OPERID.JSON_MOBILE);
@@ -82,12 +80,12 @@ public class PubMaticBannerAdRequest extends PubMaticAdRequest {
 		super.setUpPostParams();
 
 		// Set the Ad size
-		if (mPMAdSize != null) {//Need to confirm AD_HEIGHT_PARAM or SIZE_Y_PARAM
+		if (mPMAdSize != null) {
 			putPostData(PubMaticConstants.AD_HEIGHT_PARAM, String.valueOf(mPMAdSize.getAdHeight()));
 			putPostData(PubMaticConstants.AD_WIDTH_PARAM, String.valueOf(mPMAdSize.getAdWidth()));
 		}
 
-		//Send multisize parameter seperated by comma. Max 4 sizes would be considered at server
+		// Send multisize parameter seperated by comma. Max 4 sizes would be considered at server
 		if(mMultiAdSizes!=null && mMultiAdSizes.length>0) {
 			StringBuffer multisize = new StringBuffer();
 			int length = 0;

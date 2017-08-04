@@ -117,8 +117,6 @@ public class PubMaticNativeRRFormatter implements RRFormatter {
 				JSONObject responseObj = new JSONObject(httpResponse.getResponseData());
 				JSONObject object = responseObj.getJSONObject(kPubMatic_BidTag);
 
-
-
 				// If there is an error from the server which happens when provided
 				// wrong ad parameters, return the error with error code and error
 				// message.

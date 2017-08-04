@@ -44,7 +44,8 @@ public class PMUtils {
 
         try {
             ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            //It requires ACCESS_NETWORK_STATE permission
+
+            // It requires ACCESS_NETWORK_STATE permission
             NetworkInfo networkInfo = cm.getActiveNetworkInfo();
 
             if (networkInfo != null) {
@@ -75,7 +76,6 @@ public class PMUtils {
 
     }
 
-    @SuppressLint("DefaultLocale")
     public static String sha1(String string) {
         StringBuilder stringBuilder = new StringBuilder();
 
@@ -89,7 +89,7 @@ public class PMUtils {
                 stringBuilder.append(String.format("%02X", b));
             }
 
-            return stringBuilder.toString().toLowerCase();
+            return stringBuilder.toString().toLowerCase(Locale.getDefault());
         } catch (Exception e) {
             return "";
         }

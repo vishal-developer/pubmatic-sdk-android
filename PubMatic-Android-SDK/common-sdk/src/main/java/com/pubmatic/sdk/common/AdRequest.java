@@ -130,7 +130,7 @@ public abstract class AdRequest {
 			mPostData =null;
 	}
 
-	protected void setUrlParam(Map<String, String> urlParams) {
+	protected void setUrlParams(Map<String, String> urlParams) {
 		mUrlParams = urlParams;
 	}
 
@@ -153,7 +153,6 @@ public abstract class AdRequest {
 	protected void putPostData(String key, String value) {
 		if(!TextUtils.isEmpty(key) && !TextUtils.isEmpty(value)) {
 
-			//append & before 1st parameter else append &
 			if (mPostData == null) {
 				mPostData = new StringBuffer();
 
@@ -168,7 +167,7 @@ public abstract class AdRequest {
 			} catch (UnsupportedEncodingException e) {
 				Log.e(TAG, "Unable to encode ["+key+"]:[+"+value+"] in ad request");
 			}
-			//append key=value
+
 			if(encodedValue!=null) {
 				mPostData.append(key);
 				mPostData.append(CommonConstants.EQUAL);
@@ -275,8 +274,8 @@ public abstract class AdRequest {
 		return mUserAgent;
 	}
 
-	public void setUserAgent(String mUserAgent) {
-		this.mUserAgent = mUserAgent;
+	public void setUserAgent(String userAgent) {
+		this.mUserAgent = userAgent;
 	}
 
     public Map<String, String> getUrlParams() {
@@ -290,7 +289,7 @@ public abstract class AdRequest {
 
 			StringBuffer requestUrl = new StringBuffer(getAdServerURL());
 
-			requestUrl.append("?");
+			requestUrl.append(CommonConstants.QUESTIONMARK);
 
             for (Map.Entry param : mUrlParams.entrySet())
             {

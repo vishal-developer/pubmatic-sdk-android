@@ -48,7 +48,6 @@ public class HttpWorker {
 	private boolean mIsCancelled 					= false;
 	
 	public interface HttpRedirectListener {
-
 		public abstract boolean overrideRedirection();
 	}
 	
@@ -137,7 +136,6 @@ public class HttpWorker {
 					CommonConstants.CONNECTION, httpRequest.mConnection);
 		}
 
-		// Setting requestBody i.e. POST data
 		switch (httpRequest.getContentType()) {
 			case URL_ENCODED:
 				httpUrlConnection.setRequestProperty(
@@ -154,7 +152,6 @@ public class HttpWorker {
 			default:
 				break;
 		}
-	
 	}
 
 	public HttpResponse execute(HttpRequest httpRequest, HttpRedirectListener redirectListener) {
@@ -374,7 +371,7 @@ public class HttpWorker {
 		}
 	
 	}
-	
+
 
 	public void cancelRequest() {
 		mIsCancelled = true;

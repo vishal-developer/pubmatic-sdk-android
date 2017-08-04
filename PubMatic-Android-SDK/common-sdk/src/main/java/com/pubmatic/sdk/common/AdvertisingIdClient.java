@@ -46,23 +46,23 @@ public final class AdvertisingIdClient {
     private final static String PM_AID_STORAGE 				= "aid_shared_preference";
     private final static String PM_AID_KEY 					= "aid_key";
 
-public static final class AdInfo {
-    private final String advertisingId;
-    private final boolean limitAdTrackingEnabled;
+    public static final class AdInfo {
+        private final String advertisingId;
+        private final boolean limitAdTrackingEnabled;
 
-    AdInfo(String advertisingId, boolean limitAdTrackingEnabled) {
-        this.advertisingId = advertisingId;
-        this.limitAdTrackingEnabled = limitAdTrackingEnabled;
-    }
+        AdInfo(String advertisingId, boolean limitAdTrackingEnabled) {
+            this.advertisingId = advertisingId;
+            this.limitAdTrackingEnabled = limitAdTrackingEnabled;
+        }
 
-    public String getId() {
-        return this.advertisingId;
-    }
+        public String getId() {
+            return this.advertisingId;
+        }
 
-    public boolean isLimitAdTrackingEnabled() {
-        return this.limitAdTrackingEnabled;
+        public boolean isLimitAdTrackingEnabled() {
+            return this.limitAdTrackingEnabled;
+        }
     }
-}
 
     /**
      * Refresh the advertising info saved in local storage asynchronously.
@@ -83,7 +83,7 @@ public static final class AdInfo {
                     try {
                         AdvertisingInterface adInterface = new AdvertisingInterface(connection.getBinder());
 
-                        //Save the Advertisement id & opt-out plag in local storage.
+                        //Save the Advertisement id & opt-out flag in local storage.
                         saveAndroidAid(context, adInterface.getId());
                         saveLimitedAdTrackingState(context, adInterface.isLimitAdTrackingEnabled(true));
 
@@ -162,7 +162,6 @@ public static final class AdInfo {
         return androidAid;
     }
 
-
     /**
      * Save the Android advertisement id in local storage for further use.
      */
@@ -188,37 +187,14 @@ public static final class AdInfo {
         }
         return state;
     }
-    /*
-public static AdInfo getAdvertisingIdInfo(Context context) throws Exception {
-    if(Looper.myLooper() == Looper.getMainLooper()) throw new IllegalStateException("Cannot be called from the main thread");
 
-    try { PackageManager pm = context.getPackageManager(); pm.getPackageInfo("com.android.vending", 0); }  
-    catch (Exception e) { throw e; }
+    private static final class AdvertisingConnection implements ServiceConnection {
+        boolean retrieved = false;
+        private final LinkedBlockingQueue<IBinder> queue = new LinkedBlockingQueue<IBinder>(1);
 
-    AdvertisingConnection connection = new AdvertisingConnection();
-    Intent intent = new Intent("com.google.android.gms.ads.identifier.service.START");
-    intent.setPackage("com.google.android.gms");
-    if(context.bindService(intent, connection, Context.BIND_AUTO_CREATE)) {
-        try {
-            AdvertisingInterface adInterface = new AdvertisingInterface(connection.getBinder());
-            AdInfo adInfo = new AdInfo(adInterface.getId(), adInterface.isLimitAdTrackingEnabled(true));
-            return adInfo;
-        } catch (Exception exception) {
-            throw exception;
-        } finally {
-            context.unbindService(connection);
-        }
-    }       
-    throw new IOException("Google Play connection failed");     
-}*/
-
-private static final class AdvertisingConnection implements ServiceConnection {
-    boolean retrieved = false;
-    private final LinkedBlockingQueue<IBinder> queue = new LinkedBlockingQueue<IBinder>(1);
-
-    public void onServiceConnected(ComponentName name, IBinder service) {
-        try { this.queue.put(service); }
-        catch (InterruptedException localInterruptedException){}
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            try { this.queue.put(service); }
+            catch (InterruptedException localInterruptedException){}
     }
 
     public void onServiceDisconnected(ComponentName name){}
