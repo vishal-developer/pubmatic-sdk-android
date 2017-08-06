@@ -51,6 +51,7 @@ public class PhoenixConstants {
     public static final String DEBUG_PARAM              = "d";
     public static final String VISIBLE_AD_POSITION_PARAM= "visi";
     public static final String GLOBAL_KEYWORD_PARAM     = "gkv";
+    public static final String SDK_VERSION_PARAM     = "msdkVersion";
 
     public static final String URL_ENCODING 			= "UTF-8";
 

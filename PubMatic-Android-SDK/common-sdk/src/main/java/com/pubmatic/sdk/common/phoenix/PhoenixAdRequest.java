@@ -40,6 +40,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import static com.pubmatic.sdk.common.phoenix.PhoenixConstants.SDK_VERSION_PARAM;
+
 /**
  *
  */
@@ -312,6 +314,9 @@ public abstract class PhoenixAdRequest extends AdRequest {
     protected void setupPostData() {
 
         super.setupPostData();
+
+        putPostData(PhoenixConstants.SDK_VERSION_PARAM, CommonConstants.SDK_VERSION);
+        
         //Append custom parameters. It's representation is different from PubMatic channel.
         if(mCustomParams!=null && !mCustomParams.isEmpty()) {
             Set<String> set = mCustomParams.keySet();
