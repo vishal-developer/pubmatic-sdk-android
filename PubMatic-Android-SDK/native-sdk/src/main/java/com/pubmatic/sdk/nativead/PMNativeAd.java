@@ -142,8 +142,11 @@ public final class PMNativeAd {
         setAdRequest(adRequest);
 
         //Start the location update if Publisher has enabled location detection
-        if(mRetrieveLocationInfo) {
+        if(mRetrieveLocationInfo && mContext!=null) {
             location = LocationDetector.getInstance(mContext).getLocation();
+            if(LocationDetector.getInstance(mContext).hasObserver(locationObserver) == false) {
+                LocationDetector.getInstance(mContext).addObserver(locationObserver);
+            }
         }
 
     }
@@ -318,6 +321,8 @@ public final class PMNativeAd {
 
         reset();
 
+        initUserAgent();
+
         // If User has provided the location set the source as user
         Location userProvidedLocation = mAdRequest.getLocation();
         if(userProvidedLocation != null) {
@@ -331,15 +336,17 @@ public final class PMNativeAd {
         if(mRetrieveLocationInfo && location != null)
             mAdRequest.setLocation(location);
 
+        // Make a fresh adRequest
+        mAdRequest.setUserAgent(mUserAgent);
         //Fetch user-agent, if publisher has not explicitly provided
-        if(TextUtils.isEmpty(mAdRequest.getUserAgent())) {
-            initUserAgent();
-            mAdRequest.setUserAgent(mUserAgent);
-        } else {
-            //Set the publisher provided user-agent.
-            // It also requied for other http calls.
-            mUserAgent = mAdRequest.getUserAgent();
-        }
+//        if(TextUtils.isEmpty(mAdRequest.getUserAgent())) {
+//            initUserAgent();
+//            mAdRequest.setUserAgent(mUserAgent);
+//        } else {
+//            //Set the publisher provided user-agent.
+//            // It also requied for other http calls.
+//            mUserAgent = mAdRequest.getUserAgent();
+//        }
 
         HttpRequest httpRequest = mRRFormatter.formatRequest(mAdRequest);
 

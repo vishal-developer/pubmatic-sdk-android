@@ -67,6 +67,7 @@ import com.pubmatic.sdk.banner.mraid.ExpandProperties;
 import com.pubmatic.sdk.banner.mraid.OrientationProperties;
 import com.pubmatic.sdk.banner.mraid.ResizeProperties;
 import com.pubmatic.sdk.banner.mraid.WebView;
+import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest;
 import com.pubmatic.sdk.banner.ui.ImageView;
 import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.AdResponse;
@@ -360,7 +361,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
     private WebView.Handler webViewHandler = new WebViewHandler();
 
     // Updating
-    private boolean updateOnLayout = false;
+//    private boolean updateOnLayout = false;
     private boolean deferredUpdate = false;
     private BannerAdDescriptor mAdDescriptor = null;
     private ScheduledFuture<?> adUpdateIntervalFuture = null;
@@ -402,15 +403,24 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         // Since banneradRequest is class is abstract now, we will always have
         // correct channel value here.
         // and hence the controller. No need for null check.
-        mAdRequest = adRequest;
-        mChannel = adRequest.getChannel();
+        mAdRequest      = null;
+        mRRFormatter    = null;
+        mAdRequest      = adRequest;
+        mChannel        = adRequest.getChannel();
 
         createRRFormatter();
+
+        //It needs to be removed when PMInterstitialAdRequest would be created
+        if(placementType == PlacementType.Interstitial && mChannel == CHANNEL.PUBMATIC) {
+            ((PubMaticBannerAdRequest)mAdRequest).setInterstitial(true);
+        }
 
         //Start the location update if Publisher has enabled location detection
         if(mRetrieveLocationInfo) {
             location = LocationDetector.getInstance(getContext()).getLocation();
-            LocationDetector.getInstance(getContext()).addObserver(locationObserver);
+            if(LocationDetector.getInstance(getContext()).hasObserver(locationObserver) == false) {
+                LocationDetector.getInstance(getContext()).addObserver(locationObserver);
+            }
         }
     }
 
@@ -510,11 +520,11 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
     }
 
     private void updateOnLayout() {
-        if (updateOnLayout) {
-            updateOnLayout = false;
-
-            update();
-        }
+//        if (updateOnLayout) {
+//            updateOnLayout = false;
+//
+//            update();
+//        }
     }
 
     private void initUserAgent() {

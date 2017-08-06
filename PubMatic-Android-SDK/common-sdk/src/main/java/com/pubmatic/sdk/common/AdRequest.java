@@ -30,10 +30,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import android.content.Context;
 import android.location.Location;
@@ -42,7 +40,6 @@ import android.util.Log;
 
 import com.pubmatic.sdk.common.pubmatic.PUBAdSize;
 
-import static android.content.ContentValues.TAG;
 
 public abstract class AdRequest {
 
@@ -79,6 +76,8 @@ public abstract class AdRequest {
 
 	// androidAid
 	protected boolean isAndroidAidEnabled= true;
+
+	private static String TAG = AdRequest.class.toString();
 
 	protected AdRequest(CommonConstants.CHANNEL channel, Context context) {
 		mChannel = channel;
@@ -177,41 +176,64 @@ public abstract class AdRequest {
 	}
 
 	//------------------------- All public Getter/Setter -------------------------
-	/**
-	 * Set the list of custom key-value pair. There could be more than 1 possible value for 1 key.
-	 * In this case values will be send with comma separated for same key like key=value1,value2,...valuen
-	 * @param customParams
-     */
-	public void setCustomParams(Map<String, List<String>> customParams) {
-		mCustomParams = customParams;
-	}
+//	/**
+//	 * Set the list of custom key-value pair. There could be more than 1 possible value for 1 key.
+//	 * In this case values will be send with comma separated for same key like key=value1,value2,...valuen
+//	 * @param customParams
+//     */
+//	public void setCustomParams(Map<String, List<String>> customParams) {
+//		mCustomParams = customParams;
+//	}
+//
+//	/**
+//	 * It sets the list of multiple values for same key. Set values will be send
+//	 * with comma separation in ad request like: interest=cricket,football,tennis
+//	 * @param key
+//	 * @param value
+//	 */
+//	public void addCustomParam(String key, List<String> value) {
+//		if(mCustomParams==null)
+//			mCustomParams = new HashMap<String, List<String>>();
+//
+//		List<String> list =null;
+//		if(mCustomParams.containsKey(key)) {
+//			list = mCustomParams.get(key);
+//			list.addAll(value);
+//		} else
+//			mCustomParams.put(key, value);
+//	}
+//
+//	/**
+//	 * It sets the key and value pair. Key value pair will be send
+//	 * in ad request like: interest=cricket
+//	 * @param key
+//	 * @param value
+//	 *
+//	 */
+//	public void addCustomParam(String key, String value) {
+//		if(mCustomParams==null)
+//			mCustomParams = new HashMap<String, List<String>>();
+//
+//		List<String> list =null;
+//		if(mCustomParams.containsKey(key)) {
+//			list = mCustomParams.get(key);
+//			list.add(value);
+//		} else {
+//			list = new ArrayList<String>();
+//			list.add(value);
+//			mCustomParams.put(key, list);
+//		}
+//	}
 
 	/**
-	 * It sets the list of multiple values for same key. Set values will be send
-	 * with comma separation in ad request like: interest=cricket,football,tennis
-	 * @param key
-	 * @param value
-	 */
-	public void addCustomParam(String key, List<String> value) {
-		if(mCustomParams==null)
-			mCustomParams = new HashMap<String, List<String>>();
-
-		List<String> list =null;
-		if(mCustomParams.containsKey(key)) {
-			list = mCustomParams.get(key);
-			list.addAll(value);
-		} else
-			mCustomParams.put(key, value);
-	}
-
-	/**
-	 * It sets the key and value pair. Key value pair will be send
-	 * in ad request like: interest=cricket
+	 * Sets the custom key and value pair. Same method could be called with same key and different
+	 * values, in such case it will send multiple values with comma separated. Key-value pair will
+	 * be send in ad request like: interest=cricket,news
 	 * @param key
 	 * @param value
 	 *
 	 */
-	public void addCustomParam(String key, String value) {
+	public void setCustomParams(String key, String value) {
 		if(mCustomParams==null)
 			mCustomParams = new HashMap<String, List<String>>();
 

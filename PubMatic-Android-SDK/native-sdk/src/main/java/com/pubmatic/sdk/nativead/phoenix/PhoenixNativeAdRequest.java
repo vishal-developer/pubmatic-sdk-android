@@ -175,10 +175,6 @@ public class PhoenixNativeAdRequest extends PhoenixAdRequest {
         setResponseFormat(RESPONSE_TYPE.JSON);
     }
 
-    public void setUserAgent(String userAgent) {
-        super.setUserAgent(userAgent);
-    }
-
     public String getNativeTemplateID() {
         return mNativeTemplateID;
     }

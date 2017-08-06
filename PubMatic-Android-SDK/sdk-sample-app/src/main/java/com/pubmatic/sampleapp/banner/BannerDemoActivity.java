@@ -2,6 +2,7 @@ package com.pubmatic.sampleapp.banner;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
@@ -39,6 +40,8 @@ public class BannerDemoActivity extends Activity {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         PMLogger.setLogLevel(PMLogger.LogLevel.Debug);
 
+
+        banner = (PMBannerAdView)findViewById(R.id.banner);
 
         setPrefetchIds("31400",
                 "32504",
@@ -86,15 +89,6 @@ public class BannerDemoActivity extends Activity {
 
     private void loadAd(String pubId, String siteId, String adId) {
 
-        RelativeLayout layout = (RelativeLayout) findViewById(R.id.parent);
-        LayoutParams params = new LayoutParams(960, 150);
-        params.setLayoutDirection(RelativeLayout.ALIGN_PARENT_BOTTOM);
-
-        banner = new PMBannerAdView(this);
-        params.addRule(RelativeLayout.CENTER_HORIZONTAL, banner.getId());
-        params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, banner.getId());
-        layout.addView(banner, params);
-
         PubMaticBannerAdRequest adRequest = PubMaticBannerAdRequest.createPubMaticBannerAdRequest(
                 BannerDemoActivity.this,
                 pubId, siteId, adId);
@@ -106,20 +100,12 @@ public class BannerDemoActivity extends Activity {
         PMAdSize arr[]= {size1, size2, PUBBANNER_SIZE_300x250, PMAdSize.PUBBANNER_SIZE_320x100};
         adRequest.setOptionalAdSizes(arr);
 
-        //------ Setting custom parameters using 3 different methods ------
-        List<String> list2 = new ArrayList<String>(3);
-        list2.add("value21");
-        list2.add("value22");
-        list2.add("value23");
-
-        List<String> list1 = new ArrayList<String>(1);
-        list1.add("value1");
-
-        Map<String, List<String>> map = new HashMap<>(2);
-        map.put("key1", list1);
-        map.put("key2", list2);
-        adRequest.setCustomParams(map);
-        adRequest.addCustomParam("key3", "value3");
+        //------ Setting custom parameters ------
+        adRequest.setCustomParams("Key1", "value1");
+        adRequest.setCustomParams("Key2", "value21");
+        adRequest.setCustomParams("Key2", "value22");
+        adRequest.setCustomParams("Key2", "value23");
+        adRequest.setCustomParams("key3", "value3");
         //-------- End of custom parameter ---------
 
         banner.setUseInternalBrowser(true);
@@ -153,7 +139,12 @@ public class BannerDemoActivity extends Activity {
         if (banner != null) {
             // Note: It is mandatory to call destroy() method before activity gets destroyed
             banner.destroy();
+            banner = null;
         }
     }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+    }
 }

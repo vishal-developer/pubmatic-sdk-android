@@ -33,6 +33,7 @@
         </activity>
         <activity
             android:name=".banner.BannerDemoActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/banner_ad_demo">
         </activity>
         <activity

@@ -67,6 +67,14 @@ public class LocationDetector extends Observable {
     	return self;
     }
 
+    public boolean hasObserver(Observer observer) {
+
+        if(observer == null)
+            return false;
+
+        return observers.contains(observer);
+    }
+
     @Override
     public void addObserver(Observer observer) {
     	super.addObserver(observer);

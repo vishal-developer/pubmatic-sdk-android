@@ -65,12 +65,6 @@ public class PubMaticNativeAdRequest  extends PubMaticAdRequest {
 	private Context context;
 	private boolean test = false;
 
-
-	public static PubMaticNativeAdRequest createPubMaticNativeAdRequest(
-			Context context, String pubId, String siteId, String adId) {
-		return createPubMaticNativeAdRequest(context, pubId, siteId, adId, null);
-	}
-
 	/**
 	 * This method will create and object of {@link AdRequest}. It is used for
 	 * the implementations of {@link PMNativeAd}
@@ -116,9 +110,9 @@ public class PubMaticNativeAdRequest  extends PubMaticAdRequest {
 		setAdType(AD_TYPE.NATIVE);
 	}
 
-	public void setUserAgent(String userAgent) {
-		super.setUserAgent(userAgent);
-	}
+//	public void setUserAgent(String userAgent) {
+//		super.setUserAgent(userAgent);
+//	}
 
 	@Override
 	public boolean checkMandatoryParams() {
