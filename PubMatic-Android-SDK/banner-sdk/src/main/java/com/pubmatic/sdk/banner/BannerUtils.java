@@ -32,6 +32,16 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.DisplayMetrics;
 
+import com.pubmatic.sdk.common.CommonConstants;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 public class BannerUtils {
 
     public static int dpToPx(int dp) {
@@ -59,4 +69,61 @@ public class BannerUtils {
                 return null;
         }
     }
+
+
+    /**
+     * Given a URL, sets up a connection and gets the HTTP response body from the server.
+     * If the network request is successful, it returns the response body in String form. Otherwise,
+     * it will throw an IOException.
+     */
+    public static String downloadUrl(URL url) throws IOException {
+        InputStream stream = null;
+        HttpURLConnection connection = null;
+        String result = null;
+        try {
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setReadTimeout(CommonConstants.NETWORK_TIMEOUT_SECONDS*1000);
+            connection.setConnectTimeout(CommonConstants.NETWORK_TIMEOUT_SECONDS*1000);
+            connection.setRequestMethod("GET");
+            connection.setDoInput(true);
+            connection.connect();
+
+            int responseCode = connection.getResponseCode();
+            if (responseCode != HttpURLConnection.HTTP_OK) {
+                throw new IOException("HTTP error code: " + responseCode);
+            }
+            stream = connection.getInputStream();
+
+            if (stream != null) {
+                result = readStream(stream);
+            }
+        } finally {
+            if (stream != null) {
+                stream.close();
+            }
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Converts the contents of an InputStream into a String.
+     */
+    private static String readStream(InputStream stream)
+            throws IOException {
+        StringBuilder buffer = new StringBuilder();
+
+        Reader reader = new InputStreamReader(stream);
+        BufferedReader bufferReader = new BufferedReader(reader);
+
+        char[] tmp = new char[1024];
+        int l;
+        while ((l = bufferReader.read(tmp)) != -1) {
+            buffer.append(tmp, 0, l);
+        }
+        return buffer.toString();
+    }
+
 }

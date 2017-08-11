@@ -124,6 +124,8 @@ public class PubMaticConstants {
     public static final String UDID_HASH_PARAM 			= "udidhash";
     public static final String IAB_CATEGORY             = "iabcat";
     public static final String DMA                      = "dma";
+    public static final String API_PARAM 		        = "api";
+
 
 
     //PubMatic specific common parameters for POST Parameters

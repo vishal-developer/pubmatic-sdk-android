@@ -48,6 +48,7 @@ import android.location.Location;
 import android.location.LocationProvider;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.MediaStore;
@@ -55,6 +56,7 @@ import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -91,10 +93,12 @@ import com.pubmatic.sdk.common.ui.BrowserDialog;
 
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.security.MessageDigest;
 import java.text.DateFormat;
@@ -107,6 +111,8 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
+import static com.pubmatic.sdk.banner.BannerUtils.downloadUrl;
 
 public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
@@ -1680,20 +1686,55 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
     }
 
     // main thread
-    private void renderTwoPartExpand(String url) {
-        mraidTwoPartExpand = true;
+    private void renderTwoPartExpand(final String url) {
 
-        mraidTwoPartWebView = new WebView(getContext());
-        mraidTwoPartWebView.setHandler(webViewHandler);
-        mraidTwoPartBridgeInit = false;
-        mraidTwoPartBridge = new Bridge(mraidTwoPartWebView, mraidBridgeHandler);
-        mraidTwoPartBridge.setExpandProperties(mraidBridge.getExpandProperties());
+        try {
 
-        mraidTwoPartWebView.loadUrl(url, mraidTwoPartBridge);
+            AsyncTask<String, String, String> task = new AsyncTask<String, String, String>() {
 
-        mraidExpandDialog = new ExpandDialog(getContext());
-        mraidExpandDialog.addView(mraidTwoPartWebView);
-        mraidExpandDialog.show();
+                @Override
+                protected String doInBackground(String... params) {
+                    String resultString = null;
+                    try {
+                        URL urlObj = new URL(params[0]);
+                        resultString = downloadUrl(urlObj);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    return resultString;
+                }
+
+                @Override
+                protected void onPostExecute(String resultString) {
+                    super.onPostExecute(resultString);
+
+                    mraidTwoPartExpand = true;
+
+                    mraidTwoPartWebView = new WebView(getContext());
+                    mraidTwoPartWebView.setHandler(webViewHandler);
+                    mraidTwoPartBridgeInit = false;
+
+                    mraidTwoPartBridge = new Bridge(mraidTwoPartWebView, mraidBridgeHandler);
+                    mraidTwoPartBridge.setExpandProperties(mraidBridge.getExpandProperties());
+
+                    mraidExpandDialog = new ExpandDialog(getContext());
+                    mraidExpandDialog.addView(mraidTwoPartWebView);
+                    mraidExpandDialog.show();
+
+                    //If content is empty then load directly URL else inject MRAID
+                    if(TextUtils.isEmpty(resultString))
+                        mraidTwoPartWebView.loadUrl(url, mraidTwoPartBridge);
+                    else
+                        mraidTwoPartWebView.loadFragment(resultString, mraidTwoPartBridge, url);
+
+                }
+            };
+            task.execute(url);
+
+        } catch (Exception e) {
+            Log.e(TAG, e.toString());
+        }
     }
 
     @Override
@@ -2546,12 +2587,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                 });
             } else {
                 // Two part expand.
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        renderTwoPartExpand(url);
-                    }
-                });
+                renderTwoPartExpand(url);
             }
         }
 
@@ -2816,6 +2852,9 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
         @Override
         public void mraidCreateCalendarEvent(final Bridge bridge, String calendarEvent) {
+            //Send click tracker
+            performClickTracking();
+
             if ((bridge != mraidBridge) && (bridge != mraidTwoPartBridge)) {
                 return;
             }
@@ -2886,6 +2925,9 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
         @Override
         public void mraidStorePicture(final Bridge bridge, String url) {
+            //Send click tracker
+            performClickTracking();
+
             if ((bridge != mraidBridge) && (bridge != mraidTwoPartBridge)) {
                 return;
             }
