@@ -1136,7 +1136,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
         // Insert the location parameter in ad request,
         // if publisher has enabled location detection
-        // and does not provid location
         if(mRetrieveLocationInfo && location != null) {
             adRequest.setLocation(location);
         }
@@ -3028,27 +3027,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                 }
             });
 
-            RelativeLayout.LayoutParams closeAreaLayoutParams = new RelativeLayout.LayoutParams(
-                    BannerUtils.dpToPx(CloseAreaSizeDp),
-                    BannerUtils.dpToPx(CloseAreaSizeDp));
-            closeAreaLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-            closeAreaLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-            closeArea = new RelativeLayout(getContext());
-            closeArea.setBackgroundColor(0x00000000);
-            container.addView(closeArea, closeAreaLayoutParams);
-            closeArea.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (activityListener != null) {
-                        if (activityListener.onCloseButtonClick(PMBannerAdView.this) == true) {
-                            return;
-                        }
-                    }
-
-                    dismiss();
-                }
-            });
-
             setOnDismissListener(new OnDismissListener() {
                 // TODO: Resolve double close when ad invokes close (thus
                 // causing a dismiss and another close).
@@ -3096,7 +3074,8 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                     break;
             }
 
-            closeArea.bringToFront();
+            if(closeArea!=null)
+                closeArea.bringToFront();
 
             if (mraidBridge != null) {
                 if (richMediaListener != null) {
@@ -3109,7 +3088,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
         public void onBackPressed() {
             if (this == interstitialDialog) {
-                if (closeArea.getBackground() == null) {
+                if (closeArea!=null && closeArea.getBackground() == null) {
                     // Don't allow close until the close button is available.
                     return;
                 }
@@ -3136,7 +3115,8 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                 container.addView(view, layoutParams);
             }
 
-            closeArea.bringToFront();
+            if(closeArea!=null)
+                closeArea.bringToFront();
         }
 
         public void removeView(View view) {
@@ -3153,11 +3133,46 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             }
         }
 
-        public void setCloseImage(Drawable image) {
-            if(closeArea!=null && closeArea.getChildCount()>0)
-                closeArea.removeAllViews();
+        private void addCloseButton() {
 
+            if(closeArea==null) {
+
+                RelativeLayout.LayoutParams closeAreaLayoutParams = new RelativeLayout.LayoutParams(
+                        BannerUtils.dpToPx(CloseAreaSizeDp),
+                        BannerUtils.dpToPx(CloseAreaSizeDp));
+                closeAreaLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                closeAreaLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+                closeArea = new RelativeLayout(getContext());
+                closeArea.setBackgroundColor(0x00000000);
+                container.addView(closeArea, closeAreaLayoutParams);
+                closeArea.bringToFront();
+                closeArea.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (activityListener != null) {
+                            if (activityListener.onCloseButtonClick(PMBannerAdView.this) == true) {
+                                return;
+                            }
+                        }
+
+                        dismiss();
+                    }
+                });
+            }
+        }
+
+        public void setCloseImage(Drawable image) {
+
+            //Set the provided close button image
             if (image != null) {
+
+                //First instantiate the close button area, if not already done
+                addCloseButton();
+
+                //Remove already set close button image
+                if(closeArea!=null && closeArea.getChildCount()>0)
+                    closeArea.removeAllViews();
+
                 RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
                         LayoutParams.MATCH_PARENT,
                         LayoutParams.MATCH_PARENT);
