@@ -587,8 +587,21 @@ public class PMBannerPrefetchRequest extends PubMaticBannerAdRequest {
 
         try
         {
-            if(getGender() != null && !getGender().equals(""))
-                userJsonObject.put("gender", getGender());
+            if(getGender() != null) {
+                switch (getGender()) {
+                    case MALE:
+                        userJsonObject.put(PubMaticConstants.GENDER_PARAM, "M");
+                        break;
+                    case FEMALE:
+                        userJsonObject.put(PubMaticConstants.GENDER_PARAM, "F");
+                        break;
+                    case OTHER:
+                        userJsonObject.put(PubMaticConstants.GENDER_PARAM, "O");
+                        break;
+                    default:
+                        break;
+                }
+            }
 
             if (getYearOfBirth() != null && !getYearOfBirth().equals(""))
                 userJsonObject.put("yob", Integer.parseInt(getYearOfBirth()));
