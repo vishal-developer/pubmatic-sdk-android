@@ -410,16 +410,16 @@ public class PMBannerPrefetchRequest extends PubMaticBannerAdRequest {
                 geoJsonObject.put("lon", mLocation.getLongitude());
 
 
-                String provider = mLocation.getProvider();
-
-                if(!TextUtils.isEmpty(provider) ) {
-                    if (provider.equalsIgnoreCase("network") || provider.equalsIgnoreCase("wifi") || provider.equalsIgnoreCase("gps"))
-                        geoJsonObject.put(PMConstants.LOCATION_TYPE, PubMaticConstants.LOCATION_SOURCE_GPS_LOCATION_SERVICES);
-                    else if (provider.equalsIgnoreCase("user"))
-                        geoJsonObject.put(PMConstants.LOCATION_TYPE, PubMaticConstants.LOCATION_SOURCE_USER_PROVIDED);
-                    else
-                        geoJsonObject.put(PMConstants.LOCATION_TYPE, PubMaticConstants.LOCATION_SOURCE_UNKNOWN);
-                }
+//                String provider = mLocation.getProvider();
+//
+//                if(!TextUtils.isEmpty(provider) ) {
+//                    if (provider.equalsIgnoreCase("network") || provider.equalsIgnoreCase("wifi") || provider.equalsIgnoreCase("gps"))
+//                        geoJsonObject.put(PMConstants.LOCATION_TYPE, PubMaticConstants.LOCATION_SOURCE_GPS_LOCATION_SERVICES);
+//                    else if (provider.equalsIgnoreCase("user"))
+//                        geoJsonObject.put(PMConstants.LOCATION_TYPE, PubMaticConstants.LOCATION_SOURCE_USER_PROVIDED);
+//                    else
+//                        geoJsonObject.put(PMConstants.LOCATION_TYPE, PubMaticConstants.LOCATION_SOURCE_UNKNOWN);
+//                }
             }
 
             if(pubDeviceInformation.mDeviceCountryCode != null && !pubDeviceInformation.mDeviceCountryCode.equals(""))
