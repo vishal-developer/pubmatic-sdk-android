@@ -478,6 +478,11 @@ public class PMBannerPrefetchRequest extends PubMaticBannerAdRequest {
             asJsonObject.put("pageURL", pubDeviceInformation.mPageURL);
             asJsonObject.put("kltstamp", pubDeviceInformation.mDeviceTimeStamp);
 
+            if(mLocation != null) {
+                String loc = mLocation.getLatitude()+","+mLocation.getLongitude();
+                asJsonObject.put("loc", loc);
+            }
+
             double ranreq = Math.random();
             asJsonObject.put("ranreq", ranreq);
 
