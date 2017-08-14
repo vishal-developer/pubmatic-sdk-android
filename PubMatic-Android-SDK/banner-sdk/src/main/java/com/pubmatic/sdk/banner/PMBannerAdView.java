@@ -110,6 +110,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
 import static com.pubmatic.sdk.banner.BannerUtils.downloadUrl;
 
 public class PMBannerAdView extends ViewGroup implements PMAdRendered {
@@ -2038,7 +2039,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             resetRichMediaAd();
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && error!=null) {
-                PMLogger.logEvent("Error loading rich media ad content.  Error code:" + String.valueOf(error.getErrorCode()) + " Description:" + description,
+                PMLogger.logEvent("Error loading rich media ad content.  Error code:" + String.valueOf(error.getErrorCode()) + " Description:" + error.getDescription(),
                         LogLevel.Error);
 
                 if (requestListener != null) {
@@ -2718,7 +2719,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             container.setBackgroundColor(0xff000000);
             setContentView(container, layoutParams);
 
-<<<<<<< HEAD
             RelativeLayout.LayoutParams closeAreaLayoutParams = new RelativeLayout.LayoutParams(
                     BannerUtils.dpToPx(CloseAreaSizeDp),
                     BannerUtils.dpToPx(CloseAreaSizeDp));
