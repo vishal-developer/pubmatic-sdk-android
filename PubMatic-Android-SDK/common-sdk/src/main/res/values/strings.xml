@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">PubMatic-Common-SDK</string>
+    <item name="dialog_id" type="id" />
 </resources>
