@@ -31,6 +31,8 @@ import com.pubmatic.sdk.common.CommonConstants.AD_REQUEST_TYPE;
 import com.pubmatic.sdk.common.CommonConstants.CHANNEL;
 import com.pubmatic.sdk.common.CommonConstants.CONTENT_TYPE;
 
+import java.util.Locale;
+
 public class HttpRequest {
 
     public static HttpRequest getTrackingRequest(final String requestUrl,
@@ -48,11 +50,11 @@ public class HttpRequest {
 	private String			mPostData	= null;
 	
 	// Headers
-	String mContentLanguage = "en";
-	String mAcceptCharset 	= "utf-8";
-	String mConnection 		= "close";
-	String mCacheControl 	= "no-cache";
-	String mAccept 			= "text/plain";
+	String mContentLanguage;
+	String mAcceptCharset;
+	String mConnection;
+	String mCacheControl;
+	String mAccept;
 	String mContentTypeHeader= null;
 	String mContentLength 	= null;
 	String mContentMd5 		= null;
@@ -64,11 +66,18 @@ public class HttpRequest {
 	private String mRequestMethod 		= null;
 	private CONTENT_TYPE 	mContentType = CONTENT_TYPE.INVALID;
 	private String mUserAgent 		= null;
-	
-	public HttpRequest() {}
+
+	public HttpRequest() {
+		mContentLanguage 	= Locale.getDefault().getLanguage();
+		mAcceptCharset 		= "utf-8";
+		mConnection 		= "close";
+		mCacheControl 		= "no-cache";
+		mAccept 			= "text/plain";
+	}
 	
 	public HttpRequest(CONTENT_TYPE contentType)
 	{
+		this();
 		this.mContentType 	= contentType;
 	}
 
@@ -102,53 +111,6 @@ public class HttpRequest {
 		else
 			this.mRequestUrl += mRequestUrl;
 	}
-	
-//	public StringBuffer getPOSTData() {
-//		return mPOSTData;
-//	}
-//	
-//	public void setPOSTData(StringBuffer mPOSTData) {
-//		this.mPOSTData = mPOSTData;
-//	}
-//	
-//	public void appendAdParams(final String adRequestParams) {
-//		if(adRequestParams!=null) {
-//			if(mPOSTData==null)
-//				mPOSTData = new StringBuffer(adRequestParams);
-//			else
-//				mPOSTData.append(adRequestParams);
-//		}
-//	}
-//	
-//	public Method getMethod() {
-//		return mMethod;
-//	}
-//	
-//	public void setMethod(Method method) {
-//		this.mMethod = method;
-//	}
-//	
-//	public JSONObject getJsonBody() {
-//		return mJsonBody;
-//	}
-//
-//	public void setJsonBody(JSONObject jsonBody) {
-//		this.mJsonBody = jsonBody;
-//	}
-//
-//	public Map<String, String> getParams() {
-//		return mParams;
-//	}
-//
-//	public void setParam(String key, String value) {
-//		if(this.mParams==null)
-//			this.mParams = new HashMap<String, String>();
-//		this.mParams.put(key, value);
-//	}
-//	
-//	public void setParams(Map<String, String> params) {
-//		this.mParams = params;
-//	}
 	
 	public CONTENT_TYPE getContentType() {
 		return mContentType;

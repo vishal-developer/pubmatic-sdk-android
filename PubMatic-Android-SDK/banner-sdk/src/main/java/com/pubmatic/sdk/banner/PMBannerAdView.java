@@ -46,11 +46,15 @@ import android.location.Location;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
+import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebResourceError;
@@ -89,10 +93,12 @@ import com.pubmatic.sdk.common.ui.BrowserDialog;
 
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -104,8 +110,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-
-import static android.R.attr.description;
+import static com.pubmatic.sdk.banner.BannerUtils.downloadUrl;
 
 public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
@@ -1043,7 +1048,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
         // Insert the location parameter in ad request,
         // if publisher has enabled location detection
-        // and does not provid location
         if(mRetrieveLocationInfo && location != null) {
             mAdRequest.setLocation(location);
         }
@@ -1363,20 +1367,55 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
     }
 
     // main thread
-    private void renderTwoPartExpand(String url) {
-        mraidTwoPartExpand = true;
+    private void renderTwoPartExpand(final String url) {
 
-        mraidTwoPartWebView = new WebView(getContext());
-        mraidTwoPartWebView.setHandler(webViewHandler);
-        mraidTwoPartBridgeInit = false;
-        mraidTwoPartBridge = new Bridge(mraidTwoPartWebView, mraidBridgeHandler);
-        mraidTwoPartBridge.setExpandProperties(mraidBridge.getExpandProperties());
+        try {
 
-        mraidTwoPartWebView.loadUrl(url, mraidTwoPartBridge);
+            AsyncTask<String, String, String> task = new AsyncTask<String, String, String>() {
 
-        mraidExpandDialog = new ExpandDialog(getContext());
-        mraidExpandDialog.addView(mraidTwoPartWebView);
-        mraidExpandDialog.show();
+                @Override
+                protected String doInBackground(String... params) {
+                    String resultString = null;
+                    try {
+                        URL urlObj = new URL(params[0]);
+                        resultString = downloadUrl(urlObj);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    return resultString;
+                }
+
+                @Override
+                protected void onPostExecute(String resultString) {
+                    super.onPostExecute(resultString);
+
+                    mraidTwoPartExpand = true;
+
+                    mraidTwoPartWebView = new WebView(getContext());
+                    mraidTwoPartWebView.setHandler(webViewHandler);
+                    mraidTwoPartBridgeInit = false;
+
+                    mraidTwoPartBridge = new Bridge(mraidTwoPartWebView, mraidBridgeHandler);
+                    mraidTwoPartBridge.setExpandProperties(mraidBridge.getExpandProperties());
+
+                    mraidExpandDialog = new ExpandDialog(getContext());
+                    mraidExpandDialog.addView(mraidTwoPartWebView);
+                    mraidExpandDialog.show();
+
+                    //If content is empty then load directly URL else inject MRAID
+                    if(TextUtils.isEmpty(resultString))
+                        mraidTwoPartWebView.loadUrl(url, mraidTwoPartBridge);
+                    else
+                        mraidTwoPartWebView.loadFragment(resultString, mraidTwoPartBridge, url);
+
+                }
+            };
+            task.execute(url);
+
+        } catch (Exception e) {
+            Log.e(TAG, e.toString());
+        }
     }
 
     @Override
@@ -1874,11 +1913,12 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             }
         }
 
-        if (closeButtonDelay < 0) {
-            return;
-        }
+//        if (closeButtonDelay < 0) {
+//            return;
+//        }
 
-        if (closeButtonDelay == 0) {
+        //If close delay <= 0 then show close button immediately
+        if (closeButtonDelay <= 0) {
             showCloseButton();
             return;
         }
@@ -1912,12 +1952,20 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             return;
         }
 
+        final Drawable closeCustomButtonDrawable = closeButtonDrawable;
+
         if (mraidBridge != null) {
             switch (mraidBridge.getState()) {
                 case Loading:
                 case Default:
                     if (placementType == PlacementType.Interstitial) {
-                        interstitialDialog.setCloseImage(closeButtonDrawable);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                interstitialDialog.setCloseImage(closeCustomButtonDrawable);
+                            }
+                        });
                         return;
                     }
                 case Hidden:
@@ -2232,12 +2280,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                 });
             } else {
                 // Two part expand.
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        renderTwoPartExpand(url);
-                    }
-                });
+                renderTwoPartExpand(url);
             }
         }
 
@@ -2502,6 +2545,9 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
         @Override
         public void mraidCreateCalendarEvent(final Bridge bridge, String calendarEvent) {
+            //Send click tracker
+            performClickTracking();
+
             if ((bridge != mraidBridge) && (bridge != mraidTwoPartBridge)) {
                 return;
             }
@@ -2572,6 +2618,9 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
         @Override
         public void mraidStorePicture(final Bridge bridge, String url) {
+            //Send click tracker
+            performClickTracking();
+
             if ((bridge != mraidBridge) && (bridge != mraidTwoPartBridge)) {
                 return;
             }
@@ -2669,6 +2718,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             container.setBackgroundColor(0xff000000);
             setContentView(container, layoutParams);
 
+<<<<<<< HEAD
             RelativeLayout.LayoutParams closeAreaLayoutParams = new RelativeLayout.LayoutParams(
                     BannerUtils.dpToPx(CloseAreaSizeDp),
                     BannerUtils.dpToPx(CloseAreaSizeDp));
@@ -2737,7 +2787,8 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                     break;
             }
 
-            closeArea.bringToFront();
+            if(closeArea!=null)
+                closeArea.bringToFront();
 
             if (mraidBridge != null) {
                 if (richMediaListener != null) {
@@ -2750,7 +2801,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
         public void onBackPressed() {
             if (this == interstitialDialog) {
-                if (closeArea.getBackground() == null) {
+                if (closeArea!=null && closeArea.getBackground() == null) {
                     // Don't allow close until the close button is available.
                     return;
                 }
@@ -2777,7 +2828,8 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                 container.addView(view, layoutParams);
             }
 
-            closeArea.bringToFront();
+            if(closeArea!=null)
+                closeArea.bringToFront();
         }
 
         public void removeView(View view) {
@@ -2794,10 +2846,46 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             }
         }
 
-        public void setCloseImage(Drawable image) {
-            closeArea.removeAllViews();
+        private void addCloseButton() {
 
+            if(closeArea==null) {
+
+                RelativeLayout.LayoutParams closeAreaLayoutParams = new RelativeLayout.LayoutParams(
+                        BannerUtils.dpToPx(CloseAreaSizeDp),
+                        BannerUtils.dpToPx(CloseAreaSizeDp));
+                closeAreaLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                closeAreaLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+                closeArea = new RelativeLayout(getContext());
+                closeArea.setBackgroundColor(0x00000000);
+                container.addView(closeArea, closeAreaLayoutParams);
+                closeArea.bringToFront();
+                closeArea.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (activityListener != null) {
+                            if (activityListener.onCloseButtonClick(PMBannerAdView.this) == true) {
+                                return;
+                            }
+                        }
+
+                        dismiss();
+                    }
+                });
+            }
+        }
+
+        public void setCloseImage(Drawable image) {
+
+            //Set the provided close button image
             if (image != null) {
+
+                //First instantiate the close button area, if not already done
+                addCloseButton();
+
+                //Remove already set close button image
+                if(closeArea!=null && closeArea.getChildCount()>0)
+                    closeArea.removeAllViews();
+
                 RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
                         LayoutParams.MATCH_PARENT,
                         LayoutParams.MATCH_PARENT);

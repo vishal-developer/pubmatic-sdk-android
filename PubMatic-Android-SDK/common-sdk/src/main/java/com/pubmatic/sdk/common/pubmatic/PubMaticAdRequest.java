@@ -163,6 +163,10 @@ public abstract class PubMaticAdRequest extends AdRequest {
         putPostData(PubMaticConstants.AD_REFRESH_RATE_PARAM, String.valueOf(mAdRefreshRate));
         putPostData(PubMaticConstants.JS_PARAM, String.valueOf(PUBDeviceInformation.mJavaScriptSupport));
         putPostData(PubMaticConstants.DEVICE_ORIENTATION_PARAM, String.valueOf(getDeviceOrientation(mContext)));
+        putPostData(PubMaticConstants.API_PARAM, "3::4::5");
+
+        if(getOrmmaComplianceLevel() >= 0)
+            putPostData(PubMaticConstants.ORMMA_COMPLAINCE_PARAM, String.valueOf(getOrmmaComplianceLevel()));
 
         try {
 

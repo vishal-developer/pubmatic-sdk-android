@@ -410,6 +410,23 @@ public class PMBannerPrefetchRequest extends PubMaticBannerAdRequest {
 
         try
         {
+            if(mLocation != null) {
+                geoJsonObject.put("lat", mLocation.getLatitude());
+                geoJsonObject.put("lon", mLocation.getLongitude());
+
+
+//                String provider = mLocation.getProvider();
+//
+//                if(!TextUtils.isEmpty(provider) ) {
+//                    if (provider.equalsIgnoreCase("network") || provider.equalsIgnoreCase("wifi") || provider.equalsIgnoreCase("gps"))
+//                        geoJsonObject.put(PMConstants.LOCATION_TYPE, PubMaticConstants.LOCATION_SOURCE_GPS_LOCATION_SERVICES);
+//                    else if (provider.equalsIgnoreCase("user"))
+//                        geoJsonObject.put(PMConstants.LOCATION_TYPE, PubMaticConstants.LOCATION_SOURCE_USER_PROVIDED);
+//                    else
+//                        geoJsonObject.put(PMConstants.LOCATION_TYPE, PubMaticConstants.LOCATION_SOURCE_UNKNOWN);
+//                }
+            }
+
             if(pubDeviceInformation.mDeviceCountryCode != null && !pubDeviceInformation.mDeviceCountryCode.equals(""))
                 geoJsonObject.put("country", pubDeviceInformation.mDeviceCountryCode);
 
@@ -465,6 +482,11 @@ public class PMBannerPrefetchRequest extends PubMaticBannerAdRequest {
 
             asJsonObject.put("pageURL", pubDeviceInformation.mPageURL);
             asJsonObject.put("kltstamp", pubDeviceInformation.mDeviceTimeStamp);
+
+            if(mLocation != null) {
+                String loc = mLocation.getLatitude()+","+mLocation.getLongitude();
+                asJsonObject.put("loc", loc);
+            }
 
             double ranreq = Math.random();
             asJsonObject.put("ranreq", ranreq);
@@ -592,8 +614,21 @@ public class PMBannerPrefetchRequest extends PubMaticBannerAdRequest {
 
         try
         {
-            if(getGender() != null && !getGender().equals(""))
-                userJsonObject.put("gender", getGender());
+            if(getGender() != null) {
+                switch (getGender()) {
+                    case MALE:
+                        userJsonObject.put(PubMaticConstants.GENDER_PARAM, "M");
+                        break;
+                    case FEMALE:
+                        userJsonObject.put(PubMaticConstants.GENDER_PARAM, "F");
+                        break;
+                    case OTHER:
+                        userJsonObject.put(PubMaticConstants.GENDER_PARAM, "O");
+                        break;
+                    default:
+                        break;
+                }
+            }
 
             if (getYearOfBirth() != null && !getYearOfBirth().equals(""))
                 userJsonObject.put("yob", Integer.parseInt(getYearOfBirth()));

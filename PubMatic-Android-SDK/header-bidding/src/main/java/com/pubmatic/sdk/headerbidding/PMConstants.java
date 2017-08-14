@@ -42,4 +42,6 @@ public class PMConstants {
     public static final String ADVERTISEMENT_ID = "9";
     public static final String ANDROID_ID = "3";
 
+    //oRTB parameters
+    public static final String LOCATION_TYPE = "type";
 }

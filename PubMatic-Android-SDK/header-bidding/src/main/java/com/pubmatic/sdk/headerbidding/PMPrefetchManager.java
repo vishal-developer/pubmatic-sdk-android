@@ -28,6 +28,7 @@
 package com.pubmatic.sdk.headerbidding;
 
 import android.content.Context;
+import android.location.Location;
 import android.text.TextUtils;
 import android.webkit.WebView;
 
@@ -38,6 +39,7 @@ import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest;
 import com.pubmatic.sdk.common.AdResponse;
 import com.pubmatic.sdk.common.CommonConstants;
 import com.pubmatic.sdk.common.CommonConstants.CONTENT_TYPE;
+import com.pubmatic.sdk.common.LocationDetector;
 import com.pubmatic.sdk.common.PMAdRendered;
 import com.pubmatic.sdk.common.PMLogger;
 import com.pubmatic.sdk.common.ResponseGenerator;
@@ -102,6 +104,9 @@ public class PMPrefetchManager implements ResponseGenerator {
 
     private PMPrefetchListener pmPreFetchListener;
 
+    private Location location;
+    private boolean mRetrieveLocationInfo = true;
+
     public PMPrefetchManager(Context context, PMPrefetchListener pmPrefetchListener) {
         mContext = context;
         this.pmPreFetchListener = pmPrefetchListener;
@@ -115,14 +120,52 @@ public class PMPrefetchManager implements ResponseGenerator {
         return pmPreFetchListener;
     }
 
+    /**
+     * Determines if location detection is enabled. If enabled, the SDK will use the location
+     * services of the device to determine the device's location ad add ad request parameters
+     * (lat/long) to the ad request. Location detection can be enabled with
+     * setLocationDetectionEnabled() or enableLocationDetection().
+     *
+     * @return true if location detection is enabled, false if not
+     */
+    public boolean isLocationDetectionEnabled() {
+        return mRetrieveLocationInfo;
+    }
+
+    /**
+     * Enables or disable SDK location detection. If enabled with this method the most battery
+     * optimized settings are used. This method is used to disable location detection for either
+     * method of enabling location detection.
+     * <p/>
+     * Permissions for coarse or fine location detection may be required.
+     *
+     * @param locationDetectionEnabled
+     */
+    public void setLocationDetectionEnabled(boolean locationDetectionEnabled) {
+        mRetrieveLocationInfo = locationDetectionEnabled;
+    }
+
     public void prefetchCreatives(PMBannerPrefetchRequest adRequest) {
 
         if(adRequest!=null) {
 
-            // Sanitise request. Remove any ad tag detail.
-
             if(validateHeaderBiddingRequest(adRequest))
             {
+                // If User has provided the location set the source as user
+                Location userProvidedLocation = adRequest.getLocation();
+                if(userProvidedLocation != null) {
+                    userProvidedLocation.setProvider("user");
+                    adRequest.setLocation(userProvidedLocation);
+                }
+
+                // Insert the location parameter in ad request,
+                // if publisher has enabled location detection
+                if(mRetrieveLocationInfo) {
+                    location = LocationDetector.getInstance(mContext).getLocation();
+                    if(location != null)
+                        adRequest.setLocation(location);
+                }
+
                 adRequest.createRequest(mContext);
 
                 HttpRequest httpRequest = formatHeaderBiddingRequest(adRequest);
