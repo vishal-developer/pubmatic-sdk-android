@@ -19,7 +19,6 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.pubmatic.sdk.banner.PMBannerAdView;
-import com.pubmatic.sdk.banner.phoenix.PhoenixBannerAdRequest;
 import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest;
 import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.PMAdSize;
@@ -283,18 +282,6 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
                 Log.e("Parse Error", exception.toString());
             }
 
-        }
-        else if(mPlatform == ConfigurationManager.PLATFORM.PHEONIX)
-        {
-            String adUnitId = mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).get(PMConstants.SETTINGS_AD_TAG_AD_UNIT_ID);
-
-            if(adUnitId == null || adUnitId.equals(""))
-            {
-                Toast.makeText(getActivity(), "Please enter an ad unit id", Toast.LENGTH_LONG).show();
-                return null;
-            }
-
-            adRequest = PhoenixBannerAdRequest.createPhoenixBannerAdRequest(getActivity(), adUnitId, "DIV1");
         }/*
         else
             adRequest = PubMaticBannerAdRequest.createPubMaticBannerAdRequest(getActivity(), pubId, siteId, adId);*/

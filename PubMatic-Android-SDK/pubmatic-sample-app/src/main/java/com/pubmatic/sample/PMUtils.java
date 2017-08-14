@@ -100,8 +100,6 @@ public class PMUtils {
                 id = R.id.targetting_orma_compliance;
             else if(setting.equals(PMConstants.SETTINGS_TARGETTING_IP))
                 id = R.id.targetting_ip;
-            else if(setting.equals(PMConstants.SETTINGS_TARGETTING_AWT))
-                id = R.id.targetting_awt;
             else if(setting.equals(PMConstants.SETTINGS_TARGETTING_AGE))
                 id = R.id.targetting_age;
             else if(setting.equals(PMConstants.SETTINGS_TARGETTING_GENDER))

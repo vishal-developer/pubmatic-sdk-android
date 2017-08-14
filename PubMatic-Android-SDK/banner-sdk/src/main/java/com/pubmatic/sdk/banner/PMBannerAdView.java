@@ -538,7 +538,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             userAgent = getWebView().getSettings().getUserAgentString();
 
             if (TextUtils.isEmpty(userAgent)) {
-                userAgent = CommonConstants.USER_AGENT_VALUE;
+                userAgent = CommonConstants.DEFAULT_USER_AGENT;
             }
         }
     }

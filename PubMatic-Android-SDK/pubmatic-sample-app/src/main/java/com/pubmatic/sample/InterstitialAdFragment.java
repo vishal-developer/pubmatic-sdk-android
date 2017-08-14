@@ -19,7 +19,6 @@ import android.widget.Toast;
 
 import com.pubmatic.sdk.banner.PMBannerAdView;
 import com.pubmatic.sdk.banner.PMInterstitialAdView;
-import com.pubmatic.sdk.banner.phoenix.PhoenixBannerAdRequest;
 import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest;
 import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest;
@@ -40,17 +39,21 @@ public class InterstitialAdFragment extends DialogFragment {
 
     private PMInterstitialAdView mInterstitialAdView;
 
-    public InterstitialAdFragment() {}
-
-    public InterstitialAdFragment(ConfigurationManager.PLATFORM platform, LinkedHashMap<String, LinkedHashMap<String, String>> settings)
+    public InterstitialAdFragment()
     {
-        mPlatform = platform;
-        mSettings = settings;
+
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Bundle b = this.getArguments();
+        if(b.getSerializable("Settings") != null)
+            mSettings = (LinkedHashMap<String, LinkedHashMap<String, String>>)b.getSerializable("Settings");
+
+        if(b.getSerializable("Platform") != null)
+            mPlatform = (ConfigurationManager.PLATFORM)b.getSerializable("Platform");
     }
 
     @Override
@@ -167,9 +170,6 @@ public class InterstitialAdFragment extends DialogFragment {
 
                 String appName = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_APP_NAME);
 
-                if(!appName.equals("") && appName != null)
-                    ((PubMaticBannerAdRequest)adRequest).setAppName(appName);
-
                 String yearOfBirth = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_YEAR_OF_BIRTH);
 
                 if(!yearOfBirth.equals("") && yearOfBirth != null)
@@ -216,20 +216,6 @@ public class InterstitialAdFragment extends DialogFragment {
                 if(!paid.equals("") && paid != null)
                     ((PubMaticBannerAdRequest)adRequest).setApplicationPaid(Boolean.parseBoolean(paid));
 
-                String awt = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_AWT);
-
-                if(!awt.equals("") && awt != null)
-                {
-                    int awtOption = Integer.parseInt(awt);
-
-                    if(awtOption == 0)
-                        ((PubMaticBannerAdRequest)adRequest).setAWT(PubMaticAdRequest.AWT_OPTION.DEFAULT);
-                    else if(awtOption == 1)
-                        ((PubMaticBannerAdRequest)adRequest).setAWT(PubMaticAdRequest.AWT_OPTION.WRAPPED_IN_IFRAME);
-                    else if(awtOption == 2)
-                        ((PubMaticBannerAdRequest)adRequest).setAWT(PubMaticAdRequest.AWT_OPTION.WRAPPED_IN_JS);
-                }
-
                 String ormaCompliance = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_ORMA_COMPLIANCE);
 
                 if(!ormaCompliance.equals("") && ormaCompliance != null)
@@ -242,18 +228,6 @@ public class InterstitialAdFragment extends DialogFragment {
             {
                 Log.e("Parse Error", exception.toString());
             }
-        }
-        else if(mPlatform == ConfigurationManager.PLATFORM.PHEONIX)
-        {
-            String adUnitId = mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).get(PMConstants.SETTINGS_AD_TAG_AD_UNIT_ID);
-
-            if(adUnitId == null || adUnitId.equals(""))
-            {
-                Toast.makeText(getActivity(), "Please enter an ad unit id", Toast.LENGTH_LONG).show();
-                return;
-            }
-
-            adRequest = PhoenixBannerAdRequest.createPhoenixBannerAdRequest(getActivity(), adUnitId, "DIV1");
         }
         /*else
             adRequest = MoceanBannerAdRequest.createMoceanBannerAdRequest(getActivity(), "88269");*/

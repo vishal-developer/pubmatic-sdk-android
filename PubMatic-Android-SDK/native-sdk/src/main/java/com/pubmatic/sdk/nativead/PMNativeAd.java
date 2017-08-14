@@ -885,13 +885,7 @@ public final class PMNativeAd {
 			
 
 			switch (mChannel) {
-                case PHOENIX:
-					adRequestName = "com.pubmatic.sdk.nativead.phoenix.PhoenixNativeAdRequest";
-					className = Class.forName(adRequestName);
-					m = className.getMethod("createPhoenixNativeAdRequest", Context.class, String.class);
-					mAdRequest = (AdRequest)m.invoke(null, mContext, null);
-					break;
-				case PUBMATIC:
+                case PUBMATIC:
 					adRequestName = "com.pubmatic.sdk.nativead.pubmatic.PubMaticNativeAdRequest";
 					className = Class.forName(adRequestName);
 					m = className.getMethod("createPubMaticNativeAdRequest", 

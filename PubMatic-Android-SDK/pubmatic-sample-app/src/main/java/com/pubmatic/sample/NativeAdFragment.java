@@ -64,15 +64,16 @@ public class NativeAdFragment extends DialogFragment {
 
     public NativeAdFragment() {}
 
-    public NativeAdFragment(ConfigurationManager.PLATFORM platform, LinkedHashMap<String, LinkedHashMap<String, String>> settings)
-    {
-        mPlatform = platform;
-        mSettings = settings;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Bundle b = this.getArguments();
+        if(b.getSerializable("Settings") != null)
+            mSettings = (LinkedHashMap<String, LinkedHashMap<String, String>>)b.getSerializable("Settings");
+
+        if(b.getSerializable("Platform") != null)
+            mPlatform = (ConfigurationManager.PLATFORM)b.getSerializable("Platform");
     }
 
     @Override
@@ -212,11 +213,6 @@ public class NativeAdFragment extends DialogFragment {
                 if(!storeUrl.equals("") && storeUrl != null)
                     ((PubMaticNativeAdRequest)adRequest).setStoreURL(storeUrl);
 
-                String appName = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_APP_NAME);
-
-                if(!appName.equals("") && appName != null)
-                    ((PubMaticNativeAdRequest)adRequest).setAppName(appName);
-
                 String yearOfBirth = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_YEAR_OF_BIRTH);
 
                 if(!yearOfBirth.equals("") && yearOfBirth != null)
@@ -262,20 +258,6 @@ public class NativeAdFragment extends DialogFragment {
 
                 if(!paid.equals("") && paid != null)
                     ((PubMaticNativeAdRequest)adRequest).setApplicationPaid(Boolean.parseBoolean(paid));
-
-                String awt = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_AWT);
-
-                if(!awt.equals("") && awt != null)
-                {
-                    int awtOption = Integer.parseInt(awt);
-
-                    if(awtOption == 0)
-                        ((PubMaticNativeAdRequest)adRequest).setAWT(PubMaticAdRequest.AWT_OPTION.DEFAULT);
-                    else if(awtOption == 1)
-                        ((PubMaticNativeAdRequest)adRequest).setAWT(PubMaticAdRequest.AWT_OPTION.WRAPPED_IN_IFRAME);
-                    else if(awtOption == 2)
-                        ((PubMaticNativeAdRequest)adRequest).setAWT(PubMaticAdRequest.AWT_OPTION.WRAPPED_IN_JS);
-                }
 
                 String coppa = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_COPPA);
                 ((PubMaticNativeAdRequest)adRequest).setCoppa(Boolean.parseBoolean(coppa));

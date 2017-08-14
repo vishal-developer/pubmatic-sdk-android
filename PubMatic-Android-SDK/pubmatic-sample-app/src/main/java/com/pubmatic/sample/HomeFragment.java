@@ -22,8 +22,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-
 import java.util.LinkedHashMap;
 
 public class HomeFragment extends Fragment {
@@ -152,7 +150,6 @@ public class HomeFragment extends Fragment {
             if (setting.equals(PMConstants.SETTINGS_TARGETTING_ZIP)
                     || setting.equals(PMConstants.SETTINGS_TARGETTING_DMA)
                     || setting.equals(PMConstants.SETTINGS_TARGETTING_ORMA_COMPLIANCE)
-                    || setting.equals(PMConstants.SETTINGS_TARGETTING_AWT)
                     || setting.equals(PMConstants.SETTINGS_TARGETTING_AGE)
                     || setting.equals(PMConstants.SETTINGS_TARGETTING_INCOME)
                     || setting.equals(PMConstants.SETTINGS_TARGETTING_YEAR_OF_BIRTH))
@@ -197,8 +194,6 @@ public class HomeFragment extends Fragment {
 
             if(platform.equals("PubMatic"))
                 mPlatform = ConfigurationManager.PLATFORM.PUBMATIC;
-            else if(platform.equals("Phoenix"))
-                mPlatform = ConfigurationManager.PLATFORM.PHEONIX;
 
             if(ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
                 refreshSettings();
@@ -341,7 +336,12 @@ public class HomeFragment extends Fragment {
                         getPubMaticConfigurationParameters();
                         getPubmaticTargettingParameters();
 
-                        InterstitialAdFragment interstitialAdFragment = new InterstitialAdFragment(mPlatform, mSettings);
+                        InterstitialAdFragment interstitialAdFragment = new InterstitialAdFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("Settings",mSettings);
+                        bundle.putSerializable("Platform", mPlatform);
+                        interstitialAdFragment.setArguments(bundle);
+
                         interstitialAdFragment.show(getActivity().getFragmentManager(), "interstitialAdFragment");
                     }
                     else
@@ -357,7 +357,12 @@ public class HomeFragment extends Fragment {
                         getPubMaticConfigurationParameters();
                         getPubmaticTargettingParameters();
 
-                        NativeAdFragment nativeAdFragment = new NativeAdFragment(mPlatform, mSettings);
+                        NativeAdFragment nativeAdFragment = new NativeAdFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("Settings",mSettings);
+                        bundle.putSerializable("Platform", mPlatform);
+                        nativeAdFragment.setArguments(bundle);
+
                         nativeAdFragment.show(getActivity().getFragmentManager(), "NativeAdFragment");
                     }
                     else
@@ -468,10 +473,6 @@ public class HomeFragment extends Fragment {
         EditText iabCategoryEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_IAB_CATEGORY);
         String iabCategoryId = iabCategoryEt.getText().toString();
         mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_IAB_CATEGORY, iabCategoryId);
-
-        EditText awtEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_AWT);
-        String awt = awtEt.getText().toString();
-        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_AWT, awt);
 
         EditText storeUrlEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_STORE_URL);
         String storeUrl = storeUrlEt.getText().toString();
