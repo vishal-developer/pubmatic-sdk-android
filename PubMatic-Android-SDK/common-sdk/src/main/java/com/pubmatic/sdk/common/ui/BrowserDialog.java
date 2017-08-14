@@ -62,6 +62,8 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
+import com.pubmatic.sdk.common.R;
+
 public class BrowserDialog extends Dialog {
     static private final int ActionBarHeightDp = 40;
 
@@ -97,7 +99,7 @@ public class BrowserDialog extends Dialog {
                 dpToPx(ActionBarHeightDp));
         actionBarLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         LinearLayout actionBar = new LinearLayout(getContext());
-        actionBar.setId(100);
+        actionBar.setId(R.id.dialog_id);
 
         actionBar.setBackgroundColor(0xFF1A1A1A);
 
