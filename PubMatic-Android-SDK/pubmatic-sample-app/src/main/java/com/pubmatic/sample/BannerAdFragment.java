@@ -22,6 +22,7 @@ import com.pubmatic.sdk.banner.PMBannerAdView;
 import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest;
 import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.PMAdSize;
+import com.pubmatic.sdk.common.PubMaticSDK;
 import com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest;
 
 import java.util.LinkedHashMap;
@@ -53,6 +54,10 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
 
         if(b.getSerializable("Platform") != null)
             mPlatform = (ConfigurationManager.PLATFORM)b.getSerializable("Platform");
+
+
+        boolean isAutoLocationDetectionChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_AUTO_LOCATION_DETECTION);
+        PubMaticSDK.setLocationDetectionEnabled(isAutoLocationDetectionChecked);
     }
 
     @Override
@@ -129,8 +134,6 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
         boolean isUseInternalBrowserChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_USE_INTERNAL_BROWSER);
         mBanner.setUseInternalBrowser(isUseInternalBrowserChecked);
 
-        boolean isAutoLocationDetectionChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_AUTO_LOCATION_DETECTION);
-        mBanner.setLocationDetectionEnabled(isAutoLocationDetectionChecked);
 
     }
 

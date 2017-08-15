@@ -29,14 +29,11 @@ package com.pubmatic.sdk.headerbidding;
 
 import android.content.Context;
 import android.location.Location;
-import android.text.TextUtils;
 import android.webkit.WebView;
 
-import com.pubmatic.sdk.banner.BannerAdDescriptor;
 import com.pubmatic.sdk.banner.PMBannerAdView;
-import com.pubmatic.sdk.banner.PMInterstitialAdView;
+import com.pubmatic.sdk.banner.PMInterstitialAd;
 import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest;
-import com.pubmatic.sdk.common.AdResponse;
 import com.pubmatic.sdk.common.CommonConstants;
 import com.pubmatic.sdk.common.CommonConstants.CONTENT_TYPE;
 import com.pubmatic.sdk.common.LocationDetector;
@@ -46,15 +43,12 @@ import com.pubmatic.sdk.common.ResponseGenerator;
 import com.pubmatic.sdk.common.network.HttpHandler;
 import com.pubmatic.sdk.common.network.HttpRequest;
 import com.pubmatic.sdk.common.network.HttpResponse;
-import com.pubmatic.sdk.common.pubmatic.PUBDeviceInformation;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -401,7 +395,7 @@ public class PMPrefetchManager implements ResponseGenerator {
         if (pubmaticInterstitialAdViews != null && pubmaticInterstitialAdViews.size() != 0) {
             for (WeakReference adView : pubmaticInterstitialAdViews) {
                 if (adView.get() != null)
-                    ((PMInterstitialAdView) adView.get()).destroy();
+                    ((PMInterstitialAd) adView.get()).destroy();
             }
             pubmaticInterstitialAdViews.clear();
         }

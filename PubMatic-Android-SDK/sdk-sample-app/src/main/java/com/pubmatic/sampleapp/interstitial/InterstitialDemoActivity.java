@@ -1,6 +1,6 @@
 /*
  * PubMatic Inc. (�PubMatic�) CONFIDENTIAL
- * Unpublished Copyright (c) 2006-2014 PubMatic, All Rights Reserved.
+ * Unpublished Copyright (c) 2006-2017 PubMatic, All Rights Reserved.
  *
  * NOTICE:  All information contained herein is, and remains the property of PubMatic. The intellectual and technical concepts contained
  * herein are proprietary to PubMatic and may be covered by U.S. and Foreign Patents, patents in process, and are protected by trade secret or copyright law.
@@ -27,16 +27,13 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.pubmatic.sampleapp.R;
-import com.pubmatic.sdk.banner.PMBannerAdView;
-import com.pubmatic.sdk.banner.PMInterstitialAdView;
+import com.pubmatic.sdk.banner.PMInterstitialAd;
 import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest;
 import com.pubmatic.sdk.common.PMLogger;
 
-import java.util.Map;
-
 public class InterstitialDemoActivity extends Activity {
 
-    PMInterstitialAdView interstitialAdView;
+    PMInterstitialAd interstitialAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,53 +83,37 @@ public class InterstitialDemoActivity extends Activity {
 
     private void loadAd(String pubId, String siteId, String adId, View view) {
 
-        if (interstitialAdView == null) {
-            interstitialAdView = new PMInterstitialAdView(this);
-
-            RelativeLayout layout = (RelativeLayout) findViewById(R.id.parent);
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
-                                                                                 RelativeLayout.LayoutParams.WRAP_CONTENT);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                params.setLayoutDirection(RelativeLayout.ALIGN_PARENT_TOP);
-            }
-            layout.addView(interstitialAdView, params);
-
-            interstitialAdView.setUseInternalBrowser(true);
+        if (interstitialAd == null) {
+            interstitialAd = new PMInterstitialAd(this);
+            interstitialAd.setUseInternalBrowser(true);
         }
 
-        interstitialAdView.setRequestListener(new PMBannerAdView.BannerAdViewDelegate.RequestListener() {
+        interstitialAd.setRequestListener(new PMInterstitialAd.InterstitialAdListener.RequestListener() {
             @Override
-            public void onFailedToReceiveAd(PMBannerAdView adView, int errorcode, String errorMessage) {
+            public void onFailedToReceiveAd(PMInterstitialAd adView, int errorcode, String errorMessage) {
                 Toast.makeText(InterstitialDemoActivity.this,
                                "Ad failed to load!",
                                Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public void onReceivedAd(PMBannerAdView adView) {
+            public void onReceivedAd(PMInterstitialAd adView) {
                 Toast.makeText(InterstitialDemoActivity.this,
                         "Ad loaded!",
                         Toast.LENGTH_SHORT).show();
-                interstitialAdView.showInterstitial();
-            }
-
-            @Override
-            public void onReceivedThirdPartyRequest(PMBannerAdView adView,
-                    Map<String, String> properties,
-                    Map<String, String> parameters) {
-                // No operation
+                interstitialAd.showInterstitial();
             }
         });
 
         PubMaticBannerAdRequest adRequest = PubMaticBannerAdRequest.createPubMaticBannerAdRequest(
                 this, pubId, siteId, adId);
-        interstitialAdView.execute(adRequest);
+        interstitialAd.execute(adRequest);
     }
 
     private void destroyAd() {
-        if(interstitialAdView!=null)
-            interstitialAdView.destroy();
-        interstitialAdView = null;
+        if(interstitialAd!=null)
+            interstitialAd.destroy();
+        interstitialAd = null;
     }
 
     @Override

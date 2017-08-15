@@ -42,12 +42,14 @@ public class HttpRequest {
         request.setRequestUrl(requestUrl);
         request.setRequestType(AD_REQUEST_TYPE.PUB_TRACKER);
         request.setRequestMethod(CommonConstants.HTTPMETHODGET);
+		request.mTimeout = CommonConstants.MAX_TRACKER_TIMEOUT;
         return request;
     }
     
 	private AD_REQUEST_TYPE mRequestType= null;
 	private String 			mRequestUrl = null;
 	private String			mPostData	= null;
+	private int 			mTimeout;
 	
 	// Headers
 	String mContentLanguage;
@@ -73,6 +75,7 @@ public class HttpRequest {
 		mConnection 		= "close";
 		mCacheControl 		= "no-cache";
 		mAccept 			= "text/plain";
+		mTimeout 			= CommonConstants.MAX_SOCKET_TIME;
 	}
 	
 	public HttpRequest(CONTENT_TYPE contentType)
@@ -148,6 +151,14 @@ public class HttpRequest {
 
 	public void setRequestMethod(String mRequestMethod) {
 		this.mRequestMethod = mRequestMethod;
+	}
+
+	public int getTimeoutMillis() {
+		return mTimeout;
+	}
+
+	public void setTimeoutMillis(int timeout) {
+		this.mTimeout = timeout;
 	}
 
 }

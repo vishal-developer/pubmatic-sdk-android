@@ -1,6 +1,6 @@
 /*
  * PubMatic Inc. (�PubMatic�) CONFIDENTIAL
- * Unpublished Copyright (c) 2006-2014 PubMatic, All Rights Reserved.
+ * Unpublished Copyright (c) 2006-2017 PubMatic, All Rights Reserved.
  *
  * NOTICE:  All information contained herein is, and remains the property of PubMatic. The intellectual and technical concepts contained
  * herein are proprietary to PubMatic and may be covered by U.S. and Foreign Patents, patents in process, and are protected by trade secret or copyright law.
@@ -42,6 +42,7 @@ import com.pubmatic.sampleapp.banner.BannerDemoActivity;
 import com.pubmatic.sampleapp.interstitial.InterstitialDemoActivity;
 import com.pubmatic.sampleapp.nativead.NativeDemoActivity;
 import com.pubmatic.sdk.common.PMLogger;
+import com.pubmatic.sdk.common.PubMaticSDK;
 
 public class SamplesListActivity extends ListActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
 	SamplesListAdapter samplesListAdapter = null;
@@ -52,7 +53,8 @@ public class SamplesListActivity extends ListActivity implements ActivityCompat.
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		PMLogger.setLogLevel(PMLogger.LogLevel.Debug);
+
+		PubMaticSDK.setLogLevel(PMLogger.LogLevel.Debug);
 
 		// Use to check for potential leaks
 		// android.os.StrictMode.setVmPolicy(new

@@ -214,7 +214,7 @@ public class HttpWorker {
 				httpUrlConnection.setInstanceFollowRedirects(false);
 				httpUrlConnection.setRequestProperty("User-Agent", httpRequest.getUserAgent());
 				httpUrlConnection.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
-				httpUrlConnection.setConnectTimeout(CommonConstants.MAX_SOCKET_TIME);
+				httpUrlConnection.setConnectTimeout(httpRequest.getTimeoutMillis());
 
                 if(httpRequest.getRequestMethod() != null)
 				    httpUrlConnection.setRequestMethod(httpRequest.getRequestMethod());

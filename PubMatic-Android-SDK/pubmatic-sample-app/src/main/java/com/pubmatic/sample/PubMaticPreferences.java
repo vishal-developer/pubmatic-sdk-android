@@ -14,21 +14,28 @@ public class PubMaticPreferences {
 	
 	public static void saveBooleanPreference(Activity context, String key, boolean value)
 	{
-		SharedPreferences sharedPref = context.getSharedPreferences(PREFERENCE_FILE_NAME, Context.MODE_PRIVATE);
-		SharedPreferences.Editor editor = sharedPref.edit();
-		editor.putBoolean(key, value);
-		editor.commit();
+		if(context!=null) {
+			SharedPreferences sharedPref = context.getSharedPreferences(PREFERENCE_FILE_NAME, Context.MODE_PRIVATE);
+			SharedPreferences.Editor editor = sharedPref.edit();
+			editor.putBoolean(key, value);
+			editor.commit();
+		}
 	}
 
     public static Boolean getBooleanPreference(Activity context, String key)
 	{
-		SharedPreferences sharedPref = context.getSharedPreferences(PREFERENCE_FILE_NAME, Context.MODE_PRIVATE);
-		return sharedPref.getBoolean(key, false);
+		if(context!=null) {
+			SharedPreferences sharedPref = context.getSharedPreferences(PREFERENCE_FILE_NAME, Context.MODE_PRIVATE);
+			return sharedPref.getBoolean(key, false);
+		} else
+			return false;
 	}
 
     public static void deletePreference(Activity context, String key)
 	{
-		SharedPreferences sharedPref = context.getSharedPreferences(PREFERENCE_FILE_NAME, Context.MODE_PRIVATE);
-		sharedPref.edit().remove(key).commit();
+		if(context!=null) {
+			SharedPreferences sharedPref = context.getSharedPreferences(PREFERENCE_FILE_NAME, Context.MODE_PRIVATE);
+			sharedPref.edit().remove(key).commit();
+		}
 	}
 }

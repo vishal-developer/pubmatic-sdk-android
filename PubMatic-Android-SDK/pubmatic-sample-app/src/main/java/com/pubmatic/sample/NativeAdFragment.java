@@ -282,9 +282,6 @@ public class NativeAdFragment extends DialogFragment {
         boolean isUseInternalBrowserChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_USE_INTERNAL_BROWSER);
         ad.setUseInternalBrowser(isUseInternalBrowserChecked);
 
-        boolean isAutoLocationDetectionChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_AUTO_LOCATION_DETECTION);
-        ad.setLocationDetectionEnabled(isAutoLocationDetectionChecked);
-
         // Request for ads
         if(adRequest!=null)
             ad.execute(adRequest);

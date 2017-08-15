@@ -82,6 +82,7 @@ import com.pubmatic.sdk.common.PMAdRendered;
 import com.pubmatic.sdk.common.PMAdSize;
 import com.pubmatic.sdk.common.PMLogger;
 import com.pubmatic.sdk.common.PMLogger.LogLevel;
+import com.pubmatic.sdk.common.PubMaticSDK;
 import com.pubmatic.sdk.common.RRFormatter;
 import com.pubmatic.sdk.common.ResponseGenerator;
 import com.pubmatic.sdk.common.network.AdTracking;
@@ -377,7 +378,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
     private boolean invokeTracking = false;
     private boolean mImpressionTrackerSent = false;
     private boolean mClickTrackerSent = false;
-    private boolean mRetrieveLocationInfo = true;
 
     // Internal browser
     private BrowserDialog browserDialog = null;
@@ -388,9 +388,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
     private BannerAdViewDelegate.InternalBrowserListener internalBrowserListener;
     private BannerAdViewDelegate.RequestListener requestListener;
     private BannerAdViewDelegate.RichMediaListener richMediaListener;
-
-    // androidid
-    private boolean isAndroidIdEnabled;
 
     // Receiver
     private BroadcastReceiver mReceiver;
@@ -422,7 +419,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         }
 
         //Start the location update if Publisher has enabled location detection
-        if(mRetrieveLocationInfo) {
+        if(PubMaticSDK.isLocationDetectionEnabled()) {
             location = LocationDetector.getInstance(getContext()).getLocation();
             if(LocationDetector.getInstance(getContext()).hasObserver(locationObserver) == false) {
                 LocationDetector.getInstance(getContext()).addObserver(locationObserver);
@@ -544,26 +541,12 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
     }
 
     /**
-     * Determines if the instance is configured as inline.
-     *
-     * @return true if instance represents inline, false if it represents interstitial. Interstitial
-     * instances should not be added to view layouts.
-     */
-    public boolean isInline() {
-        if (placementType == PlacementType.Inline) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
      * Determines if the instance is configured as interstitial.
      *
      * @return true if instance represents interstitial, false if it represents inline. Interstitial
      * instances should not be added to view layouts.
      */
-    public boolean isInterstitial() {
+    private boolean isInterstitial() {
         if (placementType == PlacementType.Interstitial) {
             return true;
         }
@@ -701,32 +684,13 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
     }
 
     /**
-     * Used with interstitial to show a close button. If not set, users will not see a close button
-     * on interstitial ads. Does nothing if used with inline instances.
-     *
-     * @param showCloseButton true to show a close button, false to not show a close button.
-     */
-    public void setShowCloseButton(boolean showCloseButton) {
-        this.showCloseButton = showCloseButton;
-    }
-
-    /**
-     * Returns state of showing the close button for interstitial ads.
-     *
-     * @return true if showing close button, false if close button will not be shown.
-     */
-    public boolean getShowCloseButton() {
-        return showCloseButton;
-    }
-
-    /**
      * Sets the delay time between showing an interstitial with showInterstitial() and showing the
      * close button. A value of 0 indicates the button should be shown immediately.
      *
      * @param closeButtonDelay Time interval in seconds to delay showing a close button after
      * showing interstitial ad.
      */
-    public void setCloseButtonDelay(int closeButtonDelay) {
+    void setCloseButtonDelay(int closeButtonDelay) {
         this.closeButtonDelay = closeButtonDelay;
     }
 
@@ -735,7 +699,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
      *
      * @return Time interval in seconds to delay showing a close button after showing interstitial.
      */
-    public int getCloseButtonDelay() {
+    int getCloseButtonDelay() {
         return closeButtonDelay;
     }
 
@@ -795,53 +759,8 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         return false;
     }
 
-    /**
-     * Determines if location detection is enabled. If enabled, the SDK will use the location
-     * services of the device to determine the device's location ad add ad request parameters
-     * (lat/long) to the ad request. Location detection can be enabled with
-     * setLocationDetectionEnabled() or enableLocationDetection().
-     *
-     * @return true if location detection is enabled, false if not
-     */
-    public boolean isLocationDetectionEnabled() {
-        return mRetrieveLocationInfo;
-    }
-
     public Location getLocation() {
         return location;
-    }
-
-    /**
-     * Enables or disable SDK location detection. If enabled with this method the most battery
-     * optimized settings are used. This method is used to disable location detection for either
-     * method of enabling location detection.
-     * <p/>
-     * Permissions for coarse or fine location detection may be required.
-     *
-     * @param locationDetectionEnabled
-     */
-    public void setLocationDetectionEnabled(boolean locationDetectionEnabled) {
-        mRetrieveLocationInfo = locationDetectionEnabled;
-    }
-
-    /**
-     * Executes the Banner ad request.
-     * <p/>
-     * Invokes update(). public void setAndroidIdEnabled(boolean isAndroidIdEnabled) {
-     * this.isAndroidIdEnabled = isAndroidIdEnabled; }
-     * <p/>
-     * public boolean isAndoridIdEnabled() { return isAndroidIdEnabled; }
-     * <p/>
-     * /** add androidid as request param.
-     *
-     * @param isAndroidIdEnabled
-     */
-    public void setAndroidIdEnabled(boolean isAndroidIdEnabled) {
-        this.isAndroidIdEnabled = isAndroidIdEnabled;
-    }
-
-    public boolean isAndoridIdEnabled() {
-        return isAndroidIdEnabled;
     }
 
     /**
@@ -1041,15 +960,16 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         }
 
         // If User has provided the location set the source as user
-        Location userProvidedLocation = mAdRequest.getLocation();
-        if(userProvidedLocation != null) {
-            userProvidedLocation.setProvider("user");
-            mAdRequest.setLocation(userProvidedLocation);
-        }
+        // This logic will not work in refresh Ad
+//        Location userProvidedLocation = mAdRequest.getLocation();
+//        if(userProvidedLocation != null) {
+//            userProvidedLocation.setProvider("user");
+//            mAdRequest.setLocation(userProvidedLocation);
+//        }
 
         // Insert the location parameter in ad request,
         // if publisher has enabled location detection
-        if(mRetrieveLocationInfo && location != null) {
+        if(PubMaticSDK.isLocationDetectionEnabled() && location != null) {
             mAdRequest.setLocation(location);
         }
 
@@ -1123,11 +1043,11 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             return true;
     }
 
-    public void showInterstitial() {
+    void showInterstitial() {
         showInterstitialWithDuration(0);
     }
 
-    public void showInterstitialWithDuration(int durationSeconds) {
+    void showInterstitialWithDuration(int durationSeconds) {
         if (isInterstitial() == false) {
             throw new IllegalStateException("showInterstitial requires interstitial instance");
         }
@@ -1156,7 +1076,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
     }
 
     // main/background thread
-    public void closeInterstitial() {
+    void closeInterstitial() {
         if (interstitialDelayFuture != null) {
             interstitialDelayFuture.cancel(true);
             interstitialDelayFuture = null;
@@ -2719,26 +2639,26 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             container.setBackgroundColor(0xff000000);
             setContentView(container, layoutParams);
 
-            RelativeLayout.LayoutParams closeAreaLayoutParams = new RelativeLayout.LayoutParams(
-                    BannerUtils.dpToPx(CloseAreaSizeDp),
-                    BannerUtils.dpToPx(CloseAreaSizeDp));
-            closeAreaLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-            closeAreaLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-            closeArea = new RelativeLayout(getContext());
-            closeArea.setBackgroundColor(0x00000000);
-            container.addView(closeArea, closeAreaLayoutParams);
-            closeArea.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (activityListener != null) {
-                        if (activityListener.onCloseButtonClick(PMBannerAdView.this) == true) {
-                            return;
-                        }
-                    }
-
-                    dismiss();
-                }
-            });
+//            RelativeLayout.LayoutParams closeAreaLayoutParams = new RelativeLayout.LayoutParams(
+//                    BannerUtils.dpToPx(CloseAreaSizeDp),
+//                    BannerUtils.dpToPx(CloseAreaSizeDp));
+//            closeAreaLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+//            closeAreaLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+//            closeArea = new RelativeLayout(getContext());
+//            closeArea.setBackgroundColor(0x00000000);
+//            container.addView(closeArea, closeAreaLayoutParams);
+//            closeArea.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    if (activityListener != null) {
+//                        if (activityListener.onCloseButtonClick(PMBannerAdView.this) == true) {
+//                            return;
+//                        }
+//                    }
+//
+//                    dismiss();
+//                }
+//            });
 
             setOnDismissListener(new OnDismissListener() {
                 // TODO: Resolve double close when ad invokes close (thus

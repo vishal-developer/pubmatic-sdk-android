@@ -160,6 +160,7 @@ public class CommonConstants {
 	public static final int INVALID_INT 			= -999;
 	public static final int AD_TAG_TYPE_VALUE 		= 13;
 	public static final int MAX_SOCKET_TIME 		= 5000;
+	public static final int MAX_TRACKER_TIMEOUT 	= 10000;
 	public static final int NETWORK_TIMEOUT_SECONDS = 5;
 
 	public static final String RESPONSE_IMG 		= "img";

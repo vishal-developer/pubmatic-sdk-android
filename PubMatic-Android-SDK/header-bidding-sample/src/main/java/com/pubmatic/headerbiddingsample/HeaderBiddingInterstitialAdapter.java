@@ -15,7 +15,7 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.doubleclick.AppEventListener;
 import com.google.android.gms.ads.doubleclick.PublisherAdRequest;
 import com.google.android.gms.ads.doubleclick.PublisherInterstitialAd;
-import com.pubmatic.sdk.banner.PMInterstitialAdView;
+import com.pubmatic.sdk.banner.PMInterstitialAd;
 import com.pubmatic.sdk.headerbidding.PMAdSize;
 import com.pubmatic.sdk.headerbidding.PMBannerPrefetchRequest;
 import com.pubmatic.sdk.headerbidding.PMBid;
@@ -248,21 +248,14 @@ public class HeaderBiddingInterstitialAdapter {
 
                             adSlotInfoList.get(0).adView = null;
 
-                            PMInterstitialAdView adView = new PMInterstitialAdView(mContext);
+                            PMInterstitialAd adView = new PMInterstitialAd(mContext);
                             adView.setUseInternalBrowser(true);
 
-                            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                    ViewGroup.LayoutParams.MATCH_PARENT);
 
                             //Display PubMatic Cached Ad
                             pmPrefetchManager.renderedPMInterstitialAd(impressionId, adView);
 
-                            //Replace view with pubmatic Adview.
-                            ViewGroup parent = (ViewGroup) ((Activity)mContext).findViewById(R.id.parent);
-                            if (parent != null) {
-                                parent.addView(adView, layoutParams);
-                                adView.showInterstitial();
-                            }
+                            adView.showInterstitial();
                         }
                     }
                 });

@@ -62,6 +62,7 @@ import com.pubmatic.sdk.common.CommonConstants.CHANNEL;
 import com.pubmatic.sdk.common.PMLogger;
 import com.pubmatic.sdk.common.PMLogger.LogLevel;
 import com.pubmatic.sdk.common.LocationDetector;
+import com.pubmatic.sdk.common.PubMaticSDK;
 import com.pubmatic.sdk.common.RRFormatter;
 import com.pubmatic.sdk.common.network.AdTracking;
 import com.pubmatic.sdk.common.network.HttpHandler;
@@ -128,7 +129,6 @@ public final class PMNativeAd {
 
     // Location support
     private Location location;
-    private boolean mRetrieveLocationInfo = true;
 
     private CHANNEL mChannel;
 
@@ -142,7 +142,7 @@ public final class PMNativeAd {
         setAdRequest(adRequest);
 
         //Start the location update if Publisher has enabled location detection
-        if(mRetrieveLocationInfo && mContext!=null) {
+        if(PubMaticSDK.isLocationDetectionEnabled() && mContext!=null) {
             location = LocationDetector.getInstance(mContext).getLocation();
             if(LocationDetector.getInstance(mContext).hasObserver(locationObserver) == false) {
                 LocationDetector.getInstance(mContext).addObserver(locationObserver);
@@ -333,7 +333,7 @@ public final class PMNativeAd {
         // Insert the location parameter in ad request,
         // if publisher has enabled location detection
         // and does not provid location
-        if(mRetrieveLocationInfo && location != null)
+        if(PubMaticSDK.isLocationDetectionEnabled() && location != null)
             mAdRequest.setLocation(location);
 
         // Make a fresh adRequest
@@ -525,33 +525,8 @@ public final class PMNativeAd {
         }
     }
 
-    /**
-     * Determines if location detection is enabled. If enabled, the SDK will use the location
-     * services of the device to determine the device's location ad add ad request parameters
-     * (lat/long) to the ad request. Location detection can be enabled with
-     * setLocationDetectionEnabled() or enableLocationDetection().
-     *
-     * @return true if location detection is enabled, false if not
-     */
-    public boolean isLocationDetectionEnabled() {
-        return mRetrieveLocationInfo;
-    }
-
     public Location getLocation() {
         return location;
-    }
-
-    /**
-     * Enables or disable SDK location detection. If enabled with this method the most battery
-     * optimized settings are used. This method is used to disable location detection for either
-     * method of enabling location detection.
-     * <p/>
-     * Permissions for coarse or fine location detection may be required.
-     *
-     * @param locationDetectionEnabled
-     */
-    public void setLocationDetectionEnabled(boolean locationDetectionEnabled) {
-        mRetrieveLocationInfo = locationDetectionEnabled;
     }
 
     private Observer locationObserver = new Observer() {

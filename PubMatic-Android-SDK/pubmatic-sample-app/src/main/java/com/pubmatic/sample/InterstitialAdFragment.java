@@ -17,14 +17,13 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import com.pubmatic.sdk.banner.PMBannerAdView;
-import com.pubmatic.sdk.banner.PMInterstitialAdView;
+import com.pubmatic.sdk.banner.PMInterstitialAd;
 import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest;
 import com.pubmatic.sdk.common.AdRequest;
+import com.pubmatic.sdk.common.PubMaticSDK;
 import com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class InterstitialAdFragment extends DialogFragment {
 
@@ -37,11 +36,12 @@ public class InterstitialAdFragment extends DialogFragment {
 
     private AdRequest adRequest;
 
-    private PMInterstitialAdView mInterstitialAdView;
+    private PMInterstitialAd mInterstitialAd;
 
     public InterstitialAdFragment()
     {
-
+        boolean isAutoLocationDetectionChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_AUTO_LOCATION_DETECTION);
+        PubMaticSDK.setLocationDetectionEnabled(isAutoLocationDetectionChecked);
     }
 
     @Override
@@ -232,21 +232,11 @@ public class InterstitialAdFragment extends DialogFragment {
         /*else
             adRequest = MoceanBannerAdRequest.createMoceanBannerAdRequest(getActivity(), "88269");*/
 
-        mInterstitialAdView = new PMInterstitialAdView(getActivity());
+        mInterstitialAd = new PMInterstitialAd(getActivity());
 
-        RelativeLayout layout = (RelativeLayout) rootView.findViewById(R.id.banner_parent);
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
-                RelativeLayout.LayoutParams.WRAP_CONTENT);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            params.setLayoutDirection(RelativeLayout.ALIGN_PARENT_TOP);
-        }
-
-        layout.addView(mInterstitialAdView, params);
-
-        mInterstitialAdView.setRequestListener(new PMBannerAdView.BannerAdViewDelegate.RequestListener() {
+        mInterstitialAd.setRequestListener(new PMInterstitialAd.InterstitialAdListener.RequestListener() {
             @Override
-            public void onFailedToReceiveAd(PMBannerAdView adView, int errorCode, final String msg) {
+            public void onFailedToReceiveAd(PMInterstitialAd adView, int errorCode, final String msg) {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -257,51 +247,42 @@ public class InterstitialAdFragment extends DialogFragment {
             }
 
             @Override
-            public void onReceivedAd(PMBannerAdView adView) {
-                mInterstitialAdView.showInterstitial();
+            public void onReceivedAd(PMInterstitialAd adView) {
+                mInterstitialAd.showInterstitial();
             }
 
-            @Override
-            public void onReceivedThirdPartyRequest(PMBannerAdView adView,
-                                                    Map<String, String> properties,
-                                                    Map<String, String> parameters) {
-                // No operation
-            }
         });
 
         boolean isUseInternalBrowserChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_USE_INTERNAL_BROWSER);
-        mInterstitialAdView.setUseInternalBrowser(isUseInternalBrowserChecked);
+        mInterstitialAd.setUseInternalBrowser(isUseInternalBrowserChecked);
 
-        boolean isAutoLocationDetectionChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_AUTO_LOCATION_DETECTION);
-        mInterstitialAdView.setLocationDetectionEnabled(isAutoLocationDetectionChecked);
-
-        mInterstitialAdView.setActivityListener(new PMBannerAdView.BannerAdViewDelegate.ActivityListener() {
+        mInterstitialAd.setActivityListener(new PMInterstitialAd.InterstitialAdListener.ActivityListener() {
             @Override
-            public boolean onOpenUrl(PMBannerAdView adView, String url) {
+            public boolean onOpenUrl(PMInterstitialAd adView, String url) {
                 return false;
             }
 
             @Override
-            public void onLeavingApplication(PMBannerAdView adView) {
+            public void onLeavingApplication(PMInterstitialAd adView) {
 
             }
 
             @Override
-            public boolean onCloseButtonClick(PMBannerAdView adView) {
+            public boolean onCloseButtonClick(PMInterstitialAd adView) {
                 dismiss();
                 return false;
             }
         });
 
         // Make the ad request to Server banner.execute(adRequest);
-        mInterstitialAdView.execute(adRequest);
+        mInterstitialAd.execute(adRequest);
     }
 
     @Override
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
 
-        mInterstitialAdView.destroy();
-        mInterstitialAdView = null;
+        mInterstitialAd.destroy();
+        mInterstitialAd = null;
     }
 }
