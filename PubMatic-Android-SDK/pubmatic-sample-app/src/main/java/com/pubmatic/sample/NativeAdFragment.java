@@ -290,20 +290,20 @@ public class NativeAdFragment extends DialogFragment {
     private List<PMAssetRequest> getAssetRequests() {
         List<PMAssetRequest> assets = new ArrayList<PMAssetRequest>();
 
-        PMTitleAssetRequest titleAsset = new PMTitleAssetRequest(1);// Unique assetId is mandatory for each asset
+        PMTitleAssetRequest titleAsset = new PMTitleAssetRequest(3);// Unique assetId is mandatory for each asset
         titleAsset.setLength(50);
         titleAsset.setRequired(true); // Optional (Default: false)
         assets.add(titleAsset);
 
-        PMImageAssetRequest imageAssetIcon = new PMImageAssetRequest(2);
+        PMImageAssetRequest imageAssetIcon = new PMImageAssetRequest(1);
         imageAssetIcon.setImageType(PMImageAssetTypes.icon);
         assets.add(imageAssetIcon);
 
-        PMImageAssetRequest imageAssetMainImage = new PMImageAssetRequest(3);
+        PMImageAssetRequest imageAssetMainImage = new PMImageAssetRequest(5);
         imageAssetMainImage.setImageType(PMImageAssetTypes.main);
         assets.add(imageAssetMainImage);
 
-        PMDataAssetRequest dataAssetDesc = new PMDataAssetRequest(5);
+        PMDataAssetRequest dataAssetDesc = new PMDataAssetRequest(2);
         dataAssetDesc.setDataAssetType(PMDataAssetTypes.desc);
         dataAssetDesc.setLength(25);
         assets.add(dataAssetDesc);
@@ -354,11 +354,11 @@ public class NativeAdFragment extends DialogFragment {
 								 * must match that of in request.
 								 */
                                 switch (asset.getAssetId()) {
-                                    case 1:
+                                    case 3:
                                         txtTitle.setText(((PMTitleAssetResponse) asset)
                                                 .getTitleText());
                                         break;
-                                    case 2:
+                                    case 1:
                                         PMNativeAd.Image iconImage = ((PMImageAssetResponse) asset)
                                                 .getImage();
                                         if (iconImage != null) {
@@ -367,7 +367,7 @@ public class NativeAdFragment extends DialogFragment {
                                                     iconImage.getUrl());
                                         }
                                         break;
-                                    case 3:
+                                    case 5:
                                         PMNativeAd.Image mainImage = ((PMImageAssetResponse) asset)
                                                 .getImage();
                                         if (mainImage != null) {
@@ -376,7 +376,7 @@ public class NativeAdFragment extends DialogFragment {
                                                     mainImage.getUrl());
                                         }
                                         break;
-                                    case 5:
+                                    case 2:
                                         txtDescription
                                                 .setText(((PMDataAssetResponse) asset)
                                                         .getValue());
@@ -411,6 +411,7 @@ public class NativeAdFragment extends DialogFragment {
                                 }
                             } catch (Exception ex) {
                                 Log.i("NativeAdFragment", "ERROR in rendering asset. Skipping asset.");
+                                ex.printStackTrace();
                             }
                         }
                     }

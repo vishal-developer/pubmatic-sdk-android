@@ -10,6 +10,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.pubmatic.sdk.common.PubMaticSDK;
 
 /**
  * Created by Sagar on 4/24/2017.
@@ -31,6 +34,9 @@ public class HelpDialogFragment extends DialogFragment {
 
         mInflater = getActivity().getLayoutInflater();
         view = mInflater.inflate(R.layout.fragment_help, null);
+
+        TextView sdkVersionText  = (TextView)view.findViewById(R.id.sdk_version_text);
+        sdkVersionText.setText("PM SDK v"+PubMaticSDK.getSDKVersion());
 
         mBuilder.setView(view);
 

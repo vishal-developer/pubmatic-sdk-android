@@ -24,12 +24,12 @@
             android:textColor="@android:color/white" />
 
         <TextView
+            android:id="@+id/sdk_version_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_alignParentRight="true"
             android:padding="10dp"
-            android:text="PM SDK v5.2.0"
             android:textSize="18sp"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@android:color/white" />
