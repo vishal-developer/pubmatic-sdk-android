@@ -33,7 +33,7 @@ import android.webkit.WebView;
 
 import com.pubmatic.sdk.banner.PMBannerAdView;
 import com.pubmatic.sdk.banner.PMInterstitialAd;
-import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest;
+import com.pubmatic.sdk.banner.pubmatic.PMBannerAdRequest;
 import com.pubmatic.sdk.common.CommonConstants;
 import com.pubmatic.sdk.common.CommonConstants.CONTENT_TYPE;
 import com.pubmatic.sdk.common.LocationDetector;
@@ -238,7 +238,7 @@ public class PMPrefetchManager implements ResponseGenerator {
 
     }
 
-    private HttpRequest formatHeaderBiddingRequest(PubMaticBannerAdRequest adRequest) {
+    private HttpRequest formatHeaderBiddingRequest(PMBannerAdRequest adRequest) {
         HttpRequest httpRequest = new HttpRequest(CONTENT_TYPE.URL_ENCODED);
         httpRequest.setUserAgent(adRequest.getUserAgent());
         httpRequest.setConnection("close");

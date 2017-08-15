@@ -46,7 +46,7 @@ import com.pubmatic.sdk.nativead.bean.PMImageAssetResponse;
 import com.pubmatic.sdk.nativead.bean.PMImageAssetTypes;
 import com.pubmatic.sdk.nativead.bean.PMTitleAssetRequest;
 import com.pubmatic.sdk.nativead.bean.PMTitleAssetResponse;
-import com.pubmatic.sdk.nativead.pubmatic.PubMaticNativeAdRequest;
+import com.pubmatic.sdk.nativead.pubmatic.PMNativeAdRequest;
 
 public class NativeDemoActivity extends Activity {
 
@@ -132,8 +132,8 @@ public class NativeDemoActivity extends Activity {
 
 		// ad.setTest(true); // Uncomment to serve ads in test mode
 
-		PubMaticNativeAdRequest adRequest = PubMaticNativeAdRequest
-				.createPubMaticNativeAdRequest(this, pubId, siteId, adId, getAssetRequests());
+		PMNativeAdRequest adRequest = PMNativeAdRequest
+				.createPMNativeAdRequest(this, pubId, siteId, adId, getAssetRequests());
 
 		// Request for ads
 		ad.execute(adRequest);

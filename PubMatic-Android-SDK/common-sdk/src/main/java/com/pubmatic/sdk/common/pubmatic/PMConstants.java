@@ -26,7 +26,7 @@
  */
 package com.pubmatic.sdk.common.pubmatic;
 
-public class PubMaticConstants {
+public class PMConstants {
 
     public static final String HASHING_RAW = "1";
     public static final String HASHING_SHA1= "2";

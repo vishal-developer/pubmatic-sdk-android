@@ -5,7 +5,7 @@ import android.content.Context;
 /**
  *
  */
-public class PMInterstitialAdRequest extends PubMaticBannerAdRequest{
+public class PMInterstitialAdRequest extends PMBannerAdRequest {
 
     protected PMInterstitialAdRequest(Context context) {
         super(context);
@@ -20,7 +20,7 @@ public class PMInterstitialAdRequest extends PubMaticBannerAdRequest{
      * @param adId
      * @return
      */
-    public static PMInterstitialAdRequest createPubMaticInterstitialAdRequest(Context context, String pubId, String siteId, String adId) {
+    public static PMInterstitialAdRequest createPMInterstitialAdRequest(Context context, String pubId, String siteId, String adId) {
         PMInterstitialAdRequest adRequest = new PMInterstitialAdRequest(context);
         adRequest.setPubId(pubId);
         adRequest.setSiteId(siteId);

@@ -19,11 +19,11 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.pubmatic.sdk.banner.PMBannerAdView;
-import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest;
+import com.pubmatic.sdk.banner.pubmatic.PMBannerAdRequest;
 import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.PMAdSize;
 import com.pubmatic.sdk.common.PubMaticSDK;
-import com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest;
+import com.pubmatic.sdk.common.pubmatic.PMAdRequest;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -157,7 +157,7 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
                 return null;
             }
 
-            adRequest = PubMaticBannerAdRequest.createPubMaticBannerAdRequest(getActivity(), pubId, siteId, adId);
+            adRequest = PMBannerAdRequest.createPMBannerAdRequest(getActivity(), pubId, siteId, adId);
 
             try
             {
@@ -167,7 +167,7 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
                 String height = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_HEIGHT);
                 int heightInt = Integer.parseInt(height);
 
-                ((PubMaticBannerAdRequest)adRequest).setAdSize(new PMAdSize(widthInt, heightInt));
+                ((PMBannerAdRequest)adRequest).setAdSize(new PMAdSize(widthInt, heightInt));
 
                 // Configuration Parameters
                 String androidAidEnabled = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED);
@@ -190,60 +190,60 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
                 String city = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_CITY);
 
                 if(!city.equals("") && city != null)
-                    ((PubMaticBannerAdRequest)adRequest).setCity(city);
+                    ((PMBannerAdRequest)adRequest).setCity(city);
 
                 String state = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_STATE);
 
                 if(!state.equals("") && !state.equals(""))
-                    ((PubMaticBannerAdRequest)adRequest).setState(state);
+                    ((PMBannerAdRequest)adRequest).setState(state);
 
                 String zip = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_ZIP);
 
                 if(!zip.equals("") && zip != null)
-                    ((PubMaticBannerAdRequest)adRequest).setZip(zip);
+                    ((PMBannerAdRequest)adRequest).setZip(zip);
 
                 String appDomain = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_APP_DOMAIN);
 
                 if(!appDomain.equals("") && appDomain != null)
-                    ((PubMaticBannerAdRequest)adRequest).setAppDomain(appDomain);
+                    ((PMBannerAdRequest)adRequest).setAppDomain(appDomain);
 
                 String appCategory = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_APP_CATEGORY);
 
                 if(!appCategory.equals("") && appCategory != null)
-                    ((PubMaticBannerAdRequest)adRequest).setAppCategory(appCategory);
+                    ((PMBannerAdRequest)adRequest).setAppCategory(appCategory);
 
                 String iabCategory = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_IAB_CATEGORY);
 
                 if(!iabCategory.equals("") && iabCategory != null)
-                    ((PubMaticBannerAdRequest)adRequest).setIABCategory(iabCategory);
+                    ((PMBannerAdRequest)adRequest).setIABCategory(iabCategory);
 
                 String storeUrl = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_STORE_URL);
 
                 if(!storeUrl.equals("") && storeUrl != null)
-                    ((PubMaticBannerAdRequest)adRequest).setStoreURL(storeUrl);
+                    ((PMBannerAdRequest)adRequest).setStoreURL(storeUrl);
 
                 String yearOfBirth = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_YEAR_OF_BIRTH);
 
                 if(!yearOfBirth.equals("") && yearOfBirth != null)
-                    ((PubMaticBannerAdRequest)adRequest).setYearOfBirth(yearOfBirth);
+                    ((PMBannerAdRequest)adRequest).setYearOfBirth(yearOfBirth);
 
                 String income = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_INCOME);
 
                 if(!income.equals("") && income != null)
-                    ((PubMaticBannerAdRequest)adRequest).setIncome(income);
+                    ((PMBannerAdRequest)adRequest).setIncome(income);
 
                 String ethnicity = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_ETHNICITY);
 
                 if(ethnicity != null && !ethnicity.equals(""))
                 {
                     if(ethnicity.equalsIgnoreCase("HISPANIC"))
-                        ((PubMaticBannerAdRequest)adRequest).setEthnicity(PubMaticAdRequest.ETHNICITY.HISPANIC);
+                        ((PMBannerAdRequest)adRequest).setEthnicity(PMAdRequest.ETHNICITY.HISPANIC);
                     else if(ethnicity.equalsIgnoreCase("AFRICAN_AMERICAN"))
-                        ((PubMaticBannerAdRequest)adRequest).setEthnicity(PubMaticAdRequest.ETHNICITY.AFRICAN_AMERICAN);
+                        ((PMBannerAdRequest)adRequest).setEthnicity(PMAdRequest.ETHNICITY.AFRICAN_AMERICAN);
                     else if(ethnicity.equalsIgnoreCase("CAUCASIAN"))
-                        ((PubMaticBannerAdRequest)adRequest).setEthnicity(PubMaticAdRequest.ETHNICITY.CAUCASIAN);
+                        ((PMBannerAdRequest)adRequest).setEthnicity(PMAdRequest.ETHNICITY.CAUCASIAN);
                     else if(ethnicity.equalsIgnoreCase("ASIAN_AMERICAN"))
-                        ((PubMaticBannerAdRequest)adRequest).setEthnicity(PubMaticAdRequest.ETHNICITY.ASIAN_AMERICAN);
+                        ((PMBannerAdRequest)adRequest).setEthnicity(PMAdRequest.ETHNICITY.ASIAN_AMERICAN);
                 }
 
                 String gender = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_GENDER);
@@ -251,33 +251,33 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
                 if(gender != null && !gender.equals(""))
                 {
                     if(gender.equalsIgnoreCase("Male") || gender.equalsIgnoreCase("M"))
-                        ((PubMaticBannerAdRequest)adRequest).setGender(PubMaticAdRequest.GENDER.MALE);
+                        ((PMBannerAdRequest)adRequest).setGender(PMAdRequest.GENDER.MALE);
                     else if(gender.equalsIgnoreCase("Female") || gender.equalsIgnoreCase("F"))
-                        ((PubMaticBannerAdRequest)adRequest).setGender(PubMaticAdRequest.GENDER.FEMALE);
+                        ((PMBannerAdRequest)adRequest).setGender(PMAdRequest.GENDER.FEMALE);
                     else if(gender.equalsIgnoreCase("Others") || gender.equalsIgnoreCase("O"))
-                        ((PubMaticBannerAdRequest)adRequest).setGender(PubMaticAdRequest.GENDER.OTHER);
+                        ((PMBannerAdRequest)adRequest).setGender(PMAdRequest.GENDER.OTHER);
                 }
 
                 String dma = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_DMA);
 
                 if(!dma.equals("") && dma != null)
-                    ((PubMaticBannerAdRequest)adRequest).setDMA(dma);
+                    ((PMBannerAdRequest)adRequest).setDMA(dma);
 
                 String paid = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_PAID);
 
                 if(!paid.equals("") && paid != null)
-                    ((PubMaticBannerAdRequest)adRequest).setApplicationPaid(Boolean.parseBoolean(paid));
+                    ((PMBannerAdRequest)adRequest).setApplicationPaid(Boolean.parseBoolean(paid));
 
                 String coppa = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_COPPA);
-                ((PubMaticBannerAdRequest)adRequest).setCoppa(Boolean.parseBoolean(coppa));
+                ((PMBannerAdRequest)adRequest).setCoppa(Boolean.parseBoolean(coppa));
 
                 String ormaCompliance = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_ORMA_COMPLIANCE);
 
                 if(!ormaCompliance.equals("") && ormaCompliance != null)
-                    ((PubMaticBannerAdRequest)adRequest).setOrmmaComplianceLevel(Integer.parseInt(ormaCompliance));
+                    ((PMBannerAdRequest)adRequest).setOrmmaComplianceLevel(Integer.parseInt(ormaCompliance));
 
                 boolean isDoNotTrackChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_DO_NOT_TRACK);
-                ((PubMaticAdRequest)adRequest).setDoNotTrack(isDoNotTrackChecked);
+                ((PMAdRequest)adRequest).setDoNotTrack(isDoNotTrackChecked);
 
             }
             catch (Exception exception)
@@ -287,7 +287,7 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
 
         }/*
         else
-            adRequest = PubMaticBannerAdRequest.createPubMaticBannerAdRequest(getActivity(), pubId, siteId, adId);*/
+            adRequest = PMBannerAdRequest.createPMBannerAdRequest(getActivity(), pubId, siteId, adId);*/
 
         try
         {

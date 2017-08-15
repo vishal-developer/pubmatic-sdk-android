@@ -19,7 +19,7 @@ import com.pubmatic.sdk.banner.PMInterstitialAd;
 import com.pubmatic.sdk.banner.pubmatic.PMInterstitialAdRequest;
 import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.PubMaticSDK;
-import com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest;
+import com.pubmatic.sdk.common.pubmatic.PMAdRequest;
 
 import java.util.LinkedHashMap;
 
@@ -106,7 +106,7 @@ public class InterstitialAdFragment extends DialogFragment {
                 return;
             }
 
-            adRequest = PMInterstitialAdRequest.createPubMaticInterstitialAdRequest(getActivity(), pubId, siteId, adId);
+            adRequest = PMInterstitialAdRequest.createPMInterstitialAdRequest(getActivity(), pubId, siteId, adId);
 
             // Configuration Parameters
             String androidAidEnabled = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED);
@@ -183,13 +183,13 @@ public class InterstitialAdFragment extends DialogFragment {
                 if(!ethnicity.equals("") && ethnicity != null)
                 {
                     if(ethnicity.equalsIgnoreCase("HISPANIC"))
-                        ((PMInterstitialAdRequest)adRequest).setEthnicity(PubMaticAdRequest.ETHNICITY.HISPANIC);
+                        ((PMInterstitialAdRequest)adRequest).setEthnicity(PMAdRequest.ETHNICITY.HISPANIC);
                     else if(ethnicity.equalsIgnoreCase("AFRICAN_AMERICAN"))
-                        ((PMInterstitialAdRequest)adRequest).setEthnicity(PubMaticAdRequest.ETHNICITY.AFRICAN_AMERICAN);
+                        ((PMInterstitialAdRequest)adRequest).setEthnicity(PMAdRequest.ETHNICITY.AFRICAN_AMERICAN);
                     else if(ethnicity.equalsIgnoreCase("CAUCASIAN"))
-                        ((PMInterstitialAdRequest)adRequest).setEthnicity(PubMaticAdRequest.ETHNICITY.CAUCASIAN);
+                        ((PMInterstitialAdRequest)adRequest).setEthnicity(PMAdRequest.ETHNICITY.CAUCASIAN);
                     else if(ethnicity.equalsIgnoreCase("ASIAN_AMERICAN"))
-                        ((PMInterstitialAdRequest)adRequest).setEthnicity(PubMaticAdRequest.ETHNICITY.ASIAN_AMERICAN);
+                        ((PMInterstitialAdRequest)adRequest).setEthnicity(PMAdRequest.ETHNICITY.ASIAN_AMERICAN);
                 }
 
                 String gender = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_GENDER);
@@ -197,11 +197,11 @@ public class InterstitialAdFragment extends DialogFragment {
                 if(gender != null && !gender.equals(""))
                 {
                     if(gender.equalsIgnoreCase("Male") || gender.equalsIgnoreCase("M"))
-                        ((PMInterstitialAdRequest)adRequest).setGender(PubMaticAdRequest.GENDER.MALE);
+                        ((PMInterstitialAdRequest)adRequest).setGender(PMAdRequest.GENDER.MALE);
                     else if(gender.equalsIgnoreCase("Female") || gender.equalsIgnoreCase("F"))
-                        ((PMInterstitialAdRequest)adRequest).setGender(PubMaticAdRequest.GENDER.FEMALE);
+                        ((PMInterstitialAdRequest)adRequest).setGender(PMAdRequest.GENDER.FEMALE);
                     else if(gender.equalsIgnoreCase("Others") || gender.equalsIgnoreCase("O"))
-                        ((PMInterstitialAdRequest)adRequest).setGender(PubMaticAdRequest.GENDER.OTHER);
+                        ((PMInterstitialAdRequest)adRequest).setGender(PMAdRequest.GENDER.OTHER);
                 }
 
                 String dma = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_DMA);
@@ -220,7 +220,7 @@ public class InterstitialAdFragment extends DialogFragment {
                     ((PMInterstitialAdRequest)adRequest).setOrmmaComplianceLevel(Integer.parseInt(ormaCompliance));
 
                 boolean isDoNotTrackChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_DO_NOT_TRACK);
-                ((PubMaticAdRequest)adRequest).setDoNotTrack(isDoNotTrackChecked);
+                ((PMAdRequest)adRequest).setDoNotTrack(isDoNotTrackChecked);
             }
             catch (Exception exception)
             {

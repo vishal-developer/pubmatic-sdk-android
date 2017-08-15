@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.Set;
 
 
-public abstract class PubMaticAdRequest extends AdRequest {
+public abstract class PMAdRequest extends AdRequest {
 
     // Passback params
     //    private String mKAdNetworkId;
@@ -104,7 +104,7 @@ public abstract class PubMaticAdRequest extends AdRequest {
     }
 
     //---------------- protected methods to be used internally ------------------
-    protected PubMaticAdRequest(Context context) {
+    protected PMAdRequest(Context context) {
         super(CommonConstants.CHANNEL.PUBMATIC, context);
         mContext = context;
 
@@ -122,170 +122,170 @@ public abstract class PubMaticAdRequest extends AdRequest {
         boolean optedOut = AdvertisingIdClient.getLimitedAdTrackingState(mContext, false);
         PUBDeviceInformation pubDeviceInformation = PUBDeviceInformation.getInstance(mContext);
 
-        putPostData(PubMaticConstants.PUB_ID_PARAM, mPubId);
-        putPostData(PubMaticConstants.SITE_ID_PARAM, String.valueOf(mSiteId));
-        putPostData(PubMaticConstants.AD_ID_PARAM, String.valueOf(mAdId));
+        putPostData(PMConstants.PUB_ID_PARAM, mPubId);
+        putPostData(PMConstants.SITE_ID_PARAM, String.valueOf(mSiteId));
+        putPostData(PMConstants.AD_ID_PARAM, String.valueOf(mAdId));
 
         if(mOperId == OPERID.HTML)
-            putPostData(PubMaticConstants.OPER_ID_PARAM, String.valueOf(1));
+            putPostData(PMConstants.OPER_ID_PARAM, String.valueOf(1));
         else if(mOperId == OPERID.JAVA_SCRIPT)
-            putPostData(PubMaticConstants.OPER_ID_PARAM, String.valueOf(3));
+            putPostData(PMConstants.OPER_ID_PARAM, String.valueOf(3));
         else if(mOperId == OPERID.JSON)
-            putPostData(PubMaticConstants.OPER_ID_PARAM, String.valueOf(102));
+            putPostData(PMConstants.OPER_ID_PARAM, String.valueOf(102));
         else if(mOperId == OPERID.JSON_MOBILE)
-            putPostData(PubMaticConstants.OPER_ID_PARAM, String.valueOf(201));
+            putPostData(PMConstants.OPER_ID_PARAM, String.valueOf(201));
 
         if(mAdType == AD_TYPE.TEXT)
-            putPostData(PubMaticConstants.AD_TYPE_PARAM, String.valueOf(1));
+            putPostData(PMConstants.AD_TYPE_PARAM, String.valueOf(1));
         else if(mAdType == AD_TYPE.IMAGE)
-            putPostData(PubMaticConstants.AD_TYPE_PARAM, String.valueOf(2));
+            putPostData(PMConstants.AD_TYPE_PARAM, String.valueOf(2));
         else if(mAdType == AD_TYPE.IMAGE_TEXT)
-            putPostData(PubMaticConstants.AD_TYPE_PARAM, String.valueOf(3));
+            putPostData(PMConstants.AD_TYPE_PARAM, String.valueOf(3));
         else if(mAdType == AD_TYPE.BANNER)
-            putPostData(PubMaticConstants.AD_TYPE_PARAM, String.valueOf(11));
+            putPostData(PMConstants.AD_TYPE_PARAM, String.valueOf(11));
         else if(mAdType == AD_TYPE.NATIVE)
-            putPostData(PubMaticConstants.AD_TYPE_PARAM, String.valueOf(12));
+            putPostData(PMConstants.AD_TYPE_PARAM, String.valueOf(12));
         else if(mAdType == AD_TYPE.VIDEO)
-            putPostData(PubMaticConstants.AD_TYPE_PARAM, String.valueOf(13));
+            putPostData(PMConstants.AD_TYPE_PARAM, String.valueOf(13));
         else if(mAdType == AD_TYPE.AUDIO)
-            putPostData(PubMaticConstants.AD_TYPE_PARAM, String.valueOf(14));
+            putPostData(PMConstants.AD_TYPE_PARAM, String.valueOf(14));
 
-        putPostData(PubMaticConstants.AD_POSITION_PARAM, String.valueOf(PUBDeviceInformation.mAdPosition));
-        putPostData(PubMaticConstants.IN_IFRAME_PARAM, String.valueOf(PUBDeviceInformation.mInIframe));
-        putPostData(PubMaticConstants.AD_VISIBILITY_PARAM, String.valueOf(PUBDeviceInformation.mAdVisibility));
-        putPostData(PubMaticConstants.APP_CATEGORY_PARAM, mAppCategory);
-        putPostData(PubMaticConstants.COPPA_PARAM, String.valueOf(mCoppa ? 1 : 0));
-        putPostData(PubMaticConstants.NETWORK_TYPE_PARAM, PMUtils.getNetworkType(mContext));
-        putPostData(PubMaticConstants.PAID_PARAM, String.valueOf(mPaid ? 1 : 0));
-        putPostData(PubMaticConstants.APP_DOMAIN_PARAM, mAppDomain);
-        putPostData(PubMaticConstants.STORE_URL_PARAM, mStoreURL);
-        putPostData(PubMaticConstants.APP_ID_PARAM, mAid);
-        putPostData(PubMaticConstants.AD_REFRESH_RATE_PARAM, String.valueOf(mAdRefreshRate));
-        putPostData(PubMaticConstants.JS_PARAM, String.valueOf(PUBDeviceInformation.mJavaScriptSupport));
-        putPostData(PubMaticConstants.DEVICE_ORIENTATION_PARAM, String.valueOf(getDeviceOrientation(mContext)));
-        putPostData(PubMaticConstants.API_PARAM, "3::4::5");
+        putPostData(PMConstants.AD_POSITION_PARAM, String.valueOf(PUBDeviceInformation.mAdPosition));
+        putPostData(PMConstants.IN_IFRAME_PARAM, String.valueOf(PUBDeviceInformation.mInIframe));
+        putPostData(PMConstants.AD_VISIBILITY_PARAM, String.valueOf(PUBDeviceInformation.mAdVisibility));
+        putPostData(PMConstants.APP_CATEGORY_PARAM, mAppCategory);
+        putPostData(PMConstants.COPPA_PARAM, String.valueOf(mCoppa ? 1 : 0));
+        putPostData(PMConstants.NETWORK_TYPE_PARAM, PMUtils.getNetworkType(mContext));
+        putPostData(PMConstants.PAID_PARAM, String.valueOf(mPaid ? 1 : 0));
+        putPostData(PMConstants.APP_DOMAIN_PARAM, mAppDomain);
+        putPostData(PMConstants.STORE_URL_PARAM, mStoreURL);
+        putPostData(PMConstants.APP_ID_PARAM, mAid);
+        putPostData(PMConstants.AD_REFRESH_RATE_PARAM, String.valueOf(mAdRefreshRate));
+        putPostData(PMConstants.JS_PARAM, String.valueOf(PUBDeviceInformation.mJavaScriptSupport));
+        putPostData(PMConstants.DEVICE_ORIENTATION_PARAM, String.valueOf(getDeviceOrientation(mContext)));
+        putPostData(PMConstants.API_PARAM, "3::4::5");
 
         if(getOrmmaComplianceLevel() >= 0)
-            putPostData(PubMaticConstants.ORMMA_COMPLAINCE_PARAM, String.valueOf(getOrmmaComplianceLevel()));
+            putPostData(PMConstants.ORMMA_COMPLAINCE_PARAM, String.valueOf(getOrmmaComplianceLevel()));
 
         try {
 
             if(!isDoNotTrack() && !optedOut)
             {
                 if (pubDeviceInformation.mCarrierName != null) {
-                    putPostData(PubMaticConstants.CARRIER_PARAM, pubDeviceInformation.mCarrierName);
+                    putPostData(PMConstants.CARRIER_PARAM, pubDeviceInformation.mCarrierName);
                 }
 
                 if (pubDeviceInformation.mDeviceMake != null) {
-                    putPostData(PubMaticConstants.MAKE_PARAM, pubDeviceInformation.mDeviceMake);
+                    putPostData(PMConstants.MAKE_PARAM, pubDeviceInformation.mDeviceMake);
                 }
 
                 if (pubDeviceInformation.mDeviceModel != null) {
-                    putPostData(PubMaticConstants.MODEL_PARAM, pubDeviceInformation.mDeviceModel);
+                    putPostData(PMConstants.MODEL_PARAM, pubDeviceInformation.mDeviceModel);
                 }
 
                 if (pubDeviceInformation.mDeviceOSName != null) {
-                    putPostData(PubMaticConstants.OS_PARAM, pubDeviceInformation.mDeviceOSName);
+                    putPostData(PMConstants.OS_PARAM, pubDeviceInformation.mDeviceOSName);
                 }
 
                 if (pubDeviceInformation.mDeviceOSVersion != null) {
-                    putPostData(PubMaticConstants.OSV_PARAM, pubDeviceInformation.mDeviceOSVersion);
+                    putPostData(PMConstants.OSV_PARAM, pubDeviceInformation.mDeviceOSVersion);
                 }
 
                 if (!TextUtils.isEmpty(mYearOfBirth)) {
-                    putPostData(PubMaticConstants.YOB_PARAM, mYearOfBirth);
+                    putPostData(PMConstants.YOB_PARAM, mYearOfBirth);
                 }
 
                 if(getGender() != null) {
                     switch (getGender()) {
                         case MALE:
-                            putPostData(PubMaticConstants.GENDER_PARAM, "M");
+                            putPostData(PMConstants.GENDER_PARAM, "M");
                             break;
                         case FEMALE:
-                            putPostData(PubMaticConstants.GENDER_PARAM, "F");
+                            putPostData(PMConstants.GENDER_PARAM, "F");
                             break;
                         case OTHER:
-                            putPostData(PubMaticConstants.GENDER_PARAM, "O");
+                            putPostData(PMConstants.GENDER_PARAM, "O");
                             break;
                         default:
-                            putPostData(PubMaticConstants.GENDER_PARAM, "O");
+                            putPostData(PMConstants.GENDER_PARAM, "O");
                             break;
                     }
                 }
 
                 //Set the location
                 if (mLocation != null) {
-                    putPostData(PubMaticConstants.LOC_PARAM, mLocation.getLatitude() + ","
+                    putPostData(PMConstants.LOC_PARAM, mLocation.getLatitude() + ","
                             + mLocation.getLongitude());
 
                     String provider = mLocation.getProvider();
 
                     if(provider.equalsIgnoreCase("network") || provider.equalsIgnoreCase("wifi") || provider.equalsIgnoreCase("gps"))
-                        putPostData(PubMaticConstants.LOC_SOURCE_PARAM, PubMaticConstants.LOCATION_SOURCE_GPS_LOCATION_SERVICES);
+                        putPostData(PMConstants.LOC_SOURCE_PARAM, PMConstants.LOCATION_SOURCE_GPS_LOCATION_SERVICES);
                     else if(provider.equalsIgnoreCase("user"))
-                        putPostData(PubMaticConstants.LOC_SOURCE_PARAM, PubMaticConstants.LOCATION_SOURCE_USER_PROVIDED);
+                        putPostData(PMConstants.LOC_SOURCE_PARAM, PMConstants.LOCATION_SOURCE_USER_PROVIDED);
                     else
-                        putPostData(PubMaticConstants.LOC_SOURCE_PARAM, PubMaticConstants.LOCATION_SOURCE_UNKNOWN);
+                        putPostData(PMConstants.LOC_SOURCE_PARAM, PMConstants.LOCATION_SOURCE_UNKNOWN);
                 }
             }
 
             try
             {
                 if (!TextUtils.isEmpty(mAdOrientation))
-                    putPostData(PubMaticConstants.AD_ORIENTATION_PARAM, mAdOrientation);
+                    putPostData(PMConstants.AD_ORIENTATION_PARAM, mAdOrientation);
 
                 if (!TextUtils.isEmpty(mState)) {
-                    putPostData(PubMaticConstants.USER_STATE, mState);
+                    putPostData(PMConstants.USER_STATE, mState);
                 }
 
                 if (!TextUtils.isEmpty(mCity)) {
-                    putPostData(PubMaticConstants.USER_CITY, mCity);
+                    putPostData(PMConstants.USER_CITY, mCity);
                 }
 
                 if (!TextUtils.isEmpty(mZip)) {
-                    putPostData(PubMaticConstants.ZIP_PARAM, mZip);
+                    putPostData(PMConstants.ZIP_PARAM, mZip);
                 }
             }
             catch(Exception exception) {}
 
             if (pubDeviceInformation.mDeviceCountryCode != null) {
-                putPostData(PubMaticConstants.COUNTRY_PARAM, pubDeviceInformation.mDeviceCountryCode);
+                putPostData(PMConstants.COUNTRY_PARAM, pubDeviceInformation.mDeviceCountryCode);
             }
 
             if (pubDeviceInformation.mPageURL != null) {
-                putPostData(PubMaticConstants.PAGE_URL_PARAM, pubDeviceInformation.mPageURL);
+                putPostData(PMConstants.PAGE_URL_PARAM, pubDeviceInformation.mPageURL);
             }
 
             if (pubDeviceInformation.mApplicationName != null) {
-                putPostData(PubMaticConstants.APP_NAME_PARAM, pubDeviceInformation.mApplicationName);
+                putPostData(PMConstants.APP_NAME_PARAM, pubDeviceInformation.mApplicationName);
             }
 
             if (pubDeviceInformation.mPackageName != null) {
-                putPostData(PubMaticConstants.APP_BUNDLE_PARAM, pubDeviceInformation.mPackageName);
+                putPostData(PMConstants.APP_BUNDLE_PARAM, pubDeviceInformation.mPackageName);
             }
 
             if (pubDeviceInformation.mApplicationVersion != null) {
-                putPostData(PubMaticConstants.APP_VERSION_PARAM, pubDeviceInformation.mApplicationVersion);
+                putPostData(PMConstants.APP_VERSION_PARAM, pubDeviceInformation.mApplicationVersion);
             }
 
             if (mAWT != null) {
                 switch (mAWT) {
                     case WRAPPED_IN_IFRAME:
-                        putPostData(PubMaticConstants.AWT_PARAM, String.valueOf(1));
+                        putPostData(PMConstants.AWT_PARAM, String.valueOf(1));
                         break;
                     case WRAPPED_IN_JS:
-                        putPostData(PubMaticConstants.AWT_PARAM, String.valueOf(2));
+                        putPostData(PMConstants.AWT_PARAM, String.valueOf(2));
                         break;
                     case DEFAULT:
-                        putPostData(PubMaticConstants.AWT_PARAM, String.valueOf(0));
+                        putPostData(PMConstants.AWT_PARAM, String.valueOf(0));
                         break;
                 }
             }
 
             if(isDoNotTrack() || optedOut)
-                putPostData(PubMaticConstants.DNT_PARAM, String.valueOf(1));
+                putPostData(PMConstants.DNT_PARAM, String.valueOf(1));
             else
-                putPostData(PubMaticConstants.DNT_PARAM, String.valueOf(0));
+                putPostData(PMConstants.DNT_PARAM, String.valueOf(0));
 
             if(!isDoNotTrack()) {
                 AdvertisingIdClient.AdInfo adInfo = AdvertisingIdClient.refreshAdvertisingInfo(mContext);
@@ -298,20 +298,20 @@ public abstract class PubMaticAdRequest extends AdRequest {
                         switch (mHashing)
                         {
                             case RAW:
-                                putPostData(PubMaticConstants.UDID_PARAM, advertisingId);
-                                putPostData(PubMaticConstants.UDID_HASH_PARAM, PubMaticConstants.HASHING_RAW);
+                                putPostData(PMConstants.UDID_PARAM, advertisingId);
+                                putPostData(PMConstants.UDID_HASH_PARAM, PMConstants.HASHING_RAW);
                                 break;
                             case SHA1:
-                                putPostData(PubMaticConstants.UDID_PARAM, PMUtils.sha1(advertisingId));
-                                putPostData(PubMaticConstants.UDID_HASH_PARAM, PubMaticConstants.HASHING_SHA1);
+                                putPostData(PMConstants.UDID_PARAM, PMUtils.sha1(advertisingId));
+                                putPostData(PMConstants.UDID_HASH_PARAM, PMConstants.HASHING_SHA1);
                                 break;
                             case MD5:
-                                putPostData(PubMaticConstants.UDID_PARAM, PMUtils.md5(advertisingId));
-                                putPostData(PubMaticConstants.UDID_HASH_PARAM, PubMaticConstants.HASHING_MD5);
+                                putPostData(PMConstants.UDID_PARAM, PMUtils.md5(advertisingId));
+                                putPostData(PMConstants.UDID_HASH_PARAM, PMConstants.HASHING_MD5);
                                 break;
                         }
 
-                        putPostData(PubMaticConstants.UDID_TYPE_PARAM, PubMaticConstants.ADVERTISEMENT_ID);
+                        putPostData(PMConstants.UDID_TYPE_PARAM, PMConstants.ADVERTISEMENT_ID);
 
                     }
                     else {
@@ -321,20 +321,20 @@ public abstract class PubMaticAdRequest extends AdRequest {
                         switch (mHashing)
                         {
                             case RAW:
-                                putPostData(PubMaticConstants.UDID_PARAM, androidId);
-                                putPostData(PubMaticConstants.UDID_HASH_PARAM, PubMaticConstants.HASHING_RAW);
+                                putPostData(PMConstants.UDID_PARAM, androidId);
+                                putPostData(PMConstants.UDID_HASH_PARAM, PMConstants.HASHING_RAW);
                                 break;
                             case SHA1:
-                                putPostData(PubMaticConstants.UDID_PARAM, PMUtils.sha1(androidId));
-                                putPostData(PubMaticConstants.UDID_HASH_PARAM, PubMaticConstants.HASHING_SHA1);
+                                putPostData(PMConstants.UDID_PARAM, PMUtils.sha1(androidId));
+                                putPostData(PMConstants.UDID_HASH_PARAM, PMConstants.HASHING_SHA1);
                                 break;
                             case MD5:
-                                putPostData(PubMaticConstants.UDID_PARAM, PMUtils.md5(androidId));
-                                putPostData(PubMaticConstants.UDID_HASH_PARAM, PubMaticConstants.HASHING_MD5);
+                                putPostData(PMConstants.UDID_PARAM, PMUtils.md5(androidId));
+                                putPostData(PMConstants.UDID_HASH_PARAM, PMConstants.HASHING_MD5);
                                 break;
                         }
 
-                        putPostData(PubMaticConstants.UDID_TYPE_PARAM, PubMaticConstants.ANDROID_ID);
+                        putPostData(PMConstants.UDID_TYPE_PARAM, PMConstants.ANDROID_ID);
                     }
                 }
             }
@@ -342,44 +342,44 @@ public abstract class PubMaticAdRequest extends AdRequest {
             if (getEthnicity() != null) {
                 switch (getEthnicity()) {
                     case HISPANIC:
-                        putPostData(PubMaticConstants.USER_ETHNICITY, "0");
+                        putPostData(PMConstants.USER_ETHNICITY, "0");
                         break;
                     case AFRICAN_AMERICAN:
-                        putPostData(PubMaticConstants.USER_ETHNICITY, "1");
+                        putPostData(PMConstants.USER_ETHNICITY, "1");
                         break;
                     case CAUCASIAN:
-                        putPostData(PubMaticConstants.USER_ETHNICITY, "2");
+                        putPostData(PMConstants.USER_ETHNICITY, "2");
                         break;
                     case ASIAN_AMERICAN:
-                        putPostData(PubMaticConstants.USER_ETHNICITY, "3");
+                        putPostData(PMConstants.USER_ETHNICITY, "3");
                         break;
                     default:
-                        putPostData(PubMaticConstants.USER_ETHNICITY, "4");
+                        putPostData(PMConstants.USER_ETHNICITY, "4");
                         break;
                 }
 
             }
 
             if (!TextUtils.isEmpty(mIncome)) {
-                putPostData(PubMaticConstants.USER_INCOME, mIncome);
+                putPostData(PMConstants.USER_INCOME, mIncome);
             }
 
             // Setting the iab category
             if (!TextUtils.isEmpty(mIABCategory)) {
-                putPostData(PubMaticConstants.IAB_CATEGORY, mIABCategory);
+                putPostData(PMConstants.IAB_CATEGORY, mIABCategory);
             }
 
             // Setting the DMA
             if (!TextUtils.isEmpty(mDMA)) {
-                putPostData(PubMaticConstants.DMA, mDMA);
+                putPostData(PMConstants.DMA, mDMA);
             }
 
             if (mKeywordsList != null) {
-                putPostData(PubMaticConstants.KEYWORDS_PARAM, getKeywordString());
+                putPostData(PMConstants.KEYWORDS_PARAM, getKeywordString());
             }
 
             // Setting sdk_ver
-            putPostData(PubMaticConstants.SDK_VER_PARAM, PUBDeviceInformation.msdkVersion);
+            putPostData(PMConstants.SDK_VER_PARAM, PUBDeviceInformation.msdkVersion);
 
             // Send KAdNetwork id if any
 //            if(mKAdNetworkId != null && !mKAdNetworkId.equals(""))
@@ -435,7 +435,7 @@ public abstract class PubMaticAdRequest extends AdRequest {
                         index++;
                     }
                 }
-                putPostData(PubMaticConstants.SSP_CUSTOM_KEY,customPair.toString());
+                putPostData(PMConstants.SSP_CUSTOM_KEY,customPair.toString());
             }
 
         } catch (Exception e) {

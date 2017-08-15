@@ -28,16 +28,15 @@ package com.pubmatic.sdk.banner.pubmatic;
 
 import android.content.Context;
 
-import com.pubmatic.sdk.common.CommonConstants;
 import com.pubmatic.sdk.common.PMAdSize;
+import com.pubmatic.sdk.common.pubmatic.PMConstants;
 import com.pubmatic.sdk.common.pubmatic.PUBAdSize;
-import com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest;
-import com.pubmatic.sdk.common.pubmatic.PubMaticConstants;
+import com.pubmatic.sdk.common.pubmatic.PMAdRequest;
 
 /**
  *
  */
-public class PubMaticBannerAdRequest extends PubMaticAdRequest {
+public class PMBannerAdRequest extends PMAdRequest {
 
 	protected PMAdSize[] mMultiAdSizes	 = null;
 	protected boolean	 mIsInterstitial = false;
@@ -47,12 +46,12 @@ public class PubMaticBannerAdRequest extends PubMaticAdRequest {
 	//	private int mDefaultedCampaignId;
 
 	//---------------- Object creational methods ------------------
-	protected PubMaticBannerAdRequest(Context context) {
+	protected PMBannerAdRequest(Context context) {
 		super(context);
 	}
 
-	public static PubMaticBannerAdRequest createPubMaticBannerAdRequest(Context context, String pubId, String siteId, String adId) {
-		PubMaticBannerAdRequest bannerAdRequest = new PubMaticBannerAdRequest(context);
+	public static PMBannerAdRequest createPMBannerAdRequest(Context context, String pubId, String siteId, String adId) {
+		PMBannerAdRequest bannerAdRequest = new PMBannerAdRequest(context);
 		bannerAdRequest.setPubId(pubId);
 		bannerAdRequest.setSiteId(siteId);
 		bannerAdRequest.setAdId(adId);
@@ -81,8 +80,8 @@ public class PubMaticBannerAdRequest extends PubMaticAdRequest {
 
 		// Set the Ad size
 		if (mPMAdSize != null) {
-			putPostData(PubMaticConstants.AD_HEIGHT_PARAM, String.valueOf(mPMAdSize.getAdHeight()));
-			putPostData(PubMaticConstants.AD_WIDTH_PARAM, String.valueOf(mPMAdSize.getAdWidth()));
+			putPostData(PMConstants.AD_HEIGHT_PARAM, String.valueOf(mPMAdSize.getAdHeight()));
+			putPostData(PMConstants.AD_WIDTH_PARAM, String.valueOf(mPMAdSize.getAdWidth()));
 		}
 
 		// Send multisize parameter seperated by comma. Max 4 sizes would be considered at server
@@ -100,12 +99,12 @@ public class PubMaticBannerAdRequest extends PubMaticAdRequest {
 					multisize.append(",");
 			}
 
-			putPostData(PubMaticConstants.MULTI_SIZE_PARAM, multisize.toString());
+			putPostData(PMConstants.MULTI_SIZE_PARAM, multisize.toString());
 		}
 
 		//Set interstitial flag
 		if(mIsInterstitial== true)
-			putPostData(PubMaticConstants.INSTERSTITIAL_KEY, "1");
+			putPostData(PMConstants.INSTERSTITIAL_KEY, "1");
 	}
 
 	//---------------- public methods can be called externally ------------------
@@ -117,54 +116,8 @@ public class PubMaticBannerAdRequest extends PubMaticAdRequest {
 
 	@Override
 	public String getFormatter() {
-		return "com.pubmatic.sdk.banner.pubmatic.PubMaticBannerRRFormatter";
+		return "com.pubmatic.sdk.banner.pubmatic.PMBannerRRFormatter";
 	}
-
-//	protected void setAttributes(AttributeSet attr) {
-//		if (attr == null)
-//			return;
-//		try {
-//			mPubId = attr.getAttributeValue(null,
-//					PubMaticConstants.PUB_ID_PARAM);
-//
-//			mSiteId = attr.getAttributeValue(null,
-//					PubMaticConstants.SITE_ID_PARAM);
-//
-//			mAdId = attr.getAttributeValue(null,
-//					PubMaticConstants.AD_ID_PARAM);
-//
-//			String width = attr.getAttributeValue(null,
-//					CommonConstants.AD_WIDTH);
-//
-//            String height = attr.getAttributeValue(null,
-//                    CommonConstants.AD_HEIGHT);
-//			if (!TextUtils.isEmpty(width) && !TextUtils.isEmpty(height)) {
-//                int widthInt = Integer.parseInt(width);
-//                int heightInt = Integer.parseInt(height);
-//                setAdSize(new PUBAdSize(widthInt, heightInt));
-//            }
-//
-//
-//		} catch (Exception ex) {
-//
-//		}
-//	}
-//
-//	public int getDefaultedAdNetworkId() {
-//		return mDefaultedAdNetworkId;
-//	}
-//
-//	public void setDefaultedAdNetworkId(int mDefaultedAdNetworkId) {
-//		this.mDefaultedAdNetworkId = mDefaultedAdNetworkId;
-//	}
-//
-//	public int getDefaultedCampaignId() {
-//		return mDefaultedCampaignId;
-//	}
-//
-//	public void setDefaultedCampaignId(int mDefaultedCampaignId) {
-//		this.mDefaultedCampaignId = mDefaultedCampaignId;
-//	}
 
     /**
 	 * Returns the Ad size array for banner ad
@@ -215,7 +168,7 @@ public class PubMaticBannerAdRequest extends PubMaticAdRequest {
 	}
 
 	/**
-	 * Sets the banner ad size in ad request with provided size. It is mandatory to set ad size in PubMaticBannerAdRequest.
+	 * Sets the banner ad size in ad request with provided size. It is mandatory to set ad size in PMBannerAdRequest.
 	 * @return Size of banner ad
 	 */
 	public void setAdSize(PMAdSize adSize) {

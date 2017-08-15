@@ -24,23 +24,17 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
-import android.widget.RelativeLayout.LayoutParams;
 import android.widget.Toast;
 
 import com.pubmatic.sampleapp.R;
 import com.pubmatic.sdk.banner.PMBannerAdView;
 import com.pubmatic.sdk.banner.PMBannerAdView.BannerAdViewDelegate.RequestListener;
-import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest;
+import com.pubmatic.sdk.banner.pubmatic.PMBannerAdRequest;
 import com.pubmatic.sdk.common.PMAdSize;
 import com.pubmatic.sdk.common.PMLogger;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import static android.R.id.list;
 import static com.pubmatic.sdk.common.PMAdSize.PUBBANNER_SIZE_300x250;
 
 public class BannerDemoActivity extends Activity {
@@ -105,7 +99,7 @@ public class BannerDemoActivity extends Activity {
 
     private void loadAd(String pubId, String siteId, String adId) {
 
-        PubMaticBannerAdRequest adRequest = PubMaticBannerAdRequest.createPubMaticBannerAdRequest(
+        PMBannerAdRequest adRequest = PMBannerAdRequest.createPMBannerAdRequest(
                 BannerDemoActivity.this,
                 pubId, siteId, adId);
 

@@ -47,18 +47,17 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
-import android.webkit.WebView;
 
 import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.CommonConstants;
-import com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest;
+import com.pubmatic.sdk.common.pubmatic.PMAdRequest;
 import com.pubmatic.sdk.nativead.PMNativeAd;
 import com.pubmatic.sdk.nativead.bean.PMAssetRequest;
 import com.pubmatic.sdk.nativead.bean.PMDataAssetRequest;
 import com.pubmatic.sdk.nativead.bean.PMImageAssetRequest;
 import com.pubmatic.sdk.nativead.bean.PMTitleAssetRequest;
 
-public class PubMaticNativeAdRequest  extends PubMaticAdRequest {
+public class PMNativeAdRequest extends PMAdRequest {
 
 	private List<PMAssetRequest> requestedAssetsList = null;
 
@@ -71,9 +70,9 @@ public class PubMaticNativeAdRequest  extends PubMaticAdRequest {
 	 *
 	 * @return {@link AdRequest} instance
 	 */
-	public static PubMaticNativeAdRequest createPubMaticNativeAdRequest(Context context, String pubId, String siteId, String adId, List<PMAssetRequest> requestedAssets){
+	public static PMNativeAdRequest createPMNativeAdRequest(Context context, String pubId, String siteId, String adId, List<PMAssetRequest> requestedAssets){
 
-		PubMaticNativeAdRequest adRequest = new PubMaticNativeAdRequest(context,
+		PMNativeAdRequest adRequest = new PMNativeAdRequest(context,
 				CommonConstants.PUBMATIC_AD_NETWORK_URL, requestedAssets);
 		adRequest.setPubId(pubId);
 		adRequest.setSiteId(siteId);
@@ -81,8 +80,8 @@ public class PubMaticNativeAdRequest  extends PubMaticAdRequest {
 		return adRequest;
 	}
 
-	private PubMaticNativeAdRequest(Context context, String adServerUrl,
-									List<PMAssetRequest> requestedAssets) {
+	private PMNativeAdRequest(Context context, String adServerUrl,
+							  List<PMAssetRequest> requestedAssets) {
 		super(context);
 		this.context = context;
 		this.requestedAssetsList = requestedAssets;
@@ -157,7 +156,7 @@ public class PubMaticNativeAdRequest  extends PubMaticAdRequest {
 
 	@Override
 	public String getFormatter() {
-		return "com.pubmatic.sdk.nativead.pubmatic.PubMaticNativeRRFormatter";
+		return "com.pubmatic.sdk.nativead.pubmatic.PMNativeRRFormatter";
 	}
 
 	private void setupAssetData() {

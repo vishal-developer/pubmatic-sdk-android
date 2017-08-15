@@ -103,7 +103,7 @@ public class InterstitialDemoActivity extends Activity {
             }
         });
 
-        PMInterstitialAdRequest adRequest = PMInterstitialAdRequest.createPubMaticInterstitialAdRequest(
+        PMInterstitialAdRequest adRequest = PMInterstitialAdRequest.createPMInterstitialAdRequest(
                 this, pubId, siteId, adId);
         interstitialAd.execute(adRequest);
     }

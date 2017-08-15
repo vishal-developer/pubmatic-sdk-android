@@ -43,22 +43,11 @@ import com.pubmatic.sdk.common.CommonConstants.CONTENT_TYPE;
 import com.pubmatic.sdk.common.RRFormatter;
 import com.pubmatic.sdk.common.network.HttpRequest;
 import com.pubmatic.sdk.common.network.HttpResponse;
-import com.pubmatic.sdk.common.pubmatic.PUBDeviceInformation;
-import com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
-import static android.R.attr.name;
-import static java.security.AccessController.getContext;
-
-public class PubMaticBannerRRFormatter implements RRFormatter {
+public class PMBannerRRFormatter implements RRFormatter {
 
     private final static String kPubMatic_BidTag = "PubMatic_Bid";
     private static final String kecpm = "ecpm";
@@ -75,7 +64,7 @@ public class PubMaticBannerRRFormatter implements RRFormatter {
     @Override
     public HttpRequest formatRequest(AdRequest request) {
         mRequest = request;
-        PubMaticBannerAdRequest adRequest = (PubMaticBannerAdRequest) request;
+        PMBannerAdRequest adRequest = (PMBannerAdRequest) request;
         adRequest.createRequest();
 
         HttpRequest httpRequest = new HttpRequest(CONTENT_TYPE.URL_ENCODED);

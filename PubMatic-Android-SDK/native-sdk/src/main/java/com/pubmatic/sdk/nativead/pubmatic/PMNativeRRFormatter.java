@@ -66,7 +66,7 @@ import com.pubmatic.sdk.nativead.bean.PMDataAssetResponse;
 import com.pubmatic.sdk.nativead.bean.PMImageAssetResponse;
 import com.pubmatic.sdk.nativead.bean.PMTitleAssetResponse;
 
-public class PubMaticNativeRRFormatter implements RRFormatter {
+public class PMNativeRRFormatter implements RRFormatter {
 
 	private final static String kPubMatic_BidTag = "PubMatic_Bid";
 	private static final String kcreative_tag = "creative_tag";
@@ -78,7 +78,7 @@ public class PubMaticNativeRRFormatter implements RRFormatter {
 	@Override
 	public HttpRequest formatRequest(AdRequest request) {
 		mRequest = request;
-		PubMaticNativeAdRequest adRequest = (PubMaticNativeAdRequest) request;
+		PMNativeAdRequest adRequest = (PMNativeAdRequest) request;
 		adRequest.createRequest();
 
 		HttpRequest httpRequest = new HttpRequest(CONTENT_TYPE.URL_ENCODED);

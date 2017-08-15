@@ -11,7 +11,7 @@ import com.google.android.gms.ads.doubleclick.AppEventListener;
 import com.google.android.gms.ads.doubleclick.PublisherAdRequest;
 import com.google.android.gms.ads.doubleclick.PublisherAdView;
 import com.pubmatic.sdk.banner.PMBannerAdView;
-import com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest;
+import com.pubmatic.sdk.common.pubmatic.PMAdRequest;
 import com.pubmatic.sdk.headerbidding.PMAdSize;
 import com.pubmatic.sdk.headerbidding.PMBannerPrefetchRequest;
 import com.pubmatic.sdk.headerbidding.PMBid;
@@ -277,11 +277,11 @@ public class HeaderBiddingBannerHelper {
         adRequest.setPMZoneId("1");
         adRequest.addKeyword("entertainment");
         adRequest.addKeyword("sports");
-        adRequest.setEthnicity(PubMaticAdRequest.ETHNICITY.ASIAN_AMERICAN);
+        adRequest.setEthnicity(PMAdRequest.ETHNICITY.ASIAN_AMERICAN);
         adRequest.setIncome("income");
 
         adRequest.setYearOfBirth("1989");
-        adRequest.setGender(PubMaticAdRequest.GENDER.MALE);
+        adRequest.setGender(PMAdRequest.GENDER.MALE);
 
         adRequest.setCity("Pune");
         adRequest.setZip("411011");
