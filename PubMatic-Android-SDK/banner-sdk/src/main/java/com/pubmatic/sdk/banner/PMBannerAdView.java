@@ -413,11 +413,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
         createRRFormatter();
 
-        //It needs to be removed when PMInterstitialAdRequest would be created
-        if(placementType == PlacementType.Interstitial && mChannel == CHANNEL.PUBMATIC) {
-            ((PubMaticBannerAdRequest)mAdRequest).setInterstitial(true);
-        }
-
         //Start the location update if Publisher has enabled location detection
         if(PubMaticSDK.isLocationDetectionEnabled()) {
             location = LocationDetector.getInstance(getContext()).getLocation();

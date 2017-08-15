@@ -17,18 +17,16 @@
 package com.pubmatic.sampleapp.interstitial;
 
 import android.app.Activity;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.pubmatic.sampleapp.R;
 import com.pubmatic.sdk.banner.PMInterstitialAd;
-import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest;
+import com.pubmatic.sdk.banner.pubmatic.PMInterstitialAdRequest;
 import com.pubmatic.sdk.common.PMLogger;
 
 public class InterstitialDemoActivity extends Activity {
@@ -105,7 +103,7 @@ public class InterstitialDemoActivity extends Activity {
             }
         });
 
-        PubMaticBannerAdRequest adRequest = PubMaticBannerAdRequest.createPubMaticBannerAdRequest(
+        PMInterstitialAdRequest adRequest = PMInterstitialAdRequest.createPubMaticInterstitialAdRequest(
                 this, pubId, siteId, adId);
         interstitialAd.execute(adRequest);
     }

@@ -14,10 +14,6 @@ import android.widget.TextView;
 
 import com.pubmatic.sdk.common.PubMaticSDK;
 
-/**
- * Created by Sagar on 4/24/2017.
- */
-
 public class HelpDialogFragment extends DialogFragment {
 
     private AlertDialog.Builder mBuilder;

@@ -222,16 +222,4 @@ public class PubMaticBannerAdRequest extends PubMaticAdRequest {
 		mPMAdSize = adSize;
 	}
 
-	public boolean isInterstitial() {
-		return mIsInterstitial;
-	}
-
-	/**
-	 * Set this flag to true for interstitial ad format.
-	 * @param isInterstitial
-	 */
-	public void setInterstitial(boolean isInterstitial) {
-		this.mIsInterstitial = isInterstitial;
-	}
-
 }

@@ -167,7 +167,6 @@ public final class PMNativeAd {
 
     protected void initController(CHANNEL channel) {
     	mChannel = channel;
-		createDefaultAdRequest();
     }
 
     private boolean checkForMandatoryParams() {
@@ -759,12 +758,6 @@ public final class PMNativeAd {
         }
     }
 
-//    private enum CallbackType {
-//        NativeReceived, NativeFailed, ThirdPartyReceived, NativeAdClicked;
-//    }
-//  private enum TrackerType {
-//  //IMPRESSION_TRACKER, CLICK_TRACKER;
-//	}
  // constants and listeners
     private final int  NATIVEAD_RECEIVED = 10001, NATIVEAD_FAILED = 10002, THIRDPARTY_RECEIVED = 10003, NATIVEAD_CLICKED = 10004;
     
@@ -819,15 +812,6 @@ public final class PMNativeAd {
         }
     }
 
-
-    private String getUdidFromContext(Context context) {
-        String deviceId = Settings.Secure.getString(context.getContentResolver(),
-                                                    Settings.Secure.ANDROID_ID);
-        deviceId = (deviceId == null) ? "" : sha1(deviceId);
-        return deviceId;
-
-    }
-
     @SuppressLint("DefaultLocale")
     private String sha1(String string) {
         StringBuilder stringBuilder = new StringBuilder();
@@ -847,45 +831,7 @@ public final class PMNativeAd {
             return "";
         }
     }
-    
-    //------------ Controller related code --------------
 
-	//TODO :: Need to verify this method
-	private void createDefaultAdRequest() {
-
-		String adRequestName = null;
-		Class<?>  className     = null;
-		Method m			 = null;
-		try {
-			
-
-			switch (mChannel) {
-                case PUBMATIC:
-					adRequestName = "com.pubmatic.sdk.nativead.pubmatic.PubMaticNativeAdRequest";
-					className = Class.forName(adRequestName);
-					m = className.getMethod("createPubMaticNativeAdRequest", 
-							Context.class, String.class, String.class, String.class);
-					mAdRequest = (AdRequest)m.invoke(null, mContext, null, null, null);
-					break;
-		
-				default:
-					break;
-			}
-			
-			createRRFormatter();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		} catch (ClassCastException ex) {
-			
-		}
-	}
-	
 	public void setAdRequest(AdRequest adRequest) {
 		
 		if (adRequest == null)
@@ -893,18 +839,6 @@ public final class PMNativeAd {
 
         mAdRequest = adRequest;
 
-        //Need to call copy parameters
-        //if(mAdRequest!=null)
-        //   mAdRequest.copyRequestParams();
-
-        /*
-		if (adRequest instanceof NativeAdRequest) {
-			((NativeAdRequest)adRequest).copyRequestParams(mAdRequest);
-			mAdRequest = (NativeAdRequest)adRequest;
-		} else
-			throw new IllegalStateException(
-					"AdRequest and channel type do not match.");
-		*/
 		//Create RRFormater
 		createRRFormatter();
 	}
@@ -929,5 +863,4 @@ public final class PMNativeAd {
 			}
 		}
 	}
-    //---------------------------------------------------
 }
