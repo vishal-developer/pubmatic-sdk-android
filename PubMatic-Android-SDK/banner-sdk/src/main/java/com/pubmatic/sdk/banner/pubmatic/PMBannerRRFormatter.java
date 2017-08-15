@@ -74,7 +74,6 @@ public class PMBannerRRFormatter implements RRFormatter {
         httpRequest.setRequestMethod(CommonConstants.HTTPMETHODPOST);
         httpRequest.setRequestType(CommonConstants.AD_REQUEST_TYPE.PUB_BANNER);
         httpRequest.setPostData(adRequest.getPostData());
-        //httpRequest.setRLNClientIPAddress(adRequest.getIPAddress());
         return httpRequest;
     }
 

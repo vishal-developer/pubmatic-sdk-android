@@ -94,7 +94,6 @@ public class PMNativeRRFormatter implements RRFormatter {
 	@Override
 	public AdResponse formatResponse(HttpResponse httpResponse) {
 		AdResponse adResponse = new AdResponse();
-		// adResponse.setStatusCode(response.getStatusCode());
 		adResponse.setRequest(mRequest);
 
 		NativeAdDescriptor nativeAdDescriptor = null;
@@ -268,22 +267,6 @@ public class PMNativeRRFormatter implements RRFormatter {
 
 		adResponse.setRenderable(nativeAdDescriptor);
 		return adResponse;
-	}
-
-	public AdRequest getAdRequest() {
-		return mRequest;
-	}
-
-	public void setAdRequest(AdRequest mRequest) {
-		this.mRequest = mRequest;
-	}
-
-	public AdRequest getRequest() {
-		return mRequest;
-	}
-
-	public void setRequest(AdRequest mRequest) {
-		this.mRequest = mRequest;
 	}
 
 }

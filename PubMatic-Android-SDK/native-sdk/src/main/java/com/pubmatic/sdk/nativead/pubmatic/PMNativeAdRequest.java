@@ -109,10 +109,6 @@ public class PMNativeAdRequest extends PMAdRequest {
 		setAdType(AD_TYPE.NATIVE);
 	}
 
-//	public void setUserAgent(String userAgent) {
-//		super.setUserAgent(userAgent);
-//	}
-
 	@Override
 	public boolean checkMandatoryParams() {
 		return !TextUtils.isEmpty(mPubId) && !TextUtils.isEmpty(mSiteId) && !TextUtils.isEmpty(mAdId);
