@@ -9,6 +9,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.pubmatic.sdk.common.PMLogger;
+import com.pubmatic.sdk.common.PubMaticSDK;
+
 public class HomeActivity extends FragmentActivity implements
         ActionBar.TabListener{
 
@@ -19,16 +22,19 @@ public class HomeActivity extends FragmentActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        PubMaticSDK.setLogLevel(PMLogger.LogLevel.Debug);
+
+        boolean isAutoLocationDetectionChecked = PubMaticPreferences.getBooleanPreference(this, PubMaticPreferences.PREFERENCE_KEY_AUTO_LOCATION_DETECTION);
+        PubMaticSDK.setLocationDetectionEnabled(isAutoLocationDetectionChecked);
+
         mViewPager = (ViewPager) findViewById(R.id.pager);
 
         final ActionBar actionBar = getActionBar();
-
         actionBar.setHomeButtonEnabled(false);
         actionBar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(android.R.color.holo_blue_dark)));
 
         // Specify that tabs should be displayed in the action bar.
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-
         actionBar.addTab(actionBar.newTab()
                 .setContentDescription("Home")
                 .setIcon(getResources().getDrawable(R.drawable.home))

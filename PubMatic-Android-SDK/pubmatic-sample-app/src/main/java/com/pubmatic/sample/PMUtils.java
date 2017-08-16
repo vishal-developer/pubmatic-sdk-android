@@ -26,7 +26,15 @@
  */
 package com.pubmatic.sample;
 
+import android.content.res.Resources;
+
 public class PMUtils {
+
+
+    public static int dpToPx(int dp)
+    {
+        return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
+    }
 
     public static int getId(String settingsHeader, String setting)
     {
@@ -72,8 +80,6 @@ public class PMUtils {
                 id = R.id.targetting_iab_category;
             else if(setting.equals(PMConstants.SETTINGS_TARGETTING_STORE_URL))
                 id = R.id.targetting_store_url;
-            else if(setting.equals(PMConstants.SETTINGS_TARGETTING_APP_NAME))
-                id = R.id.targetting_app_name;
             else if(setting.equals(PMConstants.SETTINGS_TARGETTING_APP_DOMAIN))
                 id = R.id.targetting_app_domain;
             else if(setting.equals(PMConstants.SETTINGS_TARGETTING_CITY))

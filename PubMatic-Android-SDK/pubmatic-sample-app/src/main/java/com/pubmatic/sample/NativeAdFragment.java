@@ -44,9 +44,6 @@ import java.util.List;
  */
 public class NativeAdFragment extends DialogFragment {
 
-    private AlertDialog.Builder mBuilder;
-    private LayoutInflater mInflater;
-
     private ConfigurationManager.PLATFORM mPlatform;
 
     private LinkedHashMap<String, LinkedHashMap<String, String>> mSettings;
@@ -60,8 +57,6 @@ public class NativeAdFragment extends DialogFragment {
     private RelativeLayout mLayout = null;
 
     private PMNativeAd ad = null;
-
-    public NativeAdFragment() {}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -92,25 +87,19 @@ public class NativeAdFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState)
     {
-        final View view;
-
-        mBuilder = new AlertDialog.Builder(getActivity());
-
-        mInflater = getActivity().getLayoutInflater();
-        view = mInflater.inflate(R.layout.native_template, null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View view = inflater.inflate(R.layout.native_template, null);
+        builder.setView(view);
 
         initLayout(view);
 
-        loadAd(view);
-
-        mBuilder.setView(view);
-
-        Dialog dialog = mBuilder.create();
-
         Drawable drawable = new ColorDrawable(Color.BLACK);
         drawable.setAlpha(220);
-
+        Dialog dialog = builder.create();
         dialog.getWindow().setBackgroundDrawable(drawable);
+
+        loadAd();
 
         return dialog;
     }
@@ -126,7 +115,7 @@ public class NativeAdFragment extends DialogFragment {
         ratingBar = (RatingBar) view.findViewById(R.id.ratingbar);
     }
 
-    private void loadAd(View rootView)
+    private void loadAd()
     {
         // Initialize the adview
         ad = new PMNativeAd(getActivity());
@@ -136,10 +125,23 @@ public class NativeAdFragment extends DialogFragment {
 		 * Uncomment following line to use internal browser instead system
 		 * default browser, to open ads when clicked
 		 */
-        ad.setUseInternalBrowser(true);
+        boolean isUseInternalBrowserChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_USE_INTERNAL_BROWSER);
+        ad.setUseInternalBrowser(isUseInternalBrowserChecked);
 
         // Enable device id detection
         ad.setAndroidaidEnabled(true);
+
+        // Request for ads
+        AdRequest adRequest = buildAdRequest();
+        if(adRequest!=null)
+            ad.execute(adRequest);
+    }
+
+    /**
+     * Build AdRequest object and assign parameter values.
+     * @return
+     */
+    private AdRequest buildAdRequest() {
 
         AdRequest adRequest = null;
 
@@ -152,7 +154,7 @@ public class NativeAdFragment extends DialogFragment {
             if(pubId == null || pubId.equals("") || siteId == null || siteId.equals("") || adId == null || adId.equals(""))
             {
                 Toast.makeText(getActivity(), "Please enter pubId, siteId and adId", Toast.LENGTH_LONG).show();
-                return;
+                return null;
             }
 
             adRequest = PMNativeAdRequest.createPMNativeAdRequest(getActivity(), pubId, siteId, adId, getAssetRequests());
@@ -167,7 +169,7 @@ public class NativeAdFragment extends DialogFragment {
                 String latitude = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_LATITUDE);
                 String longitude = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_LONGITUDE);
 
-                Location location = new Location("");
+                Location location = new Location("user");
 
                 if(!latitude.equals("") && !longitude.equals(""))
                 {
@@ -275,15 +277,7 @@ public class NativeAdFragment extends DialogFragment {
             }
 
         }
-        /*else
-            adRequest = MoceanNativeAdRequest.createMoceanNativeAdRequest(getActivity(), "88269", getAssetRequests());*/
-
-        boolean isUseInternalBrowserChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_USE_INTERNAL_BROWSER);
-        ad.setUseInternalBrowser(isUseInternalBrowserChecked);
-
-        // Request for ads
-        if(adRequest!=null)
-            ad.execute(adRequest);
+        return  adRequest;
     }
 
     private List<PMAssetRequest> getAssetRequests() {
@@ -440,21 +434,12 @@ public class NativeAdFragment extends DialogFragment {
         }
     }
 
-    public static int dpToPx(int dp)
-    {
-        return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
-    }
-
-    public static int pxToDp(int px)
-    {
-        return (int) (px / Resources.getSystem().getDisplayMetrics().density) * 3;
-    }
-
     @Override
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
 
-        ad.destroy();
+        if(ad!=null)
+            ad.destroy();
         ad = null;
     }
 }

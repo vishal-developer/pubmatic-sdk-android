@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
+import com.pubmatic.sdk.common.PubMaticSDK;
+
 /**
  *
  */
@@ -52,6 +54,7 @@ public class SettingsFragment extends Fragment {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             PubMaticPreferences.saveBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_AUTO_LOCATION_DETECTION, isChecked);
+            PubMaticSDK.setLocationDetectionEnabled(isChecked);
         }
     };
 

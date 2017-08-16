@@ -18,7 +18,6 @@
         "App Category": "Tools",
         "IAB Category": "IAB3-1",
         "Store Url": "storeurl",
-        "App Name": "appname",
         "App Domain": "appdomain",
         "City": "Pune",
         "Zip": "41007",
@@ -28,9 +27,8 @@
         "Ethnicity": "ASIAN_AMERICAN",
         "Gender": "Male",
         "DMA": "41107",
-        "Orma Compliance (0/1)": "1",
+        "Ormma Compliance (0/1/2)": "1",
         "Paid (true/false)": "true",
-        "AWT (0/1)": "0",
         "Coppa (true/false)": "true"
       }
     },
@@ -49,7 +47,6 @@
         "App Category": "Tools",
         "IAB Category": "IAB3-1",
         "Store Url": "storeurl",
-        "App Name": "appname",
         "App Domain": "appdomain",
         "City": "",
         "Zip": "",
@@ -59,9 +56,8 @@
         "Ethnicity": "ASIAN_AMERICAN",
         "Gender": "",
         "DMA": "",
-        "Orma Compliance (0/1)": "1",
+        "Ormma Compliance (0/1/2)": "1",
         "Paid (true/false)": "",
-        "AWT (0/1)": "0",
         "Coppa (true/false)": "true"
       }
     },
@@ -80,7 +76,6 @@
         "App Category": "Tools",
         "IAB Category": "IAB3-1",
         "Store Url": "storeurl",
-        "App Name": "appname",
         "App Domain": "appdomain",
         "City": "Pune",
         "Zip": "41007",
@@ -90,9 +85,8 @@
         "Ethnicity": "ASIAN_AMERICAN",
         "Gender": "Male",
         "DMA": "41107",
-        "Orma Compliance (0/1)": "1",
+        "Ormma Compliance (0/1/2)": "1",
         "Paid (true/false)": "True",
-        "AWT (0/1)": "0",
         "Coppa (true/false)": "true"
       }
     }

@@ -9,10 +9,10 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.pubmatic.sdk.banner.PMInterstitialAd;
@@ -25,14 +25,9 @@ import java.util.LinkedHashMap;
 
 public class InterstitialAdFragment extends DialogFragment {
 
-    private AlertDialog.Builder mBuilder;
-    private LayoutInflater mInflater;
-
     private ConfigurationManager.PLATFORM mPlatform;
 
     private LinkedHashMap<String, LinkedHashMap<String, String>> mSettings;
-
-    private AdRequest adRequest;
 
     private PMInterstitialAd mInterstitialAd;
 
@@ -55,45 +50,32 @@ public class InterstitialAdFragment extends DialogFragment {
     }
 
     @Override
-    public void onStart()
-    {
-        super.onStart();
-
-        Dialog dialog = getDialog();
-        if (dialog != null)
-        {
-            int width = ViewGroup.LayoutParams.MATCH_PARENT;
-            int height = ViewGroup.LayoutParams.MATCH_PARENT;
-            dialog.getWindow().setLayout(width, height);
-        }
-    }
-
-    @Override
     public Dialog onCreateDialog(Bundle savedInstanceState)
     {
-        final View view;
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View view = inflater.inflate(R.layout.banner_template, null);
+        builder.setView(view);
 
-        mBuilder = new AlertDialog.Builder(getActivity());
-
-        mInflater = getActivity().getLayoutInflater();
-        view = mInflater.inflate(R.layout.banner_template, null);
-
-        loadAd(view);
-
-        mBuilder.setView(view);
-
-        Dialog dialog = mBuilder.create();
 
         Drawable drawable = new ColorDrawable(Color.BLACK);
         drawable.setAlpha(120);
-
+        Dialog dialog = builder.create();
         dialog.getWindow().setBackgroundDrawable(drawable);
+
+        loadAd();
 
         return dialog;
     }
 
-    private void loadAd(View rootView)
+    /**
+     * This method creates an AdRequest object based on platform selection in UI. And it also sets
+     * targeting parameters (provided from UI) in ad request object
+     * @return
+     */
+    private AdRequest buildAdRequest()
     {
+        AdRequest adRequest = null;
         if(mPlatform == ConfigurationManager.PLATFORM.PUBMATIC) {
 
             String pubId = mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).get(PMConstants.SETTINGS_AD_TAG_PUB_ID);
@@ -103,7 +85,7 @@ public class InterstitialAdFragment extends DialogFragment {
             if(pubId == null || pubId.equals("") || siteId == null || siteId.equals("") || adId == null || adId.equals(""))
             {
                 Toast.makeText(getActivity(), "Please enter pubId, siteId and adId", Toast.LENGTH_LONG).show();
-                return;
+                return null;
             }
 
             adRequest = PMInterstitialAdRequest.createPMInterstitialAdRequest(getActivity(), pubId, siteId, adId);
@@ -113,18 +95,18 @@ public class InterstitialAdFragment extends DialogFragment {
             ((PMInterstitialAdRequest)adRequest).setAndroidAidEnabled(Boolean.parseBoolean(androidAidEnabled));
 
             String coppa = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_TARGETTING_COPPA);
-            ((PMInterstitialAdRequest)adRequest).setCoppa(Boolean.parseBoolean(coppa));
+            if(!TextUtils.isEmpty(coppa))
+                ((PMInterstitialAdRequest)adRequest).setCoppa(Boolean.parseBoolean(coppa));
 
             try
             {
-                // Targetting Parameters
+                // Targeting Parameters
                 String latitude = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_LATITUDE);
                 String longitude = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_LONGITUDE);
 
-                Location location = new Location("");
+                Location location = new Location("user");
 
-                if(!latitude.equals("") && !longitude.equals(""))
-                {
+                if(!TextUtils.isEmpty(longitude) && !TextUtils.isEmpty(latitude)) {
                     location.setLatitude(Double.parseDouble(latitude));
                     location.setLongitude(Double.parseDouble(longitude));
 
@@ -132,55 +114,43 @@ public class InterstitialAdFragment extends DialogFragment {
                 }
 
                 String city = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_CITY);
-
-                if(!city.equals("") && city != null)
+                if(!TextUtils.isEmpty(city))
                     ((PMInterstitialAdRequest)adRequest).setCity(city);
 
                 String state = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_STATE);
-
-                if(!state.equals("") && !state.equals(""))
+                if(!TextUtils.isEmpty(state))
                     ((PMInterstitialAdRequest)adRequest).setState(state);
 
                 String zip = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_ZIP);
-
-                if(!zip.equals("") && zip != null)
+                if(!TextUtils.isEmpty(zip))
                     ((PMInterstitialAdRequest)adRequest).setZip(zip);
 
                 String appDomain = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_APP_DOMAIN);
-
-                if(!appDomain.equals("") && appDomain != null)
+                if(!TextUtils.isEmpty(appDomain))
                     ((PMInterstitialAdRequest)adRequest).setAppDomain(appDomain);
 
                 String appCategory = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_APP_CATEGORY);
-
-                if(!appCategory.equals("") && appCategory != null)
+                if(!TextUtils.isEmpty(appCategory))
                     ((PMInterstitialAdRequest)adRequest).setAppCategory(appCategory);
 
                 String iabCategory = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_IAB_CATEGORY);
-
-                if(!iabCategory.equals("") && iabCategory != null)
+                if(!TextUtils.isEmpty(iabCategory))
                     ((PMInterstitialAdRequest)adRequest).setIABCategory(iabCategory);
 
                 String storeUrl = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_STORE_URL);
-
-                if(!storeUrl.equals("") && storeUrl != null)
+                if(!TextUtils.isEmpty(storeUrl))
                     ((PMInterstitialAdRequest)adRequest).setStoreURL(storeUrl);
 
-                String appName = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_APP_NAME);
-
                 String yearOfBirth = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_YEAR_OF_BIRTH);
-
-                if(!yearOfBirth.equals("") && yearOfBirth != null)
+                if(!TextUtils.isEmpty(yearOfBirth))
                     ((PMInterstitialAdRequest)adRequest).setYearOfBirth(yearOfBirth);
 
                 String income = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_INCOME);
-
-                if(!income.equals("") && income != null)
+                if(!TextUtils.isEmpty(income))
                     ((PMInterstitialAdRequest)adRequest).setIncome(income);
 
                 String ethnicity = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_ETHNICITY);
-
-                if(!ethnicity.equals("") && ethnicity != null)
+                if(!TextUtils.isEmpty(ethnicity))
                 {
                     if(ethnicity.equalsIgnoreCase("HISPANIC"))
                         ((PMInterstitialAdRequest)adRequest).setEthnicity(PMAdRequest.ETHNICITY.HISPANIC);
@@ -193,8 +163,7 @@ public class InterstitialAdFragment extends DialogFragment {
                 }
 
                 String gender = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_GENDER);
-
-                if(gender != null && !gender.equals(""))
+                if(!TextUtils.isEmpty(gender))
                 {
                     if(gender.equalsIgnoreCase("Male") || gender.equalsIgnoreCase("M"))
                         ((PMInterstitialAdRequest)adRequest).setGender(PMAdRequest.GENDER.MALE);
@@ -205,18 +174,15 @@ public class InterstitialAdFragment extends DialogFragment {
                 }
 
                 String dma = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_DMA);
-
-                if(!dma.equals("") && dma != null)
+                if(!TextUtils.isEmpty(dma))
                     ((PMInterstitialAdRequest)adRequest).setDMA(dma);
 
                 String paid = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_PAID);
-
-                if(!paid.equals("") && paid != null)
+                if(!TextUtils.isEmpty(paid))
                     ((PMInterstitialAdRequest)adRequest).setApplicationPaid(Boolean.parseBoolean(paid));
 
                 String ormaCompliance = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_ORMA_COMPLIANCE);
-
-                if(!ormaCompliance.equals("") && ormaCompliance != null)
+                if(!TextUtils.isEmpty(ormaCompliance))
                     ((PMInterstitialAdRequest)adRequest).setOrmmaComplianceLevel(Integer.parseInt(ormaCompliance));
 
                 boolean isDoNotTrackChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_DO_NOT_TRACK);
@@ -228,6 +194,11 @@ public class InterstitialAdFragment extends DialogFragment {
             }
         }
 
+        return adRequest;
+    }
+
+    private void loadAd()
+    {
         mInterstitialAd = new PMInterstitialAd(getActivity());
 
         mInterstitialAd.setRequestListener(new PMInterstitialAd.InterstitialAdListener.RequestListener() {
@@ -249,9 +220,6 @@ public class InterstitialAdFragment extends DialogFragment {
 
         });
 
-        boolean isUseInternalBrowserChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_USE_INTERNAL_BROWSER);
-        mInterstitialAd.setUseInternalBrowser(isUseInternalBrowserChecked);
-
         mInterstitialAd.setActivityListener(new PMInterstitialAd.InterstitialAdListener.ActivityListener() {
             @Override
             public boolean onOpenUrl(PMInterstitialAd adView, String url) {
@@ -270,7 +238,11 @@ public class InterstitialAdFragment extends DialogFragment {
             }
         });
 
+        boolean isUseInternalBrowserChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_USE_INTERNAL_BROWSER);
+        mInterstitialAd.setUseInternalBrowser(isUseInternalBrowserChecked);
+
         // Make the ad request to Server banner.execute(adRequest);
+        AdRequest adRequest = buildAdRequest();
         mInterstitialAd.execute(adRequest);
     }
 
@@ -278,7 +250,8 @@ public class InterstitialAdFragment extends DialogFragment {
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
 
-        mInterstitialAd.destroy();
+        if(mInterstitialAd!=null)
+            mInterstitialAd.destroy();
         mInterstitialAd = null;
     }
 }

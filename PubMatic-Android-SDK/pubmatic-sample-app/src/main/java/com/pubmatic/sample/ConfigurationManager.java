@@ -132,19 +132,19 @@ public final class ConfigurationManager {
 
         try
         {
-            if (shouldImportSettings())
-            {
-                Log.i("Configuration Manager", "Reading from external storage");
-
-                File myFile = new File("/storage/emulated/0/Automation/settings");
-                inputStream = new FileInputStream(myFile);
-            }
-            else
-            {
+//            if (shouldImportSettings())
+//            {
+//                Log.i("Configuration Manager", "Reading from external storage");
+//
+//                File myFile = new File("/storage/emulated/0/Automation/settings");
+//                inputStream = new FileInputStream(myFile);
+//            }
+//            else
+//            {
                 Log.i("Configuration Manager", "Reading from internal storage");
 
                 inputStream = context.getAssets().open("settings");
-            }
+//            }
 
 
             BufferedReader in= new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
