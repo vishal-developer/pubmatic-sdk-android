@@ -50,9 +50,9 @@ public abstract class PMAdRequest extends AdRequest {
     //    private String mLastDefaultedNetworkId;
     //    private List<String> mDefaultedCampaignList;
 
-    protected int                           mAdRefreshRate;
     protected int                           mOrmmaComplianceLevel;
 
+    //TODO: Use Boolean class so that if it is null then do not send
     protected boolean                       mPaid;
     protected boolean			            mDoNotTrack;
     protected boolean			            mCoppa;
@@ -160,7 +160,6 @@ public abstract class PMAdRequest extends AdRequest {
         putPostData(PMConstants.APP_DOMAIN_PARAM, mAppDomain);
         putPostData(PMConstants.STORE_URL_PARAM, mStoreURL);
         putPostData(PMConstants.APP_ID_PARAM, mAid);
-        putPostData(PMConstants.AD_REFRESH_RATE_PARAM, String.valueOf(mAdRefreshRate));
         putPostData(PMConstants.JS_PARAM, String.valueOf(PUBDeviceInformation.mJavaScriptSupport));
         putPostData(PMConstants.DEVICE_ORIENTATION_PARAM, String.valueOf(getDeviceOrientation(mContext)));
         putPostData(PMConstants.API_PARAM, "3::4::5");
@@ -566,7 +565,7 @@ public abstract class PMAdRequest extends AdRequest {
     }
 
     /**
-     * Sets city of the user. For example, setCity("New York");
+     * Sets city of the user.
      * @param city User's city
      */
     public void setCity(String city) {
@@ -578,7 +577,7 @@ public abstract class PMAdRequest extends AdRequest {
     }
 
     /**
-     * Gender of the user. Possible values are:
+     * Set Gender of the user to deliver more relevant ads. Possible values are:
      * Male
      * Female
      * Others
@@ -762,7 +761,7 @@ public abstract class PMAdRequest extends AdRequest {
      * Possible options are:
      *  false - Indicates that the visitor is not COPPA-specific and can be served targeted ads.
      *  true - Indicates that the visitor is COPPA-specific and should be served only COPPA-compliant ads.
-     * The United States Federal Trade Commission has written a comprehensive FAQ on complying with COPPA at http://business.ftc.gov/documents/Complying-with-COPPA-Frequently-Asked-Questions.
+     *
      * @param mCoppa
      */
     public void setCoppa(boolean mCoppa) {
@@ -848,26 +847,6 @@ public abstract class PMAdRequest extends AdRequest {
         this.mPaid = paid;
     }
 
-    public int getAdRefreshRate() {
-        return mAdRefreshRate;
-    }
-
-    /**
-     * Ad will be refreshed by given time interval in seconds. By default,
-     * Library will set to 0 second and Ad will be not refresh automatically.
-     * <p/>
-     * <p/>
-     * The adRefreshRa te should be in range on 12 to 120 second. If you set the
-     * ad refresh time interval value < 0 or >=1 && < 12, library will set it to
-     * 12 seconds If you set the ad refresh time interval >120 seconds, library
-     * will set it to 120 seconds
-     *
-     * @param adRefreshRate adRefreshRate to set.
-     */
-    public void setAdRefreshRate(int adRefreshRate) {
-        this.mAdRefreshRate = adRefreshRate;
-    }
-
     public int getOrmmaComplianceLevel() {
         return mOrmmaComplianceLevel;
     }
@@ -918,8 +897,9 @@ public abstract class PMAdRequest extends AdRequest {
         return mAdOrientation;
     }
 
+    //TODO::Create enum and update description
     /**
-     * Set ID of the ad orientation for the given ad request.
+     * Set the ad orientation.
      * Possible values are:
      * 0 - Portrait orientation
      * 1 - Landscape orientation

@@ -46,11 +46,7 @@ public class HomeFragment extends Fragment {
     private Dialog mDialog;
     private View mLoadAd;
 
-    private final Handler handler = new Handler();
     private LinkedHashMap<String, LinkedHashMap<String, String>> mSettings;
-
-    private static final int MULTIPLE_PERMISSIONS_REQUEST_CODE = 12355;
-    private static String[] PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -70,16 +66,6 @@ public class HomeFragment extends Fragment {
         mLoadAd = rootView.findViewById(R.id.home_load_ad);
         mLoadAd.setOnClickListener(onLoadAd);
 
-        //Invoke permission check after 500 millisec. It is required for CI invoke
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if(!hasPermissions(getActivity(), PERMISSIONS)){
-                    ActivityCompat.requestPermissions(getActivity(), PERMISSIONS, MULTIPLE_PERMISSIONS_REQUEST_CODE);
-                }
-            }
-        }, 500);
-
         //Load the default values of the parameters from Settings file inside asset folder
         refreshSettings();
 
@@ -95,6 +81,9 @@ public class HomeFragment extends Fragment {
         mSettingsParent.removeAllViews();
 
         mSettings = ConfigurationManager.getInstance(getContext()).getSettings(mPlatform, mAdType);
+
+        if(mSettings==null)
+            return;
 
         //Add Header section in screen UI
         for(String settingHeaderkey : mSettings.keySet())
@@ -123,17 +112,6 @@ public class HomeFragment extends Fragment {
             }
         }
 
-    }
-
-    private static boolean hasPermissions(Context context, String... permissions) {
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
-            for (String permission : permissions) {
-                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 
     /**

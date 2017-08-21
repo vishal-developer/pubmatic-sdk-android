@@ -1,8 +1,14 @@
 package com.pubmatic.sample;
 
+import android.Manifest;
 import android.app.ActionBar;
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
@@ -17,6 +23,10 @@ public class HomeActivity extends FragmentActivity implements
 
     PMPagerAdapter mPMPagerAdapter;
     ViewPager mViewPager;
+
+    private final Handler handler = new Handler();
+    private int MULTIPLE_PERMISSIONS_REQUEST_CODE = 123;
+    private static String[] PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +65,28 @@ public class HomeActivity extends FragmentActivity implements
                         getActionBar().setSelectedNavigationItem(position);
                     }
                 });
+
+        //Invoke permission check after 500 millisec. It is required for CI invoke
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if(!hasPermissions(HomeActivity.this, PERMISSIONS)){
+                    ActivityCompat.requestPermissions(HomeActivity.this, PERMISSIONS, MULTIPLE_PERMISSIONS_REQUEST_CODE);
+                }
+            }
+        }, 500);
+
+    }
+
+    private static boolean hasPermissions(Context context, String... permissions) {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     @Override

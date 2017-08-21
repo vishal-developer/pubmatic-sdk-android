@@ -9,27 +9,11 @@
       "Configuration": {
         "Width": "320",
         "Height": "50",
-        "Android Aid Enabled": "true",
-        "Ad Refresh Rate (Sec)": ""
+        "Ad Refresh Rate (Sec)": "15"
       },
       "Targetting": {
-        "Latitude": "3.5",
-        "Longitude": "3.5",
-        "App Category": "Tools",
-        "IAB Category": "IAB3-1",
-        "Store Url": "storeurl",
-        "App Domain": "appdomain",
         "City": "Pune",
-        "Zip": "41007",
-        "State": "Maharashtra",
-        "Year of Birth (yyyy)": "1975",
-        "Income": "5000",
-        "Ethnicity": "ASIAN_AMERICAN",
-        "Gender": "Male",
-        "DMA": "41107",
-        "Ormma Compliance (0/1/2)": "1",
-        "Paid (true/false)": "true",
-        "Coppa (true/false)": "true"
+        "Zip": "411011"
       }
     },
     "Interstitial": {
@@ -39,26 +23,11 @@
         "AdId": "1059651"
       },
       "Configuration": {
-        "Android Aid Enabled": "true"
+
       },
       "Targetting": {
-        "Latitude": "",
-        "Longitude": "",
-        "App Category": "Tools",
-        "IAB Category": "IAB3-1",
-        "Store Url": "storeurl",
-        "App Domain": "appdomain",
-        "City": "",
-        "Zip": "",
-        "State": "Maharashtra",
-        "Year of Birth (yyyy)": "",
-        "Income": "",
-        "Ethnicity": "ASIAN_AMERICAN",
-        "Gender": "",
-        "DMA": "",
-        "Ormma Compliance (0/1/2)": "1",
-        "Paid (true/false)": "",
-        "Coppa (true/false)": "true"
+        "City": "Pune",
+        "Zip": "411011"
       }
     },
     "Native": {
@@ -68,26 +37,11 @@
         "AdId": "383372"
       },
       "Configuration": {
-        "Android Aid Enabled": "true"
+
       },
       "Targetting": {
-        "Latitude": "3.5",
-        "Longitude": "3.5",
-        "App Category": "Tools",
-        "IAB Category": "IAB3-1",
-        "Store Url": "storeurl",
-        "App Domain": "appdomain",
         "City": "Pune",
-        "Zip": "41007",
-        "State": "Maharashtra",
-        "Year of Birth (yyyy)": "02111989",
-        "Income": "5000",
-        "Ethnicity": "ASIAN_AMERICAN",
-        "Gender": "Male",
-        "DMA": "41107",
-        "Ormma Compliance (0/1/2)": "1",
-        "Paid (true/false)": "True",
-        "Coppa (true/false)": "true"
+        "Zip": "411011"
       }
     }
   }

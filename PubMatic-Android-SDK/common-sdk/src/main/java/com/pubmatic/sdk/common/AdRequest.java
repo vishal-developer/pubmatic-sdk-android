@@ -227,8 +227,7 @@ public abstract class AdRequest {
 
 	/**
 	 * Sets the custom key and value pair. Same method could be called with same key and different
-	 * values, in such case it will send multiple values with comma separated. Key-value pair will
-	 * be send in ad request like: interest=cricket,news
+	 * values, in such case it will send comma separated values.
 	 * @param key
 	 * @param value
 	 *
@@ -249,9 +248,11 @@ public abstract class AdRequest {
 	}
 
 	/**
-	 * Set to true if Android Advertisement ID to be used for udid parameter instead set false if Android device ID needs to be used.
-	 * If it is true and user opt-out for ad from device settings then user's decision will be honored and
-	 * Android device ID would be send as a udid
+	 * Indicates whether the Advertisment ID should be sent in the request. Possible values are:
+	 * true - Sends Advertising ID in the ad request.
+	 * false - Sends vendor ID in the ad request instead of IDFA.
+	 * Default value - true
+	 * Note: If Limit Ad tracking is enabled then Android device ID will be send instead of Advertising ID
 	 *
 	 * @param isAndroidAidEnabled
 	 */
