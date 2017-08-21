@@ -33,9 +33,11 @@ import java.util.Observer;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Build;
@@ -149,9 +151,10 @@ public class LocationDetector extends Observable {
     /**
      *
      */
+    @SuppressWarnings({"ResourceType"})
     private void removeLocationUpdate()
     {
-        if (locationManager != null && locationListener != null) {
+        if (locationManager != null && locationListener != null && hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
             try{
                 locationManager.removeUpdates(locationListener);
             }
@@ -170,6 +173,7 @@ public class LocationDetector extends Observable {
      *
      * @return
      */
+    @SuppressWarnings({"ResourceType"})
     public Location getLocation() {
         try {
             locationManager = (LocationManager) this.context
@@ -190,7 +194,7 @@ public class LocationDetector extends Observable {
                 // First get location from Network Provider
                 if (isNetworkEnabled) {
 
-                    if (locationManager != null)
+                    if (locationManager != null && hasPermission(Manifest.permission.ACCESS_FINE_LOCATION))
                     {
 
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
@@ -215,7 +219,7 @@ public class LocationDetector extends Observable {
                 else if (isGPSEnabled) {
                     if (location == null) {
 
-                        if (locationManager != null) {
+                        if (locationManager != null && hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
 
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
@@ -245,10 +249,33 @@ public class LocationDetector extends Observable {
     }
 
     /**
+     * returns true if app has Location permission
+     * @param permission
+     * @return
+     */
+    private boolean hasPermission(String permission)
+    {
+        try {
+            PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_PERMISSIONS);
+            if (info.requestedPermissions != null) {
+                for (String p : info.requestedPermissions) {
+                    if (p.equals(permission)) {
+                        return true;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
      * Enables location detection with specified criteria. To disable location
      * detection use setLocationDetectionEnabled(false).
      * @return
      */
+    @SuppressWarnings({"ResourceType"})
     public Location requestLocationUpdate() {
 
         try {
@@ -268,7 +295,7 @@ public class LocationDetector extends Observable {
 
                 if (!isGPSEnabled && !isNetworkEnabled) {
                     // no network provider is enabled
-                } else
+                } else if(hasPermission(Manifest.permission.ACCESS_FINE_LOCATION))
                 {
                     // First get location from Network Provider
                     if (isNetworkEnabled)
