@@ -10,7 +10,6 @@ public class PubMaticPreferences {
 
 	public static String PREFERENCE_KEY_USE_INTERNAL_BROWSER = "KEY_USE_INTERNAL_BROWSER";
 	public static String PREFERENCE_KEY_AUTO_LOCATION_DETECTION = "KEY_AUTO_LOCATION_DETECTION";
-	public static String PREFERENCE_KEY_DO_NOT_TRACK = "KEY_DO_NOT_TRACK";
 	
 	public static void saveBooleanPreference(Activity context, String key, boolean value)
 	{

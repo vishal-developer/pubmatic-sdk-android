@@ -35,10 +35,11 @@ public class PMConstants {
     public static final String ADVERTISEMENT_ID = "9";
     public static final String ANDROID_ID = "3";
 
-    public static final String LOCATION_SOURCE_UNKNOWN = "0";
-    public static final String LOCATION_SOURCE_GPS_LOCATION_SERVICES = "1";
-    public static final String LOCATION_SOURCE_IP_ADDRESS = "2";
-    public static final String LOCATION_SOURCE_USER_PROVIDED = "3";
+    public static final String LOCATION_TYPE = "type";
+    public static final int LOCATION_SOURCE_UNKNOWN = 0;
+    public static final int LOCATION_SOURCE_GPS_LOCATION_SERVICES = 1;
+    public static final int LOCATION_SOURCE_IP_ADDRESS = 2;
+    public static final int LOCATION_SOURCE_USER_PROVIDED = 3;
 
     //PubMatic specific common parameters for GET Parameters
     public static final String PUB_ID_PARAM 			= "pubId";
@@ -52,7 +53,7 @@ public class PMConstants {
     public static final String PAGE_URL_PARAM 			= "pageURL";
     public static final String AD_TYPE_PARAM 			= "adtype";
     public static final String FRAME_NAME_PARAM 		= "frameName";
-    public static final String DNT_PARAM 				= "dnt";
+    public static final String LMT_PARAM                = "lmt";
     public static final String COPPA_PARAM 				= "coppa";
     public static final String AWT_PARAM 				= "awt";
     public static final String APP_NAME_PARAM 			= "name";

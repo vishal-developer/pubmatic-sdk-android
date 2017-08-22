@@ -184,9 +184,6 @@ public class InterstitialAdFragment extends DialogFragment {
                 String ormaCompliance = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_ORMA_COMPLIANCE);
                 if(!TextUtils.isEmpty(ormaCompliance))
                     ((PMInterstitialAdRequest)adRequest).setOrmmaComplianceLevel(Integer.parseInt(ormaCompliance));
-
-                boolean isDoNotTrackChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_DO_NOT_TRACK);
-                ((PMAdRequest)adRequest).setDoNotTrack(isDoNotTrackChecked);
             }
             catch (Exception exception)
             {

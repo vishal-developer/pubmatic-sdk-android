@@ -17,7 +17,6 @@ public class SettingsFragment extends Fragment {
 
     Switch useInternalBrowser;
     Switch autoLocationDetection;
-    Switch doNotTrack;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -25,20 +24,15 @@ public class SettingsFragment extends Fragment {
 
         useInternalBrowser = (Switch) rootView.findViewById(R.id.settings_switch_use_internal_browser);
         autoLocationDetection = (Switch) rootView.findViewById(R.id.settings_switch_auto_location_detection);
-        doNotTrack = (Switch) rootView.findViewById(R.id.settings_switch_do_not_track);
 
         useInternalBrowser.setOnCheckedChangeListener(onUseInternalBrowserToggled);
         autoLocationDetection.setOnCheckedChangeListener(onAutoLocationDetectionToggled);
-        doNotTrack.setOnCheckedChangeListener(onDoNotTrackToggled);
 
         boolean isUseInternalBrowserChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_USE_INTERNAL_BROWSER);
         useInternalBrowser.setChecked(isUseInternalBrowserChecked);
 
         boolean isAutoLocationDetectionChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_AUTO_LOCATION_DETECTION);
         autoLocationDetection.setChecked(isAutoLocationDetectionChecked);
-
-        boolean isDoNotTrackChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_DO_NOT_TRACK);
-        doNotTrack.setChecked(isDoNotTrackChecked);
 
         return rootView;
     }
@@ -55,13 +49,6 @@ public class SettingsFragment extends Fragment {
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             PubMaticPreferences.saveBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_AUTO_LOCATION_DETECTION, isChecked);
             PubMaticSDK.setLocationDetectionEnabled(isChecked);
-        }
-    };
-
-    private CompoundButton.OnCheckedChangeListener onDoNotTrackToggled = new CompoundButton.OnCheckedChangeListener() {
-        @Override
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            PubMaticPreferences.saveBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_DO_NOT_TRACK, isChecked);
         }
     };
 }

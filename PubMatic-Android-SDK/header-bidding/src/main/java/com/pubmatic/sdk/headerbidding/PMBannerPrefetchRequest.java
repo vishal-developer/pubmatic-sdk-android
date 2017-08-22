@@ -154,8 +154,6 @@ public class PMBannerPrefetchRequest extends PMBannerAdRequest {
     {
         JSONObject parentJsonObject = new JSONObject();
 
-        AdvertisingIdClient.AdInfo adInfo = AdvertisingIdClient.refreshAdvertisingInfo(mContext);
-
         try
         {
             long randomNumber = (long) (Math.random() * 10000000000l);
@@ -167,12 +165,7 @@ public class PMBannerPrefetchRequest extends PMBannerAdRequest {
             parentJsonObject.put("imp", getImpressionJson());
             parentJsonObject.put("app", getAppJson());
             parentJsonObject.put("device", getDeviceObject());
-
-            if(!isDoNotTrack())
-            {
-                if(!AdvertisingIdClient.getLimitedAdTrackingState(mContext, false))
-                    parentJsonObject.put("user", getUserJson());
-            }
+            parentJsonObject.put("user", getUserJson());
 
             parentJsonObject.put("regs", getRegsJson());
             parentJsonObject.put("ext", getExtJson());
@@ -324,52 +317,55 @@ public class PMBannerPrefetchRequest extends PMBannerAdRequest {
         {
             deviceJsonObject.put("geo", getGeoObject());
 
-            if(isDoNotTrack()) {
-                deviceJsonObject.put("dnt", 1);
-            }
-            else {
+            //'lmt' specific parameter
+            AdvertisingIdClient.AdInfo adInfo = AdvertisingIdClient.refreshAdvertisingInfo(mContext);
+            boolean lmtState = AdvertisingIdClient.getLimitedAdTrackingState(mContext, false);
+            if(lmtState) {
+                deviceJsonObject.put("lmt", 1);
 
-                AdvertisingIdClient.AdInfo adInfo = AdvertisingIdClient.refreshAdvertisingInfo(mContext);
-
-                if(!AdvertisingIdClient.getLimitedAdTrackingState(mContext, false))
+                String androidId = com.pubmatic.sdk.headerbidding.PMUtils.getUdidFromContext(mContext);
+                switch (mHashing)
                 {
-                    deviceJsonObject.put("dnt", 0);
+                    case SHA1:
+                        deviceJsonObject.put("dpidsha1", com.pubmatic.sdk.headerbidding.PMUtils.sha1(androidId));
+                        break;
+                    case MD5:
+                        deviceJsonObject.put("dpidmd5", com.pubmatic.sdk.headerbidding.PMUtils.md5(androidId));
+                        break;
+                }
+            } else {
 
-                    if (isAndoridAidEnabled() && adInfo!=null && !TextUtils.isEmpty(adInfo.getId())) {
+                deviceJsonObject.put("lmt", 0);
 
-                        String advertisingId = adInfo.getId();
+                if (isAndoridAidEnabled() && adInfo!=null && !TextUtils.isEmpty(adInfo.getId())) {
 
-                        switch (mHashing)
-                        {
-                            case RAW:
-                                deviceJsonObject.put("ifa", advertisingId);
-                                break;
-                            case SHA1:
-                                deviceJsonObject.put("dpidsha1", com.pubmatic.sdk.headerbidding.PMUtils.sha1(advertisingId));
-                                break;
-                            case MD5:
-                                deviceJsonObject.put("dpidmd5", com.pubmatic.sdk.headerbidding.PMUtils.md5(advertisingId));
-                                break;
-                        }
+                    String advertisingId = adInfo.getId();
+                    switch (mHashing)
+                    {
+                        case RAW:
+                            deviceJsonObject.put("ifa", advertisingId);
+                            break;
+                        case SHA1:
+                            deviceJsonObject.put("dpidsha1", com.pubmatic.sdk.headerbidding.PMUtils.sha1(advertisingId));
+                            break;
+                        case MD5:
+                            deviceJsonObject.put("dpidmd5", com.pubmatic.sdk.headerbidding.PMUtils.md5(advertisingId));
+                            break;
+                    }
+                } else {
+                    String androidId = com.pubmatic.sdk.headerbidding.PMUtils.getUdidFromContext(mContext);
 
-                    } else {
-
-                        String androidId = com.pubmatic.sdk.headerbidding.PMUtils.getUdidFromContext(mContext);
-
-                        switch (mHashing)
-                        {
-                            case SHA1:
-                                deviceJsonObject.put("dpidsha1", com.pubmatic.sdk.headerbidding.PMUtils.sha1(androidId));
-                                break;
-                            case MD5:
-                                deviceJsonObject.put("dpidmd5", com.pubmatic.sdk.headerbidding.PMUtils.md5(androidId));
-                                break;
-                        }
+                    switch (mHashing)
+                    {
+                        case SHA1:
+                            deviceJsonObject.put("dpidsha1", com.pubmatic.sdk.headerbidding.PMUtils.sha1(androidId));
+                            break;
+                        case MD5:
+                            deviceJsonObject.put("dpidmd5", com.pubmatic.sdk.headerbidding.PMUtils.md5(androidId));
+                            break;
                     }
                 }
-                else
-                    deviceJsonObject.put("dnt", 1);
-            }
+            }//End of 'lmt' specific parameter
 
             String networkType = PMUtils.getNetworkType(mContext);
 
@@ -415,16 +411,15 @@ public class PMBannerPrefetchRequest extends PMBannerAdRequest {
                 geoJsonObject.put("lon", mLocation.getLongitude());
 
 
-//                String provider = mLocation.getProvider();
-//
-//                if(!TextUtils.isEmpty(provider) ) {
-//                    if (provider.equalsIgnoreCase("network") || provider.equalsIgnoreCase("wifi") || provider.equalsIgnoreCase("gps"))
-//                        geoJsonObject.put(PMConstants.LOCATION_TYPE, PMConstants.LOCATION_SOURCE_GPS_LOCATION_SERVICES);
-//                    else if (provider.equalsIgnoreCase("user"))
-//                        geoJsonObject.put(PMConstants.LOCATION_TYPE, PMConstants.LOCATION_SOURCE_USER_PROVIDED);
-//                    else
-//                        geoJsonObject.put(PMConstants.LOCATION_TYPE, PMConstants.LOCATION_SOURCE_UNKNOWN);
-//                }
+                String provider = mLocation.getProvider();
+                if(!TextUtils.isEmpty(provider) ) {
+                    if (provider.equalsIgnoreCase("network") || provider.equalsIgnoreCase("wifi") || provider.equalsIgnoreCase("gps"))
+                        geoJsonObject.put(PMConstants.LOCATION_TYPE, PMConstants.LOCATION_SOURCE_GPS_LOCATION_SERVICES);
+                    else if (provider.equalsIgnoreCase("user"))
+                        geoJsonObject.put(PMConstants.LOCATION_TYPE, PMConstants.LOCATION_SOURCE_USER_PROVIDED);
+                    else
+                        geoJsonObject.put(PMConstants.LOCATION_TYPE, PMConstants.LOCATION_SOURCE_UNKNOWN);
+                }
             }
 
             if(pubDeviceInformation.mDeviceCountryCode != null && !pubDeviceInformation.mDeviceCountryCode.equals(""))
@@ -454,8 +449,7 @@ public class PMBannerPrefetchRequest extends PMBannerAdRequest {
     {
         JSONObject extJsonObject = new JSONObject();
 
-        try
-        {
+        try {
             JSONObject extensionJsonObject = new JSONObject();
 
             JSONObject dmJsonObject = new JSONObject();
@@ -469,33 +463,37 @@ public class PMBannerPrefetchRequest extends PMBannerAdRequest {
 
             PUBDeviceInformation pubDeviceInformation = PUBDeviceInformation.getInstance(mContext);
 
-            if(mAdType == AD_TYPE.TEXT)
-                asJsonObject.put("adtype", String.valueOf(1));
-            else if(mAdType == AD_TYPE.IMAGE)
-                asJsonObject.put("adtype", String.valueOf(2));
-            else if(mAdType == AD_TYPE.IMAGE_TEXT)
-                asJsonObject.put("adtype", String.valueOf(3));
-            else if(mAdType == AD_TYPE.BANNER)
-                asJsonObject.put("adtype", String.valueOf(11));
-            else if(mAdType == AD_TYPE.NATIVE)
-                asJsonObject.put("adtype", String.valueOf(12));
+            if(pubDeviceInformation!=null) {
 
-            asJsonObject.put("pageURL", pubDeviceInformation.mPageURL);
-            asJsonObject.put("kltstamp", pubDeviceInformation.mDeviceTimeStamp);
+                if (mAdType == AD_TYPE.TEXT)
+                    asJsonObject.put("adtype", String.valueOf(1));
+                else if (mAdType == AD_TYPE.IMAGE)
+                    asJsonObject.put("adtype", String.valueOf(2));
+                else if (mAdType == AD_TYPE.IMAGE_TEXT)
+                    asJsonObject.put("adtype", String.valueOf(3));
+                else if (mAdType == AD_TYPE.BANNER)
+                    asJsonObject.put("adtype", String.valueOf(11));
+                else if (mAdType == AD_TYPE.NATIVE)
+                    asJsonObject.put("adtype", String.valueOf(12));
 
-            if(mLocation != null) {
-                String loc = mLocation.getLatitude()+","+mLocation.getLongitude();
-                asJsonObject.put("loc", loc);
+                asJsonObject.put("pageURL", pubDeviceInformation.mPageURL);
+                asJsonObject.put("kltstamp", pubDeviceInformation.mDeviceTimeStamp);
+
+                if (mLocation != null) {
+                    String loc = mLocation.getLatitude() + "," + mLocation.getLongitude();
+                    asJsonObject.put("loc", loc);
+                }
+
+                double ranreq = Math.random();
+                asJsonObject.put("ranreq", ranreq);
+
+                asJsonObject.put("timezone", pubDeviceInformation.mDeviceTimeZone);
+                asJsonObject.put("screenResolution", pubDeviceInformation.mDeviceScreenResolution);
+                asJsonObject.put("adPosition", pubDeviceInformation.mAdPosition);
+                asJsonObject.put("inIframe", String.valueOf(pubDeviceInformation.mInIframe));
+                asJsonObject.put("adVisibility", String.valueOf(pubDeviceInformation.mAdVisibility));
+
             }
-
-            double ranreq = Math.random();
-            asJsonObject.put("ranreq", ranreq);
-
-            asJsonObject.put("timezone", pubDeviceInformation.mDeviceTimeZone);
-            asJsonObject.put("screenResolution", pubDeviceInformation.mDeviceScreenResolution);
-            asJsonObject.put("adPosition", pubDeviceInformation.mAdPosition);
-            asJsonObject.put("inIframe", String.valueOf(pubDeviceInformation.mInIframe));
-            asJsonObject.put("adVisibility", String.valueOf(pubDeviceInformation.mAdVisibility));
 
             if(getAWT() == AWT_OPTION.DEFAULT)
                 asJsonObject.put("awt", "0");
@@ -507,37 +505,66 @@ public class PMBannerPrefetchRequest extends PMBannerAdRequest {
             if(getPMZoneId() != null)
                 asJsonObject.put("pmZoneId", getPMZoneId());
 
-            if(!isDoNotTrack()) {
+            // 'lmt' parameter specific
+            boolean lmtState = AdvertisingIdClient.getLimitedAdTrackingState(mContext, false);
+
+            if(lmtState) {
+
+                asJsonObject.put("lmt", 1);
+
+                if(mContext!=null) {
+                    String androidId = com.pubmatic.sdk.headerbidding.PMUtils.getUdidFromContext(mContext);
+
+                    switch (mHashing) {
+                        case RAW:
+                            asJsonObject.put(PMConstants.UDID_PARAM, androidId);
+                            asJsonObject.put(PMConstants.UDID_HASH_PARAM, com.pubmatic.sdk.headerbidding.PMConstants.HASHING_RAW);
+                            break;
+                        case SHA1:
+                            asJsonObject.put(PMConstants.UDID_PARAM, com.pubmatic.sdk.headerbidding.PMUtils.sha1(androidId));
+                            asJsonObject.put(PMConstants.UDID_HASH_PARAM, com.pubmatic.sdk.headerbidding.PMConstants.HASHING_SHA1);
+                            break;
+                        case MD5:
+                            asJsonObject.put(PMConstants.UDID_PARAM, com.pubmatic.sdk.headerbidding.PMUtils.md5(androidId));
+                            asJsonObject.put(PMConstants.UDID_HASH_PARAM, com.pubmatic.sdk.headerbidding.PMConstants.HASHING_MD5);
+                            break;
+                    }
+
+                    asJsonObject.put(PMConstants.UDID_TYPE_PARAM, String.valueOf(com.pubmatic.sdk.headerbidding.PMConstants.ANDROID_ID));
+                }
+
+            } else {
+
+                asJsonObject.put("lmt", 0);
+
                 AdvertisingIdClient.AdInfo adInfo = AdvertisingIdClient.refreshAdvertisingInfo(mContext);
+                if (isAndoridAidEnabled() && adInfo!=null && !TextUtils.isEmpty(adInfo.getId())) {
 
-                if(!AdvertisingIdClient.getLimitedAdTrackingState(mContext, false)) {
-                    if (isAndoridAidEnabled() && adInfo!=null && !TextUtils.isEmpty(adInfo.getId())) {
+                    String advertisingId = adInfo.getId();
 
-                        String advertisingId = adInfo.getId();
+                    switch (mHashing)
+                    {
+                        case RAW:
+                            asJsonObject.put(PMConstants.UDID_PARAM, advertisingId);
+                            asJsonObject.put(PMConstants.UDID_HASH_PARAM, com.pubmatic.sdk.headerbidding.PMConstants.HASHING_RAW);
+                            break;
+                        case SHA1:
+                            asJsonObject.put(PMConstants.UDID_PARAM, com.pubmatic.sdk.headerbidding.PMUtils.sha1(advertisingId));
+                            asJsonObject.put(PMConstants.UDID_HASH_PARAM, com.pubmatic.sdk.headerbidding.PMConstants.HASHING_SHA1);
+                            break;
+                        case MD5:
+                            asJsonObject.put(PMConstants.UDID_PARAM, com.pubmatic.sdk.headerbidding.PMUtils.md5(advertisingId));
+                            asJsonObject.put(PMConstants.UDID_HASH_PARAM, com.pubmatic.sdk.headerbidding.PMConstants.HASHING_MD5);
+                            break;
+                    }
 
-                        switch (mHashing)
-                        {
-                            case RAW:
-                                asJsonObject.put(PMConstants.UDID_PARAM, advertisingId);
-                                asJsonObject.put(PMConstants.UDID_HASH_PARAM, com.pubmatic.sdk.headerbidding.PMConstants.HASHING_RAW);
-                                break;
-                            case SHA1:
-                                asJsonObject.put(PMConstants.UDID_PARAM, com.pubmatic.sdk.headerbidding.PMUtils.sha1(advertisingId));
-                                asJsonObject.put(PMConstants.UDID_HASH_PARAM, com.pubmatic.sdk.headerbidding.PMConstants.HASHING_SHA1);
-                                break;
-                            case MD5:
-                                asJsonObject.put(PMConstants.UDID_PARAM, com.pubmatic.sdk.headerbidding.PMUtils.md5(advertisingId));
-                                asJsonObject.put(PMConstants.UDID_HASH_PARAM, com.pubmatic.sdk.headerbidding.PMConstants.HASHING_MD5);
-                                break;
-                        }
+                    asJsonObject.put(PMConstants.UDID_TYPE_PARAM, String.valueOf(com.pubmatic.sdk.headerbidding.PMConstants.ADVERTISEMENT_ID));
+                } else {
 
-                        asJsonObject.put(PMConstants.UDID_TYPE_PARAM, String.valueOf(com.pubmatic.sdk.headerbidding.PMConstants.ADVERTISEMENT_ID));
-                    } else if (mContext != null) {
-
+                    if(mContext!=null) {
                         String androidId = com.pubmatic.sdk.headerbidding.PMUtils.getUdidFromContext(mContext);
 
-                        switch (mHashing)
-                        {
+                        switch (mHashing) {
                             case RAW:
                                 asJsonObject.put(PMConstants.UDID_PARAM, androidId);
                                 asJsonObject.put(PMConstants.UDID_HASH_PARAM, com.pubmatic.sdk.headerbidding.PMConstants.HASHING_RAW);
@@ -554,31 +581,32 @@ public class PMBannerPrefetchRequest extends PMBannerAdRequest {
 
                         asJsonObject.put(PMConstants.UDID_TYPE_PARAM, String.valueOf(com.pubmatic.sdk.headerbidding.PMConstants.ANDROID_ID));
                     }
-
-                    if(getEthnicity() != null) {
-                        switch (getEthnicity()) {
-                            case HISPANIC:
-                                asJsonObject.put("ethn", "0");
-                                break;
-                            case AFRICAN_AMERICAN:
-                                asJsonObject.put("ethn", "1");
-                                break;
-                            case CAUCASIAN:
-                                asJsonObject.put("ethn", "2");
-                                break;
-                            case ASIAN_AMERICAN:
-                                asJsonObject.put("ethn", "3");
-                                break;
-                            default:
-                                asJsonObject.put("ethn", "4");
-                                break;
-                        }
-                    }
-
-                    if(getIncome() != null && !getIncome().equals(""))
-                        asJsonObject.put("inc", getIncome());
                 }
             }
+            //End of 'lmt' specific parameter
+
+            if(getEthnicity() != null) {
+                switch (getEthnicity()) {
+                    case HISPANIC:
+                        asJsonObject.put("ethn", "0");
+                        break;
+                    case AFRICAN_AMERICAN:
+                        asJsonObject.put("ethn", "1");
+                        break;
+                    case CAUCASIAN:
+                        asJsonObject.put("ethn", "2");
+                        break;
+                    case ASIAN_AMERICAN:
+                        asJsonObject.put("ethn", "3");
+                        break;
+                    default:
+                        asJsonObject.put("ethn", "4");
+                        break;
+                }
+            }
+
+            if(getIncome() != null && !getIncome().equals(""))
+                asJsonObject.put("inc", getIncome());
 
             if(getOrmmaComplianceLevel() >= 0)
                 asJsonObject.put("ormma", String.valueOf(getOrmmaComplianceLevel()));

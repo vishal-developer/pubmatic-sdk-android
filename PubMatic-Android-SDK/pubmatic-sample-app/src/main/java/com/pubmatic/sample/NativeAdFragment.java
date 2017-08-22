@@ -267,9 +267,6 @@ public class NativeAdFragment extends DialogFragment {
 
                 if(!ormaCompliance.equals("") && ormaCompliance != null)
                     ((PMNativeAdRequest)adRequest).setOrmmaComplianceLevel(Integer.parseInt(ormaCompliance));
-
-                boolean isDoNotTrackChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_DO_NOT_TRACK);
-                ((PMAdRequest)adRequest).setDoNotTrack(isDoNotTrackChecked);
             }
             catch (Exception exception)
             {

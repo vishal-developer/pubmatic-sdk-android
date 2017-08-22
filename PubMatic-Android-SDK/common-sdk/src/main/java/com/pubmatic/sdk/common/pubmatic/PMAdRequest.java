@@ -54,7 +54,7 @@ public abstract class PMAdRequest extends AdRequest {
 
     //TODO: Use Boolean class so that if it is null then do not send
     protected boolean                       mPaid;
-    protected boolean			            mDoNotTrack;
+//    protected boolean			            mDoNotTrack;
     protected boolean			            mCoppa;
 
     protected String                        mPubId;
@@ -119,7 +119,6 @@ public abstract class PMAdRequest extends AdRequest {
     protected void setUpPostParams() {
 
         super.setupPostData();
-        boolean optedOut = AdvertisingIdClient.getLimitedAdTrackingState(mContext, false);
         PUBDeviceInformation pubDeviceInformation = PUBDeviceInformation.getInstance(mContext);
 
         putPostData(PMConstants.PUB_ID_PARAM, mPubId);
@@ -167,66 +166,63 @@ public abstract class PMAdRequest extends AdRequest {
         if(getOrmmaComplianceLevel() >= 0)
             putPostData(PMConstants.ORMMA_COMPLAINCE_PARAM, String.valueOf(getOrmmaComplianceLevel()));
 
-        try {
+        if (pubDeviceInformation.mCarrierName != null) {
+            putPostData(PMConstants.CARRIER_PARAM, pubDeviceInformation.mCarrierName);
+        }
 
-            if(!isDoNotTrack() && !optedOut)
-            {
-                if (pubDeviceInformation.mCarrierName != null) {
-                    putPostData(PMConstants.CARRIER_PARAM, pubDeviceInformation.mCarrierName);
-                }
+        if (pubDeviceInformation.mDeviceMake != null) {
+            putPostData(PMConstants.MAKE_PARAM, pubDeviceInformation.mDeviceMake);
+        }
 
-                if (pubDeviceInformation.mDeviceMake != null) {
-                    putPostData(PMConstants.MAKE_PARAM, pubDeviceInformation.mDeviceMake);
-                }
+        if (pubDeviceInformation.mDeviceModel != null) {
+            putPostData(PMConstants.MODEL_PARAM, pubDeviceInformation.mDeviceModel);
+        }
 
-                if (pubDeviceInformation.mDeviceModel != null) {
-                    putPostData(PMConstants.MODEL_PARAM, pubDeviceInformation.mDeviceModel);
-                }
+        if (pubDeviceInformation.mDeviceOSName != null) {
+            putPostData(PMConstants.OS_PARAM, pubDeviceInformation.mDeviceOSName);
+        }
 
-                if (pubDeviceInformation.mDeviceOSName != null) {
-                    putPostData(PMConstants.OS_PARAM, pubDeviceInformation.mDeviceOSName);
-                }
+        if (pubDeviceInformation.mDeviceOSVersion != null) {
+            putPostData(PMConstants.OSV_PARAM, pubDeviceInformation.mDeviceOSVersion);
+        }
 
-                if (pubDeviceInformation.mDeviceOSVersion != null) {
-                    putPostData(PMConstants.OSV_PARAM, pubDeviceInformation.mDeviceOSVersion);
-                }
+        if (!TextUtils.isEmpty(mYearOfBirth)) {
+            putPostData(PMConstants.YOB_PARAM, mYearOfBirth);
+        }
 
-                if (!TextUtils.isEmpty(mYearOfBirth)) {
-                    putPostData(PMConstants.YOB_PARAM, mYearOfBirth);
-                }
-
-                if(getGender() != null) {
-                    switch (getGender()) {
-                        case MALE:
-                            putPostData(PMConstants.GENDER_PARAM, "M");
-                            break;
-                        case FEMALE:
-                            putPostData(PMConstants.GENDER_PARAM, "F");
-                            break;
-                        case OTHER:
-                            putPostData(PMConstants.GENDER_PARAM, "O");
-                            break;
-                        default:
-                            putPostData(PMConstants.GENDER_PARAM, "O");
-                            break;
-                    }
-                }
-
-                //Set the location
-                if (mLocation != null) {
-                    putPostData(PMConstants.LOC_PARAM, mLocation.getLatitude() + ","
-                            + mLocation.getLongitude());
-
-                    String provider = mLocation.getProvider();
-
-                    if(provider.equalsIgnoreCase("network") || provider.equalsIgnoreCase("wifi") || provider.equalsIgnoreCase("gps"))
-                        putPostData(PMConstants.LOC_SOURCE_PARAM, PMConstants.LOCATION_SOURCE_GPS_LOCATION_SERVICES);
-                    else if(provider.equalsIgnoreCase("user"))
-                        putPostData(PMConstants.LOC_SOURCE_PARAM, PMConstants.LOCATION_SOURCE_USER_PROVIDED);
-                    else
-                        putPostData(PMConstants.LOC_SOURCE_PARAM, PMConstants.LOCATION_SOURCE_UNKNOWN);
-                }
+        if(getGender() != null) {
+            switch (getGender()) {
+                case MALE:
+                    putPostData(PMConstants.GENDER_PARAM, "M");
+                    break;
+                case FEMALE:
+                    putPostData(PMConstants.GENDER_PARAM, "F");
+                    break;
+                case OTHER:
+                    putPostData(PMConstants.GENDER_PARAM, "O");
+                    break;
+                default:
+                    putPostData(PMConstants.GENDER_PARAM, "O");
+                    break;
             }
+        }
+
+        //Set the location
+        if (mLocation != null) {
+            putPostData(PMConstants.LOC_PARAM, mLocation.getLatitude() + ","
+                    + mLocation.getLongitude());
+
+            String provider = mLocation.getProvider();
+
+            if(provider.equalsIgnoreCase("network") || provider.equalsIgnoreCase("wifi") || provider.equalsIgnoreCase("gps"))
+                putPostData(PMConstants.LOC_SOURCE_PARAM, String.valueOf(PMConstants.LOCATION_SOURCE_GPS_LOCATION_SERVICES));
+            else if(provider.equalsIgnoreCase("user"))
+                putPostData(PMConstants.LOC_SOURCE_PARAM, String.valueOf(PMConstants.LOCATION_SOURCE_USER_PROVIDED));
+            else
+                putPostData(PMConstants.LOC_SOURCE_PARAM, String.valueOf(PMConstants.LOCATION_SOURCE_UNKNOWN));
+        }
+
+        try {
 
             try
             {
@@ -281,61 +277,41 @@ public abstract class PMAdRequest extends AdRequest {
                 }
             }
 
-            if(isDoNotTrack() || optedOut)
-                putPostData(PMConstants.DNT_PARAM, String.valueOf(1));
-            else
-                putPostData(PMConstants.DNT_PARAM, String.valueOf(0));
+            //'lmt' parameter case
+            boolean lmtState = AdvertisingIdClient.getLimitedAdTrackingState(mContext, false);
+            if(lmtState) {
 
-            if(!isDoNotTrack()) {
+                putPostData(PMConstants.LMT_PARAM, String.valueOf(1));
+                putDeviceIDToAdRequest();
+
+            } else {
+                putPostData(PMConstants.LMT_PARAM, String.valueOf(0));
+
+                //Send Advertising ID
                 AdvertisingIdClient.AdInfo adInfo = AdvertisingIdClient.refreshAdvertisingInfo(mContext);
+                if (isAndoridAidEnabled() && adInfo != null && !TextUtils.isEmpty(adInfo.getId())) {
 
-                if(!AdvertisingIdClient.getLimitedAdTrackingState(mContext, false)) {
-                    if (isAndoridAidEnabled() && adInfo!=null && !TextUtils.isEmpty(adInfo.getId())) {
+                    String advertisingId = adInfo.getId();
 
-                        String advertisingId = adInfo.getId();
-
-                        switch (mHashing)
-                        {
-                            case RAW:
-                                putPostData(PMConstants.UDID_PARAM, advertisingId);
-                                putPostData(PMConstants.UDID_HASH_PARAM, PMConstants.HASHING_RAW);
-                                break;
-                            case SHA1:
-                                putPostData(PMConstants.UDID_PARAM, PMUtils.sha1(advertisingId));
-                                putPostData(PMConstants.UDID_HASH_PARAM, PMConstants.HASHING_SHA1);
-                                break;
-                            case MD5:
-                                putPostData(PMConstants.UDID_PARAM, PMUtils.md5(advertisingId));
-                                putPostData(PMConstants.UDID_HASH_PARAM, PMConstants.HASHING_MD5);
-                                break;
-                        }
-
-                        putPostData(PMConstants.UDID_TYPE_PARAM, PMConstants.ADVERTISEMENT_ID);
-
+                    switch (mHashing) {
+                        case RAW:
+                            putPostData(PMConstants.UDID_PARAM, advertisingId);
+                            putPostData(PMConstants.UDID_HASH_PARAM, PMConstants.HASHING_RAW);
+                            break;
+                        case SHA1:
+                            putPostData(PMConstants.UDID_PARAM, PMUtils.sha1(advertisingId));
+                            putPostData(PMConstants.UDID_HASH_PARAM, PMConstants.HASHING_SHA1);
+                            break;
+                        case MD5:
+                            putPostData(PMConstants.UDID_PARAM, PMUtils.md5(advertisingId));
+                            putPostData(PMConstants.UDID_HASH_PARAM, PMConstants.HASHING_MD5);
+                            break;
                     }
-                    else {
 
-                        String androidId = PMUtils.getUdidFromContext(mContext);
+                    putPostData(PMConstants.UDID_TYPE_PARAM, PMConstants.ADVERTISEMENT_ID);
 
-                        switch (mHashing)
-                        {
-                            case RAW:
-                                putPostData(PMConstants.UDID_PARAM, androidId);
-                                putPostData(PMConstants.UDID_HASH_PARAM, PMConstants.HASHING_RAW);
-                                break;
-                            case SHA1:
-                                putPostData(PMConstants.UDID_PARAM, PMUtils.sha1(androidId));
-                                putPostData(PMConstants.UDID_HASH_PARAM, PMConstants.HASHING_SHA1);
-                                break;
-                            case MD5:
-                                putPostData(PMConstants.UDID_PARAM, PMUtils.md5(androidId));
-                                putPostData(PMConstants.UDID_HASH_PARAM, PMConstants.HASHING_MD5);
-                                break;
-                        }
-
-                        putPostData(PMConstants.UDID_TYPE_PARAM, PMConstants.ANDROID_ID);
-                    }
-                }
+                } else
+                    putDeviceIDToAdRequest();
             }
 
             if (getEthnicity() != null) {
@@ -440,6 +416,28 @@ public abstract class PMAdRequest extends AdRequest {
         } catch (Exception e) {
 
         }
+    }
+
+    private void putDeviceIDToAdRequest() {
+        String androidId = PMUtils.getUdidFromContext(mContext);
+
+        switch (mHashing)
+        {
+            case RAW:
+                putPostData(PMConstants.UDID_PARAM, androidId);
+                putPostData(PMConstants.UDID_HASH_PARAM, PMConstants.HASHING_RAW);
+                break;
+            case SHA1:
+                putPostData(PMConstants.UDID_PARAM, PMUtils.sha1(androidId));
+                putPostData(PMConstants.UDID_HASH_PARAM, PMConstants.HASHING_SHA1);
+                break;
+            case MD5:
+                putPostData(PMConstants.UDID_PARAM, PMUtils.md5(androidId));
+                putPostData(PMConstants.UDID_HASH_PARAM, PMConstants.HASHING_MD5);
+                break;
+        }
+
+        putPostData(PMConstants.UDID_TYPE_PARAM, PMConstants.ANDROID_ID);
     }
 
     protected AD_TYPE getAdType() {
@@ -734,21 +732,6 @@ public abstract class PMAdRequest extends AdRequest {
      */
     public void setIABCategory(String mIABCategory) {
         this.mIABCategory = mIABCategory;
-    }
-
-    public boolean isDoNotTrack() {
-        return mDoNotTrack;
-    }
-
-    /**
-     * Indicates whether the user has opted out of the publisher or not, or whether HTTP_DNT is set or not. Possible values are:
-     *  false - Either the user has not opted out of the publisher or HTTP_DNT is not set.
-     *  true - Either the user has opted out of the publisher or HTTP_DNT is set; in this case, PubMatic will not target such users.
-     *  Note: The default value for this parameter is false
-     * @param mDoNotTrack flag for do-not-track
-     */
-    public void setDoNotTrack(boolean mDoNotTrack) {
-        this.mDoNotTrack = mDoNotTrack;
     }
 
     public boolean isCoppa() {
