@@ -24,6 +24,7 @@ import java.util.Formatter;
 import java.util.Locale;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -191,13 +192,17 @@ public class WebView extends android.webkit.WebView {
                                              description, failingUrl);
         }
 
+        @TargetApi(android.os.Build.VERSION_CODES.M)
         @Override
         public void onReceivedError(android.webkit.WebView view, WebResourceRequest request,
                                     WebResourceError error) {
             super.onReceivedError(view, request, error);
 
-            if (handler != null)
-                handler.webViewReceivedError((WebView) view, request, error);
+            if(request.isForMainFrame()) {
+
+                if (handler != null)
+                    handler.webViewReceivedError((WebView) view, request, error);
+            }
         }
 
         @SuppressWarnings("deprecation")
@@ -212,6 +217,7 @@ public class WebView extends android.webkit.WebView {
             return override;
         }
 
+        @TargetApi(android.os.Build.VERSION_CODES.M)
         @Override
         public boolean shouldOverrideUrlLoading(android.webkit.WebView view, WebResourceRequest request) {
             boolean override = super.shouldOverrideUrlLoading(view, request);

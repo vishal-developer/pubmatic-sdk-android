@@ -1948,19 +1948,21 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
         @Override
         public void webViewReceivedError(android.webkit.WebView view, WebResourceRequest request, WebResourceError error) {
-            resetRichMediaAd();
+
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && error!=null) {
+
+                resetRichMediaAd();
+
                 PMLogger.logEvent("Error loading rich media ad content.  Error code:" + String.valueOf(error.getErrorCode()) + " Description:" + error.getDescription(),
                         LogLevel.Error);
 
                 if (requestListener != null) {
                     requestListener.onFailedToReceiveAd(PMBannerAdView.this, error.getErrorCode(), error.getDescription()!=null?error.getDescription().toString():null);
                 }
+
+                removeContent();
             }
-
-
-            removeContent();
         }
 
         @Override
