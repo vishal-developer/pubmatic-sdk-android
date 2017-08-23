@@ -29,6 +29,7 @@ package com.pubmatic.sdk.banner.pubmatic;
 import android.content.Context;
 
 import com.pubmatic.sdk.common.PMAdSize;
+import com.pubmatic.sdk.common.RRFormatter;
 import com.pubmatic.sdk.common.pubmatic.PMConstants;
 import com.pubmatic.sdk.common.pubmatic.PUBAdSize;
 import com.pubmatic.sdk.common.pubmatic.PMAdRequest;
@@ -111,12 +112,23 @@ public class PMBannerAdRequest extends PMAdRequest {
 
 	@Override
 	public boolean checkMandatoryParams() {
-		return super.checkMandatoryParams();
+		boolean result = super.checkMandatoryParams();
+
+		//size is mandatory for Banner
+		if(result) {
+			if (mPMAdSize != null)
+				result = (mPMAdSize.getAdWidth() > 0 && mPMAdSize.getAdHeight() > 0);
+			else
+				result = false;
+		}
+		return result;
 	}
 
 	@Override
-	public String getFormatter() {
-		return "com.pubmatic.sdk.banner.pubmatic.PMBannerRRFormatter";
+	public RRFormatter getFormatter() {
+		if(mRRFormatter==null)
+			mRRFormatter = new PMBannerRRFormatter();
+		return mRRFormatter;
 	}
 
     /**

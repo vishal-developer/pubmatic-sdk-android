@@ -79,6 +79,8 @@ public abstract class AdRequest {
 
 	private static String TAG = AdRequest.class.toString();
 
+	protected RRFormatter 				mRRFormatter;
+
 	protected AdRequest(CommonConstants.CHANNEL channel, Context context) {
 		mChannel = channel;
 		mUrlParams = new HashMap<>(0);
@@ -89,7 +91,7 @@ public abstract class AdRequest {
 	 *
 	 * @return
      */
-	public abstract String getFormatter();
+	public abstract RRFormatter getFormatter();
 
 	/**
 	 * Returns the base/host name URL

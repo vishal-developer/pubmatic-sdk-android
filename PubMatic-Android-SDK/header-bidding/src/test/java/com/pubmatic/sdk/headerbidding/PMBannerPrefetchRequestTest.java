@@ -28,7 +28,7 @@ public class PMBannerPrefetchRequestTest {
     @Test
     public void test_constructor() {
         PMBannerImpression impression = new PMBannerImpression(FAKE_ID, FAKE_SLOT_ID, mockAdSizes, FAKE_INDEX);
-        PMBannerPrefetchRequest request = PMBannerPrefetchRequest.initHBRequestForImpression(context, FAKE_PUBID, impression);
+        PMPrefetchRequest request = PMPrefetchRequest.initHBRequestForImpression(context, FAKE_PUBID, impression);
 
         //assertEquals(FAKE_HEIGHT, request.getHeight());
         //assertEquals(FAKE_WIDTH, request.getWidth());

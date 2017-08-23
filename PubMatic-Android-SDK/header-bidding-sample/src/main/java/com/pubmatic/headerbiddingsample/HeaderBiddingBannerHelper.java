@@ -13,7 +13,7 @@ import com.google.android.gms.ads.doubleclick.PublisherAdView;
 import com.pubmatic.sdk.banner.PMBannerAdView;
 import com.pubmatic.sdk.common.pubmatic.PMAdRequest;
 import com.pubmatic.sdk.headerbidding.PMAdSize;
-import com.pubmatic.sdk.headerbidding.PMBannerPrefetchRequest;
+import com.pubmatic.sdk.headerbidding.PMPrefetchRequest;
 import com.pubmatic.sdk.headerbidding.PMBid;
 import com.pubmatic.sdk.headerbidding.PMBannerImpression;
 import com.pubmatic.sdk.headerbidding.PMPrefetchManager;
@@ -104,7 +104,7 @@ public class HeaderBiddingBannerHelper {
         pmPrefetchManager = new PMPrefetchManager(mContext, listener);
 
         //Create Pubmatic adRequest for header bidding call with single impression or a Set of impressions.
-        PMBannerPrefetchRequest bannerHeaderBiddingAdRequest = getHeaderBiddingBannerAdRequest();
+        PMPrefetchRequest bannerHeaderBiddingAdRequest = getHeaderBiddingBannerAdRequest();
 
         //Set any targeting params on the adRequest instance.
         pmPrefetchManager.prefetchCreatives(bannerHeaderBiddingAdRequest);
@@ -260,16 +260,16 @@ public class HeaderBiddingBannerHelper {
         }
     }
 
-    private PMBannerPrefetchRequest getHeaderBiddingBannerAdRequest()
+    private PMPrefetchRequest getHeaderBiddingBannerAdRequest()
     {
-        PMBannerPrefetchRequest adRequest;
+        PMPrefetchRequest adRequest;
 
         List<PMBannerImpression> bannerImpressions = new ArrayList<>();
         for(AdSlotInfo adSlotInfo : adSlotInfoList) {
             bannerImpressions.add(new PMBannerImpression(getUniqueIdForView(adSlotInfo.adView), adSlotInfo.slotName, adSlotInfo.adSizes, 1));
         }
 
-        adRequest = PMBannerPrefetchRequest.initHBRequestForImpression(mContext, "31400", bannerImpressions);
+        adRequest = PMPrefetchRequest.initHBRequestForImpression(mContext, "31400", bannerImpressions);
 
         adRequest.setStoreURL("http://www.financialexpress.com");
         adRequest.setAppDomain("www.financialexpress.com");
@@ -291,7 +291,7 @@ public class HeaderBiddingBannerHelper {
         adRequest.setIABCategory("IAB1-1,IAB1-7");
         adRequest.setAppCategory("Entertainment, Sports");
 
-        adRequest.setUdidHash(PMBannerPrefetchRequest.HASHING_TECHNIQUE.RAW);
+        adRequest.setUdidHash(PMPrefetchRequest.HASHING_TECHNIQUE.RAW);
         adRequest.setAndroidAidEnabled(false);
 
         return adRequest;

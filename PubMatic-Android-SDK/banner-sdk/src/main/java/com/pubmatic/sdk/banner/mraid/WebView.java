@@ -245,7 +245,7 @@ public class WebView extends android.webkit.WebView {
         void webViewReceivedError(WebView webView, int errorCode,
                 String description, String failingUrl);
 
-        void webViewReceivedError(android.webkit.WebView view, WebResourceRequest request,
+        void webViewReceivedError(WebView view, WebResourceRequest request,
                       WebResourceError error);
 
         boolean webViewShouldOverrideUrlLoading(WebView view, String url);

@@ -846,21 +846,8 @@ public final class PMNativeAd {
 	private void createRRFormatter() {
 		if(mAdRequest != null)
 		{
-			//Create RRFormater
-			String rrFormaterName = mAdRequest.getFormatter();
-			
-			try {
-				Class<?> className = Class.forName(rrFormaterName);
-				mRRFormatter = (RRFormatter) className.newInstance();
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (InstantiationException e) {
-				e.printStackTrace();
-			} catch (ClassCastException ex) {
-				
-			}
+			//Get RRFormatter from AdRequest
+            mRRFormatter = mAdRequest.getFormatter();
 		}
 	}
 }

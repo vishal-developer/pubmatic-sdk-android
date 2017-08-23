@@ -45,16 +45,9 @@ import java.util.Set;
 
 public abstract class PMAdRequest extends AdRequest {
 
-    // Passback params
-    //    private String mKAdNetworkId;
-    //    private String mLastDefaultedNetworkId;
-    //    private List<String> mDefaultedCampaignList;
-
     protected int                           mOrmmaComplianceLevel;
 
-    //TODO: Use Boolean class so that if it is null then do not send
     protected boolean                       mPaid;
-//    protected boolean			            mDoNotTrack;
     protected boolean			            mCoppa;
 
     protected String                        mPubId;

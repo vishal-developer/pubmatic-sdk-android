@@ -45,19 +45,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class PMBannerPrefetchRequest extends PMBannerAdRequest {
+public class PMPrefetchRequest extends PMBannerAdRequest {
 
     private List<PMBannerImpression> impressions;
     private Set<String> adSlotIdsHB;
 
 
-    private PMBannerPrefetchRequest(Context context) {
+    private PMPrefetchRequest(Context context) {
         super(context);
         impressions = new ArrayList<>();
         adSlotIdsHB = new HashSet<>();
     }
 
-    private PMBannerPrefetchRequest(Context context, String pubId, PMBannerImpression impression) {
+    private PMPrefetchRequest(Context context, String pubId, PMBannerImpression impression) {
         this(context);
         this.mPubId = pubId;
 
@@ -65,7 +65,7 @@ public class PMBannerPrefetchRequest extends PMBannerAdRequest {
             impressions.add(impression);
     }
 
-    private PMBannerPrefetchRequest(Context context, String pubId, List<PMBannerImpression> impressions) {
+    private PMPrefetchRequest(Context context, String pubId, List<PMBannerImpression> impressions) {
         this(context);
         this.mPubId = pubId;
 
@@ -76,12 +76,12 @@ public class PMBannerPrefetchRequest extends PMBannerAdRequest {
         }
     }
 
-    public static PMBannerPrefetchRequest initHBRequestForImpression(Context context, String pubId, PMBannerImpression impression) {
-        return new PMBannerPrefetchRequest(context, pubId, impression);
+    public static PMPrefetchRequest initHBRequestForImpression(Context context, String pubId, PMBannerImpression impression) {
+        return new PMPrefetchRequest(context, pubId, impression);
     }
 
-    public static PMBannerPrefetchRequest initHBRequestForImpression(Context context, String pubId, List<PMBannerImpression> impressions) {
-        return new PMBannerPrefetchRequest(context, pubId, impressions);
+    public static PMPrefetchRequest initHBRequestForImpression(Context context, String pubId, List<PMBannerImpression> impressions) {
+        return new PMPrefetchRequest(context, pubId, impressions);
     }
 
     public List<PMBannerImpression> getImpressions()
@@ -290,10 +290,8 @@ public class PMBannerPrefetchRequest extends PMBannerAdRequest {
 
             appJsonObject.put("ver", pubDeviceInformation.mApplicationVersion);
 
-            if(mPaid)
-                appJsonObject.put("paid", 1);
-            else
-                appJsonObject.put("paid", 0);
+            if(mPaid!=null)
+                appJsonObject.put("paid", mPaid ? 1 : 0);
 
             JSONObject publisherJsonObject = new JSONObject();
             publisherJsonObject.put("id", getPubId());
@@ -673,10 +671,9 @@ public class PMBannerPrefetchRequest extends PMBannerAdRequest {
 
         try
         {
-            if(isCoppa())
-                regsJsonObject.put("coppa", 1);
-            else
-                regsJsonObject.put("coppa", 0);
+            if(mCoppa!=null)
+                regsJsonObject.put("coppa", mCoppa?1:0);
+
 
         } catch (JSONException e) {
             e.printStackTrace();

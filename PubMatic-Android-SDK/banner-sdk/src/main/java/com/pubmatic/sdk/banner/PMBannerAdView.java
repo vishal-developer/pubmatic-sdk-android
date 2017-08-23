@@ -422,21 +422,8 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
     private void createRRFormatter() {
         if(mAdRequest != null && mRRFormatter==null)
         {
-            //Create RRFormater
-            String rrFormaterName = mAdRequest.getFormatter();
-
-            try {
-                Class className = Class.forName(rrFormaterName);
-                mRRFormatter = (RRFormatter) className.newInstance();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (ClassCastException ex) {
-
-            }
+            //Get RRFormater from AdRequest
+            mRRFormatter = mAdRequest.getFormatter();
         }
     }
 
@@ -500,18 +487,10 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
     }
 
     private boolean checkForMandatoryParams() {
-        boolean result = mAdRequest.checkMandatoryParams();
-
-        if(result && mChannel == CHANNEL.PUBMATIC && !isInterstitial())
-        {
-            PMAdSize adSize = mAdRequest.getAdSize();
-            if(adSize!=null)
-                result = (adSize.getAdWidth()>0 && adSize.getAdHeight()>0);
-            else
-                result = false;
-        }
-
-        return result;
+        if(mAdRequest!=null)
+            return mAdRequest.checkMandatoryParams();
+        else
+            return false;
     }
 
     private void updateOnLayout() {
@@ -815,7 +794,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         // This will be the case if Publisher added the view in xml & sets the
         // values from java file
         // If channel is set => adcontroller is initialized correctly
-        if (mChannel == null || !checkForMandatoryParams()) {
+        if (mChannel == null || mAdRequest==null || mAdRequest.checkMandatoryParams()==false) {
 
             throw new IllegalArgumentException("Required parameters are not set.");
         }
@@ -1934,8 +1913,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                                          int errorCode,
                                          String description,
                                          String failingUrl) {
-            resetRichMediaAd();
-
             PMLogger.logEvent("Error loading rich media ad content.  Error code:" + String.valueOf(errorCode) + " Description:" + description,
                     LogLevel.Error);
 
@@ -1943,25 +1920,18 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                 requestListener.onFailedToReceiveAd(PMBannerAdView.this, errorCode, description);
             }
 
-            removeContent();
+            //removeContent();
         }
 
         @Override
-        public void webViewReceivedError(android.webkit.WebView view, WebResourceRequest request, WebResourceError error) {
+        public void webViewReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
 
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && error!=null) {
 
-                resetRichMediaAd();
-
-                PMLogger.logEvent("Error loading rich media ad content.  Error code:" + String.valueOf(error.getErrorCode()) + " Description:" + error.getDescription(),
-                        LogLevel.Error);
-
-                if (requestListener != null) {
-                    requestListener.onFailedToReceiveAd(PMBannerAdView.this, error.getErrorCode(), error.getDescription()!=null?error.getDescription().toString():null);
-                }
-
-                removeContent();
+                webViewReceivedError(view, error.getErrorCode(),
+                        error.getDescription()!=null?error.getDescription().toString():null,
+                        request!=null?request.getUrl().toString():null);
             }
         }
 

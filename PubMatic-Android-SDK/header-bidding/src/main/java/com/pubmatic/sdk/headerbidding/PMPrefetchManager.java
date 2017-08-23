@@ -70,7 +70,6 @@ public class PMPrefetchManager implements ResponseGenerator {
 
     private Context mContext;
     private String userAgent;
-    private static final String UTF8_CHARSET = "UTF-8";
 
     /**
      * Listener to channel result events of a header bidding request to the publisher app.
@@ -139,7 +138,7 @@ public class PMPrefetchManager implements ResponseGenerator {
         mRetrieveLocationInfo = locationDetectionEnabled;
     }
 
-    public void prefetchCreatives(PMBannerPrefetchRequest adRequest) {
+    public void prefetchCreatives(PMPrefetchRequest adRequest) {
 
         if(adRequest!=null) {
 
@@ -174,7 +173,7 @@ public class PMPrefetchManager implements ResponseGenerator {
         }
     }
 
-    private boolean validateHeaderBiddingRequest(PMBannerPrefetchRequest adRequest)
+    private boolean validateHeaderBiddingRequest(PMPrefetchRequest adRequest)
     {
         if (adRequest.getImpressions().size() == 0) {
             PMLogger.logEvent("No impressions found for Header Bidding Request.", PMLogger.LogLevel.Error);

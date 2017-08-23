@@ -50,6 +50,7 @@ import android.util.Log;
 
 import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.CommonConstants;
+import com.pubmatic.sdk.common.RRFormatter;
 import com.pubmatic.sdk.common.pubmatic.PMAdRequest;
 import com.pubmatic.sdk.nativead.PMNativeAd;
 import com.pubmatic.sdk.nativead.bean.PMAssetRequest;
@@ -151,8 +152,10 @@ public class PMNativeAdRequest extends PMAdRequest {
 	}
 
 	@Override
-	public String getFormatter() {
-		return "com.pubmatic.sdk.nativead.pubmatic.PMNativeRRFormatter";
+	public RRFormatter getFormatter() {
+		if(mRRFormatter==null)
+			mRRFormatter = new PMNativeRRFormatter();
+		return mRRFormatter;
 	}
 
 	private void setupAssetData() {

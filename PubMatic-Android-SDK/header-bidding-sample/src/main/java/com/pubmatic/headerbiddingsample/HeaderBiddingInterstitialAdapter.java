@@ -7,9 +7,7 @@ import android.os.Build;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.RelativeLayout;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.doubleclick.AppEventListener;
@@ -17,7 +15,7 @@ import com.google.android.gms.ads.doubleclick.PublisherAdRequest;
 import com.google.android.gms.ads.doubleclick.PublisherInterstitialAd;
 import com.pubmatic.sdk.banner.PMInterstitialAd;
 import com.pubmatic.sdk.headerbidding.PMAdSize;
-import com.pubmatic.sdk.headerbidding.PMBannerPrefetchRequest;
+import com.pubmatic.sdk.headerbidding.PMPrefetchRequest;
 import com.pubmatic.sdk.headerbidding.PMBid;
 import com.pubmatic.sdk.headerbidding.PMBannerImpression;
 import com.pubmatic.sdk.headerbidding.PMPrefetchManager;
@@ -111,7 +109,7 @@ public class HeaderBiddingInterstitialAdapter {
         pmPrefetchManager = new PMPrefetchManager(mContext, listener);
 
         //Create Pubmatic adRequest for header bidding call with single impression or a Set of impressions.
-        PMBannerPrefetchRequest interstitialHeaderBiddingAdRequest = getHeaderBiddingInterstitialAdRequest1();
+        PMPrefetchRequest interstitialHeaderBiddingAdRequest = getHeaderBiddingInterstitialAdRequest1();
 
         /*
         Set any targeting params on the adRequest instance.
@@ -263,9 +261,9 @@ public class HeaderBiddingInterstitialAdapter {
         }
     }
 
-    private PMBannerPrefetchRequest getHeaderBiddingInterstitialAdRequest1()
+    private PMPrefetchRequest getHeaderBiddingInterstitialAdRequest1()
     {
-        PMBannerPrefetchRequest adRequest;
+        PMPrefetchRequest adRequest;
 
         List<PMBannerImpression> interstitialImpressions = new ArrayList<>();
         for(HeaderBiddingInterstitialAdapter.AdSlotInfo adSlotInfo : adSlotInfoList) {
@@ -274,12 +272,12 @@ public class HeaderBiddingInterstitialAdapter {
             interstitialImpressions.add(pmBannerImpression);
         }
 
-        adRequest = PMBannerPrefetchRequest.initHBRequestForImpression(mContext, "31400", interstitialImpressions);
+        adRequest = PMPrefetchRequest.initHBRequestForImpression(mContext, "31400", interstitialImpressions);
 
         return adRequest;
     }
 
-    private PMBannerPrefetchRequest getHeaderBiddingInterstitialAdRequest()
+    private PMPrefetchRequest getHeaderBiddingInterstitialAdRequest()
     {
         //Get Width & Height for creating of adSlots
         int measuredWidth = 0;
@@ -300,7 +298,7 @@ public class HeaderBiddingInterstitialAdapter {
             measuredHeight  = Math.round(displayMetrics.heightPixels/density);
         }
 
-        PMBannerPrefetchRequest adRequest;
+        PMPrefetchRequest adRequest;
 
         List<PMAdSize> adSizes = new ArrayList<>(1);
         //adSizes.add(new PMAdSize(measuredWidth, measuredHeight));
@@ -312,7 +310,7 @@ public class HeaderBiddingInterstitialAdapter {
         List<PMBannerImpression> bannerImpressions = new ArrayList<>();
         bannerImpressions.add(pmBannerImpression);
 
-        adRequest = PMBannerPrefetchRequest.initHBRequestForImpression(mContext, "31400", bannerImpressions);
+        adRequest = PMPrefetchRequest.initHBRequestForImpression(mContext, "31400", bannerImpressions);
 
         return adRequest;
     }
