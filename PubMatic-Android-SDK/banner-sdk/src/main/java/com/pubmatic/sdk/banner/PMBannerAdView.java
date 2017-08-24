@@ -2603,27 +2603,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             container.setBackgroundColor(0xff000000);
             setContentView(container, layoutParams);
 
-//            RelativeLayout.LayoutParams closeAreaLayoutParams = new RelativeLayout.LayoutParams(
-//                    BannerUtils.dpToPx(CloseAreaSizeDp),
-//                    BannerUtils.dpToPx(CloseAreaSizeDp));
-//            closeAreaLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-//            closeAreaLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-//            closeArea = new RelativeLayout(getContext());
-//            closeArea.setBackgroundColor(0x00000000);
-//            container.addView(closeArea, closeAreaLayoutParams);
-//            closeArea.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    if (activityListener != null) {
-//                        if (activityListener.onCloseButtonClick(PMBannerAdView.this) == true) {
-//                            return;
-//                        }
-//                    }
-//
-//                    dismiss();
-//                }
-//            });
-
             setOnDismissListener(new OnDismissListener() {
                 // TODO: Resolve double close when ad invokes close (thus
                 // causing a dismiss and another close).
