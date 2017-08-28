@@ -47,8 +47,8 @@ public abstract class PMAdRequest extends AdRequest {
 
     protected int                           mOrmmaComplianceLevel;
 
-    protected boolean                       mPaid;
-    protected boolean			            mCoppa;
+    protected Boolean                       mPaid;
+    protected Boolean			            mCoppa;
 
     protected String                        mPubId;
     protected String                        mSiteId;
@@ -146,9 +146,11 @@ public abstract class PMAdRequest extends AdRequest {
         putPostData(PMConstants.IN_IFRAME_PARAM, String.valueOf(PUBDeviceInformation.mInIframe));
         putPostData(PMConstants.AD_VISIBILITY_PARAM, String.valueOf(PUBDeviceInformation.mAdVisibility));
         putPostData(PMConstants.APP_CATEGORY_PARAM, mAppCategory);
-        putPostData(PMConstants.COPPA_PARAM, String.valueOf(mCoppa ? 1 : 0));
         putPostData(PMConstants.NETWORK_TYPE_PARAM, PMUtils.getNetworkType(mContext));
-        putPostData(PMConstants.PAID_PARAM, String.valueOf(mPaid ? 1 : 0));
+        if(mCoppa!=null)
+            putPostData(PMConstants.COPPA_PARAM, String.valueOf(mCoppa ? 1 : 0));
+        if(mPaid!=null)
+            putPostData(PMConstants.PAID_PARAM, String.valueOf(mPaid ? 1 : 0));
         putPostData(PMConstants.APP_DOMAIN_PARAM, mAppDomain);
         putPostData(PMConstants.STORE_URL_PARAM, mStoreURL);
         putPostData(PMConstants.APP_ID_PARAM, mAid);
@@ -728,7 +730,7 @@ public abstract class PMAdRequest extends AdRequest {
         this.mIABCategory = mIABCategory;
     }
 
-    public boolean isCoppa() {
+    public Boolean isCoppa() {
         return mCoppa;
     }
 
@@ -810,7 +812,7 @@ public abstract class PMAdRequest extends AdRequest {
         this.mAppCategory = mAppCategory;
     }
 
-    public boolean isApplicationPaid() {
+    public Boolean isApplicationPaid() {
         return this.mPaid;
     }
 

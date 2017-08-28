@@ -290,7 +290,8 @@ public class PMPrefetchRequest extends PMBannerAdRequest {
 
             appJsonObject.put("ver", pubDeviceInformation.mApplicationVersion);
 
-            appJsonObject.put("paid", mPaid ? 1 : 0);
+            if(mPaid!=null)
+                appJsonObject.put("paid", mPaid ? 1 : 0);
 
             JSONObject publisherJsonObject = new JSONObject();
             publisherJsonObject.put("id", getPubId());
@@ -670,7 +671,8 @@ public class PMPrefetchRequest extends PMBannerAdRequest {
 
         try
         {
-            regsJsonObject.put("coppa", mCoppa?1:0);
+            if(mCoppa!=null)
+                regsJsonObject.put("coppa", mCoppa?1:0);
 
 
         } catch (JSONException e) {
