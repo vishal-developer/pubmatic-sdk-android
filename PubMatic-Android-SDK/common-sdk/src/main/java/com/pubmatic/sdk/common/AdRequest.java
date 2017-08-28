@@ -266,7 +266,7 @@ public abstract class AdRequest {
 	 *
 	 * @return
 	 */
-	public boolean isAndoridAidEnabled() {
+	public boolean isAndroidAidEnabled() {
 		return isAndroidAidEnabled;
 	}
 

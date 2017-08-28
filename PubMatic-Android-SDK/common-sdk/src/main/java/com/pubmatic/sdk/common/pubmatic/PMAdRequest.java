@@ -270,7 +270,9 @@ public abstract class PMAdRequest extends AdRequest {
                 }
             }
 
-            //'lmt' parameter case
+            //'lmt' parameter case. Do not put refreshAdvertisingInfo() in conditional case.
+            // It should be invoked common for both case.
+            AdvertisingIdClient.AdInfo adInfo = AdvertisingIdClient.refreshAdvertisingInfo(mContext);
             boolean lmtState = AdvertisingIdClient.getLimitedAdTrackingState(mContext, false);
             if(lmtState) {
 
@@ -278,11 +280,10 @@ public abstract class PMAdRequest extends AdRequest {
                 putDeviceIDToAdRequest();
 
             } else {
+                //Send Advertising ID
                 putPostData(PMConstants.LMT_PARAM, String.valueOf(0));
 
-                //Send Advertising ID
-                AdvertisingIdClient.AdInfo adInfo = AdvertisingIdClient.refreshAdvertisingInfo(mContext);
-                if (isAndoridAidEnabled() && adInfo != null && !TextUtils.isEmpty(adInfo.getId())) {
+                if (isAndroidAidEnabled() && adInfo != null && !TextUtils.isEmpty(adInfo.getId())) {
 
                     String advertisingId = adInfo.getId();
 

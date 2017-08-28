@@ -334,7 +334,7 @@ public class PMPrefetchRequest extends PMBannerAdRequest {
 
                 deviceJsonObject.put("lmt", 0);
 
-                if (isAndoridAidEnabled() && adInfo!=null && !TextUtils.isEmpty(adInfo.getId())) {
+                if (isAndroidAidEnabled() && adInfo!=null && !TextUtils.isEmpty(adInfo.getId())) {
 
                     String advertisingId = adInfo.getId();
                     switch (mHashing)
@@ -535,7 +535,7 @@ public class PMPrefetchRequest extends PMBannerAdRequest {
                 asJsonObject.put("lmt", 0);
 
                 AdvertisingIdClient.AdInfo adInfo = AdvertisingIdClient.refreshAdvertisingInfo(mContext);
-                if (isAndoridAidEnabled() && adInfo!=null && !TextUtils.isEmpty(adInfo.getId())) {
+                if (isAndroidAidEnabled() && adInfo!=null && !TextUtils.isEmpty(adInfo.getId())) {
 
                     String advertisingId = adInfo.getId();
 

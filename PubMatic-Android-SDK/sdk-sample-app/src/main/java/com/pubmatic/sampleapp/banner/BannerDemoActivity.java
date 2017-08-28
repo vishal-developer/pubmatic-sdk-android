@@ -110,6 +110,8 @@ public class BannerDemoActivity extends Activity {
         PMAdSize arr[]= {size1, size2, PUBBANNER_SIZE_300x250, PMAdSize.PUBBANNER_SIZE_320x100};
         adRequest.setOptionalAdSizes(arr);
 
+        adRequest.setAndroidAidEnabled(true);
+
         //------ Setting custom parameters ------
         adRequest.setCustomParams("Key1", "value1");
         adRequest.setCustomParams("Key2", "value21");
