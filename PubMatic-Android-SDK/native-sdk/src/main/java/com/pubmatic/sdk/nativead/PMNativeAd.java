@@ -120,8 +120,6 @@ public final class PMNativeAd {
     private BrowserDialog mBrowserDialog = null;
     // Use external system native browser by default
     private boolean mUseInternalBrowser = false;
-    // Android Device ID androidaid
-    private boolean isAndroidaidEnabled;
 
     //Controller related objects
 	protected AdRequest 	    mAdRequest 		= null;
@@ -244,19 +242,6 @@ public final class PMNativeAd {
             mAdRequestParameters.putAll(customParamMap);
         }
     }
-
-	/**
-	 * add androidaid as request param.
-	 * 
-	 * @param isAndroidaidEnabled
-	 */
-	public void setAndroidaidEnabled(boolean isAndroidaidEnabled) {
-		this.isAndroidaidEnabled = isAndroidaidEnabled;
-	}
-
-	public boolean isAndoridaidEnabled() {
-		return isAndroidaidEnabled;
-	}
 
     /**
      * Use this method to load your resource images.

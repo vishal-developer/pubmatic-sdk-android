@@ -296,6 +296,7 @@ public class HeaderBiddingBannerHelper {
 
         return adRequest;
     }
+
     public void destroy() {
         if(pmPrefetchManager!=null)
             pmPrefetchManager.reset();

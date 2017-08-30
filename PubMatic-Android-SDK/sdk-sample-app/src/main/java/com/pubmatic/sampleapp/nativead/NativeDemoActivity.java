@@ -127,9 +127,6 @@ public class NativeDemoActivity extends Activity {
 		 */
 		ad.setUseInternalBrowser(true);
 
-		// Enable device id detection
-		ad.setAndroidaidEnabled(true);
-
 		// ad.setTest(true); // Uncomment to serve ads in test mode
 
 		PMNativeAdRequest adRequest = PMNativeAdRequest
@@ -138,10 +135,13 @@ public class NativeDemoActivity extends Activity {
 		// Request for ads
 		ad.execute(adRequest);
 	}
+
 	private List<PMAssetRequest> getAssetRequests() {
+		// First create some assets to add in the request
 		List<PMAssetRequest> assets = new ArrayList<PMAssetRequest>();
 
-		PMTitleAssetRequest titleAsset = new PMTitleAssetRequest(3);// Unique assetId is mandatory for each asset
+		// Unique assetId is mandatory for each asset
+		PMTitleAssetRequest titleAsset = new PMTitleAssetRequest(3);
 		titleAsset.setLength(50);
 		titleAsset.setRequired(true); // Optional (Default: false)
 		assets.add(titleAsset);
