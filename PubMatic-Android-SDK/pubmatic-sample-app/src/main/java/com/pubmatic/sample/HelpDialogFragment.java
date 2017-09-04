@@ -24,8 +24,8 @@ public class HelpDialogFragment extends DialogFragment {
         return "<h2>Welcome to the PubMatic's SDK Sample app.</h2><br/>" +
                 "    This application helps you to test PubMatic's ad tag.<br/>" +
                 "    <br/>How to use:<br/>" +
-                "    1. Please select the desired ad format<br/>" +
-                "    2. Input your ad tag details. By default app is configured with test ad tag details. Please contact PubMatic to get new ad tags for your app.<br/>" +
+                "    1. Please select the desired ad type<br/>" +
+                "    2. Input your ad tag details PubID (Publisher ID), SiteID (Publisher's site ID), AdID (Ad slot ID). Please get these details while creating an ad tag from PubMatic UI or please contact PubMatic sales team to get new ad tags for your app.<br/>" +
                 "    3. Optionally you can configure other targeting parameters for better monetisation.<br/>" +
                 "    4. App also provides Settings screen which allows to apply global settings for all platform and ad type.<br/><br/>" +
                 "        <h3>Contact:</h3><br/>" +

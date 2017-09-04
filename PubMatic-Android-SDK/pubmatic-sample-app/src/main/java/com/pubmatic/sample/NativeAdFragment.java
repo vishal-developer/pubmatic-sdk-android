@@ -128,9 +128,6 @@ public class NativeAdFragment extends DialogFragment {
         boolean isUseInternalBrowserChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_USE_INTERNAL_BROWSER);
         ad.setUseInternalBrowser(isUseInternalBrowserChecked);
 
-        // Enable device id detection
-        ad.setAndroidaidEnabled(true);
-
         // Request for ads
         AdRequest adRequest = buildAdRequest();
         if(adRequest!=null)
