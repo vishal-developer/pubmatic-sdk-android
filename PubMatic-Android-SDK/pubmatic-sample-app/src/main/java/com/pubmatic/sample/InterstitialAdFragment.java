@@ -25,6 +25,8 @@ import java.util.LinkedHashMap;
 
 public class InterstitialAdFragment extends DialogFragment {
 
+    private boolean isFragmentActive = true;
+
     private ConfigurationManager.PLATFORM mPlatform;
 
     private LinkedHashMap<String, LinkedHashMap<String, String>> mSettings;
@@ -230,8 +232,11 @@ public class InterstitialAdFragment extends DialogFragment {
 
             @Override
             public boolean onCloseButtonClick(PMInterstitialAd adView) {
-                dismiss();
-                return false;
+                if(isFragmentActive) {
+                    dismiss();
+                    return true;
+                } else
+                    return false;
             }
         });
 
@@ -246,7 +251,7 @@ public class InterstitialAdFragment extends DialogFragment {
     @Override
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
-
+        isFragmentActive = false;
         if(mInterstitialAd!=null)
             mInterstitialAd.destroy();
         mInterstitialAd = null;

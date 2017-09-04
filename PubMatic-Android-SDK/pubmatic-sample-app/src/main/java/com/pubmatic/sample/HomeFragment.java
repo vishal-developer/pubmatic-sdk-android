@@ -9,6 +9,7 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -28,7 +29,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.Serializable;
 import java.util.LinkedHashMap;
+import java.util.List;
+
+import static com.pubmatic.sdk.banner.mraid.Consts.PlacementType.Interstitial;
 
 /**
  * This fragment loads 'mSettings' object in memory from Settings.json file in asset folder.
@@ -59,7 +64,20 @@ public class HomeFragment extends Fragment {
         mAdTypeSelector.setOnClickListener(onAdTypeChooserSelected);
 
         //Default type would be banner
-        mAdType = ConfigurationManager.AD_TYPE.BANNER;
+        if (savedInstanceState != null) {
+            //probably orientation change
+            mAdType = (ConfigurationManager.AD_TYPE) savedInstanceState.getSerializable("adtype");
+
+            if(mAdType == ConfigurationManager.AD_TYPE.BANNER)
+                mAdTypeSelector.setText("Banner");
+            else if(mAdType == ConfigurationManager.AD_TYPE.INTERSTITIAL)
+                mAdTypeSelector.setText("Interstitial");
+            else if(mAdType == ConfigurationManager.AD_TYPE.NATIVE)
+                mAdTypeSelector.setText("Native");
+            else
+                mAdTypeSelector.setText("Banner");
+        } else
+            mAdType = ConfigurationManager.AD_TYPE.BANNER;
 
         mSettingsParent = (LinearLayout) rootView.findViewById(R.id.home_settings_parent);
 
@@ -70,6 +88,17 @@ public class HomeFragment extends Fragment {
         refreshSettings();
 
         return rootView;
+    }
+
+    @Override
+    public void onSaveInstanceState(final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable("adtype", (Serializable) mAdType);
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
     }
 
     /**

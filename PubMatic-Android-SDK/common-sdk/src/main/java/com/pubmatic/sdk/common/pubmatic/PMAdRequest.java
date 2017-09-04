@@ -42,6 +42,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import static com.pubmatic.sdk.common.pubmatic.PMConstants.DNT_PARAM;
+
 /**
  * Abstract class for PubMatic (SSP) channel ad requests (e.g. PMBannerAdRequest, PMNativeAdRequest etc)
  */
@@ -293,38 +295,37 @@ public abstract class PMAdRequest extends AdRequest {
             AdvertisingIdClient.AdInfo adInfo = AdvertisingIdClient.refreshAdvertisingInfo(mContext);
             boolean lmtState = AdvertisingIdClient.getLimitedAdTrackingState(mContext, false);
             if(lmtState) {
-
                 putPostData(PMConstants.LMT_PARAM, String.valueOf(1));
-                putDeviceIDToAdRequest();
-
+                putPostData(PMConstants.DNT_PARAM, String.valueOf(1));
             } else {
-                //Send Advertising ID
                 putPostData(PMConstants.LMT_PARAM, String.valueOf(0));
-
-                if (isAndroidAidEnabled() && adInfo != null && !TextUtils.isEmpty(adInfo.getId())) {
-
-                    String advertisingId = adInfo.getId();
-
-                    switch (mHashing) {
-                        case RAW:
-                            putPostData(PMConstants.UDID_PARAM, advertisingId);
-                            putPostData(PMConstants.UDID_HASH_PARAM, PMConstants.HASHING_RAW);
-                            break;
-                        case SHA1:
-                            putPostData(PMConstants.UDID_PARAM, PMUtils.sha1(advertisingId));
-                            putPostData(PMConstants.UDID_HASH_PARAM, PMConstants.HASHING_SHA1);
-                            break;
-                        case MD5:
-                            putPostData(PMConstants.UDID_PARAM, PMUtils.md5(advertisingId));
-                            putPostData(PMConstants.UDID_HASH_PARAM, PMConstants.HASHING_MD5);
-                            break;
-                    }
-
-                    putPostData(PMConstants.UDID_TYPE_PARAM, PMConstants.ADVERTISEMENT_ID);
-
-                } else
-                    putDeviceIDToAdRequest();
+                putPostData(PMConstants.DNT_PARAM, String.valueOf(0));
             }
+
+            //Send advertising id if setAndroidAidEnabled(true) else send android id
+            if(isAndroidAidEnabled() && adInfo != null && !TextUtils.isEmpty(adInfo.getId())) {
+
+                String advertisingId = adInfo.getId();
+
+                switch (mHashing) {
+                    case RAW:
+                        putPostData(PMConstants.UDID_PARAM, advertisingId);
+                        putPostData(PMConstants.UDID_HASH_PARAM, PMConstants.HASHING_RAW);
+                        break;
+                    case SHA1:
+                        putPostData(PMConstants.UDID_PARAM, PMUtils.sha1(advertisingId));
+                        putPostData(PMConstants.UDID_HASH_PARAM, PMConstants.HASHING_SHA1);
+                        break;
+                    case MD5:
+                        putPostData(PMConstants.UDID_PARAM, PMUtils.md5(advertisingId));
+                        putPostData(PMConstants.UDID_HASH_PARAM, PMConstants.HASHING_MD5);
+                        break;
+                }
+
+                putPostData(PMConstants.UDID_TYPE_PARAM, PMConstants.ADVERTISEMENT_ID);
+
+            } else
+                putDeviceIDToAdRequest();
 
             if (getEthnicity() != null) {
                 switch (getEthnicity()) {

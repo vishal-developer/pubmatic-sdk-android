@@ -54,6 +54,7 @@ public class PMConstants {
     public static final String AD_TYPE_PARAM 			= "adtype";
     public static final String FRAME_NAME_PARAM 		= "frameName";
     public static final String LMT_PARAM                = "lmt";
+    public static final String DNT_PARAM                = "dnt";
     public static final String COPPA_PARAM 				= "coppa";
     public static final String AWT_PARAM 				= "awt";
     public static final String APP_NAME_PARAM 			= "name";

@@ -773,14 +773,12 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             adUpdateIntervalFuture = null;
         }
 
-        if (interstitialDelayFuture != null) {
-            interstitialDelayFuture.cancel(true);
-            interstitialDelayFuture = null;
-        }
+        closeInterstitial();
 
         closeInternalBrowser();
         browserDialog = null;
         unregisterReceiver();
+
     }
 
     /**
