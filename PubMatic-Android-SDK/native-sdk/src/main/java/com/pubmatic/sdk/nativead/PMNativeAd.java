@@ -78,6 +78,9 @@ import com.pubmatic.sdk.nativead.bean.PMAssetResponse;
  */
 public final class PMNativeAd {
 
+    /**
+     * An interface to notify the native ad request callbacks
+     */
     public interface NativeRequestListener {
 
         /**
@@ -88,10 +91,10 @@ public final class PMNativeAd {
         public void onNativeAdReceived(PMNativeAd ad);
 
         /**
-         * Callback when MASTNativeAd fails to get an ad. This may be due to invalid zone, network
+         * Callback when PMNativeAd fails to get an ad. This may be due to invalid zone, network
          * connection not available, timeout, no Ad to fill at this point.
          *
-         * @param ad - MASTNativeAd object which has requested for the Ad.
+         * @param ad - PMNativeAd object which has requested for the Ad.
          * @param ex - Exception occurred.
          */
         public void onNativeAdFailed(PMNativeAd ad, Exception ex);
@@ -128,15 +131,12 @@ public final class PMNativeAd {
     // Location support
     private Location location;
 
-    private CHANNEL mChannel;
 
     protected void setAdrequest(AdRequest adRequest) {
         if (adRequest == null) {
             throw new IllegalArgumentException("AdRequest object is null");
         }
 
-        // mAdRequest = adRequest;
-        setChannel(adRequest.getChannel());
         setAdRequest(adRequest);
 
         //Start the location update if Publisher has enabled location detection
@@ -147,24 +147,6 @@ public final class PMNativeAd {
             }
         }
 
-    }
-
-    /**
-     * Sets the ad network channel.
-     * <p/>
-     * REQUIRED - If not set updates will fail.
-     *
-     * @param channel Ad network channel.
-     */
-    private void setChannel(CHANNEL channel) {
-        // If channel is changed, controller needs to be re-initialized.
-        initController(channel);
-
-        mChannel = channel;
-    }
-
-    protected void initController(CHANNEL channel) {
-    	mChannel = channel;
     }
 
     private boolean checkForMandatoryParams() {

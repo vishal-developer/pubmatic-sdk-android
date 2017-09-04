@@ -42,7 +42,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-
+/**
+ * Abstract class for PubMatic (SSP) channel ad requests (e.g. PMBannerAdRequest, PMNativeAdRequest etc)
+ */
 public abstract class PMAdRequest extends AdRequest {
 
     protected int                           mOrmmaComplianceLevel;
@@ -86,8 +88,22 @@ public abstract class PMAdRequest extends AdRequest {
     protected enum RS { PURE_JSON, JSON_CALLBACK, JS_VAR}
 
     //---------------- public enums to be used externally ------------------
-    public enum AWT_OPTION { DEFAULT, WRAPPED_IN_IFRAME, WRAPPED_IN_JS }
 
+    /**
+     * Indicates whether the tracking URL has been wrapped or not in the creative tag.
+     * Possible options are:
+     * DEFAULT - Indicates that the tracking URL is sent separately in the response JSON as tracking_url. In this case, the tracking_url field is absent in the JSON response.
+     * WRAPPED_IN_IFRAME - Indicates that the tracking_url value is wrapped in an Iframe and appended to the creative_tag.
+     * WRAPPED_IN_JS - Indicates that the tracking_url value is wrapped in a JS tag and appended to the creative_tag.
+     * Note: If the awt parameter is absent in the bid request URL, then it is same as awt=DEFAULT mentioned above.
+     */
+    protected enum AWT_OPTION { DEFAULT, WRAPPED_IN_IFRAME, WRAPPED_IN_JS }
+
+    /**
+     * The user’s ethnicity may be used to deliver more relevant ads. Code of ethnicity.
+     * Possible options are:
+     * HISPANIC, AFRICAN_AMERICAN, CAUCASIAN, ASIAN_AMERICAN, OTHER
+     */
     public enum ETHNICITY { HISPANIC, AFRICAN_AMERICAN, CAUCASIAN, ASIAN_AMERICAN, OTHER }
 
     public enum GENDER { MALE, FEMALE, OTHER }
@@ -608,7 +624,7 @@ public abstract class PMAdRequest extends AdRequest {
     }
 
     /**
-     * User's income or income range in dollars (whole numbers). For example, inc=50000 or 50000-75000
+     * Set user Income if available for more relevant Ads. User's income or income range in dollars (whole numbers). For example, inc=50000 or 50000-75000
      *
      * @param income
      *            Sets the user income value
@@ -693,7 +709,7 @@ public abstract class PMAdRequest extends AdRequest {
     }
 
     /**
-     *
+     * Getter for ID of the publisher. This value can be obtained from the pubId parameter in the PubMatic ad tag.
      * @return
      */
     public String getPubId() {
@@ -701,7 +717,7 @@ public abstract class PMAdRequest extends AdRequest {
     }
 
     /**
-     *
+     * Getter for ID of the publisher's site/app. This value can be obtained from the siteId parameter in the PubMatic ad tag.
      * @return
      */
     public String getSiteId() {
@@ -709,7 +725,7 @@ public abstract class PMAdRequest extends AdRequest {
     }
 
     /**
-     *
+     * Getter for ID of the publisher's ad tag ID. This value can be obtained from the adId parameter in the PubMatic ad tag.
      * @return
      */
     public String getAdId() {
@@ -721,7 +737,7 @@ public abstract class PMAdRequest extends AdRequest {
     }
 
     /**
-     * List of IAB content categories for the overall site/application. Refer the "Table 6.1 Content Categories" in the Open RTB 2.1 / 2.2 specifications document.
+     * Sets IAB category for the application.
      * If the site/application falls under multiple IAB categories, you can send categories separated by comma, and the string should be URL encoded.
      * For example, iabcat=IAB1%2CIAB-5%2CIAB1-6
      * @param mIABCategory
@@ -764,7 +780,7 @@ public abstract class PMAdRequest extends AdRequest {
     }
 
     /**
-     * URL of the app store from where a user can download this application. This URL must match the storeurl that is whitelisted on UI.
+     * URL of the app store from where a user can download this application.
      * @param mStoreURL
      */
     public void setStoreURL(String mStoreURL) {
@@ -774,16 +790,15 @@ public abstract class PMAdRequest extends AdRequest {
     /**
      * It is not in use.
      */
-    @Deprecated
     public String getAid() {
         return mAid;
     }
 
     /**
      * It is not in use.
+     * Android application’s ID
      * @param mAid
      */
-    @Deprecated
     public void setAid(String mAid) {
         this.mAid = mAid;
     }
@@ -812,6 +827,10 @@ public abstract class PMAdRequest extends AdRequest {
         this.mAppCategory = mAppCategory;
     }
 
+    /**
+     * Indicates whether the mobile application is a paid version or not. Possible values are: false - Free version, true - Paid version
+     * @return
+     */
     public Boolean isApplicationPaid() {
         return this.mPaid;
     }
@@ -837,40 +856,6 @@ public abstract class PMAdRequest extends AdRequest {
     public void setOrmmaComplianceLevel(int mOrmmaComplianceLevel) {
         this.mOrmmaComplianceLevel = mOrmmaComplianceLevel;
     }
-
-//    public String getKAdNetworkId() {
-//        return mKAdNetworkId;
-//    }
-//
-//    public void setKAdNetworkId(String kAdNetworkId) {
-//        this.mKAdNetworkId = kAdNetworkId;
-//    }
-//
-//    public String getLastDefaultedNetworkId() {
-//        return mLastDefaultedNetworkId;
-//    }
-//
-//    protected void setLastDefaultedNetworkId(String lastDefaultedNetworkId) {
-//        this.mLastDefaultedNetworkId = lastDefaultedNetworkId;
-//    }
-//
-//    public List<String> getDefaultedCampaignList() {
-//        return mDefaultedCampaignList;
-//    }
-//
-//    public void addDefaultedCampaign(String campaign)
-//    {
-//        this.mDefaultedCampaignList.add(campaign);
-//    }
-//
-//    public void clearDefaultedCampaignList()
-//    {
-//        this.mDefaultedCampaignList.clear();
-//    }
-
-//    public void setDefaultedCampaignList(List<String> defaultedCampaignList) {
-//        this.mDefaultedCampaignList = defaultedCampaignList;
-//    }
 
     public String getAdOrientation() {
         return mAdOrientation;
@@ -903,10 +888,4 @@ public abstract class PMAdRequest extends AdRequest {
         this.mLocation = mLocation;
     }
 
-//    public void resetPassbackParameters()
-//    {
-//        setKAdNetworkId("");
-//        setLastDefaultedNetworkId("");
-//        clearDefaultedCampaignList();
-//    }
 }

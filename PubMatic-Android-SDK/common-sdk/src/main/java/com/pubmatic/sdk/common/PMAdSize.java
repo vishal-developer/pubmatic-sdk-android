@@ -32,7 +32,7 @@
 package com.pubmatic.sdk.common;
 
 /**
- * Class provides the different Ad sizes for Banner Ads.
+ * Class provides the different Ad sizes for Banner Ads. It is mandatory to set ad size in PMBannerAdRequest.
  */
 public final class PMAdSize {
 

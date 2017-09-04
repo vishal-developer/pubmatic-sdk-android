@@ -111,10 +111,21 @@ import java.util.concurrent.TimeUnit;
 
 import static com.pubmatic.sdk.banner.BannerUtils.downloadUrl;
 
+/**
+ * View class to renders simple Banner & Mraid ads.
+ */
 public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
+    /**
+     * Interface for interaction with the PMBannerAdView.
+     * The entire interface is optional. Some methods override default behavior and some are required to get full support for MRAID 2 ad content (saving calendar entries or pictures).
+     * All messages are guaranteed to occur on the main thread. If any long running tasks are needed in reponse to any of the sent messages then they should be executed in a background thread to prevent and UI delays for the user.
+     */
     public interface BannerAdViewDelegate {
 
+        /**
+         * An interface to notify the ad request callbacks.
+         */
         public interface RequestListener
         {
             /**
@@ -144,6 +155,9 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             public void onReceivedThirdPartyRequest(PMBannerAdView adView, Map<String, String> properties, Map<String, String> parameters);
         }
 
+        /**
+         * An interface to notify when user is navigated from current activity
+         */
         public interface ActivityListener
         {
             /**
@@ -190,6 +204,9 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             public boolean onCloseButtonClick(PMBannerAdView adView);
         }
 
+        /**
+         * An interface to notify the activity of internal browser.
+         */
         public interface InternalBrowserListener
         {
             /**
@@ -206,6 +223,9 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             public void onInternalBrowserDismissed(PMBannerAdView adView);
         }
 
+        /**
+         * An interface to notify the events of MRAID ads
+         */
         public interface RichMediaListener
         {
             /**

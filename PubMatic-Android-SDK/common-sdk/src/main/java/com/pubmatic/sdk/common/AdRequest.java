@@ -74,7 +74,13 @@ public abstract class AdRequest {
 	 */
 	protected Map<String, List<String>> mCustomParams;
 
-	// androidAid
+	/**
+	 * Indicates whether Advertising ID should be sent in the request.
+	 * Possible values are:
+	 * true  - Advertising will be sent in the request.
+	 * false - Android ID will be sent in the request instead of the Advertising ID.
+	 * Default value - true
+	 */
 	protected boolean isAndroidAidEnabled= true;
 
 	private static String TAG = AdRequest.class.toString();
@@ -178,58 +184,10 @@ public abstract class AdRequest {
 	}
 
 	//------------------------- All public Getter/Setter -------------------------
-//	/**
-//	 * Set the list of custom key-value pair. There could be more than 1 possible value for 1 key.
-//	 * In this case values will be send with comma separated for same key like key=value1,value2,...valuen
-//	 * @param customParams
-//     */
-//	public void setCustomParams(Map<String, List<String>> customParams) {
-//		mCustomParams = customParams;
-//	}
-//
-//	/**
-//	 * It sets the list of multiple values for same key. Set values will be send
-//	 * with comma separation in ad request like: interest=cricket,football,tennis
-//	 * @param key
-//	 * @param value
-//	 */
-//	public void addCustomParam(String key, List<String> value) {
-//		if(mCustomParams==null)
-//			mCustomParams = new HashMap<String, List<String>>();
-//
-//		List<String> list =null;
-//		if(mCustomParams.containsKey(key)) {
-//			list = mCustomParams.get(key);
-//			list.addAll(value);
-//		} else
-//			mCustomParams.put(key, value);
-//	}
-//
-//	/**
-//	 * It sets the key and value pair. Key value pair will be send
-//	 * in ad request like: interest=cricket
-//	 * @param key
-//	 * @param value
-//	 *
-//	 */
-//	public void addCustomParam(String key, String value) {
-//		if(mCustomParams==null)
-//			mCustomParams = new HashMap<String, List<String>>();
-//
-//		List<String> list =null;
-//		if(mCustomParams.containsKey(key)) {
-//			list = mCustomParams.get(key);
-//			list.add(value);
-//		} else {
-//			list = new ArrayList<String>();
-//			list.add(value);
-//			mCustomParams.put(key, list);
-//		}
-//	}
 
 	/**
-	 * Sets the custom key and value pair. Same method could be called with same key and different
-	 * values, in such case it will send comma separated values.
+	 * Adds custom key-value parameters in Ad request
+	 *
 	 * @param key
 	 * @param value
 	 *

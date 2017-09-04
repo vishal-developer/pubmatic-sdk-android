@@ -35,22 +35,26 @@ import com.pubmatic.sdk.common.pubmatic.PUBAdSize;
 import com.pubmatic.sdk.common.pubmatic.PMAdRequest;
 
 /**
- *
+ * PMBannerAdRequest class provides parameters for banner ad request. To request Banner Ad, you need to pass valid PMBannerAdRequest instance to PMBannerAdView’s execute() method.
  */
 public class PMBannerAdRequest extends PMAdRequest {
 
 	protected PMAdSize[] mMultiAdSizes	 = null;
 	protected boolean	 mIsInterstitial = false;
 
-	//	//Should not exposed to Publisher, Handled by SDK.
-	//	private int mDefaultedAdNetworkId;
-	//	private int mDefaultedCampaignId;
-
 	//---------------- Object creational methods ------------------
 	protected PMBannerAdRequest(Context context) {
 		super(context);
 	}
 
+	/**
+	 * Creates Ad request with Publisher credentials i.e Publisher Id, Site Id, AdTag Id
+	 * @param context
+	 * @param pubId
+	 * @param siteId
+	 * @param adId
+	 * @return
+	 */
 	public static PMBannerAdRequest createPMBannerAdRequest(Context context, String pubId, String siteId, String adId) {
 		PMBannerAdRequest bannerAdRequest = new PMBannerAdRequest(context);
 		bannerAdRequest.setPubId(pubId);
@@ -140,9 +144,7 @@ public class PMBannerAdRequest extends PMAdRequest {
 	}
 
 	/**
-	 * Set the multisize keyword with provided pair of ad sizes. Compatible
-	 * creative would be returned based on DSP auctioning. Maximum first 4
-	 * sizes would be considered at server.
+	 * Set the array of ad sizes. Maximum first 4 sizes would be considered at server for DSP auctioning.
 	 * @param mMultiAdSizes
 	 */
 	public void setOptionalAdSizes(PMAdSize[] mMultiAdSizes) {
@@ -186,5 +188,4 @@ public class PMBannerAdRequest extends PMAdRequest {
 	public void setAdSize(PMAdSize adSize) {
 		mPMAdSize = adSize;
 	}
-
 }

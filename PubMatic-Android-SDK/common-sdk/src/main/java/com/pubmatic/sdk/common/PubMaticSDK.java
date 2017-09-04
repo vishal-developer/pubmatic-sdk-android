@@ -1,5 +1,8 @@
 package com.pubmatic.sdk.common;
 
+/**
+ * Class to provide configuration properties for PubMatic SDK
+ */
 public class PubMaticSDK {
 
     static boolean locationUpdateState = true;

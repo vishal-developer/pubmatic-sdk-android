@@ -28,8 +28,14 @@ package com.pubmatic.sdk.common;
 
 import android.util.Log;
 
+/**
+ * Logger file for logging SDK log statements
+ */
 public class PMLogger {
 
+    /**
+     * Log level
+     */
     public enum LogLevel {
         None, Error, Debug,
     }
@@ -59,6 +65,7 @@ public class PMLogger {
 
     /**
      * Sets the log level of the instance. Logging is done through console logging.
+     * Default value is Error
      *
      * @param logLevel LogLevel
      */
@@ -75,8 +82,11 @@ public class PMLogger {
         return logLevel;
     }
 
-
-
+    /**
+     * Logs the event/string as per given log level
+     * @param event
+     * @param eventLevel
+     */
     public static void logEvent(String event, LogLevel eventLevel) {
         if (eventLevel.ordinal() > logLevel.ordinal()) {
             return;
