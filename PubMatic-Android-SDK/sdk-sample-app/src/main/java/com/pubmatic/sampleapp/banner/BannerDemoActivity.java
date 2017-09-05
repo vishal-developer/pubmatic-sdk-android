@@ -126,11 +126,6 @@ public class BannerDemoActivity extends Activity {
         mRequestListener = new RequestListener() {
 
             @Override
-            public void onReceivedThirdPartyRequest(PMBannerAdView arg0, Map<String, String> arg1,
-                                                    Map<String, String> arg2) {
-            }
-
-            @Override
             public void onReceivedAd(PMBannerAdView adView) {
                 adView.setVisibility(View.VISIBLE);
             }

@@ -2,8 +2,9 @@ package com.pubmatic.sdk.headerbidding;
 
 import android.content.ContentResolver;
 import android.content.Context;
-import android.provider.Settings;
 import android.provider.Settings.Secure;
+
+import com.pubmatic.sdk.common.PMUtils;
 
 import java.util.regex.Pattern;
 import org.junit.Test;

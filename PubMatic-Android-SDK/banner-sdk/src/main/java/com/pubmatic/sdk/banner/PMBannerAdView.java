@@ -143,16 +143,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
              * @param adView
              */
             public void onReceivedAd(PMBannerAdView adView);
-
-            /**
-             * Third party ad received.  The application should be expecting this and ready to
-             * render the ad with the supplied configuration.
-             *
-             * @param adView
-             * @param properties Properties of the ad request (ad network information).
-             * @param parameters Parameters for the third party network (expected to be passed to that network).
-             */
-            public void onReceivedThirdPartyRequest(PMBannerAdView adView, Map<String, String> properties, Map<String, String> parameters);
         }
 
         /**

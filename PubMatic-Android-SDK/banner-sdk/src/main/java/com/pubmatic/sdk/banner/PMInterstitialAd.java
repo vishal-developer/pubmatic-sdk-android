@@ -327,10 +327,6 @@ public class PMInterstitialAd implements PMAdRendered {
                 requestListener.onReceivedAd(PMInterstitialAd.this);
             }
 
-            @Override
-            public void onReceivedThirdPartyRequest(PMBannerAdView adView, Map<String, String> properties, Map<String, String> parameters) {
-
-            }
         });
     }
 

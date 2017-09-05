@@ -298,11 +298,6 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
     }
 
     @Override
-    public void onReceivedThirdPartyRequest(PMBannerAdView adView, Map<String, String> properties, Map<String, String> parameters) {
-
-    }
-
-    @Override
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
 

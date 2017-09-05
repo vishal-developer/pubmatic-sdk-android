@@ -318,52 +318,43 @@ public class PMPrefetchRequest extends PMBannerAdRequest {
             //'lmt' specific parameter
             AdvertisingIdClient.AdInfo adInfo = AdvertisingIdClient.refreshAdvertisingInfo(mContext);
             boolean lmtState = AdvertisingIdClient.getLimitedAdTrackingState(mContext, false);
+
             if(lmtState) {
                 deviceJsonObject.put("lmt", 1);
+                deviceJsonObject.put("dnt", 1);
+            } else {
+                deviceJsonObject.put("lmt", 0);
+                deviceJsonObject.put("dnt", 0);
+            }
 
-                String androidId = com.pubmatic.sdk.headerbidding.PMUtils.getUdidFromContext(mContext);
+            if (isAndroidAidEnabled() && adInfo!=null && !TextUtils.isEmpty(adInfo.getId())) {
+                String advertisingId = adInfo.getId();
                 switch (mHashing)
                 {
+                    case RAW:
+                        deviceJsonObject.put("ifa", advertisingId);
+                        break;
                     case SHA1:
-                        deviceJsonObject.put("dpidsha1", com.pubmatic.sdk.headerbidding.PMUtils.sha1(androidId));
+                        deviceJsonObject.put("dpidsha1", PMUtils.sha1(advertisingId));
                         break;
                     case MD5:
-                        deviceJsonObject.put("dpidmd5", com.pubmatic.sdk.headerbidding.PMUtils.md5(androidId));
+                        deviceJsonObject.put("dpidmd5", PMUtils.md5(advertisingId));
                         break;
                 }
             } else {
+                String androidId = PMUtils.getUdidFromContext(mContext);
 
-                deviceJsonObject.put("lmt", 0);
-
-                if (isAndroidAidEnabled() && adInfo!=null && !TextUtils.isEmpty(adInfo.getId())) {
-
-                    String advertisingId = adInfo.getId();
-                    switch (mHashing)
-                    {
-                        case RAW:
-                            deviceJsonObject.put("ifa", advertisingId);
-                            break;
-                        case SHA1:
-                            deviceJsonObject.put("dpidsha1", com.pubmatic.sdk.headerbidding.PMUtils.sha1(advertisingId));
-                            break;
-                        case MD5:
-                            deviceJsonObject.put("dpidmd5", com.pubmatic.sdk.headerbidding.PMUtils.md5(advertisingId));
-                            break;
-                    }
-                } else {
-                    String androidId = com.pubmatic.sdk.headerbidding.PMUtils.getUdidFromContext(mContext);
-
-                    switch (mHashing)
-                    {
-                        case SHA1:
-                            deviceJsonObject.put("dpidsha1", com.pubmatic.sdk.headerbidding.PMUtils.sha1(androidId));
-                            break;
-                        case MD5:
-                            deviceJsonObject.put("dpidmd5", com.pubmatic.sdk.headerbidding.PMUtils.md5(androidId));
-                            break;
-                    }
+                switch (mHashing)
+                {
+                    case SHA1:
+                        deviceJsonObject.put("dpidsha1", PMUtils.sha1(androidId));
+                        break;
+                    case MD5:
+                        deviceJsonObject.put("dpidmd5", PMUtils.md5(androidId));
+                        break;
                 }
-            }//End of 'lmt' specific parameter
+            }
+
 
             String networkType = PMUtils.getNetworkType(mContext);
 
@@ -490,7 +481,6 @@ public class PMPrefetchRequest extends PMBannerAdRequest {
                 asJsonObject.put("adPosition", pubDeviceInformation.mAdPosition);
                 asJsonObject.put("inIframe", String.valueOf(pubDeviceInformation.mInIframe));
                 asJsonObject.put("adVisibility", String.valueOf(pubDeviceInformation.mAdVisibility));
-
             }
 
             if(getAWT() == AWT_OPTION.DEFAULT)
@@ -504,82 +494,55 @@ public class PMPrefetchRequest extends PMBannerAdRequest {
                 asJsonObject.put("pmZoneId", getPMZoneId());
 
             // 'lmt' parameter specific
+            AdvertisingIdClient.AdInfo adInfo = AdvertisingIdClient.refreshAdvertisingInfo(mContext);
             boolean lmtState = AdvertisingIdClient.getLimitedAdTrackingState(mContext, false);
-
             if(lmtState) {
-
                 asJsonObject.put("lmt", 1);
-
-                if(mContext!=null) {
-                    String androidId = com.pubmatic.sdk.headerbidding.PMUtils.getUdidFromContext(mContext);
-
-                    switch (mHashing) {
-                        case RAW:
-                            asJsonObject.put(PMConstants.UDID_PARAM, androidId);
-                            asJsonObject.put(PMConstants.UDID_HASH_PARAM, com.pubmatic.sdk.headerbidding.PMConstants.HASHING_RAW);
-                            break;
-                        case SHA1:
-                            asJsonObject.put(PMConstants.UDID_PARAM, com.pubmatic.sdk.headerbidding.PMUtils.sha1(androidId));
-                            asJsonObject.put(PMConstants.UDID_HASH_PARAM, com.pubmatic.sdk.headerbidding.PMConstants.HASHING_SHA1);
-                            break;
-                        case MD5:
-                            asJsonObject.put(PMConstants.UDID_PARAM, com.pubmatic.sdk.headerbidding.PMUtils.md5(androidId));
-                            asJsonObject.put(PMConstants.UDID_HASH_PARAM, com.pubmatic.sdk.headerbidding.PMConstants.HASHING_MD5);
-                            break;
-                    }
-
-                    asJsonObject.put(PMConstants.UDID_TYPE_PARAM, String.valueOf(com.pubmatic.sdk.headerbidding.PMConstants.ANDROID_ID));
-                }
-
+                asJsonObject.put("dnt", 1);
             } else {
-
                 asJsonObject.put("lmt", 0);
+                asJsonObject.put("dnt", 0);
+            }
 
-                AdvertisingIdClient.AdInfo adInfo = AdvertisingIdClient.refreshAdvertisingInfo(mContext);
-                if (isAndroidAidEnabled() && adInfo!=null && !TextUtils.isEmpty(adInfo.getId())) {
+            if (isAndroidAidEnabled() && adInfo!=null && !TextUtils.isEmpty(adInfo.getId())) {
 
-                    String advertisingId = adInfo.getId();
+                String advertisingId = adInfo.getId();
 
-                    switch (mHashing)
-                    {
-                        case RAW:
-                            asJsonObject.put(PMConstants.UDID_PARAM, advertisingId);
-                            asJsonObject.put(PMConstants.UDID_HASH_PARAM, com.pubmatic.sdk.headerbidding.PMConstants.HASHING_RAW);
-                            break;
-                        case SHA1:
-                            asJsonObject.put(PMConstants.UDID_PARAM, com.pubmatic.sdk.headerbidding.PMUtils.sha1(advertisingId));
-                            asJsonObject.put(PMConstants.UDID_HASH_PARAM, com.pubmatic.sdk.headerbidding.PMConstants.HASHING_SHA1);
-                            break;
-                        case MD5:
-                            asJsonObject.put(PMConstants.UDID_PARAM, com.pubmatic.sdk.headerbidding.PMUtils.md5(advertisingId));
-                            asJsonObject.put(PMConstants.UDID_HASH_PARAM, com.pubmatic.sdk.headerbidding.PMConstants.HASHING_MD5);
-                            break;
-                    }
-
-                    asJsonObject.put(PMConstants.UDID_TYPE_PARAM, String.valueOf(com.pubmatic.sdk.headerbidding.PMConstants.ADVERTISEMENT_ID));
-                } else {
-
-                    if(mContext!=null) {
-                        String androidId = com.pubmatic.sdk.headerbidding.PMUtils.getUdidFromContext(mContext);
-
-                        switch (mHashing) {
-                            case RAW:
-                                asJsonObject.put(PMConstants.UDID_PARAM, androidId);
-                                asJsonObject.put(PMConstants.UDID_HASH_PARAM, com.pubmatic.sdk.headerbidding.PMConstants.HASHING_RAW);
-                                break;
-                            case SHA1:
-                                asJsonObject.put(PMConstants.UDID_PARAM, com.pubmatic.sdk.headerbidding.PMUtils.sha1(androidId));
-                                asJsonObject.put(PMConstants.UDID_HASH_PARAM, com.pubmatic.sdk.headerbidding.PMConstants.HASHING_SHA1);
-                                break;
-                            case MD5:
-                                asJsonObject.put(PMConstants.UDID_PARAM, com.pubmatic.sdk.headerbidding.PMUtils.md5(androidId));
-                                asJsonObject.put(PMConstants.UDID_HASH_PARAM, com.pubmatic.sdk.headerbidding.PMConstants.HASHING_MD5);
-                                break;
-                        }
-
-                        asJsonObject.put(PMConstants.UDID_TYPE_PARAM, String.valueOf(com.pubmatic.sdk.headerbidding.PMConstants.ANDROID_ID));
-                    }
+                switch (mHashing)
+                {
+                    case RAW:
+                        asJsonObject.put(PMConstants.UDID_PARAM, advertisingId);
+                        asJsonObject.put(PMConstants.UDID_HASH_PARAM, com.pubmatic.sdk.headerbidding.PMConstants.HASHING_RAW);
+                        break;
+                    case SHA1:
+                        asJsonObject.put(PMConstants.UDID_PARAM, PMUtils.sha1(advertisingId));
+                        asJsonObject.put(PMConstants.UDID_HASH_PARAM, com.pubmatic.sdk.headerbidding.PMConstants.HASHING_SHA1);
+                        break;
+                    case MD5:
+                        asJsonObject.put(PMConstants.UDID_PARAM, PMUtils.md5(advertisingId));
+                        asJsonObject.put(PMConstants.UDID_HASH_PARAM, com.pubmatic.sdk.headerbidding.PMConstants.HASHING_MD5);
+                        break;
                 }
+
+                asJsonObject.put(PMConstants.UDID_TYPE_PARAM, String.valueOf(com.pubmatic.sdk.headerbidding.PMConstants.ADVERTISEMENT_ID));
+            } else {
+                String androidId = PMUtils.getUdidFromContext(mContext);
+
+                switch (mHashing) {
+                    case RAW:
+                        asJsonObject.put(PMConstants.UDID_PARAM, androidId);
+                        asJsonObject.put(PMConstants.UDID_HASH_PARAM, com.pubmatic.sdk.headerbidding.PMConstants.HASHING_RAW);
+                        break;
+                    case SHA1:
+                        asJsonObject.put(PMConstants.UDID_PARAM, PMUtils.sha1(androidId));
+                        asJsonObject.put(PMConstants.UDID_HASH_PARAM, com.pubmatic.sdk.headerbidding.PMConstants.HASHING_SHA1);
+                        break;
+                    case MD5:
+                        asJsonObject.put(PMConstants.UDID_PARAM, PMUtils.md5(androidId));
+                        asJsonObject.put(PMConstants.UDID_HASH_PARAM, com.pubmatic.sdk.headerbidding.PMConstants.HASHING_MD5);
+                        break;
+                }
+                asJsonObject.put(PMConstants.UDID_TYPE_PARAM, String.valueOf(com.pubmatic.sdk.headerbidding.PMConstants.ANDROID_ID));
             }
             //End of 'lmt' specific parameter
 
