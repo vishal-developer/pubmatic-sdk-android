@@ -32,6 +32,7 @@ import android.text.TextUtils;
 
 import com.pubmatic.sdk.banner.pubmatic.PMBannerAdRequest;
 import com.pubmatic.sdk.common.AdvertisingIdClient;
+import com.pubmatic.sdk.common.CommonConstants;
 import com.pubmatic.sdk.common.pubmatic.PUBDeviceInformation;
 import com.pubmatic.sdk.common.pubmatic.PMConstants;
 import com.pubmatic.sdk.common.PMUtils;
@@ -130,7 +131,7 @@ public class PMPrefetchRequest extends PMBannerAdRequest {
 
     void createRequest(Context context) {
         setAdType(AD_TYPE.BANNER);
-        setAWT(AWT_OPTION.WRAPPED_IN_JS);
+        setAWT(AWT_OPTION.DEFAULT);
         setUpUrlParams();
         setupPostData();
     }
@@ -476,6 +477,7 @@ public class PMPrefetchRequest extends PMBannerAdRequest {
                 double ranreq = Math.random();
                 asJsonObject.put("ranreq", ranreq);
 
+                asJsonObject.put("msdkVersion", CommonConstants.SDK_VERSION);
                 asJsonObject.put("timezone", pubDeviceInformation.mDeviceTimeZone);
                 asJsonObject.put("screenResolution", pubDeviceInformation.mDeviceScreenResolution);
                 asJsonObject.put("adPosition", pubDeviceInformation.mAdPosition);

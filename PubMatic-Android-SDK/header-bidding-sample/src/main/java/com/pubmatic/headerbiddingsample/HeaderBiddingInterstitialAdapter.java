@@ -109,7 +109,7 @@ public class HeaderBiddingInterstitialAdapter {
         pmPrefetchManager = new PMPrefetchManager(mContext, listener);
 
         //Create Pubmatic adRequest for header bidding call with single impression or a Set of impressions.
-        PMPrefetchRequest interstitialHeaderBiddingAdRequest = getHeaderBiddingInterstitialAdRequest1();
+        PMPrefetchRequest interstitialHeaderBiddingAdRequest = getHeaderBiddingInterstitialAdRequest();
 
         /*
         Set any targeting params on the adRequest instance.
@@ -261,7 +261,7 @@ public class HeaderBiddingInterstitialAdapter {
         }
     }
 
-    private PMPrefetchRequest getHeaderBiddingInterstitialAdRequest1()
+    private PMPrefetchRequest getHeaderBiddingInterstitialAdRequest()
     {
         PMPrefetchRequest adRequest;
 
@@ -273,44 +273,6 @@ public class HeaderBiddingInterstitialAdapter {
         }
 
         adRequest = PMPrefetchRequest.initHBRequestForImpression(mContext, "31400", interstitialImpressions);
-
-        return adRequest;
-    }
-
-    private PMPrefetchRequest getHeaderBiddingInterstitialAdRequest()
-    {
-        //Get Width & Height for creating of adSlots
-        int measuredWidth = 0;
-        int measuredHeight = 0;
-        Point size = new Point();
-        WindowManager w = ((Activity)mContext).getWindowManager();
-        float density  = mContext.getResources().getDisplayMetrics().density;
-
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2)    {
-            w.getDefaultDisplay().getSize(size);
-            measuredWidth = Math.round(size.x/density);
-            measuredHeight = Math.round(size.y/density);
-        }else{
-            DisplayMetrics displayMetrics = new DisplayMetrics();
-            WindowManager windowmanager = (WindowManager) mContext.getApplicationContext().getSystemService(WINDOW_SERVICE);
-            windowmanager.getDefaultDisplay().getMetrics(displayMetrics);
-            measuredWidth   = Math.round(displayMetrics.widthPixels/density);
-            measuredHeight  = Math.round(displayMetrics.heightPixels/density);
-        }
-
-        PMPrefetchRequest adRequest;
-
-        List<PMAdSize> adSizes = new ArrayList<>(1);
-        //adSizes.add(new PMAdSize(measuredWidth, measuredHeight));
-        adSizes.add(new PMAdSize(320, 480));
-
-        PMBannerImpression pmBannerImpression = new PMBannerImpression("impression1", "DMDemo", adSizes, 1);
-        pmBannerImpression.setInterstitial(true);
-
-        List<PMBannerImpression> bannerImpressions = new ArrayList<>();
-        bannerImpressions.add(pmBannerImpression);
-
-        adRequest = PMPrefetchRequest.initHBRequestForImpression(mContext, "31400", bannerImpressions);
 
         return adRequest;
     }

@@ -271,29 +271,6 @@ public class HeaderBiddingBannerHelper {
 
         adRequest = PMPrefetchRequest.initHBRequestForImpression(mContext, "31400", bannerImpressions);
 
-        adRequest.setStoreURL("http://www.financialexpress.com");
-        adRequest.setAppDomain("www.financialexpress.com");
-        adRequest.setApplicationPaid(false);
-        adRequest.setPMZoneId("1");
-        adRequest.addKeyword("entertainment");
-        adRequest.addKeyword("sports");
-        adRequest.setEthnicity(PMAdRequest.ETHNICITY.ASIAN_AMERICAN);
-        adRequest.setIncome("income");
-
-        adRequest.setYearOfBirth("1989");
-        adRequest.setGender(PMAdRequest.GENDER.MALE);
-
-        adRequest.setCity("Pune");
-        adRequest.setZip("411011");
-        adRequest.setCoppa(true);
-        adRequest.setOrmmaComplianceLevel(1);
-
-        adRequest.setIABCategory("IAB1-1,IAB1-7");
-        adRequest.setAppCategory("Entertainment, Sports");
-
-        adRequest.setUdidHash(PMPrefetchRequest.HASHING_TECHNIQUE.RAW);
-        adRequest.setAndroidAidEnabled(false);
-
         return adRequest;
     }
 
