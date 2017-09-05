@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -57,6 +58,9 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
         Dialog dialog = getDialog();
         if (dialog != null)
         {
+            //this line is to add the softkeyboard
+            dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE|WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+
             int width = ViewGroup.LayoutParams.MATCH_PARENT;
             int height = ViewGroup.LayoutParams.MATCH_PARENT;
             dialog.getWindow().setLayout(width, height);

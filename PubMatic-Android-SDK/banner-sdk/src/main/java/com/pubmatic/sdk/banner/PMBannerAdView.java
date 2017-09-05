@@ -1806,6 +1806,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
                 case Resized:
                     // The ad creative MUST supply it's own close button.
+                    showCloseButton();
                     return;
 
                 default:
@@ -2409,7 +2410,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                     updateMRAIDLayoutForState(bridge, State.Resized);
                     bridge.setState(State.Resized);
 
-                    // TODO:PrepareCloseButton();
+                    prepareCloseButton();
 
                     if (richMediaListener != null) {
                         richMediaListener.onResized(PMBannerAdView.this, new Rect(xPx,

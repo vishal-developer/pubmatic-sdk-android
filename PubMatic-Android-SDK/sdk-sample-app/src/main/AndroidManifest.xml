@@ -41,6 +41,7 @@
             android:label="@string/native_ad_demo">
         </activity>
         <activity android:name=".interstitial.InterstitialDemoActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
                   android:label="@string/interstitial_ad_demo">
         </activity>
         <!--
