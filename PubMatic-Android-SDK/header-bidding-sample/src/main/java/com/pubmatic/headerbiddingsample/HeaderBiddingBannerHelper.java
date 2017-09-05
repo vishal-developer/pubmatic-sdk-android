@@ -11,7 +11,6 @@ import com.google.android.gms.ads.doubleclick.AppEventListener;
 import com.google.android.gms.ads.doubleclick.PublisherAdRequest;
 import com.google.android.gms.ads.doubleclick.PublisherAdView;
 import com.pubmatic.sdk.banner.PMBannerAdView;
-import com.pubmatic.sdk.common.pubmatic.PMAdRequest;
 import com.pubmatic.sdk.headerbidding.PMAdSize;
 import com.pubmatic.sdk.headerbidding.PMPrefetchRequest;
 import com.pubmatic.sdk.headerbidding.PMBid;
@@ -245,7 +244,7 @@ public class HeaderBiddingBannerHelper {
                             adView.setUseInternalBrowser(true);
 
                             //Display PubMatic Cached Ad
-                            pmPrefetchManager.renderPubMaticAd(impressionId, adView);
+                            pmPrefetchManager.renderPMBannerAd(impressionId, adView);
 
                             //Replace view with pubmatic Adview.
                             ViewGroup parent = (ViewGroup) adSlotInfo.adView.getParent();

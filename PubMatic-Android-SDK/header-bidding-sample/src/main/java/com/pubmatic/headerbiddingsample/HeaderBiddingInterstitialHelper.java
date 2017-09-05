@@ -2,12 +2,8 @@ package com.pubmatic.headerbiddingsample;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Point;
-import android.os.Build;
 import android.text.TextUtils;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.WindowManager;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.doubleclick.AppEventListener;
@@ -26,13 +22,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static android.content.Context.WINDOW_SERVICE;
-
 /**
  *
  */
 
-public class HeaderBiddingInterstitialAdapter {
+public class HeaderBiddingInterstitialHelper {
 
     public static final class AdSlotInfo {
 
@@ -71,7 +65,7 @@ public class HeaderBiddingInterstitialAdapter {
 
     private static final String       TAG = "HBInterstitialAdapter";
 
-    public HeaderBiddingInterstitialAdapter(Context context, List<HeaderBiddingInterstitialAdapter.AdSlotInfo> adSlotInfoList) {
+    public HeaderBiddingInterstitialHelper(Context context, List<HeaderBiddingInterstitialHelper.AdSlotInfo> adSlotInfoList) {
         this.mContext        = context;
         this.adSlotInfoList = adSlotInfoList;
     }
@@ -213,7 +207,7 @@ public class HeaderBiddingInterstitialAdapter {
 
         if(adSlotInfoList != null)
         {
-            for (HeaderBiddingInterstitialAdapter.AdSlotInfo adSlotInfo : adSlotInfoList)
+            for (HeaderBiddingInterstitialHelper.AdSlotInfo adSlotInfo : adSlotInfoList)
             {
                 adViewSet.add(adSlotInfo.adView);
             }
@@ -222,18 +216,18 @@ public class HeaderBiddingInterstitialAdapter {
         return adViewSet;
     }
 
-    private void registerAdListener(List<HeaderBiddingInterstitialAdapter.AdSlotInfo> adSlotInfoList) {
+    private void registerAdListener(List<HeaderBiddingInterstitialHelper.AdSlotInfo> adSlotInfoList) {
 
-        for(HeaderBiddingInterstitialAdapter.AdSlotInfo adSlotInfo : adSlotInfoList)
+        for(HeaderBiddingInterstitialHelper.AdSlotInfo adSlotInfo : adSlotInfoList)
         {
             if (adSlotInfo!=null && adSlotInfo.adView != null)
-                adSlotInfo.adView.setAdListener(new HeaderBiddingInterstitialAdapter.DfpAdListener());
+                adSlotInfo.adView.setAdListener(new HeaderBiddingInterstitialHelper.DfpAdListener());
         }
     }
 
-    private void registerListenerForPublisherAdView(final List<HeaderBiddingInterstitialAdapter.AdSlotInfo> adSlotInfoList) {
+    private void registerListenerForPublisherAdView(final List<HeaderBiddingInterstitialHelper.AdSlotInfo> adSlotInfoList) {
 
-        for(final HeaderBiddingInterstitialAdapter.AdSlotInfo adSlotInfo : adSlotInfoList)
+        for(final HeaderBiddingInterstitialHelper.AdSlotInfo adSlotInfo : adSlotInfoList)
         {
             if (adSlotInfo!=null && adSlotInfo.adView != null)
             {
@@ -251,7 +245,7 @@ public class HeaderBiddingInterstitialAdapter {
 
 
                             //Display PubMatic Cached Ad
-                            pmPrefetchManager.renderedPMInterstitialAd(impressionId, adView);
+                            pmPrefetchManager.renderPMInterstitialAd(impressionId, adView);
 
                             adView.showInterstitial();
                         }
@@ -266,7 +260,7 @@ public class HeaderBiddingInterstitialAdapter {
         PMPrefetchRequest adRequest;
 
         List<PMBannerImpression> interstitialImpressions = new ArrayList<>();
-        for(HeaderBiddingInterstitialAdapter.AdSlotInfo adSlotInfo : adSlotInfoList) {
+        for(HeaderBiddingInterstitialHelper.AdSlotInfo adSlotInfo : adSlotInfoList) {
             PMBannerImpression pmBannerImpression = new PMBannerImpression(getUniqueIdForView(adSlotInfo.adView), adSlotInfo.slotName, adSlotInfo.adSizes, 1);
             pmBannerImpression.setInterstitial(true);
             interstitialImpressions.add(pmBannerImpression);

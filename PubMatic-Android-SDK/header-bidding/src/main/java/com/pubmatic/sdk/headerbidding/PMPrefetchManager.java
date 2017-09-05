@@ -39,6 +39,7 @@ import com.pubmatic.sdk.common.CommonConstants.CONTENT_TYPE;
 import com.pubmatic.sdk.common.LocationDetector;
 import com.pubmatic.sdk.common.PMAdRendered;
 import com.pubmatic.sdk.common.PMLogger;
+import com.pubmatic.sdk.common.PubMaticSDK;
 import com.pubmatic.sdk.common.ResponseGenerator;
 import com.pubmatic.sdk.common.network.HttpHandler;
 import com.pubmatic.sdk.common.network.HttpRequest;
@@ -98,7 +99,6 @@ public class PMPrefetchManager implements ResponseGenerator {
     private PMPrefetchListener pmPreFetchListener;
 
     private Location location;
-    private boolean mRetrieveLocationInfo = true;
 
     public PMPrefetchManager(Context context, PMPrefetchListener pmPrefetchListener) {
         mContext = context;
@@ -122,21 +122,9 @@ public class PMPrefetchManager implements ResponseGenerator {
      * @return true if location detection is enabled, false if not
      */
     public boolean isLocationDetectionEnabled() {
-        return mRetrieveLocationInfo;
+        return PubMaticSDK.isLocationDetectionEnabled();
     }
 
-    /**
-     * Enables or disable SDK location detection. If enabled with this method the most battery
-     * optimized settings are used. This method is used to disable location detection for either
-     * method of enabling location detection.
-     * <p/>
-     * Permissions for coarse or fine location detection may be required.
-     *
-     * @param locationDetectionEnabled
-     */
-    public void setLocationDetectionEnabled(boolean locationDetectionEnabled) {
-        mRetrieveLocationInfo = locationDetectionEnabled;
-    }
 
     public void prefetchCreatives(PMPrefetchRequest adRequest) {
 
@@ -153,7 +141,7 @@ public class PMPrefetchManager implements ResponseGenerator {
 
                 // Insert the location parameter in ad request,
                 // if publisher has enabled location detection
-                if(mRetrieveLocationInfo) {
+                if(PubMaticSDK.isLocationDetectionEnabled()) {
                     location = LocationDetector.getInstance(mContext).getLocation();
                     if(location != null)
                         adRequest.setLocation(location);
@@ -190,7 +178,7 @@ public class PMPrefetchManager implements ResponseGenerator {
      *
      * @param impressionId  the winning impressionId
      */
-    public void renderPubMaticAd(String impressionId, PMAdRendered pmAdRendered) {
+    public void renderPMBannerAd(String impressionId, PMAdRendered pmAdRendered) {
 
         if(pmAdRendered!=null)
             pmAdRendered.renderPrefetchedAd(impressionId, this);
@@ -221,7 +209,7 @@ public class PMPrefetchManager implements ResponseGenerator {
      * This creative is the header bidding winner for the provided adSlotId.
      *
      */
-    public void renderedPMInterstitialAd(String impressionId, PMAdRendered pmAdRendered) {
+    public void renderPMInterstitialAd(String impressionId, PMAdRendered pmAdRendered) {
 
         if(pmAdRendered!=null)
             pmAdRendered.renderPrefetchedAd(impressionId, this);
