@@ -27,8 +27,10 @@
 
 package com.pubmatic.sdk.headerbidding;
 
+import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 
 import com.pubmatic.sdk.banner.pubmatic.PMBannerAdRequest;
 import com.pubmatic.sdk.common.AdvertisingIdClient;
@@ -45,6 +47,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static android.R.attr.width;
+import static java.security.AccessController.getContext;
 
 public class PMPrefetchRequest extends PMBannerAdRequest {
 
@@ -379,6 +384,11 @@ public class PMPrefetchRequest extends PMBannerAdRequest {
             deviceJsonObject.put("model", pubDeviceInformation.mDeviceModel);
             deviceJsonObject.put("os", pubDeviceInformation.mDeviceOSName);
             deviceJsonObject.put("osv", pubDeviceInformation.mDeviceOSVersion);
+
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            (((Activity) mContext).getWindowManager()).getDefaultDisplay().getMetrics(displayMetrics);
+            deviceJsonObject.put("w", displayMetrics.widthPixels);
+            deviceJsonObject.put("h", displayMetrics.heightPixels);
         }
         catch (Exception exception)
         {
