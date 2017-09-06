@@ -497,15 +497,6 @@ public class PMPrefetchRequest extends PMBannerAdRequest {
 
             // 'lmt' parameter specific
             AdvertisingIdClient.AdInfo adInfo = AdvertisingIdClient.refreshAdvertisingInfo(mContext);
-            boolean lmtState = AdvertisingIdClient.getLimitedAdTrackingState(mContext, false);
-            if(lmtState) {
-                asJsonObject.put("lmt", 1);
-                asJsonObject.put("dnt", 1);
-            } else {
-                asJsonObject.put("lmt", 0);
-                asJsonObject.put("dnt", 0);
-            }
-
             if (isAndroidAidEnabled() && adInfo!=null && !TextUtils.isEmpty(adInfo.getId())) {
 
                 String advertisingId = adInfo.getId();
