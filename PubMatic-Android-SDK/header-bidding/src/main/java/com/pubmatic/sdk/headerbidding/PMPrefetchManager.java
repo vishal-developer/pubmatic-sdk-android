@@ -178,7 +178,7 @@ public class PMPrefetchManager implements ResponseGenerator {
      *
      * @param impressionId  the winning impressionId
      */
-    public void renderPMBannerAd(String impressionId, PMAdRendered pmAdRendered) {
+    public void loadBannerAd(String impressionId, PMAdRendered pmAdRendered) {
 
         if(pmAdRendered!=null)
             pmAdRendered.renderPrefetchedAd(impressionId, this);
@@ -193,23 +193,12 @@ public class PMPrefetchManager implements ResponseGenerator {
         pubmaticAdViews.add(weakRefAdView);
     }
 
-    public void reset() {
-        if(pubmaticAdViews!=null) {
-            if(pubmaticAdViews.size()>0) {
-                for(WeakReference<PMAdRendered> adRendered : pubmaticAdViews) {
-                    ((PMBannerAdView)adRendered.get()).destroy();
-                }
-            }
-            pubmaticAdViews = null;
-        }
-    }
-
     /**
      * Provide the rendered adView from PubMatic cached creative.
      * This creative is the header bidding winner for the provided adSlotId.
      *
      */
-    public void renderPMInterstitialAd(String impressionId, PMAdRendered pmAdRendered) {
+    public void loadInterstitialAd(String impressionId, PMAdRendered pmAdRendered) {
 
         if(pmAdRendered!=null)
             pmAdRendered.renderPrefetchedAd(impressionId, this);
@@ -372,7 +361,7 @@ public class PMPrefetchManager implements ResponseGenerator {
         // Reset all PMBannerAdViews.
         if (pubmaticAdViews != null && pubmaticAdViews.size() != 0) {
             for (WeakReference adView : pubmaticAdViews) {
-                if (adView.get() != null)
+                if (adView!=null && adView.get() != null)
                     ((PMBannerAdView) adView.get()).destroy();
             }
             pubmaticAdViews.clear();
@@ -381,7 +370,7 @@ public class PMPrefetchManager implements ResponseGenerator {
         // Reset all PMInterstitialAdView.
         if (pubmaticInterstitialAdViews != null && pubmaticInterstitialAdViews.size() != 0) {
             for (WeakReference adView : pubmaticInterstitialAdViews) {
-                if (adView.get() != null)
+                if (adView!=null && adView.get() != null)
                     ((PMInterstitialAd) adView.get()).destroy();
             }
             pubmaticInterstitialAdViews.clear();

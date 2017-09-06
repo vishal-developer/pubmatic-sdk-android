@@ -1,5 +1,6 @@
 package com.pubmatic.headerbiddingsample;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
@@ -64,6 +65,11 @@ public class BannerDemoScreen extends AppCompatActivity {
             headerBiddingHelper.destroy();
             headerBiddingHelper = null;
         }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
     }
 }
 

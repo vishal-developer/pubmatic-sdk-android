@@ -79,6 +79,14 @@ public class HeaderBiddingInterstitialHelper {
         requestPubMaticHeaderBidding();
     }
 
+    public void destroy() {
+
+        if(pmPrefetchManager!=null) {
+            pmPrefetchManager.destroy();
+            pmPrefetchManager = null;
+        }
+    }
+
     private void requestPubMaticHeaderBidding()
     {
         PMPrefetchManager.PMPrefetchListener listener = new PMPrefetchManager.PMPrefetchListener() {
@@ -238,16 +246,19 @@ public class HeaderBiddingInterstitialHelper {
 
                         if (TextUtils.equals(key, PUBMATIC_WIN_KEY)) {
 
-                            adSlotInfoList.get(0).adView = null;
+                            if(adSlotInfoList!=null && adSlotInfoList.size()>0) {
 
-                            PMInterstitialAd adView = new PMInterstitialAd(mContext);
-                            adView.setUseInternalBrowser(true);
+                                adSlotInfoList.get(0).adView = null;
 
+                                PMInterstitialAd adView = new PMInterstitialAd(mContext);
+                                adView.setUseInternalBrowser(true);
 
-                            //Display PubMatic Cached Ad
-                            pmPrefetchManager.renderPMInterstitialAd(impressionId, adView);
+                                //Display PubMatic Cached Ad
+                                pmPrefetchManager.loadInterstitialAd(impressionId, adView);
 
-                            adView.showInterstitial();
+                                //Once ad gets load, show Interstitial ad
+                                adView.showInterstitial();
+                            }
                         }
                     }
                 });
@@ -267,15 +278,16 @@ public class HeaderBiddingInterstitialHelper {
         }
 
         adRequest = PMPrefetchRequest.initHBRequestForImpression(mContext, "31400", interstitialImpressions);
-
         return adRequest;
     }
+
+
 
     class DfpAdListener extends AdListener {
         public void onAdLoaded() {
             Log.d(TAG, "onAdLoaded");
 
-            if(adSlotInfoList.get(0).adView != null)
+            if(adSlotInfoList!=null && adSlotInfoList.size()>0 && adSlotInfoList.get(0).adView != null)
                 adSlotInfoList.get(0).adView.show();
         }
 

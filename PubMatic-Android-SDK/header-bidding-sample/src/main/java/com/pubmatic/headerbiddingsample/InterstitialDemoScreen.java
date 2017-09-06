@@ -1,5 +1,6 @@
 package com.pubmatic.headerbiddingsample;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
@@ -50,9 +51,14 @@ public class InterstitialDemoScreen extends AppCompatActivity {
         adViews.clear();
 
         if(headerBiddingHelper !=null) {
-            //hbBannerHelper.destroy();
+            headerBiddingHelper.destroy();
             headerBiddingHelper = null;
         }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
     }
 }
 

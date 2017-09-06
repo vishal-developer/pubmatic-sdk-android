@@ -244,7 +244,7 @@ public class HeaderBiddingBannerHelper {
                             adView.setUseInternalBrowser(true);
 
                             //Display PubMatic Cached Ad
-                            pmPrefetchManager.renderPMBannerAd(impressionId, adView);
+                            pmPrefetchManager.loadBannerAd(impressionId, adView);
 
                             //Replace view with pubmatic Adview.
                             ViewGroup parent = (ViewGroup) adSlotInfo.adView.getParent();
@@ -275,7 +275,8 @@ public class HeaderBiddingBannerHelper {
 
     public void destroy() {
         if(pmPrefetchManager!=null)
-            pmPrefetchManager.reset();
+            pmPrefetchManager.destroy();
+        pmPrefetchManager = null;
     }
 
     class DfpAdListener extends AdListener {
