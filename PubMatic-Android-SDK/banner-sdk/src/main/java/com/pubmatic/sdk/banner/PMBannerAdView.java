@@ -2895,7 +2895,8 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
             try {
 
-                if (!TextUtils.isEmpty(responseGenerator.getCreative(impressionId))) {
+                String creative = responseGenerator.getCreative(impressionId);
+                if (!TextUtils.isEmpty(creative)) {
 
                     adInfo.put("content", responseGenerator.getCreative(impressionId));
 
@@ -2913,6 +2914,9 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                     if (responseGenerator.getClickTrackingUrl(impressionId) != null && !responseGenerator.getClickTrackingUrl(impressionId).equals("")) {
                         clickTrackers.add( URLDecoder.decode(responseGenerator.getClickTrackingUrl(impressionId), CommonConstants.ENCODING_UTF_8));
                     }
+                } else {
+                    PMLogger.logEvent("Creative not found for impression Id = "+impressionId, LogLevel.Error);
+                    return;
                 }
 
                 BannerAdDescriptor adDescriptor = new BannerAdDescriptor(adInfo);
