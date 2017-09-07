@@ -408,7 +408,8 @@ public class PMPrefetchManager implements ResponseGenerator {
         if(publisherHBResponse != null)
         {
             PMBid pmBid = publisherHBResponse.get(impressionId);
-            return pmBid.getCreative();
+            if(pmBid!=null)
+                return pmBid.getCreative();
         }
 
         return null;
