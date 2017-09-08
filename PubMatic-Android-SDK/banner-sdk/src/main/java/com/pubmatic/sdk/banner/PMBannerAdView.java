@@ -1224,7 +1224,8 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         webView.loadFragment(creative, mraidBridge, url);
 
         this.mAdDescriptor = adDescriptor;
-        performAdTracking();
+        if(!isInterstitial())
+            performAdTracking();
 
         if (requestListener != null) {
             requestListener.onReceivedAd(PMBannerAdView.this);
