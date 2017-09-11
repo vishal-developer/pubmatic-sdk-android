@@ -1,6 +1,6 @@
 /*
  * PubMatic Inc. (�PubMatic�) CONFIDENTIAL
- * Unpublished Copyright (c) 2006-2014 PubMatic, All Rights Reserved.
+ * Unpublished Copyright (c) 2006-2017 PubMatic, All Rights Reserved.
  *
  * NOTICE:  All information contained herein is, and remains the property of PubMatic. The intellectual and technical concepts contained
  * herein are proprietary to PubMatic and may be covered by U.S. and Foreign Patents, patents in process, and are protected by trade secret or copyright law.
@@ -21,11 +21,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.ListActivity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
@@ -36,18 +38,23 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.pubmatic.sampleapp.banner.BannerSamplesListActivity;
-import com.pubmatic.sampleapp.interstitial.InterstitialSamplesListActivity;
-import com.pubmatic.sampleapp.nativead.NativeSamplesListActivity;
+import com.pubmatic.sampleapp.banner.BannerDemoActivity;
+import com.pubmatic.sampleapp.interstitial.InterstitialDemoActivity;
+import com.pubmatic.sampleapp.nativead.NativeDemoActivity;
+import com.pubmatic.sdk.common.PMLogger;
+import com.pubmatic.sdk.common.PubMaticSDK;
 
-public class SamplesListActivity extends ListActivity {
+public class SamplesListActivity extends ListActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
 	SamplesListAdapter samplesListAdapter = null;
 
-	private static final int MY_PERMISSIONS_REQUEST_LOCATION = 12355;
+	private static final int MULTIPLE_PERMISSIONS_REQUEST_CODE = 12355;
+	private static String[] PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		PubMaticSDK.setLogLevel(PMLogger.LogLevel.Debug);
 
 		// Use to check for potential leaks
 		// android.os.StrictMode.setVmPolicy(new
@@ -56,16 +63,31 @@ public class SamplesListActivity extends ListActivity {
 		samplesListAdapter = new SamplesListAdapter();
 
 		// @formatter:off
-		samplesListAdapter.addItem(new SamplesItem("Banner Demo", BannerSamplesListActivity.class));
-        samplesListAdapter.addItem(new SamplesItem("Interstitial Demo", InterstitialSamplesListActivity.class));
-		samplesListAdapter.addItem(new SamplesItem("Native Demo", NativeSamplesListActivity.class));
+		samplesListAdapter.addItem(new SamplesItem("Banner Demo", BannerDemoActivity.class));
+        samplesListAdapter.addItem(new SamplesItem("Interstitial Demo", InterstitialDemoActivity.class));
+		samplesListAdapter.addItem(new SamplesItem("Native Demo", NativeDemoActivity.class));
 
 		super.setListAdapter(samplesListAdapter);
 
-        int LocationPermissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+		if(!hasPermissions(this, PERMISSIONS)){
+			ActivityCompat.requestPermissions(this, PERMISSIONS, MULTIPLE_PERMISSIONS_REQUEST_CODE);
+		}
+	}
 
-        if(LocationPermissionCheck != PackageManager.PERMISSION_GRANTED)
-            ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION }, MY_PERMISSIONS_REQUEST_LOCATION);
+	public static boolean hasPermissions(Context context, String... permissions) {
+		if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
+			for (String permission : permissions) {
+				if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 	}
 
 	@Override
@@ -118,7 +140,6 @@ public class SamplesListActivity extends ListActivity {
 			return position;
 		}
 
-		@SuppressLint("ViewHolder")
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View view = LayoutInflater.from(getBaseContext()).inflate(

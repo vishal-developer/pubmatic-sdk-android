@@ -22,7 +22,7 @@ import java.util.LinkedHashMap;
  */
 public final class ConfigurationManager {
 
-    public enum PLATFORM { MOCEAN, PUBMATIC, PHEONIX };
+    public enum PLATFORM { PUBMATIC };
     public enum AD_TYPE { BANNER, INTERSTITIAL, NATIVE };
 
     private JSONObject mSettingsJson;
@@ -53,12 +53,8 @@ public final class ConfigurationManager {
         String platformKey = null;
         String adTypeKey = null;
 
-        if(platform == PLATFORM.MOCEAN)
-            platformKey = "Mocean";
-        else if(platform == PLATFORM.PUBMATIC)
+        if(platform == PLATFORM.PUBMATIC)
             platformKey = "PubMatic";
-        else if(platform == PLATFORM.PHEONIX)
-            platformKey = "Phoenix";
 
         if(adType == AD_TYPE.BANNER)
             adTypeKey = "Banner";
@@ -136,19 +132,19 @@ public final class ConfigurationManager {
 
         try
         {
-            if (shouldImportSettings())
-            {
-                Log.i("Configuration Manager", "Reading from external storage");
-
-                File myFile = new File("/storage/emulated/0/Automation/settings");
-                inputStream = new FileInputStream(myFile);
-            }
-            else
-            {
+//            if (shouldImportSettings())
+//            {
+//                Log.i("Configuration Manager", "Reading from external storage");
+//
+//                File myFile = new File("/storage/emulated/0/Automation/settings");
+//                inputStream = new FileInputStream(myFile);
+//            }
+//            else
+//            {
                 Log.i("Configuration Manager", "Reading from internal storage");
 
                 inputStream = context.getAssets().open("settings");
-            }
+//            }
 
 
             BufferedReader in= new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));

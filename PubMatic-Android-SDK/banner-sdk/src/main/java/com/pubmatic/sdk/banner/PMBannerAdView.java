@@ -26,7 +26,6 @@
  */
 package com.pubmatic.sdk.banner;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
@@ -40,28 +39,25 @@ import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
-import android.location.LocationProvider;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.Build;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.pubmatic.sdk.banner.mraid.Bridge;
 import com.pubmatic.sdk.banner.mraid.Consts;
@@ -73,7 +69,6 @@ import com.pubmatic.sdk.banner.mraid.ExpandProperties;
 import com.pubmatic.sdk.banner.mraid.OrientationProperties;
 import com.pubmatic.sdk.banner.mraid.ResizeProperties;
 import com.pubmatic.sdk.banner.mraid.WebView;
-import com.pubmatic.sdk.banner.ui.GifDecoder;
 import com.pubmatic.sdk.banner.ui.ImageView;
 import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.AdResponse;
@@ -81,8 +76,11 @@ import com.pubmatic.sdk.common.CommonConstants;
 import com.pubmatic.sdk.common.CommonConstants.CHANNEL;
 import com.pubmatic.sdk.common.LocationDetector;
 import com.pubmatic.sdk.common.PMAdRendered;
+import com.pubmatic.sdk.common.PMAdSize;
 import com.pubmatic.sdk.common.PMLogger;
 import com.pubmatic.sdk.common.PMLogger.LogLevel;
+import com.pubmatic.sdk.common.PubMaticSDK;
+import com.pubmatic.sdk.common.RRFormatter;
 import com.pubmatic.sdk.common.ResponseGenerator;
 import com.pubmatic.sdk.common.network.AdTracking;
 import com.pubmatic.sdk.common.network.HttpHandler;
@@ -100,7 +98,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.security.MessageDigest;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -114,10 +111,21 @@ import java.util.concurrent.TimeUnit;
 
 import static com.pubmatic.sdk.banner.BannerUtils.downloadUrl;
 
+/**
+ * View class to renders simple Banner & Mraid ads.
+ */
 public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
+    /**
+     * Interface for interaction with the PMBannerAdView.
+     * The entire interface is optional. Some methods override default behavior and some are required to get full support for MRAID 2 ad content (saving calendar entries or pictures).
+     * All messages are guaranteed to occur on the main thread. If any long running tasks are needed in reponse to any of the sent messages then they should be executed in a background thread to prevent and UI delays for the user.
+     */
     public interface BannerAdViewDelegate {
 
+        /**
+         * An interface to notify the ad request callbacks.
+         */
         public interface RequestListener
         {
             /**
@@ -135,18 +143,11 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
              * @param adView
              */
             public void onReceivedAd(PMBannerAdView adView);
-
-            /**
-             * Third party ad received.  The application should be expecting this and ready to
-             * render the ad with the supplied configuration.
-             *
-             * @param adView
-             * @param properties Properties of the ad request (ad network information).
-             * @param parameters Parameters for the third party network (expected to be passed to that network).
-             */
-            public void onReceivedThirdPartyRequest(PMBannerAdView adView, Map<String, String> properties, Map<String, String> parameters);
         }
 
+        /**
+         * An interface to notify when user is navigated from current activity
+         */
         public interface ActivityListener
         {
             /**
@@ -193,6 +194,9 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             public boolean onCloseButtonClick(PMBannerAdView adView);
         }
 
+        /**
+         * An interface to notify the activity of internal browser.
+         */
         public interface InternalBrowserListener
         {
             /**
@@ -209,6 +213,9 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             public void onInternalBrowserDismissed(PMBannerAdView adView);
         }
 
+        /**
+         * An interface to notify the events of MRAID ads
+         */
         public interface RichMediaListener
         {
             /**
@@ -323,28 +330,23 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
     private static final String TAG = PMBannerAdView.class.getSimpleName();
 
-    private BannerAdController mAdController;
-
     final private int CloseAreaSizeDp = 50;
     final private int OrientationReset = Short.MIN_VALUE;
 
     // User agent used for all requests
     private String userAgent = null;
-
     //No need to have location here. Can get directly from singleton.
     private Location location;
+
     // Configuration
     private int updateInterval = 0;
     private int viewVisibility = View.INVISIBLE;
-    private Map<String, String> adRequestDefaultParameters = new HashMap<String, String>();
 
     private boolean useInternalBrowser = false;
     private PlacementType placementType = PlacementType.Inline;
 
     // Ad containers (render ad content)
     private WebView webView = null;
-    private TextView textView = null;
-    private ImageView imageView = null;
 
     // Close button
     private boolean showCloseButton = false;
@@ -373,7 +375,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
     private WebView.Handler webViewHandler = new WebViewHandler();
 
     // Updating
-    private boolean updateOnLayout = false;
+//    private boolean updateOnLayout = false;
     private boolean deferredUpdate = false;
     private BannerAdDescriptor mAdDescriptor = null;
     private ScheduledFuture<?> adUpdateIntervalFuture = null;
@@ -383,7 +385,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
     private boolean invokeTracking = false;
     private boolean mImpressionTrackerSent = false;
     private boolean mClickTrackerSent = false;
-    private boolean mRetrieveLocationInfo = true;
 
     // Internal browser
     private BrowserDialog browserDialog = null;
@@ -395,18 +396,16 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
     private BannerAdViewDelegate.RequestListener requestListener;
     private BannerAdViewDelegate.RichMediaListener richMediaListener;
 
-    // androidid
-    private boolean isAndroidIdEnabled;
-
     // Receiver
     private BroadcastReceiver mReceiver;
     private IntentFilter filter;
 
-    private AttributeSet mAttributes;
+    private AdRequest 		mAdRequest 		= null;
+    private RRFormatter 	mRRFormatter 	= null;
 
     private CHANNEL mChannel;
 
-    private void setAdrequest(AdRequest adRequest) {
+    private void setAdRequest(AdRequest adRequest) throws IllegalArgumentException {
         if (adRequest == null) {
             throw new IllegalArgumentException("AdRequest object is null");
         }
@@ -414,19 +413,32 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         // Since banneradRequest is class is abstract now, we will always have
         // correct channel value here.
         // and hence the controller. No need for null check.
-        // mAdRequest = adRequest;
-        setChannel(adRequest.getChannel());
-        mAdController.setAdRequest(adRequest);
+        mAdRequest      = null;
+        mRRFormatter    = null;
+        mAdRequest      = adRequest;
+        mChannel        = adRequest.getChannel();
+
+        createRRFormatter();
 
         //Start the location update if Publisher has enabled location detection
-        if(mRetrieveLocationInfo) {
+        if(PubMaticSDK.isLocationDetectionEnabled()) {
             location = LocationDetector.getInstance(getContext()).getLocation();
-            LocationDetector.getInstance(getContext()).addObserver(locationObserver);
+            if(LocationDetector.getInstance(getContext()).hasObserver(locationObserver) == false) {
+                LocationDetector.getInstance(getContext()).addObserver(locationObserver);
+            }
+        }
+    }
+
+    private void createRRFormatter() {
+        if(mAdRequest != null && mRRFormatter==null)
+        {
+            //Get RRFormater from AdRequest
+            mRRFormatter = mAdRequest.getFormatter();
         }
     }
 
     public AdRequest getAdRequest() {
-        return mAdController != null ? mAdController.mAdRequest : null;
+        return mAdRequest;
     }
 
     /**
@@ -436,7 +448,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
      */
     public PMBannerAdView(Context context) {
         super(context);
-        //setChannel(channel);
         init(false);
     }
 
@@ -461,7 +472,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
      */
     public PMBannerAdView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        applyAttributeSet(attrs);
         init(false);
     }
 
@@ -474,48 +484,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
      */
     public PMBannerAdView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        applyAttributeSet(attrs);
         init(false);
-    }
-
-    protected void applyAttributeSet(AttributeSet attrs) {
-
-        mAttributes = attrs;
-        String logLevelStr = attrs.getAttributeValue(null,
-                CommonConstants.xml_layout_attribute_logLevel);
-        if(!TextUtils.isEmpty(logLevelStr)){
-            if("error".equalsIgnoreCase(logLevelStr)){
-                PMLogger.setLogLevel(LogLevel.Error);
-            }else if("debug".equalsIgnoreCase(logLevelStr)){
-                PMLogger.setLogLevel(LogLevel.Error);
-            }else{
-                PMLogger.setLogLevel(LogLevel.None);
-            }
-        }
-
-        String updateIntStr = attrs.getAttributeValue(null,
-                CommonConstants.xml_layout_attribute_update_interval);
-        if (!TextUtils.isEmpty(updateIntStr)) {
-            try {
-                int updateInt = Integer.parseInt(updateIntStr);
-                setUpdateInterval(updateInt);
-            } catch (NumberFormatException ne) {
-                PMLogger.logEvent(
-                        "Invalid value of updateInterval set in XML. Valid range is 12 to 120 seconds. Eg: updateInterval=\"12\"",
-                        LogLevel.Error);
-            }
-        }
-
-        String channel = attrs.getAttributeValue(null,
-                CommonConstants.xml_layout_attribute_channel);
-        if ("mocean".equalsIgnoreCase(channel)) {
-            setChannel(CHANNEL.MOCEAN);
-        } else if ("phoenix".equalsIgnoreCase(channel)) {
-            setChannel(CHANNEL.PHOENIX);
-        } else {
-            //PUBMATIC will be used as default channel, if not mentioned in xml
-            setChannel(CHANNEL.PUBMATIC);
-        }
     }
 
     protected void init(boolean interstitial) {
@@ -525,65 +494,21 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             placementType = PlacementType.Interstitial;
             interstitialDialog = new ExpandDialog(getContext());
         }
-
-        setOnClickListener(new OnClickHandler());
-        initUserAgent();
-    }
-
-    protected void initController(CHANNEL channel) {
-        if (mAdController == null) {
-            mAdController = new BannerAdController(channel, getContext(), mAttributes);
-        }
     }
 
     private boolean checkForMandatoryParams() {
-        boolean result = mAdController.checkMandatoryParams();
-
-        if(result && mChannel == CHANNEL.PUBMATIC && !isInterstitial())
-        {
-            result = (mAdController.getAdRequest().getWidth()>0 && mAdController.getAdRequest().getHeight()>0);
-        }
-
-        return result;
-    }
-
-    /**
-     * Sets the ad network channel.
-     * <p/>
-     * REQUIRED - If not set updates will fail.
-     *
-     * @param channel Ad network channel.
-     */
-    private void setChannel(CHANNEL channel) {
-        // If channel is changed, controller needs to be re-initialized.
-        initController(channel);
-
-        mChannel = channel;
-
-        //XML flow - Checking for mandatory parameters
-        if (mAttributes != null) {
-            if (checkForMandatoryParams()) {
-                updateOnLayout = true;
-            }
-        }
-
-    }
-
-    /**
-     * Returns the currently configured ad network channel.
-     *
-     * @return Ad network channel.
-     */
-    public CHANNEL getChannel() {
-        return mChannel;
+        if(mAdRequest!=null)
+            return mAdRequest.checkMandatoryParams();
+        else
+            return false;
     }
 
     private void updateOnLayout() {
-        if (updateOnLayout) {
-            updateOnLayout = false;
-
-            update();
-        }
+//        if (updateOnLayout) {
+//            updateOnLayout = false;
+//
+//            update();
+//        }
     }
 
     private void initUserAgent() {
@@ -591,32 +516,9 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             userAgent = getWebView().getSettings().getUserAgentString();
 
             if (TextUtils.isEmpty(userAgent)) {
-                userAgent = CommonConstants.USER_AGENT_VALUE;
+                userAgent = CommonConstants.DEFAULT_USER_AGENT;
             }
         }
-    }
-
-    /**
-     * Accessor to the User-Agent header value the SDK will send to the ad network.
-     *
-     * @return
-     */
-    public String getUserAgent() {
-        return userAgent;
-    }
-
-    /**
-     * Determines if the instance is configured as inline.
-     *
-     * @return true if instance represents inline, false if it represents interstitial. Interstitial
-     * instances should not be added to view layouts.
-     */
-    public boolean isInline() {
-        if (placementType == PlacementType.Inline) {
-            return true;
-        }
-
-        return false;
     }
 
     /**
@@ -625,7 +527,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
      * @return true if instance represents interstitial, false if it represents inline. Interstitial
      * instances should not be added to view layouts.
      */
-    public boolean isInterstitial() {
+    private boolean isInterstitial() {
         if (placementType == PlacementType.Interstitial) {
             return true;
         }
@@ -727,18 +629,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
     }
 
     /**
-     * Collection of ad request parameters. Allows setting extra network parameters.
-     * <p/>
-     * The SDK will set various parameters based on configuration and other options. For more
-     * information see http://developer.moceanmobile.com/Mocean_Ad_Request_API.
-     *
-     * @return Map containing optional request parameters.
-     */
-    public Map<String, String> getAdRequestParameters() {
-        return adRequestDefaultParameters;
-    }
-
-    /**
      * Sets the interval between updates. Set update interval to auto load ads after specified
      * update interval. <p/> Valid values for update interval are between 12 to 120 seconds.
      * <p/>
@@ -775,32 +665,13 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
     }
 
     /**
-     * Used with interstitial to show a close button. If not set, users will not see a close button
-     * on interstitial ads. Does nothing if used with inline instances.
-     *
-     * @param showCloseButton true to show a close button, false to not show a close button.
-     */
-    public void setShowCloseButton(boolean showCloseButton) {
-        this.showCloseButton = showCloseButton;
-    }
-
-    /**
-     * Returns state of showing the close button for interstitial ads.
-     *
-     * @return true if showing close button, false if close button will not be shown.
-     */
-    public boolean getShowCloseButton() {
-        return showCloseButton;
-    }
-
-    /**
      * Sets the delay time between showing an interstitial with showInterstitial() and showing the
      * close button. A value of 0 indicates the button should be shown immediately.
      *
      * @param closeButtonDelay Time interval in seconds to delay showing a close button after
      * showing interstitial ad.
      */
-    public void setCloseButtonDelay(int closeButtonDelay) {
+    void setCloseButtonDelay(int closeButtonDelay) {
         this.closeButtonDelay = closeButtonDelay;
     }
 
@@ -809,7 +680,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
      *
      * @return Time interval in seconds to delay showing a close button after showing interstitial.
      */
-    public int getCloseButtonDelay() {
+    int getCloseButtonDelay() {
         return closeButtonDelay;
     }
 
@@ -869,76 +740,46 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         return false;
     }
 
-    /**
-     * Determines if location detection is enabled. If enabled, the SDK will use the location
-     * services of the device to determine the device's location ad add ad request parameters
-     * (lat/long) to the ad request. Location detection can be enabled with
-     * setLocationDetectionEnabled() or enableLocationDetection().
-     *
-     * @return true if location detection is enabled, false if not
-     */
-    public boolean isLocationDetectionEnabled() {
-        return mRetrieveLocationInfo;
-    }
-
     public Location getLocation() {
         return location;
     }
 
     /**
-     * Enables or disable SDK location detection. If enabled with this method the most battery
-     * optimized settings are used. This method is used to disable location detection for either
-     * method of enabling location detection.
+     * Resets instance state to it's default (doesn't destroy configured parameters). Stops update
+     * interval timer, closes internal browser if open, disables location detection.
      * <p/>
-     * Permissions for coarse or fine location detection may be required.
-     *
-     * @param locationDetectionEnabled
+     * Invoke this method to stop any ad processing. This should be done for ads that have a update
+     * time interval set with setUpdateInterval() before the owning context/activity is destroyed.
      */
-    public void setLocationDetectionEnabled(boolean locationDetectionEnabled) {
-        mRetrieveLocationInfo = locationDetectionEnabled;
-    }
+    public void destroy() {
+        deferredUpdate = false;
+        mImpressionTrackerSent = false;
+        mClickTrackerSent = false;
 
-    private Observer locationObserver = new Observer() {
-        @Override
-        public void update(Observable observable, Object data) {
+        removeContent();
 
-            if(data instanceof Location) {
-                location = (Location) data;
-            }
+        if (adUpdateIntervalFuture != null) {
+            adUpdateIntervalFuture.cancel(true);
+            adUpdateIntervalFuture = null;
         }
-    };
 
-    /**
-     * Executes the Banner ad request.
-     * <p/>
-     * Invokes update(). public void setAndroidIdEnabled(boolean isAndroidIdEnabled) {
-     * this.isAndroidIdEnabled = isAndroidIdEnabled; }
-     * <p/>
-     * public boolean isAndoridIdEnabled() { return isAndroidIdEnabled; }
-     * <p/>
-     * /** add androidid as request param.
-     *
-     * @param isAndroidIdEnabled
-     */
-    public void setAndroidIdEnabled(boolean isAndroidIdEnabled) {
-        this.isAndroidIdEnabled = isAndroidIdEnabled;
+        closeInterstitial();
+
+        closeInternalBrowser();
+        browserDialog = null;
+        unregisterReceiver();
+
     }
-
-    public boolean isAndoridIdEnabled() {
-        return isAndroidIdEnabled;
-    }
-
-
 
     /**
      * @param adrequest
      */
-    public void execute(AdRequest adrequest) {
-        setAdrequest(adrequest);
+    public void execute(AdRequest adrequest) throws IllegalArgumentException {
+        setAdRequest(adrequest);
         update();
     }
 
-    /*
+    /**
      * Updates ad.
      *
      * Invokes update(false).
@@ -961,7 +802,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         // This will be the case if Publisher added the view in xml & sets the
         // values from java file
         // If channel is set => adcontroller is initialized correctly
-        if (getChannel() == null || !checkForMandatoryParams()) {
+        if (mChannel == null || mAdRequest==null || mAdRequest.checkMandatoryParams()==false) {
 
             throw new IllegalArgumentException("Required parameters are not set.");
         }
@@ -1014,47 +855,23 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         }
     }
 
+    private Observer locationObserver = new Observer() {
+        @Override
+        public void update(Observable observable, Object data) {
 
-    /**
-     * Resets instance state to it's default (doesn't destroy configured parameters). Stops update
-     * interval timer, closes internal browser if open, disables location detection.
-     * <p/>
-     * Invoke this method to stop any ad processing. This should be done for ads that have a update
-     * time interval set with setUpdateInterval() before the owning context/activity is destroyed.
-     */
-    public void destroy() {
-        deferredUpdate = false;
-        mImpressionTrackerSent = false;
-        mClickTrackerSent = false;
-
-        removeContent();
-
-        if (adUpdateIntervalFuture != null) {
-            adUpdateIntervalFuture.cancel(true);
-            adUpdateIntervalFuture = null;
+            if(data instanceof Location) {
+                location = (Location) data;
+            }
         }
-
-        if (interstitialDelayFuture != null) {
-            interstitialDelayFuture.cancel(true);
-            interstitialDelayFuture = null;
-        }
-
-        closeInternalBrowser();
-        browserDialog = null;
-
-        //findLocation();
-        unregisterReceiver();
-    }
+    };
 
     /**
      * Removes any displayed ad content.
      */
-    public void removeContent() {
+    private void removeContent() {
         deferredUpdate = false;
 
         resetRichMediaAd();
-        resetImageAd();
-        resetTextAd();
 
         switch (placementType) {
             case Inline:
@@ -1065,8 +882,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                 interstitialDialog.removeAllViews();
         }
 
-        //		mAdRequest = null;
-        mAdController = null;
+        mAdRequest = null;
     }
 
     private void internalUpdate() {
@@ -1105,44 +921,38 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             }
         }
 
-        // Make a fresh adRequest
-        AdRequest adRequest = (AdRequest) mAdController.getAdRequest();
-        adRequest.setUserAgent(getUserAgent());
+        //Fetch user-agent, if publisher has not explicitly provided
+        if(TextUtils.isEmpty(mAdRequest.getUserAgent())) {
+            initUserAgent();
+            mAdRequest.setUserAgent(userAgent);
+        } else {
+            //Set the publisher provided user-agent.
+            // It also requied for other http calls.
+            userAgent = mAdRequest.getUserAgent();
+        }
 
         // Set common width/height param to all platforms.
         // Respective AdRequest implementation will send them as per their key name.
-        int width = getWidth();
-        int height = getHeight();
         if (isInterstitial()) {
             DisplayMetrics displayMetrics = Resources.getSystem().getDisplayMetrics();
-            adRequest.setWidth(displayMetrics.widthPixels);
-            adRequest.setHeight(displayMetrics.heightPixels);
-        } else {
-            if (width != 0 && adRequest.getWidth() <= 0) {
-                adRequest.setWidth(width);
-            }
-
-            if (height != 0 && adRequest.getHeight() <= 0) {
-                adRequest.setHeight(height);
-            }
+            mAdRequest.setAdSize(new PMAdSize(displayMetrics.widthPixels, displayMetrics.heightPixels));
         }
 
         // If User has provided the location set the source as user
-        Location userProvidedLocation = adRequest.getLocation();
-        if(userProvidedLocation != null) {
-            userProvidedLocation.setProvider("user");
-            adRequest.setLocation(userProvidedLocation);
-        }
+        // This logic will not work in refresh Ad
+//        Location userProvidedLocation = mAdRequest.getLocation();
+//        if(userProvidedLocation != null) {
+//            userProvidedLocation.setProvider("user");
+//            mAdRequest.setLocation(userProvidedLocation);
+//        }
 
         // Insert the location parameter in ad request,
         // if publisher has enabled location detection
-        if(mRetrieveLocationInfo && location != null) {
-            adRequest.setLocation(location);
+        if(PubMaticSDK.isLocationDetectionEnabled() && location != null) {
+            mAdRequest.setLocation(location);
         }
 
-        adRequest.createRequest(getContext());
-
-        HttpRequest httpRequest = mAdController.getRRFormatter().formatRequest(adRequest);
+        HttpRequest httpRequest = mRRFormatter.formatRequest(mAdRequest);
 
         PMLogger.logEvent("Ad request:" + httpRequest.getRequestUrl(), LogLevel.Debug);
         PMLogger.logEvent("Ad request body:" + httpRequest.getPostData(), LogLevel.Debug);
@@ -1157,11 +967,10 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         @Override
         public void onRequestComplete(HttpResponse response, String requestURL) {
 
-            if (response != null) {
-                AdRequest adRequest = (AdRequest) mAdController.getAdRequest();
+            if (response != null && mRRFormatter!=null) {
 
-                AdResponse adData = mAdController.getRRFormatter().formatResponse(response);
-                if (adData.getRequest() != adRequest) {
+                AdResponse adData = mRRFormatter.formatResponse(response);
+                if (adData.getRequest() != mAdRequest) {
                     return;
                 }
 
@@ -1213,11 +1022,11 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             return true;
     }
 
-    public void showInterstitial() {
+    void showInterstitial() {
         showInterstitialWithDuration(0);
     }
 
-    public void showInterstitialWithDuration(int durationSeconds) {
+    void showInterstitialWithDuration(int durationSeconds) {
         if (isInterstitial() == false) {
             throw new IllegalStateException("showInterstitial requires interstitial instance");
         }
@@ -1246,7 +1055,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
     }
 
     // main/background thread
-    public void closeInterstitial() {
+    void closeInterstitial() {
         if (interstitialDelayFuture != null) {
             interstitialDelayFuture.cancel(true);
             interstitialDelayFuture = null;
@@ -1255,23 +1064,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         if (interstitialDialog != null) {
             interstitialDialog.dismiss();
         }
-    }
-
-    public ImageView getImageView() {
-        if (imageView == null) {
-            imageView = new ImageView(getContext());
-        }
-
-        return imageView;
-    }
-
-    public TextView getTextView() {
-        if (textView == null) {
-            textView = new TextView(getContext());
-            textView.setGravity(Gravity.CENTER);
-        }
-
-        return textView;
     }
 
     public android.webkit.WebView getWebView() {
@@ -1314,117 +1106,11 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         mImpressionTrackerSent = false;
         mClickTrackerSent = false;
 
-        String adType = adDescriptor.getType();
-        if (adType.startsWith("image")) {
-            String img = adDescriptor.getImage();
-            fetchImage(adDescriptor, img);
-            return;
-        }
-
-        if (adType.startsWith("text")) {
-            final String txt = adDescriptor.getText();
-
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    renderText(adDescriptor, txt);
-                }
-            });
-
-            return;
-        }
-
-        String content = adDescriptor.getContent();
-
-        if (adType.startsWith("thirdparty")) {
-            String url = adDescriptor.getURL();
-            if (TextUtils.isEmpty(url) == false && url.trim().length() > 0) {
-                String img = adDescriptor.getImage();
-                if (TextUtils.isEmpty(img) == false && img.trim().length() > 0) {
-                    if (verifyThirdPartyRendering(content, url, img)) {
-                        fetchImage(adDescriptor, img);
-                        return;
-                    }
-                }
-
-                final String txt = adDescriptor.getText();
-                if (TextUtils.isEmpty(txt) == false && txt.trim().length() > 0) {
-                    if (verifyThirdPartyRendering(content, url, txt)) {
-                        runOnUiThread(new Runnable() {
-                            public void run() {
-                                renderText(adDescriptor, txt);
-                            }
-                        });
-                        return;
-                    }
-                }
-            } else if (TextUtils.isEmpty(content) == false) {
-                if (content.contains("client_side_external_campaign") == true) {
-                    try {
-                        if (requestListener != null) {
-                            ThirdPartyDescriptor thirdPartyDescriptor = ThirdPartyDescriptor.parseDescriptor(
-                                    content);
-                            this.mAdDescriptor = adDescriptor;
-
-                            requestListener.onReceivedThirdPartyRequest(this,
-                                    thirdPartyDescriptor.getProperties(),
-                                    thirdPartyDescriptor.getParams());
-                        }
-                    } catch (Exception ex) {
-                        PMLogger.logEvent("Error parsing third party content descriptor.  Exception:" + ex,
-                                LogLevel.Error);
-                    }
-
-                    return;
-                }
-            }
-        }
-
-        if (TextUtils.isEmpty(content)) {
-            PMLogger.logEvent("Ad descriptor missing ad content", LogLevel.Error);
-
-            if (requestListener != null) {
-                requestListener.onFailedToReceiveAd(this, -1, "Ad content missing");
-            }
-
-            return;
-        }
-
         runOnUiThread(new Runnable() {
             public void run() {
-                renderRichMedia(adDescriptor);
+                renderAd(adDescriptor);
             }
         });
-    }
-
-    private boolean verifyThirdPartyRendering(String content, String url, String imgOrText) {
-        // May as well attempt to render image or text if there's no content to
-        // render.
-        if (TextUtils.isEmpty(content)) {
-            return true;
-        }
-
-        // If there is any script content then the ad must be rendered in the
-        // web view.
-        if (content.contains("<script")) {
-            return false;
-        }
-
-        // The content must contain both the url and the image url or text
-        // content and
-        // after removing the length of those pieces should be a length
-        // representative
-        // of simple <a and <img wrapping fluff to be validated.
-        if (content.contains(url) && content.contains(imgOrText)) {
-            int length = content.length();
-            length -= url.length();
-            length -= imgOrText.length();
-
-            if (length < BannerConstants.DESCRIPTOR_THIRD_PARTY_VALIDATOR_LENGTH) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     // main thread
@@ -1471,7 +1157,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
      * rendered ad using third-party SDK. User should call this method when successful ad load
      * complete callback is received from third party SDK.
      */
-    public void sendImpression() {
+    private void sendImpression() {
         if (!mImpressionTrackerSent && mAdDescriptor != null && "thirdparty".equals(mAdDescriptor.getType())) {
             if (mAdDescriptor.getImpressionTrackers() != null && mAdDescriptor.getImpressionTrackers()
                     .size() > 0) {
@@ -1489,7 +1175,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
      * Call this method whenever ad received from client side thirdparty SDK is clicked. User should
      * call this method when ad clicked callback is received from third party SDK.
      */
-    public void sendClickTracker() {
+    private void sendClickTracker() {
         if (!mClickTrackerSent && mAdDescriptor != null && "thirdparty".equals(mAdDescriptor.getType())) {
             if (mAdDescriptor.getClickTrackers() != null && mAdDescriptor.getClickTrackers()
                     .size() > 0) {
@@ -1517,112 +1203,8 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         }
     }
 
-    // main/background thread
-    private void fetchImage(final BannerAdDescriptor adDescriptor, final String url) {
-        ImageRequest.create(CommonConstants.NETWORK_TIMEOUT_SECONDS,
-                url,
-                getUserAgent(),
-                true,
-                new ImageRequest.Handler() {
-                    @Override
-                    public void imageFailed(ImageRequest request, Exception ex) {
-                        PMLogger.logEvent("Image download failure.  Exception:" + ex,
-                                LogLevel.Error);
-
-                        if (requestListener != null) {
-                            requestListener.onFailedToReceiveAd(PMBannerAdView.this, -1, "Failed to load Image");
-                        }
-                    }
-
-                    @Override
-                    public void imageReceived(ImageRequest request,
-                                              Object imageObject) {
-                        final Object finalImaegObject = imageObject;
-
-                        runOnUiThread(new Runnable() {
-                            public void run() {
-                                renderImage(adDescriptor, finalImaegObject);
-                            }
-                        });
-                    }
-                });
-    }
-
     // main thread
-    private void renderImage(BannerAdDescriptor adDescriptor, Object imageObject) {
-        resetTextAd();
-        resetRichMediaAd();
-
-        getImageView();
-
-        LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
-                LayoutParams.WRAP_CONTENT);
-
-        addContentView(imageView, layoutParams);
-
-        if (imageObject instanceof Bitmap) {
-            imageView.setImageBitmap((Bitmap) imageObject);
-        } else if (imageObject instanceof GifDecoder) {
-            imageView.setImageGifDecoder((GifDecoder) imageObject);
-        }
-
-        this.mAdDescriptor = adDescriptor;
-
-        prepareCloseButton();
-        performAdTracking();
-
-        if (requestListener != null) {
-            requestListener.onReceivedAd(PMBannerAdView.this);
-        }
-    }
-
-    private void resetImageAd() {
-        if (imageView != null) {
-            imageView.setImageBitmap(null);
-        }
-
-        mAdDescriptor = null;
-    }
-
-    // main thread
-    private void renderText(BannerAdDescriptor adDescriptor, String text) {
-        resetImageAd();
-        resetRichMediaAd();
-
-        getTextView();
-
-        LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
-                LayoutParams.MATCH_PARENT);
-
-        addContentView(textView, layoutParams);
-
-        textView.setTextColor(Color.BLUE);
-        textView.setText(text);
-
-        this.mAdDescriptor = adDescriptor;
-
-        prepareCloseButton();
-        performAdTracking();
-
-        if (requestListener != null) {
-            requestListener.onReceivedAd(PMBannerAdView.this);
-        }
-    }
-
-    private void resetTextAd() {
-        if (textView != null) {
-            textView.setText("");
-        }
-
-        mAdDescriptor = null;
-    }
-
-    // main thread
-    private void renderRichMedia(BannerAdDescriptor adDescriptor) {
-        //invokeTracking = true;
-
-        resetImageAd();
-        resetTextAd();
+    private void renderAd(BannerAdDescriptor adDescriptor) {
 
         getWebView().stopLoading();
 
@@ -1637,12 +1219,13 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         String creative = adDescriptor.getContent();
         String url = "";
         if (getAdRequest() != null)
-            url = getAdRequest().getAdServerURL();
+            url = getAdRequest().getRequestUrl();
 
         webView.loadFragment(creative, mraidBridge, url);
 
         this.mAdDescriptor = adDescriptor;
-        performAdTracking();
+        if(!isInterstitial())
+            performAdTracking();
 
         if (requestListener != null) {
             requestListener.onReceivedAd(PMBannerAdView.this);
@@ -1836,14 +1419,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             }
         }
 
-        if (imageView != null) {
-            imageView.layout(0, 0, getWidth(), getHeight());
-        }
-
-        if (textView != null) {
-            textView.layout(0, 0, getWidth(), getHeight());
-        }
-
         updateOnLayout();
     }
 
@@ -2021,7 +1596,8 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             pictureSupported = featureSupportHandler.shouldSupportStorePicture(this);
         }
 
-        if (smsSupported == null) {
+        //Commenting it as SMS, CALL, CALENDAR permissions are not required for MRAID Ads
+        /*if (smsSupported == null) {
             smsSupported = getContext().checkCallingOrSelfPermission(android.Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED;
         }
         if (phoneSupported == null) {
@@ -2030,16 +1606,21 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         if (calendarSupported == null) {
             calendarSupported = ((getContext().checkCallingOrSelfPermission(android.Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED) && (getContext()
                     .checkCallingOrSelfPermission(android.Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED));
-        }
+        }*/
         if (pictureSupported == null) {
             pictureSupported = getContext().checkCallingOrSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
         }
 
-        bridge.setSupportedFeature(Feature.SMS, smsSupported);
-        bridge.setSupportedFeature(Feature.Tel, phoneSupported);
-        bridge.setSupportedFeature(Feature.Calendar, calendarSupported);
-        bridge.setSupportedFeature(Feature.StorePicture, pictureSupported);
-        bridge.setSupportedFeature(Feature.InlineVideo, false);
+        if(smsSupported!=null)
+            bridge.setSupportedFeature(Feature.SMS, smsSupported);
+        if(phoneSupported!=null)
+            bridge.setSupportedFeature(Feature.Tel, phoneSupported);
+        if(calendarSupported!=null)
+            bridge.setSupportedFeature(Feature.Calendar, calendarSupported);
+        if(pictureSupported!=null)
+            bridge.setSupportedFeature(Feature.StorePicture, pictureSupported);
+        if(smsSupported!=null)
+            bridge.setSupportedFeature(Feature.InlineVideo, false);
     }
 
     private void updateMRAIDLayoutForState(Bridge bridge, State state) {
@@ -2226,6 +1807,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
                 case Resized:
                     // The ad creative MUST supply it's own close button.
+                    showCloseButton();
                     return;
 
                 default:
@@ -2321,18 +1903,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         }
     }
 
-    private class OnClickHandler implements View.OnClickListener {
-        @Override
-        public void onClick(View view) {
-            if (((imageView != null) && (imageView.getParent() == view)) || ((textView != null) && (textView
-                    .getParent() == view))) {
-                if ((mAdDescriptor != null) && (TextUtils.isEmpty(mAdDescriptor.getURL()) == false)) {
-                    openUrl(mAdDescriptor.getURL(), false);
-                }
-            }
-        }
-    }
-
     private class WebViewHandler implements WebView.Handler {
         @Override
         public void webViewPageStarted(WebView webView) {
@@ -2353,8 +1923,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                                          int errorCode,
                                          String description,
                                          String failingUrl) {
-            resetRichMediaAd();
-
             PMLogger.logEvent("Error loading rich media ad content.  Error code:" + String.valueOf(errorCode) + " Description:" + description,
                     LogLevel.Error);
 
@@ -2362,13 +1930,34 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                 requestListener.onFailedToReceiveAd(PMBannerAdView.this, errorCode, description);
             }
 
-            removeContent();
+            //removeContent();
+        }
+
+        @Override
+        public void webViewReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && error!=null) {
+
+                webViewReceivedError(view, error.getErrorCode(),
+                        error.getDescription()!=null?error.getDescription().toString():null,
+                        request!=null?request.getUrl().toString():null);
+            }
         }
 
         @Override
         public boolean webViewShouldOverrideUrlLoading(WebView view, String url) {
             openUrl(url, false);
             return true;
+        }
+
+        @Override
+        public boolean webViewShouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                openUrl(request.getUrl().toString(), false);
+                return true;
+            }
+            return false;
         }
     }
 
@@ -2822,7 +2411,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                     updateMRAIDLayoutForState(bridge, State.Resized);
                     bridge.setState(State.Resized);
 
-                    // TODO:PrepareCloseButton();
+                    prepareCloseButton();
 
                     if (richMediaListener != null) {
                         richMediaListener.onResized(PMBannerAdView.this, new Rect(xPx,
@@ -2945,7 +2534,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
             ImageRequest.create(CommonConstants.NETWORK_TIMEOUT_SECONDS,
                     url,
-                    getUserAgent(),
+                    userAgent,
                     false,
                     new ImageRequest.Handler() {
                         @Override
@@ -2961,33 +2550,42 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                         @Override
                         public void imageReceived(ImageRequest request,
                                                   Object imageObject) {
-                            // TODO: android.permission.WRITE_EXTERNAL_STORAGE
                             final Bitmap bitmap = (Bitmap) imageObject;
 
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    String errorMessage = "Error saving picture to device.";
+                                    String errorMessage = "Error saving picture to device through MRAID ad.";
 
                                     try {
-                                        String insertedUrl = MediaStore.Images.Media.insertImage(
-                                                getContext().getContentResolver(),
-                                                bitmap,
-                                                "AdImage",
-                                                "Image created by rich media ad.");
-                                        if (TextUtils.isEmpty(insertedUrl)) {
-                                            bridge.sendErrorMessage(errorMessage,
-                                                    Consts.CommandStorePicture);
+                                        boolean pictureSupported = getContext().checkCallingOrSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+                                        if (pictureSupported == true) {
+                                            // It requires android.permission.WRITE_EXTERNAL_STORAGE
+                                            String insertedUrl = MediaStore.Images.Media.insertImage(
+                                                    getContext().getContentResolver(),
+                                                    bitmap,
+                                                    "AdImage",
+                                                    "Image created by rich media ad.");
+                                            if (TextUtils.isEmpty(insertedUrl)) {
+                                                bridge.sendErrorMessage(errorMessage,
+                                                        Consts.CommandStorePicture);
 
-                                            PMLogger.logEvent(errorMessage, LogLevel.Error);
-                                            return;
+                                                PMLogger.logEvent(errorMessage, LogLevel.Error);
+                                                return;
+                                            }
+
+                                            MediaScannerConnection.scanFile(getContext(),
+                                                    new String[]{
+                                                            insertedUrl},
+                                                    null,
+                                                    null);
+
+
+                                        } else {
+                                            PMLogger.logEvent(errorMessage + " WRITE_EXTERNAL_STORAGE permission is not granted. " +
+                                                            "Please grant this permission to save pictures in storage. ",
+                                                    LogLevel.Error);
                                         }
-
-                                        MediaScannerConnection.scanFile(getContext(),
-                                                new String[]{
-                                                        insertedUrl},
-                                                null,
-                                                null);
                                     } catch (Exception ex) {
                                         bridge.sendErrorMessage(errorMessage,
                                                 Consts.CommandStorePicture);
@@ -3014,18 +2612,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             container = new RelativeLayout(getContext());
             container.setBackgroundColor(0xff000000);
             setContentView(container, layoutParams);
-
-            container.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (((imageView != null) && (imageView.getParent() == container)) || ((textView != null) && (textView
-                            .getParent() == container))) {
-                        if ((mAdDescriptor != null) && (TextUtils.isEmpty(mAdDescriptor.getURL()) == false)) {
-                            openUrl(mAdDescriptor.getURL(), false);
-                        }
-                    }
-                }
-            });
 
             setOnDismissListener(new OnDismissListener() {
                 // TODO: Resolve double close when ad invokes close (thus
@@ -3194,52 +2780,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         }
     }
 
-    private class LocationListener implements android.location.LocationListener {
-        public LocationListener() {
-        }
-
-        @Override
-        public void onLocationChanged(Location location) {
-            PMLogger.logEvent("LocationListener.onLocationChanged location:" + location.toString(),
-                    PMLogger.LogLevel.Debug);
-
-            String lat = String.valueOf(location.getLatitude());
-            String lng = String.valueOf(location.getLongitude());
-
-            adRequestDefaultParameters.put("lat", lat);
-            adRequestDefaultParameters.put("long", lng);
-            adRequestDefaultParameters.put("provider", location.getProvider());
-
-            PMBannerAdView.this.location = location;
-
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-            PMLogger.logEvent("LocationListener.onProviderDisabled provider:" + provider, LogLevel.Debug);
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-            PMLogger.logEvent("LocationListener.onProviderEnabled provider:" + provider, LogLevel.Debug);
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-            PMLogger.logEvent("LocationListener.onStatusChanged provider:" + provider + " status:" + String
-                    .valueOf(status), LogLevel.Debug);
-
-            if (status == LocationProvider.AVAILABLE) {
-                return;
-            }
-
-            adRequestDefaultParameters.remove("lat");
-            adRequestDefaultParameters.remove("long");
-
-        }
-    }
-
-
     private final Activity getActivity() {
         Activity activity = null;
 
@@ -3287,7 +2827,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         }
     }
 
-    public int statusBarHeightDp() {
+    private int statusBarHeightDp() {
         View rootView = getRootView();
 
         int statusBarHeightDp = 25;
@@ -3302,34 +2842,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         }
 
         return statusBarHeightDp;
-    }
-
-    private static String getUdidFromContext(Context context) {
-        String deviceId = Settings.Secure.getString(context.getContentResolver(),
-                Settings.Secure.ANDROID_ID);
-        deviceId = (deviceId == null) ? "" : sha1(deviceId);
-        return deviceId;
-
-    }
-
-    @SuppressLint("DefaultLocale")
-    public static String sha1(String string) {
-        StringBuilder stringBuilder = new StringBuilder();
-
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-1");
-            byte[] bytes = string.getBytes("UTF-8");
-            digest.update(bytes, 0, bytes.length);
-            bytes = digest.digest();
-
-            for (final byte b : bytes) {
-                stringBuilder.append(String.format("%02X", b));
-            }
-
-            return stringBuilder.toString().toLowerCase();
-        } catch (Exception e) {
-            return "";
-        }
     }
 
     public static boolean isScreenOn = true;
@@ -3370,62 +2882,59 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         }
     }
 
-    /**
-     * Renders the PubMatic creative received in header bidding.
-     * @param adData
-     */
-    public void renderHeaderBiddingCreative(AdResponse adData) {
-
-        if (isAdResponseValid(adData))
-            renderAdDescriptor(adData.getRenderable());
-    }
-
     @Override
     public void renderPrefetchedAd(String impressionId, ResponseGenerator responseGenerator) {
 
-        AdResponse pubResponse = new AdResponse();
+        if(responseGenerator!=null && !TextUtils.isEmpty(impressionId)) {
 
-        Map<String, String> adInfo = new HashMap<String, String>();
-        ArrayList<String> impressionTrackers = new ArrayList<String>();
-        ArrayList<String> clickTrackers = new ArrayList<String>();
-        adInfo.put("type", "thirdparty");
+            AdResponse pubResponse = new AdResponse();
 
-        try {
+            Map<String, String> adInfo = new HashMap<String, String>();
+            ArrayList<String> impressionTrackers = new ArrayList<String>();
+            ArrayList<String> clickTrackers = new ArrayList<String>();
+            adInfo.put("type", "thirdparty");
 
-            if (!TextUtils.isEmpty(responseGenerator.getCreative(impressionId))) {
+            try {
 
-                adInfo.put("content", responseGenerator.getCreative(impressionId));
+                String creative = responseGenerator.getCreative(impressionId);
+                if (!TextUtils.isEmpty(creative)) {
 
-                // Setting ecpm if not null
-                if (responseGenerator.getPrice(impressionId) != 0) {
-                    adInfo.put("ecpm", String.valueOf(responseGenerator.getPrice(impressionId)));
+                    adInfo.put("content", responseGenerator.getCreative(impressionId));
+
+                    // Setting ecpm if not null
+                    if (responseGenerator.getPrice(impressionId) != 0) {
+                        adInfo.put("ecpm", String.valueOf(responseGenerator.getPrice(impressionId)));
+                    }
+
+                    // Setting tracking url if not null
+                    if (responseGenerator.getTrackingUrl(impressionId) != null && !responseGenerator.getTrackingUrl(impressionId).equals("")) {
+                        impressionTrackers.add( URLDecoder.decode(responseGenerator.getTrackingUrl(impressionId), CommonConstants.ENCODING_UTF_8));
+                    }
+
+                    // Setting click tracking url if not null
+                    if (responseGenerator.getClickTrackingUrl(impressionId) != null && !responseGenerator.getClickTrackingUrl(impressionId).equals("")) {
+                        clickTrackers.add( URLDecoder.decode(responseGenerator.getClickTrackingUrl(impressionId), CommonConstants.ENCODING_UTF_8));
+                    }
+                } else {
+                    PMLogger.logEvent("Creative not found for impression Id = "+impressionId, LogLevel.Error);
+                    return;
                 }
 
-                // Setting tracking url if not null
-                if (responseGenerator.getTrackingUrl(impressionId) != null && !responseGenerator.getTrackingUrl(impressionId).equals("")) {
-                    impressionTrackers.add( URLDecoder.decode(responseGenerator.getTrackingUrl(impressionId), CommonConstants.ENCODING_UTF_8));
-                }
+                BannerAdDescriptor adDescriptor = new BannerAdDescriptor(adInfo);
+                adDescriptor.setImpressionTrackers(impressionTrackers);
+                adDescriptor.setClickTrackers(clickTrackers);
 
-                // Setting click tracking url if not null
-                if (responseGenerator.getClickTrackingUrl(impressionId) != null && !responseGenerator.getClickTrackingUrl(impressionId).equals("")) {
-                    clickTrackers.add( URLDecoder.decode(responseGenerator.getClickTrackingUrl(impressionId), CommonConstants.ENCODING_UTF_8));
-                }
+                pubResponse.setRenderable(adDescriptor);
+
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } finally {
+                //response = null;
             }
 
-            BannerAdDescriptor adDescriptor = new BannerAdDescriptor(adInfo);
-            adDescriptor.setImpressionTrackers(impressionTrackers);
-            adDescriptor.setClickTrackers(clickTrackers);
+            if (isAdResponseValid(pubResponse))
+                renderAdDescriptor(pubResponse.getRenderable());
 
-            pubResponse.setRenderable(adDescriptor);
-
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } finally {
-            //response = null;
         }
-
-        if (isAdResponseValid(pubResponse))
-            renderAdDescriptor(pubResponse.getRenderable());
-
     }
 }

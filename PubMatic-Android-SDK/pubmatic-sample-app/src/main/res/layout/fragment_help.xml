@@ -24,43 +24,23 @@
             android:textColor="@android:color/white" />
 
         <TextView
+            android:id="@+id/sdk_version_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_alignParentRight="true"
             android:padding="10dp"
-            android:text="PM SDK v5.2.0"
             android:textSize="18sp"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@android:color/white" />
 
     </RelativeLayout>
 
+    <WebView
+        android:id="@+id/webview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/dialog_help_relative_layout_header"></WebView>
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/dialog_help_relative_layout_header"
-        android:orientation="vertical">
-
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="10dp"
-                    android:text="@string/help_text"
-                    android:textColor="@android:color/black"
-                    android:textSize="17sp" />
-            </LinearLayout>
-        </ScrollView>
-    </LinearLayout>
 
 </RelativeLayout>

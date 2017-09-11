@@ -33,8 +33,9 @@ package com.pubmatic.sdk.common.pubmatic;
 
 /**
  * Class provides the different Ad sizes for Banner Ads.
- * 
+ * This class is deprecated, use PMAdSize class instead.
  */
+@Deprecated
 public final class PUBAdSize {
 
 	private int adWidth;
@@ -88,24 +89,30 @@ public final class PUBAdSize {
 	}
 
 	/**
+	 * Use PMAdSize class instead.
 	 * @param adWidth
 	 * @param adHeight
 	 */
+	@Deprecated
 	public PUBAdSize(int adWidth, int adHeight) {
 		this.adWidth = adWidth;
 		this.adHeight = adHeight;
 	}
 
 	/**
+	 * Use PMAdSize class instead.
 	 * @return the adWidth
 	 */
+	@Deprecated
 	public int getAdWidth() {
 		return adWidth;
 	}
 
 	/**
+	 * Use PMAdSize class instead.
 	 * @return the adHeight
 	 */
+	@Deprecated
 	public int getAdHeight() {
 		return adHeight;
 	}

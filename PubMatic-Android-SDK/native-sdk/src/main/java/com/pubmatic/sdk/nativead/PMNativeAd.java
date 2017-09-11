@@ -27,28 +27,18 @@
 
 package com.pubmatic.sdk.nativead;
 
-import static com.pubmatic.sdk.common.CommonConstants.DEFAULTED_EXCREATIVES;
-import static com.pubmatic.sdk.common.CommonConstants.DEFAULTED_PUBMATIC_EXFEEDS;
 import static com.pubmatic.sdk.common.CommonConstants.NATIVE_IMAGE_H;
 import static com.pubmatic.sdk.common.CommonConstants.NATIVE_IMAGE_W;
-import static com.pubmatic.sdk.common.CommonConstants.REQUESTPARAM_ANDROID_ID_SHA1;
-import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_DIRECT_STRING;
-import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_MEDIATION;
 import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_URL;
-import static com.pubmatic.sdk.common.CommonConstants.TELEPHONY_MCC;
-import static com.pubmatic.sdk.common.CommonConstants.TELEPHONY_MNC;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.MessageDigest;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Set;
 
 import org.json.JSONObject;
 
@@ -58,7 +48,6 @@ import android.content.Intent;
 import android.location.Location;
 import android.net.Uri;
 import android.provider.Settings;
-import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -72,8 +61,8 @@ import com.pubmatic.sdk.common.CommonConstants;
 import com.pubmatic.sdk.common.CommonConstants.CHANNEL;
 import com.pubmatic.sdk.common.PMLogger;
 import com.pubmatic.sdk.common.PMLogger.LogLevel;
-import com.pubmatic.sdk.common.CommonConstants.MediationNetwork;
 import com.pubmatic.sdk.common.LocationDetector;
+import com.pubmatic.sdk.common.PubMaticSDK;
 import com.pubmatic.sdk.common.RRFormatter;
 import com.pubmatic.sdk.common.network.AdTracking;
 import com.pubmatic.sdk.common.network.HttpHandler;
@@ -81,11 +70,7 @@ import com.pubmatic.sdk.common.network.HttpHandler.HttpRequestListener;
 import com.pubmatic.sdk.common.network.HttpRequest;
 import com.pubmatic.sdk.common.network.HttpResponse;
 import com.pubmatic.sdk.common.ui.BrowserDialog;
-import com.pubmatic.sdk.nativead.bean.PMAssetRequest;
 import com.pubmatic.sdk.nativead.bean.PMAssetResponse;
-import com.pubmatic.sdk.nativead.bean.PMDataAssetRequest;
-import com.pubmatic.sdk.nativead.bean.PMImageAssetRequest;
-import com.pubmatic.sdk.nativead.bean.PMTitleAssetRequest;
 
 /**
  * Main class used for requesting native ads. <br> Refer Sample application for example of
@@ -93,6 +78,9 @@ import com.pubmatic.sdk.nativead.bean.PMTitleAssetRequest;
  */
 public final class PMNativeAd {
 
+    /**
+     * An interface to notify the native ad request callbacks
+     */
     public interface NativeRequestListener {
 
         /**
@@ -103,26 +91,13 @@ public final class PMNativeAd {
         public void onNativeAdReceived(PMNativeAd ad);
 
         /**
-         * Callback when MASTNativeAd fails to get an ad. This may be due to invalid zone, network
+         * Callback when PMNativeAd fails to get an ad. This may be due to invalid zone, network
          * connection not available, timeout, no Ad to fill at this point.
          *
-         * @param ad - MASTNativeAd object which has requested for the Ad.
+         * @param ad - PMNativeAd object which has requested for the Ad.
          * @param ex - Exception occurred.
          */
         public void onNativeAdFailed(PMNativeAd ad, Exception ex);
-
-        /**
-         * Third party ad received. The application should be expecting this and ready to render the
-         * ad with the supplied configuration.
-         *
-         * @param ad
-         * @param properties Properties of the ad request (ad network information).
-         * @param parameters Parameters for the third party network (expected to be passed to that
-         * network).
-         */
-        public void onReceivedThirdPartyRequest(PMNativeAd ad,
-                Map<String, String> properties,
-                Map<String, String> parameters);
 
         /**
          * Callback when the user clicks on the native ad. Implement your logic on view click in
@@ -137,12 +112,9 @@ public final class PMNativeAd {
 
     private Context mContext = null;
 
-    private Map<MediationNetwork, String> mMapMediationNetworkTestDeviceIds = null;
     // Used to store the the current native response
     private NativeAdDescriptor mNativeAdDescriptor = null;
     private boolean mImpressionTrackerSent = false;
-    private boolean mThirdPartyImpTrackerSent = false;
-    private boolean mThirdPartyClickTrackerSent = false;
     private boolean mClickTrackerSent = false;
     private NativeRequestListener mListener = null;
     private String mUserAgent = null;
@@ -151,63 +123,30 @@ public final class PMNativeAd {
     private BrowserDialog mBrowserDialog = null;
     // Use external system native browser by default
     private boolean mUseInternalBrowser = false;
-    private MediationData mMediationData = null;
-    // Android Device ID androidaid
-    private boolean isAndroidaidEnabled;
 
     //Controller related objects
 	protected AdRequest 	    mAdRequest 		= null;
 	protected RRFormatter 		mRRFormatter 	= null;
-	
-    /**
-     * If false, denotes that SDK should handle the third party request with the help of adapter. If
-     * true, SDK should give the control back to publisher to handle third party request.
-     */
-    private boolean mOverrideAdapter = true;
 
     // Location support
     private Location location;
-    private boolean mRetrieveLocationInfo = true;
 
-    //private NativeAdController mAdController;
-    private CHANNEL mChannel;
 
     protected void setAdrequest(AdRequest adRequest) {
         if (adRequest == null) {
             throw new IllegalArgumentException("AdRequest object is null");
         }
 
-        // Since banneradRequest is class is abstract now, we will always have
-        // correct channel value here.
-        // and hence the controller. No need for null check.
-        // mAdRequest = adRequest;
-        setChannel(adRequest.getChannel());
         setAdRequest(adRequest);
 
         //Start the location update if Publisher has enabled location detection
-        if(mRetrieveLocationInfo) {
+        if(PubMaticSDK.isLocationDetectionEnabled() && mContext!=null) {
             location = LocationDetector.getInstance(mContext).getLocation();
+            if(LocationDetector.getInstance(mContext).hasObserver(locationObserver) == false) {
+                LocationDetector.getInstance(mContext).addObserver(locationObserver);
+            }
         }
 
-    }
-
-    /**
-     * Sets the ad network channel.
-     * <p/>
-     * REQUIRED - If not set updates will fail.
-     *
-     * @param channel Ad network channel.
-     */
-    private void setChannel(CHANNEL channel) {
-        // If channel is changed, controller needs to be re-initialized.
-        initController(channel);
-
-        mChannel = channel;
-    }
-
-    protected void initController(CHANNEL channel) {
-    	mChannel = channel;
-		createDefaultAdRequest();
     }
 
     private boolean checkForMandatoryParams() {
@@ -256,8 +195,7 @@ public final class PMNativeAd {
     /**
      * Collection of ad request parameters. Allows setting extra network parameters.
      * <p/>
-     * The SDK will set various parameters based on configuration and other options. For more
-     * information see http://developer.moceanmobile.com/Mocean_Ad_Request_API.
+     * The SDK will set various parameters based on configuration and other options.
      *
      * @return Map containing optional request parameters.
      */
@@ -267,8 +205,6 @@ public final class PMNativeAd {
 
     /**
      * Allows setting of extra custom parameters to ad request. Add custom parameter (key-value).
-     *
-     * @see - For details of custom parameters refer http://developer.moceanmobile.com/Mocean_Ad_Request_API
      */
     public void addCustomParameter(String customParamName, String value) {
         if (mAdRequestParameters != null && customParamName != null) {
@@ -282,76 +218,10 @@ public final class PMNativeAd {
      *
      * @param customParamMap Map containing custom parameters
      *
-     * @see - For details of custom parameters refer http://developer.moceanmobile.com/Mocean_Ad_Request_API
      */
     public void addCustomParametersMap(HashMap<String, String> customParamMap) {
         if (mAdRequestParameters != null && customParamMap != null) {
             mAdRequestParameters.putAll(customParamMap);
-        }
-    }
-
-    // @formatter:off
-	@SuppressWarnings("unused")
-	/**
-	 * Use this method if you are testing third party mediation SDKs using
-	 * adapter and set the deviceId with respect to particular network. <br />
-	 * e.g. If you are testing Facebook Audience Network with Mocean SDK using
-	 * <b> Mocean Adapter support </b>(<i> in which case Mocean SDK will
-	 * initialize the Facebook SDK internally </i>). Use
-	 * {@link MASTNativeAd#addTestDeviceIdForNetwork(MediationNetwork, String)};
-	 * 
-	 * <br />
-	 * You will know your device id when you run the application for the first
-	 * time and Facebook SDK will print your device id in console. Replace
-	 * "deviceid" with the generated id.
-	 * 
-	 * NativeAdObj.addTestDeviceIdForNetwork(MediationNetwork.
-	 * FACEBOOK_AUDIENCE_NETWORK, "deviceId");
-	 * 
-	 * <br />
-	 * Follow same instructions for other supported networks as well.
-	 * 
-	 * @param network
-	 * @param deviceId
-	 */
-	@Deprecated
-	// This method is deprecated and will be removed in next release
-	private void addTestDeviceIdForNetwork(MediationNetwork network,
-			String deviceId) {
-		if (mMapMediationNetworkTestDeviceIds == null) {
-			mMapMediationNetworkTestDeviceIds = new HashMap<MediationNetwork, String>();
-		}
-
-		mMapMediationNetworkTestDeviceIds.put(network, deviceId);
-	}
-
-	/**
-	 * add androidaid as request param.
-	 * 
-	 * @param isAndroidaidEnabled
-	 */
-	public void setAndroidaidEnabled(boolean isAndroidaidEnabled) {
-		this.isAndroidaidEnabled = isAndroidaidEnabled;
-	}
-
-	public boolean isAndoridaidEnabled() {
-		return isAndroidaidEnabled;
-	}
-
-	/**
-	 * Use this method to remove test devices ids for network.
-	 * 
-	 * e.g. if you have set device ids using
-	 * {@link PMNativeAd#addTestDeviceIdForNetwork(MediationNetwork, String)}
-	 * remove it using nativeAd.removeTestDeviceIdForNetwork(MediationNetwork.
-	 * FACEBOOK_AUDIENCE_NETWORK);
-	 * 
-	 * @param network
-	 */
-	// @formatter:on
-    public void removeTestDeviceIdForNetwork(MediationNetwork network) {
-        if (mMapMediationNetworkTestDeviceIds != null) {
-            mMapMediationNetworkTestDeviceIds.remove(network);
         }
     }
 
@@ -383,8 +253,7 @@ public final class PMNativeAd {
         else
         {
             fireCallback(NATIVEAD_FAILED,
-                    new Exception("Mandatory parameters validation error"),
-                    null);
+                    new Exception("Mandatory parameters validation error"));
         }
 
     }
@@ -415,44 +284,10 @@ public final class PMNativeAd {
      * @param defaulted denotes whether third party ad network defaulted
      */
     private void internalUpdate(boolean defaulted) {
-        Map<String, String> args = new HashMap<String, String>();
-
-		/*
-		 * If the mediation partner has defaulted, add this parameter to denote
-		 * that this network has defaulted and remove this network from auction
-		 * next time. In case the source is direct send the creativeId instead
-		 * of network id.
-		 */
-        if (defaulted && mNativeAdDescriptor != null) {
-            if (RESPONSE_DIRECT_STRING.equals(mNativeAdDescriptor.getSource())) {
-                args.put(DEFAULTED_EXCREATIVES, mNativeAdDescriptor.getCreativeId());
-                args.remove(DEFAULTED_PUBMATIC_EXFEEDS);
-            } else if (RESPONSE_MEDIATION.equals(mNativeAdDescriptor.getSource())) {
-                args.put(DEFAULTED_PUBMATIC_EXFEEDS, mNativeAdDescriptor.getMediationId());
-                args.remove(DEFAULTED_EXCREATIVES);
-            }
-        }
 
         reset();
+
         initUserAgent();
-
-        try {
-            TelephonyManager tm = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
-            String networkOperator = tm.getNetworkOperator();
-            if ((networkOperator != null) && (networkOperator.length() > 3)) {
-                String mcc = networkOperator.substring(0, 3);
-                String mnc = networkOperator.substring(3);
-
-                args.put(TELEPHONY_MCC, String.valueOf(mcc));
-                args.put(TELEPHONY_MNC, String.valueOf(mnc));
-            }
-        } catch (Exception ex) {
-            PMLogger.logEvent("Unable to obtain mcc and mnc. Exception:" + ex, LogLevel.Debug);
-        }
-        // Add Device ID
-        if (isAndoridaidEnabled()) {
-            args.put(REQUESTPARAM_ANDROID_ID_SHA1, getUdidFromContext(mContext));
-        }
 
         // If User has provided the location set the source as user
         Location userProvidedLocation = mAdRequest.getLocation();
@@ -464,13 +299,20 @@ public final class PMNativeAd {
         // Insert the location parameter in ad request,
         // if publisher has enabled location detection
         // and does not provid location
-        if(mRetrieveLocationInfo && location != null)
+        if(PubMaticSDK.isLocationDetectionEnabled() && location != null)
             mAdRequest.setLocation(location);
 
         // Make a fresh adRequest
-        mAdRequest.setUserAgent(getUserAgent());
-
-        mAdRequest.createRequest(mContext);
+        mAdRequest.setUserAgent(mUserAgent);
+        //Fetch user-agent, if publisher has not explicitly provided
+//        if(TextUtils.isEmpty(mAdRequest.getUserAgent())) {
+//            initUserAgent();
+//            mAdRequest.setUserAgent(mUserAgent);
+//        } else {
+//            //Set the publisher provided user-agent.
+//            // It also requied for other http calls.
+//            mUserAgent = mAdRequest.getUserAgent();
+//        }
 
         HttpRequest httpRequest = mRRFormatter.formatRequest(mAdRequest);
 
@@ -491,52 +333,12 @@ public final class PMNativeAd {
 
         if (adDescriptor != null && adDescriptor instanceof NativeAdDescriptor) {
             mNativeAdDescriptor = (NativeAdDescriptor) adDescriptor;
-            mMediationData = null;
-
-			/*
-			 * Check if the third party network has win. Then parse the response
-			 * and inform the publisher.
-			 */
-            if (mNativeAdDescriptor.isTypeMediation()) {
-                try {
-                    if (mOverrideAdapter) {
-						/*
-						 * Since user has decided to handle the third party SDK
-						 * initialization using overrideAdapter = true, parse
-						 * the response to get third party descriptor and inform
-						 * the user.
-						 */
-                        ThirdPartyDescriptor thirdPartyDescriptor = ThirdPartyDescriptor.getDescriptor(
-                                mNativeAdDescriptor);
-
-                        if (("mediation").equalsIgnoreCase(mNativeAdDescriptor.getSource())) {
-                            mMediationData = new MediationData();
-                            mMediationData.setMediationNetworkId(mNativeAdDescriptor.getMediationId());
-                            mMediationData.setMediationNetworkName(mNativeAdDescriptor.getMediation());
-                            mMediationData.setMediationSource(mNativeAdDescriptor.getSource());
-                            mMediationData.setMediationAdId(mNativeAdDescriptor.getAdUnitId());
-                        }
-
-                        fireCallback(THIRDPARTY_RECEIVED, null, thirdPartyDescriptor);
-                    } else {
-                        PMLogger.logEvent(
-                                "Error parsing third party content descriptor. No Inbuilt adapter available.",
-                                LogLevel.Error);
-                    }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    PMLogger.logEvent("Error parsing third party content descriptor.  Exception:" + ex,
-                             LogLevel.Error);
-                }
-            } else {
-                // If it is the native response, then pass the native response
-                // Set all the properties for native ad
-                fireCallback(NATIVEAD_RECEIVED, null, null);
-            } // if (mNativeAdDescriptor.isTypeMediation()) ends
+            // If it is the native response, then pass the native response
+            // Set all the properties for native ad
+            fireCallback(NATIVEAD_RECEIVED, null);
         } else {
             fireCallback(NATIVEAD_FAILED,
-                         new Exception("Incorrect response received"),
-                         null);
+                         new Exception("Incorrect response received"));
         }
     }
 
@@ -589,8 +391,7 @@ public final class PMNativeAd {
             }
 
             fireCallback(NATIVEAD_FAILED,
-                         new Exception(errorType + ", " + errorCode),
-                         null);
+                         new Exception(errorType + ", " + errorCode));
 
             LogLevel logLevel = LogLevel.Error;
             if (String.valueOf(404).equals(errorCode)) {
@@ -660,7 +461,7 @@ public final class PMNativeAd {
                         adClicked();
                         openClickUrlInBrowser();
 
-                        fireCallback(NATIVEAD_CLICKED, null, null);
+                        fireCallback(NATIVEAD_CLICKED, null);
                     }
                 });
             }
@@ -671,7 +472,7 @@ public final class PMNativeAd {
      * Traverse view and remove click listeners for all children views.
      * <p/>
      * In some 3rd party mediation SDK's, click listeners are set on all sub views. This causes
-     * problem with click listener in mocean and other native ad views. To fix this, we remove click
+     * problem with click listener in PubMatic and other native ad views. To fix this, we remove click
      * listeners on all sub views and set all sub views as non-clickable.
      */
     private void removeListenerFromChildViews(View view) {
@@ -690,61 +491,8 @@ public final class PMNativeAd {
         }
     }
 
-    /**
-     * The SDK handles the adapter loading by default in case of third party SDK wins and invokes
-     * the third party SDK through adapters. The default value is false.
-     * <p/>
-     * Set override = true if you want to handle the invoking of the third party SDK. The SDK will
-     * call {@link NativeRequestListener#onReceivedThirdPartyRequest(PMNativeAd, Map, Map)} in case
-     * third party SDK wins. If the third party SDK defaults you may call {@link
-     * PMNativeAd#thirdpartyPartnerDefaulted()}.
-     * <p/>
-     * If the adapter is invoked the defaulting is handled by the SDK itself.
-     *
-     * @param override
-     */
-    @SuppressWarnings("unused")
-    @Deprecated
-    private void overrideAdapterLoading(boolean override) {
-        // This method will be removed in next release
-        mOverrideAdapter = override;
-    }
-
-    /**
-     * Call this method if the third party partner defaults or gives the error. SDK will initiate a
-     * new request eliminating the call to the defaulted partner.
-     */
-    public void thirdpartyPartnerDefaulted() {
-        internalUpdate(true);
-    }
-
-    /**
-     * Determines if location detection is enabled. If enabled, the SDK will use the location
-     * services of the device to determine the device's location ad add ad request parameters
-     * (lat/long) to the ad request. Location detection can be enabled with
-     * setLocationDetectionEnabled() or enableLocationDetection().
-     *
-     * @return true if location detection is enabled, false if not
-     */
-    public boolean isLocationDetectionEnabled() {
-        return mRetrieveLocationInfo;
-    }
-
     public Location getLocation() {
         return location;
-    }
-
-    /**
-     * Enables or disable SDK location detection. If enabled with this method the most battery
-     * optimized settings are used. This method is used to disable location detection for either
-     * method of enabling location detection.
-     * <p/>
-     * Permissions for coarse or fine location detection may be required.
-     *
-     * @param locationDetectionEnabled
-     */
-    public void setLocationDetectionEnabled(boolean locationDetectionEnabled) {
-        mRetrieveLocationInfo = locationDetectionEnabled;
     }
 
     private Observer locationObserver = new Observer() {
@@ -760,11 +508,8 @@ public final class PMNativeAd {
     public void reset() {
 
         mNativeAdDescriptor = null;
-        mMediationData = null;
 
         mImpressionTrackerSent = false;
-        mThirdPartyImpTrackerSent = false;
-        mThirdPartyClickTrackerSent = false;
         mClickTrackerSent = false;
     }
 
@@ -776,12 +521,8 @@ public final class PMNativeAd {
             mBrowserDialog.dismiss();
             mBrowserDialog = null;
         }
-
-        mOverrideAdapter = true;
         mListener = null;
     }
-
-    // SDK methods for native ads
 
     /**
      * Get the list of native assets.
@@ -839,27 +580,6 @@ public final class PMNativeAd {
         return null;
     }
 
-    /**
-     * Returns true if mediation response
-     *
-     * @return true for mediation response
-     */
-    public boolean isMediationResponse() {
-        return mNativeAdDescriptor.isTypeMediation();
-    }
-
-    /**
-     * In case if third party mediation response is received from Mocean server (when
-     * source=mediation), then user should call this method in onReceivedThirdPartyRequest()
-     * callback, to get mediation data. This mediation data can then be used to Initialize third
-     * party SDK. <br> Please note that MediationData will be null when mediation source is direct.
-     *
-     * @return {@link MediationData} instance.
-     */
-    public MediationData getMediationData() {
-        return mMediationData;
-    }
-
     // Private methods start
     private void initUserAgent() {
         if (TextUtils.isEmpty(mUserAgent)) {
@@ -879,32 +599,8 @@ public final class PMNativeAd {
      *
      * @return
      */
-    public String getUserAgent() {
+    private String getUserAgent() {
         return mUserAgent;
-    }
-
-
-    /**
-     * Call this method whenever a client side thirdparty response is received and user have
-     * rendered ad using third-party SDK. User should call this method when successful ad load
-     * complete callback is received from third party SDK.
-     */
-    public void sendImpression() {
-        if (!mThirdPartyImpTrackerSent && mNativeAdDescriptor != null && mNativeAdDescriptor.isTypeMediation()) {
-            sendImpressions(IMPRESSION_TRACKER);
-            mThirdPartyImpTrackerSent = true;
-        }
-    }
-
-    /**
-     * Call this method whenever ad received from client side thirdparty SDK is clicked. User should
-     * call this method when ad clicked callback is received from third party SDK.
-     */
-    public void sendClickTracker() {
-        if (!mThirdPartyClickTrackerSent && mNativeAdDescriptor != null && mNativeAdDescriptor.isTypeMediation()) {
-            sendImpressions(CLICK_TRACKER);
-            mThirdPartyClickTrackerSent = true;
-        }
     }
 
     private void sendImpressions(final int trackerType) {
@@ -1008,8 +704,7 @@ public final class PMNativeAd {
     }
 
     private void fireCallback(int callbackType,
-            Exception ex,
-            ThirdPartyDescriptor thirdPartyDescriptor) {
+            Exception ex) {
         // Check if listener is set.
         if (mListener != null) {
 
@@ -1021,14 +716,7 @@ public final class PMNativeAd {
                     mListener.onNativeAdFailed(this, ex);
                     break;
                 case THIRDPARTY_RECEIVED:
-                    if (thirdPartyDescriptor != null) {
-                        mListener.onReceivedThirdPartyRequest(this,
-                                                              thirdPartyDescriptor.getProperties(),
-                                                              thirdPartyDescriptor.getParams());
-                    } else {
-                        fireCallback(NATIVEAD_FAILED, new Exception(
-                                "Third party response is invalid"), thirdPartyDescriptor);
-                    }
+
                     break;
                 case NATIVEAD_CLICKED:
                     mListener.onNativeAdClicked(this);
@@ -1037,12 +725,6 @@ public final class PMNativeAd {
         }
     }
 
-//    private enum CallbackType {
-//        NativeReceived, NativeFailed, ThirdPartyReceived, NativeAdClicked;
-//    }
-//  private enum TrackerType {
-//  //IMPRESSION_TRACKER, CLICK_TRACKER;
-//	}
  // constants and listeners
     private final int  NATIVEAD_RECEIVED = 10001, NATIVEAD_FAILED = 10002, THIRDPARTY_RECEIVED = 10003, NATIVEAD_CLICKED = 10004;
     
@@ -1097,15 +779,6 @@ public final class PMNativeAd {
         }
     }
 
-
-    private String getUdidFromContext(Context context) {
-        String deviceId = Settings.Secure.getString(context.getContentResolver(),
-                                                    Settings.Secure.ANDROID_ID);
-        deviceId = (deviceId == null) ? "" : sha1(deviceId);
-        return deviceId;
-
-    }
-
     @SuppressLint("DefaultLocale")
     private String sha1(String string) {
         StringBuilder stringBuilder = new StringBuilder();
@@ -1125,71 +798,14 @@ public final class PMNativeAd {
             return "";
         }
     }
-    
-    //------------ Controller related code --------------
 
-	//TODO :: Need to verify this method
-	private void createDefaultAdRequest() {
-
-		String adRequestName = null;
-		Class<?>  className     = null;
-		Method m			 = null;
-		try {
-			
-
-			switch (mChannel) {
-				case MOCEAN:
-					adRequestName = "com.pubmatic.sdk.nativead.mocean.MoceanNativeAdRequest";
-					className = Class.forName(adRequestName);
-					m = className.getMethod("createMoceanNativeAdRequest", Context.class, String.class);
-					mAdRequest = (AdRequest)m.invoke(null, mContext, null);
-					break;
-				case PUBMATIC:
-					adRequestName = "com.pubmatic.sdk.nativead.pubmatic.PubMaticNativeAdRequest";
-					className = Class.forName(adRequestName);
-					m = className.getMethod("createPubMaticNativeAdRequest", 
-							Context.class, String.class, String.class, String.class);
-					mAdRequest = (AdRequest)m.invoke(null, mContext, null, null, null);
-					break;
-		
-				default:
-					break;
-			}
-			
-			createRRFormatter();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		} catch (ClassCastException ex) {
-			
-		}
-	}
-	
 	public void setAdRequest(AdRequest adRequest) {
 		
 		if (adRequest == null)
 			throw new IllegalArgumentException("AdRequest object is null");
 
-        adRequest.copyRequestParams(mAdRequest);
         mAdRequest = adRequest;
 
-        //Need to call copy parameters
-        //if(mAdRequest!=null)
-        //   mAdRequest.copyRequestParams();
-
-        /*
-		if (adRequest instanceof NativeAdRequest) {
-			((NativeAdRequest)adRequest).copyRequestParams(mAdRequest);
-			mAdRequest = (NativeAdRequest)adRequest;
-		} else
-			throw new IllegalStateException(
-					"AdRequest and channel type do not match.");
-		*/
 		//Create RRFormater
 		createRRFormatter();
 	}
@@ -1197,22 +813,8 @@ public final class PMNativeAd {
 	private void createRRFormatter() {
 		if(mAdRequest != null)
 		{
-			//Create RRFormater
-			String rrFormaterName = mAdRequest.getFormatter();
-			
-			try {
-				Class<?> className = Class.forName(rrFormaterName);
-				mRRFormatter = (RRFormatter) className.newInstance();
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (InstantiationException e) {
-				e.printStackTrace();
-			} catch (ClassCastException ex) {
-				
-			}
+			//Get RRFormatter from AdRequest
+            mRRFormatter = mAdRequest.getFormatter();
 		}
 	}
-    //---------------------------------------------------
 }

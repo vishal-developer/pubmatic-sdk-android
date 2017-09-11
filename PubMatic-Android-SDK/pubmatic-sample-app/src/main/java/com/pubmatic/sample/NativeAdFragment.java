@@ -20,11 +20,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.pubmatic.sdk.banner.mocean.MoceanBannerAdRequest;
-import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest;
 import com.pubmatic.sdk.common.AdRequest;
-import com.pubmatic.sdk.common.mocean.MoceanAdRequest;
-import com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest;
+import com.pubmatic.sdk.common.pubmatic.PMAdRequest;
 import com.pubmatic.sdk.nativead.PMNativeAd;
 import com.pubmatic.sdk.nativead.bean.PMAssetRequest;
 import com.pubmatic.sdk.nativead.bean.PMAssetResponse;
@@ -36,21 +33,16 @@ import com.pubmatic.sdk.nativead.bean.PMImageAssetResponse;
 import com.pubmatic.sdk.nativead.bean.PMImageAssetTypes;
 import com.pubmatic.sdk.nativead.bean.PMTitleAssetRequest;
 import com.pubmatic.sdk.nativead.bean.PMTitleAssetResponse;
-import com.pubmatic.sdk.nativead.mocean.MoceanNativeAdRequest;
-import com.pubmatic.sdk.nativead.pubmatic.PubMaticNativeAdRequest;
+import com.pubmatic.sdk.nativead.pubmatic.PMNativeAdRequest;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  *
  */
 public class NativeAdFragment extends DialogFragment {
-
-    private AlertDialog.Builder mBuilder;
-    private LayoutInflater mInflater;
 
     private ConfigurationManager.PLATFORM mPlatform;
 
@@ -66,17 +58,16 @@ public class NativeAdFragment extends DialogFragment {
 
     private PMNativeAd ad = null;
 
-    public NativeAdFragment() {}
-
-    public NativeAdFragment(ConfigurationManager.PLATFORM platform, LinkedHashMap<String, LinkedHashMap<String, String>> settings)
-    {
-        mPlatform = platform;
-        mSettings = settings;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Bundle b = this.getArguments();
+        if(b.getSerializable("Settings") != null)
+            mSettings = (LinkedHashMap<String, LinkedHashMap<String, String>>)b.getSerializable("Settings");
+
+        if(b.getSerializable("Platform") != null)
+            mPlatform = (ConfigurationManager.PLATFORM)b.getSerializable("Platform");
     }
 
     @Override
@@ -96,25 +87,19 @@ public class NativeAdFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState)
     {
-        final View view;
-
-        mBuilder = new AlertDialog.Builder(getActivity());
-
-        mInflater = getActivity().getLayoutInflater();
-        view = mInflater.inflate(R.layout.native_template, null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View view = inflater.inflate(R.layout.native_template, null);
+        builder.setView(view);
 
         initLayout(view);
 
-        loadAd(view);
-
-        mBuilder.setView(view);
-
-        Dialog dialog = mBuilder.create();
-
         Drawable drawable = new ColorDrawable(Color.BLACK);
         drawable.setAlpha(220);
-
+        Dialog dialog = builder.create();
         dialog.getWindow().setBackgroundDrawable(drawable);
+
+        loadAd();
 
         return dialog;
     }
@@ -130,7 +115,7 @@ public class NativeAdFragment extends DialogFragment {
         ratingBar = (RatingBar) view.findViewById(R.id.ratingbar);
     }
 
-    private void loadAd(View rootView)
+    private void loadAd()
     {
         // Initialize the adview
         ad = new PMNativeAd(getActivity());
@@ -140,133 +125,24 @@ public class NativeAdFragment extends DialogFragment {
 		 * Uncomment following line to use internal browser instead system
 		 * default browser, to open ads when clicked
 		 */
-        ad.setUseInternalBrowser(true);
+        boolean isUseInternalBrowserChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_USE_INTERNAL_BROWSER);
+        ad.setUseInternalBrowser(isUseInternalBrowserChecked);
 
-        // Enable device id detection
-        ad.setAndroidaidEnabled(true);
+        // Request for ads
+        AdRequest adRequest = buildAdRequest();
+        if(adRequest!=null)
+            ad.execute(adRequest);
+    }
 
-        AdRequest adRequest;
+    /**
+     * Build AdRequest object and assign parameter values.
+     * @return
+     */
+    private AdRequest buildAdRequest() {
 
-        if(mPlatform == ConfigurationManager.PLATFORM.MOCEAN) {
+        AdRequest adRequest = null;
 
-            String zone = mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).get(PMConstants.SETTINGS_AD_TAG_ZONE);
-
-            if(zone == null || zone.equals(""))
-            {
-                Toast.makeText(getActivity(), "Please enter a zone", Toast.LENGTH_LONG).show();
-                return;
-            }
-
-            adRequest = MoceanNativeAdRequest.createMoceanNativeAdRequest(getActivity(), zone, getAssetRequests());
-
-            String test = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_TEST);
-            ((MoceanNativeAdRequest)adRequest).setTest(Boolean.parseBoolean(test));
-
-            try
-            {
-                // Targetting Parameters
-                String latitude = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_LATITUDE);
-                String longitude = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_LONGITUDE);
-
-                Location location = new Location("");
-
-                if(!latitude.equals("") && !longitude.equals(""))
-                {
-                    location.setLatitude(Double.parseDouble(latitude));
-                    location.setLongitude(Double.parseDouble(longitude));
-
-                    adRequest.setLocation(location);
-                }
-
-                String city = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_CITY);
-
-                if(!city.equals("") && !city.equals(""))
-                    ((MoceanNativeAdRequest)adRequest).setCity(city);
-
-                String zip = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_ZIP);
-
-                if(!zip.equals("") && !zip.equals(""))
-                    ((MoceanNativeAdRequest)adRequest).setZip(zip);
-
-                String dma = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_DMA);
-
-                if(!dma.equals("") && !dma.equals(""))
-                    ((MoceanNativeAdRequest)adRequest).setDMA(dma);
-
-                String area = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_AREA);
-
-                if(!area.equals("") && area != null)
-                    ((MoceanNativeAdRequest)adRequest).setAreaCode(area);
-
-                String age = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_AGE);
-
-                if(!age.equals("") && !age.equals(""))
-                    ((MoceanNativeAdRequest)adRequest).setAge(age);
-
-                String birthday = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_BIRTHDAY);
-
-                if(!birthday.equals("") && birthday != null)
-                    ((MoceanNativeAdRequest)adRequest).setBirthDay(birthday);
-
-                String gender = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_GENDER);
-
-                if(!gender.equals("") && !gender.equals(""))
-                {
-                    if(gender.equalsIgnoreCase("Male") || gender.equalsIgnoreCase("M"))
-                        ((MoceanBannerAdRequest)adRequest).setGender(MoceanAdRequest.GENDER.MALE);
-                    else if(gender.equalsIgnoreCase("Female") || gender.equalsIgnoreCase("F"))
-                        ((MoceanBannerAdRequest)adRequest).setGender(MoceanAdRequest.GENDER.FEMALE);
-                }
-
-                String over18 = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_OVER_18);
-
-                if(!over18.equals("") && over18 != null)
-                {
-                    if(over18.equalsIgnoreCase("0"))
-                        ((MoceanBannerAdRequest)adRequest).setOver18(MoceanAdRequest.OVER_18.DENY);
-                    else if(over18.equalsIgnoreCase("2"))
-                        ((MoceanBannerAdRequest)adRequest).setOver18(MoceanAdRequest.OVER_18.ONLY_OVER_18);
-                    else if(over18.equalsIgnoreCase("3"))
-                        ((MoceanBannerAdRequest)adRequest).setOver18(MoceanAdRequest.OVER_18.ALLOW_ALL);
-                }
-
-                String ethnicity = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_ETHNICITY);
-
-                if(!ethnicity.equals("") && ethnicity != null)
-                {
-                    if(ethnicity.equals("0"))
-                        ((MoceanBannerAdRequest)adRequest).setEthnicity(MoceanAdRequest.ETHNICITY.BLACK);
-                    else if(ethnicity.equals("1"))
-                        ((MoceanBannerAdRequest)adRequest).setEthnicity(MoceanAdRequest.ETHNICITY.ASIAN);
-                    else if(ethnicity.equals("2"))
-                        ((MoceanBannerAdRequest)adRequest).setEthnicity(MoceanAdRequest.ETHNICITY.LATINO);
-                    else if(ethnicity.equals("3"))
-                        ((MoceanBannerAdRequest)adRequest).setEthnicity(MoceanAdRequest.ETHNICITY.WHITE);
-                    else if(ethnicity.equals("4"))
-                        ((MoceanBannerAdRequest)adRequest).setEthnicity(MoceanAdRequest.ETHNICITY.EAST_INDIAN);
-                }
-
-                String language = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_LANGUAGE);
-
-                if(!language.equals("") && language != null)
-                    ((MoceanBannerAdRequest)adRequest).setLanguage(language);
-
-                /*String timeout = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_TIMEOUT);
-
-                if(!timeout.equals("") && timeout != null)
-                    ((MoceanBannerAdRequest)adRequest).setTimeout(Integer.parseInt(timeout));*/
-
-                /*String keywords = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_KEYWORDS);
-
-                if(!keywords.equals("") && keywords != null)
-                    ((MoceanBannerAdRequest)adRequest).setKeywords(keywords);*/
-            }
-            catch (Exception exception)
-            {
-                Log.e("Parse Error", exception.toString());
-            }
-        }
-        else if(mPlatform == ConfigurationManager.PLATFORM.PUBMATIC) {
+        if(mPlatform == ConfigurationManager.PLATFORM.PUBMATIC) {
 
             String pubId = mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).get(PMConstants.SETTINGS_AD_TAG_PUB_ID);
             String siteId = mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).get(PMConstants.SETTINGS_AD_TAG_SITE_ID);
@@ -275,14 +151,14 @@ public class NativeAdFragment extends DialogFragment {
             if(pubId == null || pubId.equals("") || siteId == null || siteId.equals("") || adId == null || adId.equals(""))
             {
                 Toast.makeText(getActivity(), "Please enter pubId, siteId and adId", Toast.LENGTH_LONG).show();
-                return;
+                return null;
             }
 
-            adRequest = PubMaticNativeAdRequest.createPubMaticNativeAdRequest(getActivity(), pubId, siteId, adId, getAssetRequests());
+            adRequest = PMNativeAdRequest.createPMNativeAdRequest(getActivity(), pubId, siteId, adId, getAssetRequests());
 
             // Configuration Parameters
             String androidAidEnabled = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED);
-            ((PubMaticNativeAdRequest)adRequest).setAndroidAidEnabled(Boolean.parseBoolean(androidAidEnabled));
+            ((PMNativeAdRequest)adRequest).setAndroidAidEnabled(Boolean.parseBoolean(androidAidEnabled));
 
             try
             {
@@ -290,7 +166,7 @@ public class NativeAdFragment extends DialogFragment {
                 String latitude = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_LATITUDE);
                 String longitude = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_LONGITUDE);
 
-                Location location = new Location("");
+                Location location = new Location("user");
 
                 if(!latitude.equals("") && !longitude.equals(""))
                 {
@@ -303,65 +179,60 @@ public class NativeAdFragment extends DialogFragment {
                 String city = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_CITY);
 
                 if(!city.equals("") && city != null)
-                    ((PubMaticNativeAdRequest)adRequest).setCity(city);
+                    ((PMNativeAdRequest)adRequest).setCity(city);
 
                 String state = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_STATE);
 
                 if(!state.equals("") && !state.equals(""))
-                    ((PubMaticNativeAdRequest)adRequest).setState(state);
+                    ((PMNativeAdRequest)adRequest).setState(state);
 
                 String zip = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_ZIP);
 
                 if(!zip.equals("") && zip != null)
-                    ((PubMaticNativeAdRequest)adRequest).setZip(zip);
+                    ((PMNativeAdRequest)adRequest).setZip(zip);
 
                 String appDomain = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_APP_DOMAIN);
 
                 if(!appDomain.equals("") && appDomain != null)
-                    ((PubMaticNativeAdRequest)adRequest).setAppDomain(appDomain);
+                    ((PMNativeAdRequest)adRequest).setAppDomain(appDomain);
 
                 String appCategory = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_APP_CATEGORY);
 
                 if(!appCategory.equals("") && appCategory != null)
-                    ((PubMaticNativeAdRequest)adRequest).setAppCategory(appCategory);
+                    ((PMNativeAdRequest)adRequest).setAppCategory(appCategory);
 
                 String iabCategory = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_IAB_CATEGORY);
 
                 if(!iabCategory.equals("") && iabCategory != null)
-                    ((PubMaticNativeAdRequest)adRequest).setIABCategory(iabCategory);
+                    ((PMNativeAdRequest)adRequest).setIABCategory(iabCategory);
 
                 String storeUrl = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_STORE_URL);
 
                 if(!storeUrl.equals("") && storeUrl != null)
-                    ((PubMaticNativeAdRequest)adRequest).setStoreURL(storeUrl);
-
-                String appName = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_APP_NAME);
-
-                if(!appName.equals("") && appName != null)
-                    ((PubMaticNativeAdRequest)adRequest).setAppName(appName);
+                    ((PMNativeAdRequest)adRequest).setStoreURL(storeUrl);
 
                 String yearOfBirth = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_YEAR_OF_BIRTH);
 
                 if(!yearOfBirth.equals("") && yearOfBirth != null)
-                    ((PubMaticNativeAdRequest)adRequest).setYearOfBirth(yearOfBirth);
+                    ((PMNativeAdRequest)adRequest).setYearOfBirth(yearOfBirth);
 
                 String income = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_INCOME);
 
                 if(!income.equals("") && income != null)
-                    ((PubMaticNativeAdRequest)adRequest).setIncome(income);
+                    ((PMNativeAdRequest)adRequest).setIncome(income);
 
                 String ethnicity = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_ETHNICITY);
 
                 if(!ethnicity.equals("") && ethnicity != null)
                 {
                     if(ethnicity.equalsIgnoreCase("HISPANIC"))
-                        ((PubMaticNativeAdRequest)adRequest).setEthnicity(PubMaticAdRequest.ETHNICITY.HISPANIC);
+                        ((PMNativeAdRequest)adRequest).setEthnicity(PMAdRequest.ETHNICITY.HISPANIC);
                     else if(ethnicity.equalsIgnoreCase("AFRICAN_AMERICAN"))
-                        ((PubMaticNativeAdRequest)adRequest).setEthnicity(PubMaticAdRequest.ETHNICITY.AFRICAN_AMERICAN);
+                        ((PMNativeAdRequest)adRequest).setEthnicity(PMAdRequest.ETHNICITY.AFRICAN_AMERICAN);
                     else if(ethnicity.equalsIgnoreCase("CAUCASIAN"))
-                        ((PubMaticNativeAdRequest)adRequest).setEthnicity(PubMaticAdRequest.ETHNICITY.CAUCASIAN);
+                        ((PMNativeAdRequest)adRequest).setEthnicity(PMAdRequest.ETHNICITY.CAUCASIAN);
                     else if(ethnicity.equalsIgnoreCase("ASIAN_AMERICAN"))
-                        ((PubMaticNativeAdRequest)adRequest).setEthnicity(PubMaticAdRequest.ETHNICITY.ASIAN_AMERICAN);
+                        ((PMNativeAdRequest)adRequest).setEthnicity(PMAdRequest.ETHNICITY.ASIAN_AMERICAN);
                 }
 
                 String gender = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_GENDER);
@@ -369,47 +240,30 @@ public class NativeAdFragment extends DialogFragment {
                 if(gender != null && !gender.equals(""))
                 {
                     if(gender.equalsIgnoreCase("Male") || gender.equalsIgnoreCase("M"))
-                        ((PubMaticNativeAdRequest)adRequest).setGender(PubMaticAdRequest.GENDER.MALE);
+                        ((PMNativeAdRequest)adRequest).setGender(PMAdRequest.GENDER.MALE);
                     else if(gender.equalsIgnoreCase("Female") || gender.equalsIgnoreCase("F"))
-                        ((PubMaticNativeAdRequest)adRequest).setGender(PubMaticAdRequest.GENDER.FEMALE);
+                        ((PMNativeAdRequest)adRequest).setGender(PMAdRequest.GENDER.FEMALE);
                     else if(gender.equalsIgnoreCase("Others") || gender.equalsIgnoreCase("O"))
-                        ((PubMaticNativeAdRequest)adRequest).setGender(PubMaticAdRequest.GENDER.OTHER);
+                        ((PMNativeAdRequest)adRequest).setGender(PMAdRequest.GENDER.OTHER);
                 }
 
                 String dma = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_DMA);
 
                 if(!dma.equals("") && dma != null)
-                    ((PubMaticNativeAdRequest)adRequest).setDMA(dma);
+                    ((PMNativeAdRequest)adRequest).setDMA(dma);
 
                 String paid = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_PAID);
 
                 if(!paid.equals("") && paid != null)
-                    ((PubMaticNativeAdRequest)adRequest).setApplicationPaid(Boolean.parseBoolean(paid));
-
-                String awt = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_AWT);
-
-                if(!awt.equals("") && awt != null)
-                {
-                    int awtOption = Integer.parseInt(awt);
-
-                    if(awtOption == 0)
-                        ((PubMaticNativeAdRequest)adRequest).setAWT(PubMaticAdRequest.AWT_OPTION.DEFAULT);
-                    else if(awtOption == 1)
-                        ((PubMaticNativeAdRequest)adRequest).setAWT(PubMaticAdRequest.AWT_OPTION.WRAPPED_IN_IFRAME);
-                    else if(awtOption == 2)
-                        ((PubMaticNativeAdRequest)adRequest).setAWT(PubMaticAdRequest.AWT_OPTION.WRAPPED_IN_JS);
-                }
+                    ((PMNativeAdRequest)adRequest).setApplicationPaid(Boolean.parseBoolean(paid));
 
                 String coppa = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_COPPA);
-                ((PubMaticBannerAdRequest)adRequest).setCoppa(Boolean.parseBoolean(coppa));
+                ((PMNativeAdRequest)adRequest).setCoppa(Boolean.parseBoolean(coppa));
 
                 String ormaCompliance = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_ORMA_COMPLIANCE);
 
                 if(!ormaCompliance.equals("") && ormaCompliance != null)
-                    ((PubMaticNativeAdRequest)adRequest).setOrmmaComplianceLevel(Integer.parseInt(ormaCompliance));
-
-                boolean isDoNotTrackChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_DO_NOT_TRACK);
-                ((PubMaticAdRequest)adRequest).setDoNotTrack(isDoNotTrackChecked);
+                    ((PMNativeAdRequest)adRequest).setOrmmaComplianceLevel(Integer.parseInt(ormaCompliance));
             }
             catch (Exception exception)
             {
@@ -417,36 +271,26 @@ public class NativeAdFragment extends DialogFragment {
             }
 
         }
-        else
-            adRequest = MoceanNativeAdRequest.createMoceanNativeAdRequest(getActivity(), "88269", getAssetRequests());
-
-        boolean isUseInternalBrowserChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_USE_INTERNAL_BROWSER);
-        ad.setUseInternalBrowser(isUseInternalBrowserChecked);
-
-        boolean isAutoLocationDetectionChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_AUTO_LOCATION_DETECTION);
-        ad.setLocationDetectionEnabled(isAutoLocationDetectionChecked);
-
-        // Request for ads
-        ad.execute(adRequest);
+        return  adRequest;
     }
 
     private List<PMAssetRequest> getAssetRequests() {
         List<PMAssetRequest> assets = new ArrayList<PMAssetRequest>();
 
-        PMTitleAssetRequest titleAsset = new PMTitleAssetRequest(1);// Unique assetId is mandatory for each asset
+        PMTitleAssetRequest titleAsset = new PMTitleAssetRequest(3);// Unique assetId is mandatory for each asset
         titleAsset.setLength(50);
         titleAsset.setRequired(true); // Optional (Default: false)
         assets.add(titleAsset);
 
-        PMImageAssetRequest imageAssetIcon = new PMImageAssetRequest(2);
+        PMImageAssetRequest imageAssetIcon = new PMImageAssetRequest(1);
         imageAssetIcon.setImageType(PMImageAssetTypes.icon);
         assets.add(imageAssetIcon);
 
-        PMImageAssetRequest imageAssetMainImage = new PMImageAssetRequest(3);
+        PMImageAssetRequest imageAssetMainImage = new PMImageAssetRequest(5);
         imageAssetMainImage.setImageType(PMImageAssetTypes.main);
         assets.add(imageAssetMainImage);
 
-        PMDataAssetRequest dataAssetDesc = new PMDataAssetRequest(5);
+        PMDataAssetRequest dataAssetDesc = new PMDataAssetRequest(2);
         dataAssetDesc.setDataAssetType(PMDataAssetTypes.desc);
         dataAssetDesc.setLength(25);
         assets.add(dataAssetDesc);
@@ -497,11 +341,11 @@ public class NativeAdFragment extends DialogFragment {
 								 * must match that of in request.
 								 */
                                 switch (asset.getAssetId()) {
-                                    case 1:
+                                    case 3:
                                         txtTitle.setText(((PMTitleAssetResponse) asset)
                                                 .getTitleText());
                                         break;
-                                    case 2:
+                                    case 1:
                                         PMNativeAd.Image iconImage = ((PMImageAssetResponse) asset)
                                                 .getImage();
                                         if (iconImage != null) {
@@ -510,7 +354,7 @@ public class NativeAdFragment extends DialogFragment {
                                                     iconImage.getUrl());
                                         }
                                         break;
-                                    case 3:
+                                    case 5:
                                         PMNativeAd.Image mainImage = ((PMImageAssetResponse) asset)
                                                 .getImage();
                                         if (mainImage != null) {
@@ -519,7 +363,7 @@ public class NativeAdFragment extends DialogFragment {
                                                     mainImage.getUrl());
                                         }
                                         break;
-                                    case 5:
+                                    case 2:
                                         txtDescription
                                                 .setText(((PMDataAssetResponse) asset)
                                                         .getValue());
@@ -554,6 +398,7 @@ public class NativeAdFragment extends DialogFragment {
                                 }
                             } catch (Exception ex) {
                                 Log.i("NativeAdFragment", "ERROR in rendering asset. Skipping asset.");
+                                ex.printStackTrace();
                             }
                         }
                     }
@@ -579,30 +424,16 @@ public class NativeAdFragment extends DialogFragment {
         }
 
         @Override
-        public void onReceivedThirdPartyRequest(PMNativeAd mastNativeAd,
-                                                Map<String, String> properties, Map<String, String> parameters) {
-        }
-
-        @Override
         public void onNativeAdClicked(PMNativeAd ad) {
         }
-    }
-
-    public static int dpToPx(int dp)
-    {
-        return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
-    }
-
-    public static int pxToDp(int px)
-    {
-        return (int) (px / Resources.getSystem().getDisplayMetrics().density) * 3;
     }
 
     @Override
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
 
-        ad.destroy();
+        if(ad!=null)
+            ad.destroy();
         ad = null;
     }
 }

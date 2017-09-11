@@ -5,108 +5,124 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="50dp"
-        android:background="#F2F2F2"
         android:paddingBottom="1dp"
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
         android:scrollbarStyle="outsideOverlay">
 
-        <RelativeLayout
-            android:id="@+id/layout"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/imgLogo"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_alignParentLeft="true"
-                android:layout_margin="0dp"
-                android:adjustViewBounds="true"
-                android:padding="1dp"
-                android:scaleType="fitCenter"/>
-
-            <TextView
-                android:id="@+id/txtTitle"
-                style="?android:attr/textAppearanceLarge"
+            <include layout="@layout/ad_tag_entry_layout"
+                android:id="@+id/ad_tag_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_toRightOf="@id/imgLogo"
-                android:paddingLeft="5dp"
-                android:text="&lt;Native Title>"
-                android:textColor="#2164A1"/>
+                />
 
-            <TextView
-                android:id="@+id/txtDescription"
-                style="?android:attr/textAppearanceMedium"
+            <RelativeLayout
+                android:id="@+id/layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/txtTitle"
-                android:layout_toRightOf="@id/imgLogo"
-                android:paddingLeft="5dp"
-                android:text="&lt;Native Description>"
-                android:textColor="#555555"/>
+                android:background="#F2F2F2"
+                >
 
-            <ImageView
-                android:id="@+id/imgMain"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_below="@id/txtDescription"
-                android:layout_marginTop="5dp"
-                android:adjustViewBounds="true"
-                android:padding="1dp"
-                android:scaleType="fitCenter"/>
+                <ImageView
+                    android:id="@+id/imgLogo"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_margin="0dp"
+                    android:adjustViewBounds="true"
+                    android:padding="1dp"
+                    android:scaleType="fitCenter"/>
 
-            <RatingBar
-                android:id="@+id/ratingbar"
-                style="?android:attr/ratingBarStyleIndicator"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_below="@id/imgMain"
-                android:clickable="false"
-                android:isIndicator="true"
-                android:maxHeight="30dp"
-                android:numStars="5"
-                android:padding="1dp"
-                android:rating="0.0"
-                android:stepSize="0.1"
-                android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/txtTitle"
+                    style="?android:attr/textAppearanceLarge"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_toRightOf="@id/imgLogo"
+                    android:paddingLeft="5dp"
+                    android:text="&lt;Native Title>"
+                    android:textColor="#2164A1"/>
 
-            <TextView
-                android:id="@+id/ctaText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_below="@id/imgMain"
-                android:layout_marginRight="5dp"
-                android:layout_marginTop="2dp"
-                android:layout_toRightOf="@id/ratingbar"
-                android:background="#555555"
-                android:gravity="center_horizontal"
-                android:padding="5dp"
-                android:text="&lt;CTA>"
-                android:textAllCaps="true"/>
+                <TextView
+                    android:id="@+id/txtDescription"
+                    style="?android:attr/textAppearanceMedium"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/txtTitle"
+                    android:layout_toRightOf="@id/imgLogo"
+                    android:paddingLeft="5dp"
+                    android:text="&lt;Native Description>"
+                    android:textColor="#555555"/>
 
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@id/ctaText"
-                android:layout_marginTop="5dp"
-                android:background="#66DDDDDD"
-                android:textColor="#333333"/>
-        </RelativeLayout>
+                <ImageView
+                    android:id="@+id/imgMain"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:layout_below="@id/txtDescription"
+                    android:layout_marginTop="5dp"
+                    android:adjustViewBounds="true"
+                    android:padding="1dp"
+                    android:scaleType="fitCenter"/>
+
+                <RatingBar
+                    android:id="@+id/ratingbar"
+                    style="?android:attr/ratingBarStyleIndicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@id/imgMain"
+                    android:clickable="false"
+                    android:isIndicator="true"
+                    android:maxHeight="30dp"
+                    android:numStars="5"
+                    android:padding="1dp"
+                    android:rating="0.0"
+                    android:stepSize="0.1"
+                    android:visibility="gone"/>
+
+                <TextView
+                    android:id="@+id/ctaText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_below="@id/imgMain"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_toRightOf="@id/ratingbar"
+                    android:background="#555555"
+                    android:gravity="center_horizontal"
+                    android:padding="5dp"
+                    android:text="&lt;CTA>"
+                    android:textAllCaps="true"/>
+
+                <TextView
+                    android:id="@+id/textView_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_below="@id/ctaText"
+                    android:layout_marginTop="7dp"
+                    android:background="#DDDDDD"
+                    android:textColor="#333333"
+                    android:text="Response Logs:"
+                    android:gravity="center_horizontal"
+                    android:textStyle="bold"/>
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_below="@id/textView_label"
+                    android:layout_marginTop="1dp"
+                    android:background="#66DDDDDD"
+                    android:textColor="#333333"/>
+            </RelativeLayout>
+        </LinearLayout>
+
     </ScrollView>
-
-    <Button
-        style="@android:style/ButtonBar"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_alignParentBottom="true"
-        android:onClick="onReloadAdClicked"
-        android:text="Reload Ad"/>
 
 </RelativeLayout>

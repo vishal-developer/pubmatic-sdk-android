@@ -1,17 +1,24 @@
 package com.pubmatic.sample;
 
-
 import android.Manifest;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,79 +29,125 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.Serializable;
 import java.util.LinkedHashMap;
+import java.util.List;
 
+import static com.pubmatic.sdk.banner.mraid.Consts.PlacementType.Interstitial;
+
+/**
+ * This fragment loads 'mSettings' object in memory from Settings.json file in asset folder.
+ * Any change in the UI values updates the 'mSettings' object in onFocusChangedListener.
+ * 'mSettings' object gets passed to respective ad fragment when LoadAd button clicked.
+ */
 public class HomeFragment extends Fragment {
 
-    private TextView mPlatformSelector;
     private TextView mAdTypeSelector;
 
     private ConfigurationManager.PLATFORM mPlatform;
     private ConfigurationManager.AD_TYPE mAdType;
 
+    private LinearLayout mSettingsParent;
     private Dialog mDialog;
-
     private View mLoadAd;
 
-    private final Handler handler = new Handler();
+    private LinkedHashMap<String, LinkedHashMap<String, String>> mSettings;
 
-    public static final int MY_PERMISSIONS_ALL = 111;
-    public static final int MY_PERMISSIONS_READ_EXTERNAL_STORAGE = 112;
-    public static final int MY_PERMISSIONS_ACCESS_FINE_LOCATION = 113;
-
-    LinkedHashMap<String, LinkedHashMap<String, String>> mSettings;
-
-    private LinearLayout mSettingsParent;
-
-    public HomeFragment() {
-    }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
 
-        mPlatformSelector = (TextView) rootView.findViewById(R.id.home_platform);
-        mAdTypeSelector = (TextView) rootView.findViewById(R.id.home_ad_type);
-
-        mPlatformSelector.setOnClickListener(onPlatformChooserSelected);
         mPlatform = ConfigurationManager.PLATFORM.PUBMATIC;
 
+        mAdTypeSelector = (TextView) rootView.findViewById(R.id.home_ad_type);
         mAdTypeSelector.setOnClickListener(onAdTypeChooserSelected);
-        mAdType = ConfigurationManager.AD_TYPE.BANNER;
+
+        //Default type would be banner
+        if (savedInstanceState != null) {
+            //probably orientation change
+            mAdType = (ConfigurationManager.AD_TYPE) savedInstanceState.getSerializable("adtype");
+
+            if(mAdType == ConfigurationManager.AD_TYPE.BANNER)
+                mAdTypeSelector.setText("Banner");
+            else if(mAdType == ConfigurationManager.AD_TYPE.INTERSTITIAL)
+                mAdTypeSelector.setText("Interstitial");
+            else if(mAdType == ConfigurationManager.AD_TYPE.NATIVE)
+                mAdTypeSelector.setText("Native");
+            else
+                mAdTypeSelector.setText("Banner");
+        } else
+            mAdType = ConfigurationManager.AD_TYPE.BANNER;
 
         mSettingsParent = (LinearLayout) rootView.findViewById(R.id.home_settings_parent);
 
         mLoadAd = rootView.findViewById(R.id.home_load_ad);
         mLoadAd.setOnClickListener(onLoadAd);
 
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if(getActivity() != null)
-                {
-                    int readExternalStoragePermissionCheck = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE);
-                    int accessFineLocationPermissionCheck = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION);
-
-                    if(readExternalStoragePermissionCheck != PackageManager.PERMISSION_GRANTED && accessFineLocationPermissionCheck != PackageManager.PERMISSION_GRANTED)
-                        requestPermissions(new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_ALL);
-                    else if (readExternalStoragePermissionCheck != PackageManager.PERMISSION_GRANTED)
-                        requestPermissions(new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_READ_EXTERNAL_STORAGE);
-                    else if(accessFineLocationPermissionCheck != PackageManager.PERMISSION_GRANTED)
-                        requestPermissions(new String[]{ Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_ACCESS_FINE_LOCATION);
-                }
-            }
-        }, 500);
-
+        //Load the default values of the parameters from Settings file inside asset folder
         refreshSettings();
 
         return rootView;
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onSaveInstanceState(final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable("adtype", (Serializable) mAdType);
     }
 
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+    }
+
+    /**
+     * It reads the settings.json file from asset folder and populates them in the screen UI.
+     * Internally, it inflates the runtime UI and assign the id/properties before UI loading.
+     */
+    public void refreshSettings()
+    {
+        mSettingsParent.removeAllViews();
+
+        mSettings = ConfigurationManager.getInstance(getContext()).getSettings(mPlatform, mAdType);
+
+        if(mSettings==null)
+            return;
+
+        //Add Header section in screen UI
+        for(String settingHeaderkey : mSettings.keySet())
+        {
+            Log.i("Setting Header", settingHeaderkey);
+            Log.i("Setting header", "-------------------------------------------------------");
+
+            View settingsHeaderView = getSettingsHeaderView(settingHeaderkey);
+
+            if(settingHeaderkey != null)
+                mSettingsParent.addView(settingsHeaderView);
+
+            LinkedHashMap<String, String> setting = mSettings.get(settingHeaderkey);
+
+            //Add elements/parameters in screen UI
+            for(String settingKey : setting.keySet())
+            {
+                Log.i("Setting Key", settingKey);
+                Log.i("Setting Value", setting.get(settingKey).toString());
+
+                //Get the element UI view for individual parameter
+                View settingView = getSettingItemsView(settingHeaderkey, settingKey, setting.get(settingKey).toString());
+
+                if(settingView != null)
+                    mSettingsParent.addView(settingView);
+            }
+        }
+
+    }
+
+    /**
+     * Resturns the Header view
+     * @param headerText
+     * @return
+     */
     private TextView getSettingsHeaderView(String headerText)
     {
         TextView textView = new TextView(getActivity());
@@ -110,6 +163,13 @@ public class HomeFragment extends Fragment {
         return textView;
     }
 
+    /**
+     *
+     * @param settingsHeader
+     * @param setting
+     * @param defaultValue
+     * @return
+     */
     private View getSettingItemsView(String settingsHeader, String setting, String defaultValue)
     {
         LayoutInflater vi = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -118,36 +178,55 @@ public class HomeFragment extends Fragment {
         TextView textView = (TextView) v.findViewById(R.id.home_setting_property);
         textView.setText(setting);
 
-        EditText editText = (EditText) v.findViewById(R.id.home_setting_value);
+        final EditText editText = (EditText) v.findViewById(R.id.home_setting_value);
 
+        //Need to assign the id from xml file, as it is inflated runtime
         int id = PMUtils.getId(settingsHeader, setting);
         if(id != 0)
             editText.setId(id);
 
+        //assign the basic properties of the edit text
         editText.setText(defaultValue);
         editText.setSelection(defaultValue.length());
         editText.setTag(settingsHeader + ":" + setting);
-        editText.setOnFocusChangeListener(onSettingFocusChangedListener);
+        //editText.setOnFocusChangeListener(onSettingFocusChangedListener);
         editText.getBackground().setColorFilter(getResources().getColor(android.R.color.holo_blue_dark), PorterDuff.Mode.SRC_IN);
         editText.setInputType(InputType.TYPE_CLASS_TEXT);
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count,
+                                          int after) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before,
+                                      int count) {
+                String tag = (String) editText.getTag();
+                String value = editText.getText().toString();
 
+                String headerKey = tag.split(":")[0];
+                String settingKey = tag.split(":")[1];
+
+                mSettings.get(headerKey).put(settingKey, value);
+            }
+            @Override
+            public void afterTextChanged(Editable newText) {
+
+            }});
+
+        //Set the keyboard type for respective parameters
         if(settingsHeader.equals(PMConstants.SETTINGS_HEADING_AD_TAG))
         {
-            if(mPlatform == ConfigurationManager.PLATFORM.MOCEAN || mPlatform == ConfigurationManager.PLATFORM.PUBMATIC)
+            if(mPlatform == ConfigurationManager.PLATFORM.PUBMATIC)
                 editText.setInputType(InputType.TYPE_CLASS_NUMBER);
-        }
-
-        if(settingsHeader.equals((PMConstants.SETTINGS_HEADING_CONFIGURATION)))
-        {
+        } else if(settingsHeader.equals((PMConstants.SETTINGS_HEADING_CONFIGURATION))) {
             if(setting.equals(PMConstants.SETTINGS_CONFIGURATION_WIDTH) || setting.equals(PMConstants.SETTINGS_CONFIGURATION_HEIGHT ) || setting.equals(PMConstants.SETTINGS_CONFIGURATION_AD_REFRESH_RATE))
             {
                 editText.setInputType(InputType.TYPE_CLASS_NUMBER);
             }
-        }
-
-        if(settingsHeader.equals(PMConstants.SETTINGS_HEADING_TARGETTING))
-        {
+        } else if(settingsHeader.equals(PMConstants.SETTINGS_HEADING_TARGETTING)) {
             if (setting.equals(PMConstants.SETTINGS_TARGETTING_ZIP)
+                    || setting.equals(PMConstants.SETTINGS_TARGETTING_DMA)
+                    || setting.equals(PMConstants.SETTINGS_TARGETTING_ORMA_COMPLIANCE)
                     || setting.equals(PMConstants.SETTINGS_TARGETTING_AGE)
                     || setting.equals(PMConstants.SETTINGS_TARGETTING_INCOME)
                     || setting.equals(PMConstants.SETTINGS_TARGETTING_YEAR_OF_BIRTH))
@@ -163,52 +242,6 @@ public class HomeFragment extends Fragment {
 
         return v;
     }
-
-    private View.OnClickListener onPlatformChooserSelected = new View.OnClickListener() {
-
-        @Override
-        public void onClick(View view) {
-
-            mDialog = new Dialog(getActivity());
-            mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-
-            mDialog.setContentView(R.layout.dialog_platform);
-
-            View moceanPlatform = mDialog.findViewById(R.id.dialog_platform_mocean);
-            moceanPlatform.setOnClickListener(onPlatformSelected);
-
-            View pubmaticPlatform = mDialog.findViewById(R.id.dialog_platform_pubmatic);
-            pubmaticPlatform.setOnClickListener(onPlatformSelected);
-
-            mDialog.show();
-
-        }
-    };
-
-    private View.OnClickListener onPlatformSelected = new View.OnClickListener() {
-
-        @Override
-        public void onClick(View view) {
-
-            String platform = ((TextView)view).getText().toString();
-            mPlatformSelector.setText(platform);
-
-            if(platform.equals("Mocean"))
-                mPlatform = ConfigurationManager.PLATFORM.MOCEAN;
-            else if(platform.equals("PubMatic"))
-                mPlatform = ConfigurationManager.PLATFORM.PUBMATIC;
-            else if(platform.equals("Phoenix"))
-                mPlatform = ConfigurationManager.PLATFORM.PHEONIX;
-            else
-                mPlatform = ConfigurationManager.PLATFORM.MOCEAN;
-
-            if(ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
-                refreshSettings();
-
-            if(mDialog != null)
-                mDialog.dismiss();
-        }
-    };
 
     private View.OnClickListener onAdTypeChooserSelected = new View.OnClickListener() {
 
@@ -260,54 +293,6 @@ public class HomeFragment extends Fragment {
         }
     };
 
-    public void refreshSettings()
-    {
-        mSettingsParent.removeAllViews();
-
-        mSettings = ConfigurationManager.getInstance(getActivity()).getSettings(mPlatform, mAdType);
-
-        for(String settingHeaderkey : mSettings.keySet())
-        {
-            Log.i("Setting Header", settingHeaderkey);
-            Log.i("Setting header", "-------------------------------------------------------");
-
-            View settingsHeaderView = getSettingsHeaderView(settingHeaderkey);
-
-            if(settingHeaderkey != null)
-                mSettingsParent.addView(settingsHeaderView);
-
-            LinkedHashMap<String, String> setting = mSettings.get(settingHeaderkey);
-
-            for(String settingKey : setting.keySet())
-            {
-                Log.i("Setting Key", settingKey);
-                Log.i("Setting Value", setting.get(settingKey).toString());
-
-                View settingView = getSettingItemsView(settingHeaderkey, settingKey, setting.get(settingKey).toString());
-
-                if(settingView != null)
-                    mSettingsParent.addView(settingView);
-            }
-        }
-
-    }
-
-    private View.OnFocusChangeListener onSettingFocusChangedListener = new View.OnFocusChangeListener() {
-        @Override
-        public void onFocusChange(View view, boolean b) {
-            if(!b)
-            {
-                String tag = (String) view.getTag();
-                String value = ((EditText) view).getText().toString();
-
-                String headerKey = tag.split(":")[0];
-                String settingKey = tag.split(":")[1];
-
-                mSettings.get(headerKey).put(settingKey, value);
-            }
-        }
-    };
-
     private View.OnClickListener onLoadAd = new View.OnClickListener() {
 
         @Override
@@ -315,27 +300,16 @@ public class HomeFragment extends Fragment {
 
             if(mAdType == ConfigurationManager.AD_TYPE.BANNER)
             {
-                if(mPlatform == ConfigurationManager.PLATFORM.MOCEAN)
-                {
-                    if(checkMoceanAdTag())
-                    {
-                        getMoceanConfigurationParameters();
-                        getMoceanTargettingParameters();
-
-                        BannerAdFragment bannerAdDialogFragment = new BannerAdFragment(mPlatform, mSettings);
-                        bannerAdDialogFragment.show(getActivity().getFragmentManager(), "BannerAdFragment");
-                    }
-                    else
-                        Toast.makeText(getActivity(), "Please enter a zone", Toast.LENGTH_LONG).show();
-                }
-                else if(mPlatform == ConfigurationManager.PLATFORM.PUBMATIC)
+                if(mPlatform == ConfigurationManager.PLATFORM.PUBMATIC)
                 {
                     if(checkPubMaticAdTag())
                     {
-                        getPubMaticConfigurationParameters();
-                        getPubmaticTargettingParameters();
+                        BannerAdFragment bannerAdDialogFragment = new BannerAdFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("Settings",mSettings);
+                        bundle.putSerializable("Platform", mPlatform);
+                        bannerAdDialogFragment.setArguments(bundle);
 
-                        BannerAdFragment bannerAdDialogFragment = new BannerAdFragment(mPlatform, mSettings);
                         bannerAdDialogFragment.show(getActivity().getFragmentManager(), "BannerAdFragment");
                     }
                     else
@@ -344,26 +318,16 @@ public class HomeFragment extends Fragment {
             }
             else if(mAdType == ConfigurationManager.AD_TYPE.INTERSTITIAL)
             {
-                if(mPlatform == ConfigurationManager.PLATFORM.MOCEAN)
-                {
-                    if(checkMoceanAdTag())
-                    {
-                        getMoceanTargettingParameters();
-
-                        InterstitialAdFragment interstitialAdFragment = new InterstitialAdFragment(mPlatform, mSettings);
-                        interstitialAdFragment.show(getActivity().getFragmentManager(), "interstitialAdFragment");
-                    }
-                    else
-                        Toast.makeText(getActivity(), "Please enter a zone", Toast.LENGTH_LONG).show();
-                }
-                else if(mPlatform == ConfigurationManager.PLATFORM.PUBMATIC)
+                if(mPlatform == ConfigurationManager.PLATFORM.PUBMATIC)
                 {
                     if(checkPubMaticAdTag())
                     {
-                        getPubMaticConfigurationParameters();
-                        getPubmaticTargettingParameters();
+                        InterstitialAdFragment interstitialAdFragment = new InterstitialAdFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("Settings",mSettings);
+                        bundle.putSerializable("Platform", mPlatform);
+                        interstitialAdFragment.setArguments(bundle);
 
-                        InterstitialAdFragment interstitialAdFragment = new InterstitialAdFragment(mPlatform, mSettings);
                         interstitialAdFragment.show(getActivity().getFragmentManager(), "interstitialAdFragment");
                     }
                     else
@@ -372,26 +336,16 @@ public class HomeFragment extends Fragment {
             }
             else if(mAdType == ConfigurationManager.AD_TYPE.NATIVE)
             {
-                if(mPlatform == ConfigurationManager.PLATFORM.MOCEAN)
-                {
-                    if(checkMoceanAdTag())
-                    {
-                        getMoceanTargettingParameters();
-
-                        NativeAdFragment nativeAdFragment = new NativeAdFragment(mPlatform, mSettings);
-                        nativeAdFragment.show(getActivity().getFragmentManager(), "NativeAdFragment");
-                    }
-                    else
-                        Toast.makeText(getActivity(), "Please enter a zone", Toast.LENGTH_LONG).show();
-                }
-                else if(mPlatform == ConfigurationManager.PLATFORM.PUBMATIC)
+                if(mPlatform == ConfigurationManager.PLATFORM.PUBMATIC)
                 {
                     if(checkPubMaticAdTag())
                     {
-                        getPubMaticConfigurationParameters();
-                        getPubmaticTargettingParameters();
+                        NativeAdFragment nativeAdFragment = new NativeAdFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("Settings",mSettings);
+                        bundle.putSerializable("Platform", mPlatform);
+                        nativeAdFragment.setArguments(bundle);
 
-                        NativeAdFragment nativeAdFragment = new NativeAdFragment(mPlatform, mSettings);
                         nativeAdFragment.show(getActivity().getFragmentManager(), "NativeAdFragment");
                     }
                     else
@@ -401,60 +355,15 @@ public class HomeFragment extends Fragment {
         }
     };
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSIONS_ALL: {
-
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                    refreshSettings();
-
-                return;
-            }
-            case MY_PERMISSIONS_READ_EXTERNAL_STORAGE: {
-
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                    refreshSettings();
-
-                return;
-            }
-            case MY_PERMISSIONS_ACCESS_FINE_LOCATION: {
-
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                    refreshSettings();
-
-                return;
-            }
-        }
-    }
-
-    private boolean checkMoceanAdTag()
-    {
-        String zone = "";
-
-        try
-        {
-            EditText et = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_AD_TAG + ":" + PMConstants.SETTINGS_AD_TAG_ZONE);
-            zone = et.getText().toString();
-            mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).put(PMConstants.SETTINGS_AD_TAG_ZONE, zone);
-        }
-        catch(Exception exception)
-        {
-            Log.i("CheckMoceanAdTag : ", exception.toString());
-        }
-
-        if(zone != null && !zone.equals(""))
-            return true;
-        else
-            return false;
-    }
-
+    /**
+     * It returns true if all mandatory parameters are set else returns false
+     * @return
+     */
     private boolean checkPubMaticAdTag()
     {
-        String pubId = "";
-        String siteId = "";
-        String adId = "";
+        String pubId = null;
+        String siteId = null;
+        String adId = null;
 
         try
         {
@@ -475,97 +384,37 @@ public class HomeFragment extends Fragment {
             Log.i("CheckPubMaticAdTag : ", exception.toString());
         }
 
-        if(pubId != null && !pubId.equals("") && siteId != null && !siteId.equals("") && adId != null & !adId.equals(""))
-            return true;
-        else
+        if(TextUtils.isEmpty(pubId) || TextUtils.isEmpty(siteId) || TextUtils.isEmpty(adId))
             return false;
+        else
+            return true;
     }
 
-    private void getMoceanConfigurationParameters()
-    {
-        if(mAdType == ConfigurationManager.AD_TYPE.BANNER)
-        {
-            EditText widthEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_CONFIGURATION + ":" + PMConstants.SETTINGS_CONFIGURATION_WIDTH);
-            String width = widthEt.getText().toString();
-            mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).put(PMConstants.SETTINGS_CONFIGURATION_WIDTH, width);
+    //------------------- Below methods are not in use, can be delted -------------------
 
-            EditText heightEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_CONFIGURATION + ":" + PMConstants.SETTINGS_CONFIGURATION_HEIGHT);
-            String height = heightEt.getText().toString();
-            mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).put(PMConstants.SETTINGS_CONFIGURATION_HEIGHT, height);
+    /**
+     * Update 'mSetings' object in memory with the updated value, when focus
+     * change happen to any UI element view
+     */
+    private View.OnFocusChangeListener onSettingFocusChangedListener = new View.OnFocusChangeListener() {
+        @Override
+        public void onFocusChange(View view, boolean hasGainedFocus) {
+            if(!hasGainedFocus)
+            {
+                String tag = (String) view.getTag();
+                String value = ((EditText) view).getText().toString();
 
-            EditText adRefreshRateEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_CONFIGURATION + ":" + PMConstants.SETTINGS_CONFIGURATION_AD_REFRESH_RATE);
-            String adRefreshRate = adRefreshRateEt.getText().toString();
-            mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).put(PMConstants.SETTINGS_CONFIGURATION_AD_REFRESH_RATE, adRefreshRate);
+                String headerKey = tag.split(":")[0];
+                String settingKey = tag.split(":")[1];
+
+                mSettings.get(headerKey).put(settingKey, value);
+            }
         }
+    };
 
-        EditText testEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_CONFIGURATION + ":" + PMConstants.SETTINGS_CONFIGURATION_TEST);
-        String test = testEt.getText().toString();
-        mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).put(PMConstants.SETTINGS_CONFIGURATION_TEST, test);
-    }
-
-    private void getMoceanTargettingParameters()
-    {
-        EditText etLatitude = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_LATITUDE);
-        String latitude = etLatitude.getText().toString();
-
-        if(!latitude.equals(""))
-            mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_LATITUDE, latitude);
-
-        EditText etLongitude = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_LONGITUDE);
-        String longitude = etLongitude.getText().toString();
-
-        if(!longitude.equals(""))
-            mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_LONGITUDE, longitude);
-
-        EditText etCity = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_CITY);
-        String city = etCity.getText().toString();
-        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_CITY, city);
-
-        EditText etZip = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_ZIP);
-        String zip = etZip.getText().toString();
-        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_ZIP, zip);
-
-        EditText etDMA = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_DMA);
-        String dma = etDMA.getText().toString();
-        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_DMA, dma);
-
-        EditText etArea = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_AREA);
-        String area = etArea.getText().toString();
-        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_AREA, area);
-
-        EditText etAge = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_AGE);
-        String age = etAge.getText().toString();
-        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_AGE, age);
-
-        EditText etBirthday = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_BIRTHDAY);
-        String birthday = etBirthday.getText().toString();
-        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_BIRTHDAY, birthday);
-
-        EditText etGender = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_GENDER);
-        String gender = etGender.getText().toString();
-        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_GENDER, gender);
-
-        EditText etEthnicity = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_ETHNICITY);
-        String ethnicity = etEthnicity.getText().toString();
-        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_ETHNICITY, ethnicity);
-
-        EditText etLanguage = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_LANGUAGE);
-        String language = etLanguage.getText().toString();
-        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_LANGUAGE, language);
-
-        EditText etOver18 = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_OVER_18);
-        String over18 = etOver18.getText().toString();
-        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_OVER_18, over18);
-
-        EditText etTimeout = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_TIMEOUT);
-        String timeout = etTimeout.getText().toString();
-        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_TIMEOUT, timeout);
-
-        EditText etKeywords = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_KEYWORDS);
-        String keywords = etKeywords.getText().toString();
-        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_KEYWORDS, keywords);
-    }
-
+    /**
+     * It loads the 'mSettings' memory object with the current values of the Configutaion UI section
+     */
     private void getPubMaticConfigurationParameters()
     {
         if(mAdType == ConfigurationManager.AD_TYPE.BANNER) {
@@ -587,6 +436,9 @@ public class HomeFragment extends Fragment {
         mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).put(PMConstants.SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED, androidAidEnabled);
     }
 
+    /**
+     * It loads the 'mSettings' memory object with the current values of the Targetting UI section
+     */
     private void getPubmaticTargettingParameters()
     {
         EditText etLatitude = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_LATITUDE);
@@ -609,17 +461,9 @@ public class HomeFragment extends Fragment {
         String iabCategoryId = iabCategoryEt.getText().toString();
         mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_IAB_CATEGORY, iabCategoryId);
 
-        EditText awtEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_AWT);
-        String awt = awtEt.getText().toString();
-        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_AWT, awt);
-
         EditText storeUrlEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_STORE_URL);
         String storeUrl = storeUrlEt.getText().toString();
         mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_STORE_URL, storeUrl);
-
-        EditText appNameEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_APP_NAME);
-        String appName = appNameEt.getText().toString();
-        mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).put(PMConstants.SETTINGS_TARGETTING_APP_NAME, appName);
 
         EditText appDomainEt = (EditText) getView().findViewWithTag(PMConstants.SETTINGS_HEADING_TARGETTING + ":" + PMConstants.SETTINGS_TARGETTING_APP_DOMAIN);
         String appDomain = appDomainEt.getText().toString();

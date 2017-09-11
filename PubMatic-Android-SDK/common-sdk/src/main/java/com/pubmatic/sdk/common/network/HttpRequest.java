@@ -35,20 +35,21 @@ import java.util.Locale;
 
 public class HttpRequest {
 
-
     public static HttpRequest getTrackingRequest(final String requestUrl,
             final CommonConstants.CHANNEL channel) {
 
         HttpRequest request = new HttpRequest();
         request.setRequestUrl(requestUrl);
-        request.setRequestType(channel == CHANNEL.PUBMATIC ? AD_REQUEST_TYPE.PUB_TRACKER : channel == CHANNEL.MOCEAN ? AD_REQUEST_TYPE.MOCEAN_TRACKER : AD_REQUEST_TYPE.PHOENIX_TRACKER);
+        request.setRequestType(AD_REQUEST_TYPE.PUB_TRACKER);
         request.setRequestMethod(CommonConstants.HTTPMETHODGET);
+		request.mTimeout = CommonConstants.MAX_TRACKER_TIMEOUT;
         return request;
     }
     
 	private AD_REQUEST_TYPE mRequestType= null;
 	private String 			mRequestUrl = null;
 	private String			mPostData	= null;
+	private int 			mTimeout;
 	
 	// Headers
 	String mContentLanguage;
@@ -64,17 +65,17 @@ public class HttpRequest {
 	String mAcceptDateTime 	= null;
 	String mDate 			= null;
 	
-	private String mRequestMethod 		= null;//GET/POST
-	private String mRLNClientIPAddress 	= null;
+	private String mRequestMethod 		= null;
 	private CONTENT_TYPE 	mContentType = CONTENT_TYPE.INVALID;
 	private String mUserAgent 		= null;
-	
+
 	public HttpRequest() {
 		mContentLanguage 	= Locale.getDefault().getLanguage();
 		mAcceptCharset 		= "utf-8";
 		mConnection 		= "close";
 		mCacheControl 		= "no-cache";
 		mAccept 			= "text/plain";
+		mTimeout 			= CommonConstants.MAX_SOCKET_TIME;
 	}
 	
 	public HttpRequest(CONTENT_TYPE contentType)
@@ -114,53 +115,6 @@ public class HttpRequest {
 			this.mRequestUrl += mRequestUrl;
 	}
 	
-//	public StringBuffer getPOSTData() {
-//		return mPOSTData;
-//	}
-//	
-//	public void setPOSTData(StringBuffer mPOSTData) {
-//		this.mPOSTData = mPOSTData;
-//	}
-//	
-//	public void appendAdParams(final String adRequestParams) {
-//		if(adRequestParams!=null) {
-//			if(mPOSTData==null)
-//				mPOSTData = new StringBuffer(adRequestParams);
-//			else
-//				mPOSTData.append(adRequestParams);
-//		}
-//	}
-//	
-//	public Method getMethod() {
-//		return mMethod;
-//	}
-//	
-//	public void setMethod(Method method) {
-//		this.mMethod = method;
-//	}
-//	
-//	public JSONObject getJsonBody() {
-//		return mJsonBody;
-//	}
-//
-//	public void setJsonBody(JSONObject jsonBody) {
-//		this.mJsonBody = jsonBody;
-//	}
-//
-//	public Map<String, String> getParams() {
-//		return mParams;
-//	}
-//
-//	public void setParam(String key, String value) {
-//		if(this.mParams==null)
-//			this.mParams = new HashMap<String, String>();
-//		this.mParams.put(key, value);
-//	}
-//	
-//	public void setParams(Map<String, String> params) {
-//		this.mParams = params;
-//	}
-	
 	public CONTENT_TYPE getContentType() {
 		return mContentType;
 	}
@@ -199,11 +153,12 @@ public class HttpRequest {
 		this.mRequestMethod = mRequestMethod;
 	}
 
-	public String getRLNClientIPAddress() {
-		return mRLNClientIPAddress;
+	public int getTimeoutMillis() {
+		return mTimeout;
 	}
 
-	public void setRLNClientIPAddress(String mRLNClientIPAddress) {
-		this.mRLNClientIPAddress = mRLNClientIPAddress;
+	public void setTimeoutMillis(int timeout) {
+		this.mTimeout = timeout;
 	}
+
 }

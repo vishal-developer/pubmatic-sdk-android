@@ -7,38 +7,48 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
+import android.widget.TextView;
 
-/**
- * Created by Sagar on 4/24/2017.
- */
+import com.pubmatic.sdk.common.PubMaticSDK;
+
+import static com.pubmatic.sample.R.string.help_text;
 
 public class HelpDialogFragment extends DialogFragment {
 
-    private AlertDialog.Builder mBuilder;
-    private LayoutInflater mInflater;
-
-    public HelpDialogFragment() {}
+    private String getHelpText() {
+        return "<h2>Welcome to the PubMatic's SDK Sample app.</h2><br/>" +
+                "    This application helps you to test PubMatic's ad tag.<br/>" +
+                "    <br/>How to use:<br/>" +
+                "    1. Please select the desired ad type<br/>" +
+                "    2. Input your ad tag details PubID (Publisher ID), SiteID (Publisher's site ID), AdID (Ad slot ID). Please get these details while creating an ad tag from PubMatic UI or please contact PubMatic sales team to get new ad tags for your app.<br/>" +
+                "    3. Optionally you can configure other targeting parameters for better monetisation.<br/>" +
+                "    4. App also provides Settings screen which allows to apply global settings for all platform and ad type.<br/><br/>" +
+                "        <h3>Contact:</h3><br/>" +
+                "    To monetize your app using PubMatic platform, Please <a href='https://pubmatic.com/contact-us/'>contact us</a>";
+    }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState)
     {
-        final View view;
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View view = inflater.inflate(R.layout.fragment_help, null);
 
-        mBuilder = new AlertDialog.Builder(getActivity());
+        TextView sdkVersionText  = (TextView)view.findViewById(R.id.sdk_version_text);
+        sdkVersionText.setText("PM SDK v"+PubMaticSDK.getSDKVersion());
 
-        mInflater = getActivity().getLayoutInflater();
-        view = mInflater.inflate(R.layout.fragment_help, null);
+        WebView webView = (WebView)view.findViewById(R.id.webview);
+        webView.loadData(getHelpText(), "text/html", "UTF-8");
+        builder.setView(view);
 
-        mBuilder.setView(view);
-
-        Dialog dialog = mBuilder.create();
-
+        Dialog dialog = builder.create();
         Drawable drawable = new ColorDrawable(Color.WHITE);
         drawable.setAlpha(240);
-
         dialog.getWindow().setBackgroundDrawable(drawable);
 
         return dialog;

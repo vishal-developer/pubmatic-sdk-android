@@ -3,12 +3,12 @@ apply plugin: 'com.github.dcendents.android-maven'
 group='com.github.pm-library'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion '24.0.2'
+    compileSdkVersion 25
+    buildToolsVersion '25.0.0'
 
     defaultConfig {
-        minSdkVersion 9
-        targetSdkVersion 23
+        minSdkVersion 19
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
     }
@@ -23,7 +23,6 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.1.0'
     compile project(':common-sdk')
 }
 
@@ -34,7 +33,7 @@ task deleteOldJar(type: Delete) {
 
 // Task to export contents as jar
 task exportJar(type: Copy) {
-    from('build/intermediates/bundles/release/')
+    from('build/intermediates/bundles/default/')
     into('../SDK-JAR/')
     include('classes.jar')
     //Name of Jar

@@ -29,32 +29,27 @@ package com.pubmatic.sdk.headerbidding;
 
 import android.content.Context;
 import android.location.Location;
-import android.text.TextUtils;
 import android.webkit.WebView;
 
-import com.pubmatic.sdk.banner.BannerAdDescriptor;
 import com.pubmatic.sdk.banner.PMBannerAdView;
-import com.pubmatic.sdk.banner.PMInterstitialAdView;
-import com.pubmatic.sdk.banner.pubmatic.PubMaticBannerAdRequest;
-import com.pubmatic.sdk.common.AdResponse;
+import com.pubmatic.sdk.banner.PMInterstitialAd;
+import com.pubmatic.sdk.banner.pubmatic.PMBannerAdRequest;
 import com.pubmatic.sdk.common.CommonConstants;
 import com.pubmatic.sdk.common.CommonConstants.CONTENT_TYPE;
 import com.pubmatic.sdk.common.LocationDetector;
 import com.pubmatic.sdk.common.PMAdRendered;
 import com.pubmatic.sdk.common.PMLogger;
+import com.pubmatic.sdk.common.PubMaticSDK;
 import com.pubmatic.sdk.common.ResponseGenerator;
 import com.pubmatic.sdk.common.network.HttpHandler;
 import com.pubmatic.sdk.common.network.HttpRequest;
 import com.pubmatic.sdk.common.network.HttpResponse;
-import com.pubmatic.sdk.common.pubmatic.PUBDeviceInformation;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -76,7 +71,6 @@ public class PMPrefetchManager implements ResponseGenerator {
 
     private Context mContext;
     private String userAgent;
-    private static final String UTF8_CHARSET = "UTF-8";
 
     /**
      * Listener to channel result events of a header bidding request to the publisher app.
@@ -105,13 +99,14 @@ public class PMPrefetchManager implements ResponseGenerator {
     private PMPrefetchListener pmPreFetchListener;
 
     private Location location;
-    private boolean mRetrieveLocationInfo = true;
 
     public PMPrefetchManager(Context context, PMPrefetchListener pmPrefetchListener) {
         mContext = context;
         this.pmPreFetchListener = pmPrefetchListener;
 
-        userAgent = new WebView(context).getSettings().getUserAgentString();
+        WebView webView = new WebView(context);
+        userAgent = webView.getSettings().getUserAgentString();
+        webView = null;
     }
 
     public PMPrefetchListener getPrefetchListener() {
@@ -127,59 +122,46 @@ public class PMPrefetchManager implements ResponseGenerator {
      * @return true if location detection is enabled, false if not
      */
     public boolean isLocationDetectionEnabled() {
-        return mRetrieveLocationInfo;
+        return PubMaticSDK.isLocationDetectionEnabled();
     }
 
-    /**
-     * Enables or disable SDK location detection. If enabled with this method the most battery
-     * optimized settings are used. This method is used to disable location detection for either
-     * method of enabling location detection.
-     * <p/>
-     * Permissions for coarse or fine location detection may be required.
-     *
-     * @param locationDetectionEnabled
-     */
-    public void setLocationDetectionEnabled(boolean locationDetectionEnabled) {
-        mRetrieveLocationInfo = locationDetectionEnabled;
-    }
 
-    public void prefetchCreatives(PMBannerPrefetchRequest adRequest) {
+    public void prefetchCreatives(PMPrefetchRequest adRequest) {
 
-        // Sanitise request. Remove any ad tag detail.
-        adRequest.setSiteId("");
-        adRequest.setAdId("");
+        if(adRequest!=null) {
 
-        if(validateHeaderBiddingRequest(adRequest))
-        {
-            // If User has provided the location set the source as user
-            Location userProvidedLocation = adRequest.getLocation();
-            if(userProvidedLocation != null) {
-                userProvidedLocation.setProvider("user");
-                adRequest.setLocation(userProvidedLocation);
+            if(validateHeaderBiddingRequest(adRequest))
+            {
+                // If User has provided the location set the source as user
+                Location userProvidedLocation = adRequest.getLocation();
+                if(userProvidedLocation != null) {
+                    userProvidedLocation.setProvider("user");
+                    adRequest.setLocation(userProvidedLocation);
+                }
+
+                // Insert the location parameter in ad request,
+                // if publisher has enabled location detection
+                if(PubMaticSDK.isLocationDetectionEnabled()) {
+                    location = LocationDetector.getInstance(mContext).getLocation();
+                    if(location != null)
+                        adRequest.setLocation(location);
+                }
+
+                adRequest.createRequest(mContext);
+
+                HttpRequest httpRequest = formatHeaderBiddingRequest(adRequest);
+                PMLogger.logEvent("Request Url : " + httpRequest.getRequestUrl() + "\n body : " + httpRequest.getPostData(),
+                        PMLogger.LogLevel.Debug);
+
+                HttpHandler requestProcessor = new HttpHandler(networkListener, httpRequest);
+
+                ExecutorService executor = Executors.newSingleThreadExecutor();
+                executor.execute(requestProcessor);
             }
-
-            // Insert the location parameter in ad request,
-            // if publisher has enabled location detection
-            if(mRetrieveLocationInfo) {
-                location = LocationDetector.getInstance(mContext).getLocation();
-                if(location != null)
-                    adRequest.setLocation(location);
-            }
-
-            adRequest.createRequest(mContext);
-
-            HttpRequest httpRequest = formatHeaderBiddingRequest(adRequest);
-            PMLogger.logEvent("Request Url : " + httpRequest.getRequestUrl() + "\n body : " + httpRequest.getPostData(),
-                    PMLogger.LogLevel.Debug);
-
-            HttpHandler requestProcessor = new HttpHandler(networkListener, httpRequest);
-
-            ExecutorService executor = Executors.newSingleThreadExecutor();
-            executor.execute(requestProcessor);
         }
     }
 
-    private boolean validateHeaderBiddingRequest(PMBannerPrefetchRequest adRequest)
+    private boolean validateHeaderBiddingRequest(PMPrefetchRequest adRequest)
     {
         if (adRequest.getImpressions().size() == 0) {
             PMLogger.logEvent("No impressions found for Header Bidding Request.", PMLogger.LogLevel.Error);
@@ -196,13 +178,13 @@ public class PMPrefetchManager implements ResponseGenerator {
      *
      * @param impressionId  the winning impressionId
      */
-    public void renderPubMaticAd(String impressionId, PMAdRendered pmAdRendered) {
+    public void loadBannerAd(String impressionId, PMAdRendered pmAdRendered) {
 
-        //AdResponse adData = formatHeaderBiddingResponse(publisherHBResponse.get(impressionId));
-        //adView.renderHeaderBiddingCreative(adData);
+        if(pmAdRendered!=null)
+            pmAdRendered.renderPrefetchedAd(impressionId, this);
 
-        pmAdRendered.renderPrefetchedAd(impressionId, this);
-        publisherHBResponse.remove(impressionId);
+        if(publisherHBResponse!=null)
+            publisherHBResponse.remove(impressionId);
 
         // Save a weak reference to this view. To be used in destroy method later.
         if (pubmaticAdViews == null)
@@ -211,83 +193,18 @@ public class PMPrefetchManager implements ResponseGenerator {
         pubmaticAdViews.add(weakRefAdView);
     }
 
-    public void reset() {
-        if(pubmaticAdViews!=null) {
-            if(pubmaticAdViews.size()>0) {
-                for(WeakReference<PMAdRendered> adRendered : pubmaticAdViews) {
-                    ((PMBannerAdView)adRendered.get()).destroy();
-                }
-            }
-            pubmaticAdViews = null;
-        }
-    }
-
-    private AdResponse formatHeaderBiddingResponse(PMBid bid)
-    {
-        AdResponse pubResponse = new AdResponse();
-
-        Map<String, String> adInfo = new HashMap<String, String>();
-        ArrayList<String> impressionTrackers = new ArrayList<String>();
-        ArrayList<String> clickTrackers = new ArrayList<String>();
-        adInfo.put("type", "thirdparty");
-
-        try {
-            // If there is an error from the server which happens when provided
-            // wrong ad parameters, return the error with error code and error
-            // message.
-            String errorCode;
-            /*if (!TextUtils.isEmpty(errorCode = response.optString(kerror_code))) {
-
-                pubResponse.setErrorCode(errorCode);
-                pubResponse.setErrorMessage(response.getString(kerror_message));
-                return pubResponse;
-            }*/
-
-            // Check if json contains the creative_tag and tracking_url.
-            // If these are missing then the ad is invalid. Return null else
-            // return valid adInfo object.
-            if (bid != null && !TextUtils.isEmpty(bid.getCreative())) {
-
-                adInfo.put("content", URLDecoder.decode(bid.getCreative(), UTF8_CHARSET));
-                impressionTrackers.add( URLDecoder.decode(bid.getTrackingUrl(), UTF8_CHARSET));
-
-                // Setting ecpm if not null
-                if (bid.getPrice() != 0) {
-                    adInfo.put("ecpm", String.valueOf(bid.getPrice()));
-                }
-                // Setting click_tracking_url if not null
-                if (bid.getTrackingUrl() != null && bid.getTrackingUrl() != "") {
-                    // clickTrackers.add(URLDecoder.decode(bid.getTrackingUrl(), UTF8_CHARSET));
-                }
-                // Setting landing_page if not null
-                /*if (!response.isNull(klanding_page)) {
-                    adInfo.put("url", URLDecoder.decode(response.getString(klanding_page), UTF8_CHARSET));
-                }*/
-            }
-
-            BannerAdDescriptor adDescriptor = new BannerAdDescriptor(adInfo);
-            adDescriptor.setImpressionTrackers(impressionTrackers);
-            adDescriptor.setClickTrackers(clickTrackers);
-            pubResponse.setRenderable(adDescriptor);
-
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } finally {
-            //response = null;
-        }
-
-        return pubResponse;
-    }
-
     /**
      * Provide the rendered adView from PubMatic cached creative.
      * This creative is the header bidding winner for the provided adSlotId.
      *
      */
-    public void renderedPMInterstitialAd(String impressionId, PMAdRendered pmAdRendered) {
+    public void loadInterstitialAd(String impressionId, PMAdRendered pmAdRendered) {
 
-        pmAdRendered.renderPrefetchedAd(impressionId, this);
-        publisherHBResponse.remove(impressionId);
+        if(pmAdRendered!=null)
+            pmAdRendered.renderPrefetchedAd(impressionId, this);
+
+        if(publisherHBResponse!=null)
+            publisherHBResponse.remove(impressionId);
 
         // Save a weak reference to this view. To be used in destroy method later.
         if (pubmaticInterstitialAdViews == null)
@@ -297,7 +214,7 @@ public class PMPrefetchManager implements ResponseGenerator {
 
     }
 
-    private HttpRequest formatHeaderBiddingRequest(PubMaticBannerAdRequest adRequest) {
+    private HttpRequest formatHeaderBiddingRequest(PMBannerAdRequest adRequest) {
         HttpRequest httpRequest = new HttpRequest(CONTENT_TYPE.URL_ENCODED);
         httpRequest.setUserAgent(adRequest.getUserAgent());
         httpRequest.setConnection("close");
@@ -305,8 +222,6 @@ public class PMPrefetchManager implements ResponseGenerator {
         httpRequest.setRequestType(CommonConstants.AD_REQUEST_TYPE.PUB_BANNER);
         httpRequest.setRequestUrl(adRequest.getRequestUrl());
         httpRequest.setPostData(adRequest.getPostData());
-        PUBDeviceInformation pubDeviceInformation = PUBDeviceInformation.getInstance(mContext);
-        httpRequest.setRLNClientIPAddress(pubDeviceInformation.mDeviceIpAddress);
         httpRequest.setUserAgent(userAgent);
         return httpRequest;
     }
@@ -440,12 +355,13 @@ public class PMPrefetchManager implements ResponseGenerator {
      * Release resources, clear maps and destroy the adViews used.
      */
     public void destroy() {
-        publisherHBResponse.clear();
+        if(publisherHBResponse!=null)
+            publisherHBResponse.clear();
 
         // Reset all PMBannerAdViews.
         if (pubmaticAdViews != null && pubmaticAdViews.size() != 0) {
             for (WeakReference adView : pubmaticAdViews) {
-                if (adView.get() != null)
+                if (adView!=null && adView.get() != null)
                     ((PMBannerAdView) adView.get()).destroy();
             }
             pubmaticAdViews.clear();
@@ -454,8 +370,8 @@ public class PMPrefetchManager implements ResponseGenerator {
         // Reset all PMInterstitialAdView.
         if (pubmaticInterstitialAdViews != null && pubmaticInterstitialAdViews.size() != 0) {
             for (WeakReference adView : pubmaticInterstitialAdViews) {
-                if (adView.get() != null)
-                    ((PMInterstitialAdView) adView.get()).destroy();
+                if (adView!=null && adView.get() != null)
+                    ((PMInterstitialAd) adView.get()).destroy();
             }
             pubmaticInterstitialAdViews.clear();
         }
@@ -492,7 +408,8 @@ public class PMPrefetchManager implements ResponseGenerator {
         if(publisherHBResponse != null)
         {
             PMBid pmBid = publisherHBResponse.get(impressionId);
-            return pmBid.getCreative();
+            if(pmBid!=null)
+                return pmBid.getCreative();
         }
 
         return null;

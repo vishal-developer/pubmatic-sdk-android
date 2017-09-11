@@ -1,81 +1,4 @@
 {
-  "Mocean": {
-    "Banner": {
-      "Ad Tag": {
-        "Zone": "88269"
-      },
-      "Configuration": {
-        "Width": "320",
-        "Height": "50",
-        "Ad Refresh Rate (Sec)": "",
-        "Test": "true"
-      },
-      "Targetting": {
-        "Latitude":"3.8",
-        "Longitude":"3.8",
-        "City": "Pune",
-        "Zip": "40117",
-        "DMA": "41007",
-        "Area": "Rambag Colony",
-        "Age": "27",
-        "Birthday": "02111989",
-        "Gender": "Male",
-        "Ethnicity": "3",
-        "Language": "Hindi",
-        "Over 18": "No",
-        "Timeout": "8",
-        "Keywords": "Keyword"
-      }
-    },
-    "Interstitial": {
-      "Ad Tag": {
-        "Zone": "88269"
-      },
-      "Configuration": {
-        "Test": "true"
-      },
-      "Targetting": {
-        "Latitude":"3.8",
-        "Longitude":"3.8",
-        "City": "Pune",
-        "Zip": "40117",
-        "DMA": "41007",
-        "Area": "Rambag Colony",
-        "Age": "27",
-        "Birthday": "02111989",
-        "Gender": "Male",
-        "Ethnicity": "3",
-        "Language": "Hindi",
-        "Over 18": "No",
-        "Timeout": "8",
-        "Keywords": "Keyword"
-      }
-    },
-    "Native": {
-      "Ad Tag": {
-        "Zone": "179492"
-      },
-      "Configuration": {
-        "Test": ""
-      },
-      "Targetting": {
-        "Latitude":"3.8",
-        "Longitude":"3.8",
-        "City": "Pune",
-        "Zip": "40117",
-        "DMA": "41007",
-        "Area": "Rambag Colony",
-        "Age": "27",
-        "Birthday": "02111989",
-        "Gender": "Male",
-        "Ethnicity": "3",
-        "Language": "Hindi",
-        "Over 18": "No",
-        "Timeout": "8",
-        "Keywords": "Keyword"
-      }
-    }
-  },
   "PubMatic": {
     "Banner": {
       "Ad Tag": {
@@ -86,29 +9,11 @@
       "Configuration": {
         "Width": "320",
         "Height": "50",
-        "Android Aid Enabled": "true",
-        "Ad Refresh Rate (Sec)": ""
+        "Ad Refresh Rate (Sec)": "15"
       },
       "Targetting": {
-        "Latitude": "3.5",
-        "Longitude": "3.5",
-        "App Category": "Tools",
-        "IAB Category": "IAB3-1",
-        "Store Url": "storeurl",
-        "App Name": "appname",
-        "App Domain": "appdomain",
         "City": "Pune",
-        "Zip": "41007",
-        "State": "Maharashtra",
-        "Year of Birth": "02111989",
-        "Income": "5000",
-        "Ethnicity": "ASIAN_AMERICAN",
-        "Gender": "Male",
-        "DMA": "41107",
-        "Orma Compliance": "1",
-        "Paid": "True",
-        "AWT": "0",
-        "Coppa": "true"
+        "Zip": "411011"
       }
     },
     "Interstitial": {
@@ -118,28 +23,11 @@
         "AdId": "1059651"
       },
       "Configuration": {
-        "Android Aid Enabled": "true"
+
       },
       "Targetting": {
-        "Latitude": "",
-        "Longitude": "",
-        "App Category": "Tools",
-        "IAB Category": "IAB3-1",
-        "Store Url": "storeurl",
-        "App Name": "appname",
-        "App Domain": "appdomain",
-        "City": "",
-        "Zip": "",
-        "State": "Maharashtra",
-        "Year of Birth": "",
-        "Income": "",
-        "Ethnicity": "ASIAN_AMERICAN",
-        "Gender": "",
-        "DMA": "",
-        "Orma Compliance": "1",
-        "Paid": "",
-        "AWT": "0",
-        "Coppa": "true"
+        "City": "Pune",
+        "Zip": "411011"
       }
     },
     "Native": {
@@ -149,28 +37,11 @@
         "AdId": "383372"
       },
       "Configuration": {
-        "Android Aid Enabled": "true"
+
       },
       "Targetting": {
-        "Latitude": "3.5",
-        "Longitude": "3.5",
-        "App Category": "Tools",
-        "IAB Category": "IAB3-1",
-        "Store Url": "storeurl",
-        "App Name": "appname",
-        "App Domain": "appdomain",
         "City": "Pune",
-        "Zip": "41007",
-        "State": "Maharashtra",
-        "Year of Birth": "02111989",
-        "Income": "5000",
-        "Ethnicity": "ASIAN_AMERICAN",
-        "Gender": "Male",
-        "DMA": "41107",
-        "Orma Compliance": "1",
-        "Paid": "True",
-        "AWT": "0",
-        "Coppa": "true"
+        "Zip": "411011"
       }
     }
   }

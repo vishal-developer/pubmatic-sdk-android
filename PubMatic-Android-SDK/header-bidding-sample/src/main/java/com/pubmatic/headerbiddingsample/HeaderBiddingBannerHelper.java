@@ -11,9 +11,8 @@ import com.google.android.gms.ads.doubleclick.AppEventListener;
 import com.google.android.gms.ads.doubleclick.PublisherAdRequest;
 import com.google.android.gms.ads.doubleclick.PublisherAdView;
 import com.pubmatic.sdk.banner.PMBannerAdView;
-import com.pubmatic.sdk.common.pubmatic.PubMaticAdRequest;
 import com.pubmatic.sdk.headerbidding.PMAdSize;
-import com.pubmatic.sdk.headerbidding.PMBannerPrefetchRequest;
+import com.pubmatic.sdk.headerbidding.PMPrefetchRequest;
 import com.pubmatic.sdk.headerbidding.PMBid;
 import com.pubmatic.sdk.headerbidding.PMBannerImpression;
 import com.pubmatic.sdk.headerbidding.PMPrefetchManager;
@@ -104,7 +103,7 @@ public class HeaderBiddingBannerHelper {
         pmPrefetchManager = new PMPrefetchManager(mContext, listener);
 
         //Create Pubmatic adRequest for header bidding call with single impression or a Set of impressions.
-        PMBannerPrefetchRequest bannerHeaderBiddingAdRequest = getHeaderBiddingBannerAdRequest();
+        PMPrefetchRequest bannerHeaderBiddingAdRequest = getHeaderBiddingBannerAdRequest();
 
         //Set any targeting params on the adRequest instance.
         pmPrefetchManager.prefetchCreatives(bannerHeaderBiddingAdRequest);
@@ -245,7 +244,7 @@ public class HeaderBiddingBannerHelper {
                             adView.setUseInternalBrowser(true);
 
                             //Display PubMatic Cached Ad
-                            pmPrefetchManager.renderPubMaticAd(impressionId, adView);
+                            pmPrefetchManager.loadBannerAd(impressionId, adView);
 
                             //Replace view with pubmatic Adview.
                             ViewGroup parent = (ViewGroup) adSlotInfo.adView.getParent();
@@ -260,46 +259,24 @@ public class HeaderBiddingBannerHelper {
         }
     }
 
-    private PMBannerPrefetchRequest getHeaderBiddingBannerAdRequest()
+    private PMPrefetchRequest getHeaderBiddingBannerAdRequest()
     {
-        PMBannerPrefetchRequest adRequest;
+        PMPrefetchRequest adRequest;
 
         List<PMBannerImpression> bannerImpressions = new ArrayList<>();
         for(AdSlotInfo adSlotInfo : adSlotInfoList) {
             bannerImpressions.add(new PMBannerImpression(getUniqueIdForView(adSlotInfo.adView), adSlotInfo.slotName, adSlotInfo.adSizes, 1));
         }
 
-        adRequest = PMBannerPrefetchRequest.initHBRequestForImpression(mContext, "31400", bannerImpressions);
-
-        adRequest.setStoreURL("http://www.financialexpress.com");
-        adRequest.setAppDomain("www.financialexpress.com");
-        adRequest.setApplicationPaid(false);
-        adRequest.setAWT(PubMaticAdRequest.AWT_OPTION.WRAPPED_IN_IFRAME);
-        adRequest.setPMZoneId("1");
-        adRequest.addKeyword("entertainment");
-        adRequest.addKeyword("sports");
-        adRequest.setEthnicity(PubMaticAdRequest.ETHNICITY.ASIAN_AMERICAN);
-        adRequest.setIncome("income");
-
-        adRequest.setYearOfBirth("1989");
-        adRequest.setGender(PubMaticAdRequest.GENDER.MALE);
-
-        adRequest.setCity("Pune");
-        adRequest.setZip("411011");
-        adRequest.setCoppa(true);
-        adRequest.setOrmmaComplianceLevel(1);
-
-        adRequest.setIABCategory("IAB1-1,IAB1-7");
-        adRequest.setAppCategory("Entertainment, Sports");
-
-        adRequest.setUdidHash(PMBannerPrefetchRequest.HASHING_TECHNIQUE.RAW);
-        adRequest.setAndroidAidEnabled(false);
+        adRequest = PMPrefetchRequest.initHBRequestForImpression(mContext, "31400", bannerImpressions);
 
         return adRequest;
     }
+
     public void destroy() {
         if(pmPrefetchManager!=null)
-            pmPrefetchManager.reset();
+            pmPrefetchManager.destroy();
+        pmPrefetchManager = null;
     }
 
     class DfpAdListener extends AdListener {

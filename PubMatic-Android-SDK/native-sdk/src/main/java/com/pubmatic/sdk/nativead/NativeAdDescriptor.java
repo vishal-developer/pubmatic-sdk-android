@@ -2,7 +2,7 @@
  * 
  * PubMatic Inc. ("PubMatic") CONFIDENTIAL
  * 
- * Unpublished Copyright (c) 2006-2014 PubMatic, All Rights Reserved.
+ * Unpublished Copyright (c) 2006-2017 PubMatic, All Rights Reserved.
  * 
  * 
  * 
@@ -53,15 +53,12 @@ import com.pubmatic.sdk.nativead.bean.PMAssetResponse;
 
 public final class NativeAdDescriptor extends AdDescriptor implements Renderable {
 
-    private String creativeId = null;
-    private String feedId = null;
     private String click = null;
     private String[] impressionTrackers = null;
     private String jsTracker = null;
     private String[] clickTrackers = null;
     private String nativeAdJSON = null;
     private int nativeVersion = 0;
-    private String subtype = "";
     private String mediation = null; // mediation partner name
     private String mediationId = null; // id of the mediation partner
     private String fallbackUrl = null;
@@ -76,11 +73,8 @@ public final class NativeAdDescriptor extends AdDescriptor implements Renderable
      * Source of the advertisement, can be direct or mediation.
      */
     private String source = null;
-    // may be of in the form "mediationData":{ "adid":"<ad id>"}
-    private String adUnitId = null;
 
     /**
-     * @param subtype
      * @param clickUrl
      * @param fallbackUrl
      * @param impressionTrackers
@@ -88,10 +82,9 @@ public final class NativeAdDescriptor extends AdDescriptor implements Renderable
      * @param jsTrackerString
      * @param nativeAssetList
      */
-    public NativeAdDescriptor(String subtype, int nativeVersion2, String clickUrl, String fallbackUrl,
+    public NativeAdDescriptor(int nativeVersion2, String clickUrl, String fallbackUrl,
             String[] impressionTrackers, String[] clickTrackers, String jsTrackerString,
             List<PMAssetResponse> nativeAssetList) {
-        this.subtype = subtype;
         this.click = clickUrl;
         this.impressionTrackers = impressionTrackers;
         this.clickTrackers = clickTrackers;
@@ -103,30 +96,22 @@ public final class NativeAdDescriptor extends AdDescriptor implements Renderable
     }
 
     /**
-     * @param subtype
-     * @param creativeId
      * @param mediation
      * @param mediation
      * @param mediationId
-     * @param adUnitId
      * @param impressionTrackers
      * @param clickTrackers
      * @param jsTrackerString
-     * @param feedId
      */
-    public NativeAdDescriptor(String subtype, String creativeId, String mediation, String mediationId, String adUnitId,
-            String source, String[] impressionTrackers, String[] clickTrackers, String jsTrackerString, String feedId) {
+    public NativeAdDescriptor(String mediation, String mediationId,
+            String source, String[] impressionTrackers, String[] clickTrackers, String jsTrackerString) {
         super();
-        this.subtype = subtype;
-        this.creativeId = creativeId;
         this.mediation = mediation;
         this.mediationId = mediationId;
-        this.adUnitId = adUnitId;
         this.source = source;
         this.impressionTrackers = impressionTrackers;
         this.clickTrackers = clickTrackers;
         this.jsTracker = jsTrackerString;
-        this.feedId = feedId;
 
         typeMediation = true;
     }
@@ -207,52 +192,6 @@ public final class NativeAdDescriptor extends AdDescriptor implements Renderable
     }
 
     /**
-     * @return the subtype
-     */
-    String getSubtype() {
-        return subtype;
-    }
-
-    /**
-     * @param subtype
-     *            the subtype to set
-     */
-    void setSubtype(String subtype) {
-        this.subtype = subtype;
-    }
-
-    /**
-     * @return the creativeId
-     */
-    String getCreativeId() {
-        return creativeId;
-    }
-
-    /**
-     * @param creativeId
-     *            the creativeId to set
-     */
-    void setCreativeId(String creativeId) {
-        this.creativeId = creativeId;
-    }
-
-    /**
-     * @param feedId
-     *            Ad feed partner identifier in Mocean
-     */
-    public void setFeedId(String feedId) {
-        this.feedId = feedId;
-    }
-
-    /**
-     * 
-     * @return feedId Ad feed partner identifier in Mocean
-     */
-    public String getFeedId() {
-        return feedId;
-    }
-
-    /**
      * @return the mediation
      */
     String getMediation() {
@@ -298,22 +237,6 @@ public final class NativeAdDescriptor extends AdDescriptor implements Renderable
     }
 
     /**
-     * 
-     * @return
-     */
-    String getAdUnitId() {
-        return adUnitId;
-    }
-
-    /**
-     * 
-     * @param adUnitId
-     */
-    void setMediationData(String adUnitId) {
-        this.adUnitId = adUnitId;
-    }
-
-    /**
      * Denotes whether response received is of type mediation or native.
      * 
      * @return
@@ -346,8 +269,7 @@ public final class NativeAdDescriptor extends AdDescriptor implements Renderable
     @Override
     public String toString() {
         return "NativeAdDescriptor [click=" + click + ", impressionTrackers=" + Arrays.toString(impressionTrackers)
-                + ", clickTrackers=" + Arrays.toString(clickTrackers) + ", nativeAdJSON=" + nativeAdJSON + ", subtype="
-                + subtype + ", mediation=" + mediation + ", mediationId=" + mediationId + ", adUnitId=" + adUnitId
+                + ", clickTrackers=" + Arrays.toString(clickTrackers) + ", nativeAdJSON=" + nativeAdJSON + ", mediation=" + mediation + ", mediationId=" + mediationId
                 + " nativeVersion=" + nativeVersion + " ]";
     }
 

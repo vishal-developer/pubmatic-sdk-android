@@ -16,7 +16,6 @@
  */
 
 package com.pubmatic.sdk.banner.ui;
-//package jp.tomorrowkey.android.gifplayer;
 
 import java.io.InputStream;
 import java.util.Vector;
@@ -24,7 +23,7 @@ import java.util.Vector;
 
 /**
  * This class is used to decode GIF images into separate frames.
- * Note this class has been modified specifically for the MAST SDK.
+ * Note this class has been modified specifically for the PubMatic SDK.
  * 
  * Attribution:
  * https://code.google.com/p/android-gifview/
@@ -32,8 +31,8 @@ import java.util.Vector;
  * License (per Google Code project page above):
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Modifications Copyright 2013, Mocean Mobile
- * http://www.moceanmobile.com/
+ * Modifications Copyright 2017, PubMatic Mobile
+ * https://pubmatic.com/
  */
 public class GifDecoder {
 	/**

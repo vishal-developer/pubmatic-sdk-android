@@ -24,6 +24,7 @@ import java.util.Formatter;
 import java.util.Locale;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -31,6 +32,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.ConsoleMessage;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebViewClient;
 
@@ -178,6 +181,7 @@ public class WebView extends android.webkit.WebView {
             view.setFocusableInTouchMode(true);
         }
 
+        @SuppressWarnings("deprecation")
         @Override
         public void onReceivedError(android.webkit.WebView view, int errorCode,
                 String description, String failingUrl) {
@@ -188,6 +192,20 @@ public class WebView extends android.webkit.WebView {
                                              description, failingUrl);
         }
 
+        @TargetApi(android.os.Build.VERSION_CODES.M)
+        @Override
+        public void onReceivedError(android.webkit.WebView view, WebResourceRequest request,
+                                    WebResourceError error) {
+            super.onReceivedError(view, request, error);
+
+            if(request.isForMainFrame()) {
+
+                if (handler != null)
+                    handler.webViewReceivedError((WebView) view, request, error);
+            }
+        }
+
+        @SuppressWarnings("deprecation")
         @Override
         public boolean shouldOverrideUrlLoading(android.webkit.WebView view,
                 String url) {
@@ -195,6 +213,17 @@ public class WebView extends android.webkit.WebView {
 
             if (handler != null)
                 override = handler.webViewShouldOverrideUrlLoading((WebView) view, url);
+
+            return override;
+        }
+
+        @TargetApi(android.os.Build.VERSION_CODES.M)
+        @Override
+        public boolean shouldOverrideUrlLoading(android.webkit.WebView view, WebResourceRequest request) {
+            boolean override = super.shouldOverrideUrlLoading(view, request);
+
+            if (handler != null)
+                override = handler.webViewShouldOverrideUrlLoading((WebView)view, request);
 
             return override;
         }
@@ -216,6 +245,11 @@ public class WebView extends android.webkit.WebView {
         void webViewReceivedError(WebView webView, int errorCode,
                 String description, String failingUrl);
 
+        void webViewReceivedError(WebView view, WebResourceRequest request,
+                      WebResourceError error);
+
         boolean webViewShouldOverrideUrlLoading(WebView view, String url);
+
+        boolean webViewShouldOverrideUrlLoading(WebView view, WebResourceRequest request);
     }
 }

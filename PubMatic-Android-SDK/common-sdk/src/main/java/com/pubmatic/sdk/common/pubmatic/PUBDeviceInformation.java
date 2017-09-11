@@ -39,23 +39,16 @@ import java.util.Locale;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
-import android.location.Location;
-import android.location.LocationListener;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 import android.os.Build;
-import android.os.Bundle;
 import android.telephony.TelephonyManager;
-import android.text.format.Formatter;
 import android.view.Display;
-import android.view.Surface;
 import android.view.WindowManager;
 import android.webkit.WebView;
 
 import com.pubmatic.sdk.common.CommonConstants;
 
-public final class PUBDeviceInformation implements LocationListener {
+
+public final class PUBDeviceInformation {
 
 	private static Context mApplicationContext = null;
 
@@ -71,7 +64,7 @@ public final class PUBDeviceInformation implements LocationListener {
 	public String mPageURL = null;
 
 	public String mDeviceCountryCode = null;
-	public String mDeviceIpAddress = null;
+	//public String mDeviceIpAddress = null;
 	public String mDeviceUserAgent = null;
 	public String mCarrierName = null;
 	public String mDeviceAcceptLanguage = null;
@@ -79,7 +72,6 @@ public final class PUBDeviceInformation implements LocationListener {
 
     public String mDeviceTimeStamp = "";
 	public double mDeviceTimeZone = 0.0;
-	public String mDeviceLocation = "";
 	// Hard Coded Values
 	public static int mJavaScriptSupport = DeviceConstants.mPubDeviceJavaScriptSupport;
 	public static int mAdVisibility = DeviceConstants.mAdVisibility;
@@ -106,7 +98,7 @@ public final class PUBDeviceInformation implements LocationListener {
 				.getSystemService(Context.WINDOW_SERVICE);
 		Display display = window.getDefaultDisplay();
 		mDeviceScreenResolution = display.getWidth() + "x"
-				+ display.getHeight();
+								+ display.getHeight();
 
 		// Get the system time and time zone
 		Calendar cal = Calendar.getInstance();
@@ -152,7 +144,7 @@ public final class PUBDeviceInformation implements LocationListener {
 			manager = null;
 		}
 
-		mDeviceIpAddress = getDeviceIpAddress();
+		//mDeviceIpAddress = getDeviceIpAddress();
 
         mDeviceTimeStamp = getCurrentTimeStamp();
 	}
@@ -165,125 +157,32 @@ public final class PUBDeviceInformation implements LocationListener {
 		return instance;
 	}
 
-	// Returns the current system time
-	public synchronized static String getCurrentTime() {
-		Calendar cal = Calendar.getInstance();
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
-				DeviceConstants.mDateTimeFormat, Locale.getDefault());
-		String systemTime = simpleDateFormat.format(cal.getTime());
-		return systemTime;
-	}
-
-	// Generate the random number in between 0 to 1
-	public synchronized static float getRandomNumber() {
-		float randomNumber = (float) Math.random();
-		while (randomNumber >= 1)
-			randomNumber = randomNumber / 10;
-		return randomNumber;
-	}
-
-	public synchronized static int getScreenOrientation() {
-		WindowManager window = (WindowManager) mApplicationContext
-				.getSystemService(Context.WINDOW_SERVICE);
-		Display getOrient = window.getDefaultDisplay();
-		int orientation = Configuration.ORIENTATION_UNDEFINED;
-		if (getOrient.getWidth() == getOrient.getHeight()) {
-			orientation = 0;
-		} else {
-			if (getOrient.getWidth() < getOrient.getHeight()) {
-				orientation = 0;
-			} else {
-				orientation = 1;
-			}
-		}
-		return orientation;
-	}
-
-	public synchronized int getDeviceOrientation() {
-		// 1 for landscape
-		// 0 for portrait
-
-		Display display = ((WindowManager) mApplicationContext
-				.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-
-		int rotation = display.getRotation();
-
-		// If a device has a naturally tall screen, and the user has turned it
-		// on its side to go into a landscape orientation, the value returned
-		// here may be either Surface.ROTATION_90 or Surface.ROTATION_270
-		// depending on the direction it was turned.
-		if (display.getWidth() == display.getHeight()) {
-			if (rotation == Surface.ROTATION_90
-					|| rotation == Surface.ROTATION_270) {
-				rotation = 1;
-			}
-			else
-			// Device will always remain in potrait mode
-			rotation = 0;
-		} else if (display.getWidth() < display.getHeight()) 
-				{
-						if (rotation == Surface.ROTATION_90
-								|| rotation == Surface.ROTATION_270) 
-						{
-							rotation = 1;
-						}else
-						{
-							// Device is in portrait mode
-							rotation = 0;
-						}
-				} else 
-				{
-						if (rotation == Surface.ROTATION_90
-										|| rotation == Surface.ROTATION_270)
-						{
-							rotation = 1;
-						}else
-						{
-							// Device is in landscape mode
-							rotation = 1;
-						}
-				}
-
-		return rotation;
-	}
-
+	@Deprecated
 	private synchronized static String getDeviceIpAddress() {
-		WifiManager wifiManager = (WifiManager) mApplicationContext
+		/*WifiManager wifiManager = (WifiManager) mApplicationContext
 				.getSystemService(Context.WIFI_SERVICE);
 		if (wifiManager != null) {
-			WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-			if (wifiInfo != null) {
-				String strIpAdd = Formatter.formatIpAddress(wifiInfo
-						.getIpAddress());
-				return strIpAdd;
+			try {
+				//It requires ACCESS_WIFI_STATE permission
+				WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+				if (wifiInfo != null) {
+					String strIpAdd = Formatter.formatIpAddress(wifiInfo
+							.getIpAddress());
+					return strIpAdd;
+				}
+			} catch (SecurityException e) {
+				Log.e(TAG, "Unable to get IP address using WiFiManager.");
 			}
 			return null;
-		}
+		}*/
 		return null;
-	}
-
-	public void onLocationChanged(Location location) {
-		if (location != null) {
-			mDeviceLocation = location.getLatitude() + ","
-					+ location.getLongitude();
-		}
-	}
-
-	public void onProviderDisabled(String provider) {
-	}
-
-	public void onProviderEnabled(String provider) {
-	}
-
-	public void onStatusChanged(String provider, int status, Bundle extras) {
-
 	}
 
 	/**
 	 *
 	 * @return yyyy-MM-dd HH:mm:ss formate date as string
 	 */
-	public static String getCurrentTimeStamp(){
+	private static String getCurrentTimeStamp(){
 		try {
 
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
