@@ -16,20 +16,24 @@ import android.widget.TextView;
 
 import com.pubmatic.sdk.common.PubMaticSDK;
 
+import static android.os.Build.ID;
 import static com.pubmatic.sample.R.string.help_text;
 
 public class HelpDialogFragment extends DialogFragment {
 
     private String getHelpText() {
         return "<h2>Welcome to the PubMatic's SDK Sample app.</h2><br/>" +
-                "    This application helps you to test PubMatic's ad tag.<br/>" +
+                "    This application helps you test PubMatic’s ad tag.<br/>" +
                 "    <br/>How to use:<br/>" +
-                "    1. Select the desired ad type<br/>" +
-                "    2. Input your ad tag details PubID (Publisher ID), SiteID (Publisher's site ID), AdID (Ad slot ID). Please get these details while creating an ad tag from PubMatic UI or please contact PubMatic sales team to get new ad tags for your app.<br/>" +
-                "    3. Optionally you can configure other targeting parameters for better monetisation.<br/>" +
-                "    4. App also provides Settings screen which allows to apply global settings.<br/><br/>" +
-                "        <h3>Contact:</h3><br/>" +
-                "    To monetize your app using PubMatic platform, Please contact support@pubmatic.com</a>";
+                "    1. Select the desired ad type.<br/>" +
+                "    2. Input your ad tag details below. These can be obtained while creating an ad tag in the PubMatic UI or from the PubMatic Sales team, who can get new ad tags for your app.<br/>" +
+                "    &nbsp;* PubID = Publisher ID<br/>"+
+                "    &nbsp;* SiteID = Publisher Site ID<br/>"+
+                "    &nbsp;* AdID = Ad Slot ID<br/>"+
+                "    3. (Optional but Recommended) Configure additional targeting parameters for better monetization.<br/>" +
+                "    4. (Optional but Recommended) Use the Settings screen to apply global settings.<br/><br/>" +
+                "        <h3>Contact us:</h3><br/>" +
+                "    To monetize your app with PubMatic, please contact support@pubmatic.com</a>";
     }
 
     @Override
