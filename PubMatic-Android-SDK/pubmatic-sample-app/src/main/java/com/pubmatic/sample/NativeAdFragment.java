@@ -474,7 +474,10 @@ public class NativeAdFragment extends DialogFragment {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Toast.makeText(getActivity(), ex.getMessage(), Toast.LENGTH_LONG).show();
+                    if(ex!=null)
+                        Toast.makeText(getActivity(), ex.getMessage(), Toast.LENGTH_LONG).show();
+                    else
+                        Toast.makeText(getActivity(), "Unable to load Native ad.", Toast.LENGTH_LONG).show();
                     dismiss();
                 }
             });

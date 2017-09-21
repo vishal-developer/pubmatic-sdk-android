@@ -261,7 +261,6 @@ public class PMPrefetchManager implements ResponseGenerator {
         httpRequest.setRequestUrl(adRequest.getRequestUrl());
         httpRequest.setPostData(adRequest.getPostData());
         PUBDeviceInformation pubDeviceInformation = PUBDeviceInformation.getInstance(mContext);
-        httpRequest.setRLNClientIPAddress(pubDeviceInformation.mDeviceIpAddress);
         httpRequest.setUserAgent(userAgent);
         return httpRequest;
     }

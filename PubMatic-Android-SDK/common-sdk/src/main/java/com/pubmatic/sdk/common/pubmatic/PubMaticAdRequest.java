@@ -144,8 +144,6 @@ public abstract class PubMaticAdRequest extends AdRequest {
     @Override
     protected void initializeDefaultParams(Context context) {
 
-        PUBDeviceInformation pubDeviceInformation = PUBDeviceInformation.getInstance(mContext);
-        setIPAddress(pubDeviceInformation.mDeviceIpAddress);
     }
 
     @Override

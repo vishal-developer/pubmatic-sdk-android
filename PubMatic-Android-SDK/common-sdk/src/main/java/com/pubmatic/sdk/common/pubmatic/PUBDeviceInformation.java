@@ -71,7 +71,6 @@ public final class PUBDeviceInformation implements LocationListener {
 	public String mPageURL = null;
 
 	public String mDeviceCountryCode = null;
-	public String mDeviceIpAddress = null;
 	public String mDeviceUserAgent = null;
 	public String mCarrierName = null;
 	public String mDeviceAcceptLanguage = null;
@@ -151,8 +150,6 @@ public final class PUBDeviceInformation implements LocationListener {
 			info = null;
 			manager = null;
 		}
-
-		mDeviceIpAddress = getDeviceIpAddress();
 
         mDeviceTimeStamp = getCurrentTimeStamp();
 	}
@@ -245,21 +242,6 @@ public final class PUBDeviceInformation implements LocationListener {
 				}
 
 		return rotation;
-	}
-
-	private synchronized static String getDeviceIpAddress() {
-		WifiManager wifiManager = (WifiManager) mApplicationContext
-				.getSystemService(Context.WIFI_SERVICE);
-		if (wifiManager != null) {
-			WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-			if (wifiInfo != null) {
-				String strIpAdd = Formatter.formatIpAddress(wifiInfo
-						.getIpAddress());
-				return strIpAdd;
-			}
-			return null;
-		}
-		return null;
 	}
 
 	public void onLocationChanged(Location location) {

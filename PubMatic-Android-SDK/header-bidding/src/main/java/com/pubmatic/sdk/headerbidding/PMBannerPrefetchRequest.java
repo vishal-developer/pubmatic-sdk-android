@@ -383,7 +383,6 @@ public class PMBannerPrefetchRequest extends PubMaticBannerAdRequest {
             deviceJsonObject.put("js", pubDeviceInformation.mJavaScriptSupport);
 
             deviceJsonObject.put("ua", getUserAgent());
-            deviceJsonObject.put("ip", pubDeviceInformation.mDeviceIpAddress);
             deviceJsonObject.put("make", pubDeviceInformation.mDeviceMake);
             deviceJsonObject.put("model", pubDeviceInformation.mDeviceModel);
             deviceJsonObject.put("os", pubDeviceInformation.mDeviceOSName);
