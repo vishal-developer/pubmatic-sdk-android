@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import com.pubmatic.sampleapp.R;
+import com.pubmatic.sdk.banner.PMBannerAdView;
 
 public class PubStaticBannerActivity extends Activity {
 
@@ -27,6 +28,39 @@ public class PubStaticBannerActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.pubmatic_activity_static_banner);
+
+		PMBannerAdView banner = (PMBannerAdView)findViewById(R.id.banner);
+		banner.setFeatureSupportHandler(new PMBannerAdView.BannerAdViewDelegate.FeatureSupportHandler() {
+			@Override
+			public Boolean shouldSupportSMS(PMBannerAdView adView) {
+				return true;
+			}
+
+			@Override
+			public Boolean shouldSupportPhone(PMBannerAdView adView) {
+				return true;
+			}
+
+			@Override
+			public Boolean shouldSupportCalendar(PMBannerAdView adView) {
+				return true;
+			}
+
+			@Override
+			public Boolean shouldSupportStorePicture(PMBannerAdView adView) {
+				return null;
+			}
+
+			@Override
+			public boolean shouldStorePicture(PMBannerAdView sender, String url) {
+				return false;
+			}
+
+			@Override
+			public boolean shouldAddCalendarEntry(PMBannerAdView sender, String calendarProperties) {
+				return true;
+			}
+		});
 	}
 
 }
