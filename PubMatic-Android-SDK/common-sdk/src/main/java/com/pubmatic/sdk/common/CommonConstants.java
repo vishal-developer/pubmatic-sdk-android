@@ -29,7 +29,7 @@ package com.pubmatic.sdk.common;
 @SuppressWarnings("unused")
 public class CommonConstants {
 
-	public static final String SDK_VERSION = "5.2.0";
+	public static final String SDK_VERSION = "5.2.1";
 
 	// This is used if the WebView's returned value is empty.
 	public static final String USER_AGENT_VALUE = "PMSDK/" + SDK_VERSION
