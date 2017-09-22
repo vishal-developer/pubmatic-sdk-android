@@ -156,5 +156,6 @@ public class PubMaticConstants {
     public static final String SDK_ID_PARAM 			= "msdkId";
     public static final String SDK_VER_PARAM 			= "msdkVersion";
     public static final String MULTI_SIZE_PARAM 		= "multisize";
+    public static final String API_PARAM 		        = "api";
 
 }
