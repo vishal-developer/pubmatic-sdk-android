@@ -48,12 +48,12 @@ public class PubStaticBannerActivity extends Activity {
 
 			@Override
 			public Boolean shouldSupportStorePicture(PMBannerAdView adView) {
-				return null;
+				return true;
 			}
 
 			@Override
 			public boolean shouldStorePicture(PMBannerAdView sender, String url) {
-				return false;
+				return true;
 			}
 
 			@Override

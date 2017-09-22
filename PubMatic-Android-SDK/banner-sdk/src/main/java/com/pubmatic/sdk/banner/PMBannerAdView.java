@@ -2807,6 +2807,9 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
         @Override
         public void mraidCreateCalendarEvent(final Bridge bridge, String calendarEvent) {
+            //Send click tracker
+            performClickTracking();
+
             if ((bridge != mraidBridge) && (bridge != mraidTwoPartBridge)) {
                 return;
             }
@@ -2877,6 +2880,9 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
         @Override
         public void mraidStorePicture(final Bridge bridge, String url) {
+            //Send click tracker
+            performClickTracking();
+
             if ((bridge != mraidBridge) && (bridge != mraidTwoPartBridge)) {
                 return;
             }
