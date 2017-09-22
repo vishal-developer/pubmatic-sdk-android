@@ -14,13 +14,9 @@ Supported Ad formats
 
 ## What is new in [latest release](../../releases/latest)?
 
-* Revised Sample application
-* Automatic Location detection
-* Hashing of UDID parameter
-* Support of multisize feature for banner ad
-* Support of Header-Biding via DFP for Banner
-* Bug fixed Multiple adtype parameter in ad request
-* Added Github wiki pages for SDK features ([wiki](../../wiki))
+* Removed permission from SDK manifest and added in sample application's manifest.
+* Removed sending IP address in all ad request.
+* Added click tracking in calendar and store picture event of MRAID ad.
 
 For full change log , please go to [CHANGELOG](CHANGELOG.md)
 
