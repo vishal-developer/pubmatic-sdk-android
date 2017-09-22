@@ -1,7 +1,6 @@
 ## 5.2.1
 - Removed permission from SDK manifest and added in sample application's manifest.
-- Removed sending IP address in all ad request.
-- Added click tracking in calendar and store picture event of MRAID ad.
+- Fixed other minor issues.
 
 ## 5.2.0
 
