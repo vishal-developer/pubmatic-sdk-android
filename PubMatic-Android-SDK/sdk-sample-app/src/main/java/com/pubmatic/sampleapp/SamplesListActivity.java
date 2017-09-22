@@ -23,9 +23,12 @@ import java.util.List;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ListActivity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
@@ -39,11 +42,14 @@ import android.widget.TextView;
 import com.pubmatic.sampleapp.banner.BannerSamplesListActivity;
 import com.pubmatic.sampleapp.interstitial.InterstitialSamplesListActivity;
 import com.pubmatic.sampleapp.nativead.NativeSamplesListActivity;
+import com.pubmatic.sdk.common.PMLogger;
 
 public class SamplesListActivity extends ListActivity {
 	SamplesListAdapter samplesListAdapter = null;
 
-	private static final int MY_PERMISSIONS_REQUEST_LOCATION = 12355;
+
+	private static final int MULTIPLE_PERMISSIONS_REQUEST_CODE = 123;
+	private static String[] PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +58,8 @@ public class SamplesListActivity extends ListActivity {
 		// Use to check for potential leaks
 		// android.os.StrictMode.setVmPolicy(new
 		// android.os.StrictMode.VmPolicy.Builder().detectActivityLeaks().penaltyLog().build());
+
+		PMLogger.setLogLevel(PMLogger.LogLevel.Debug);
 
 		samplesListAdapter = new SamplesListAdapter();
 
@@ -62,11 +70,28 @@ public class SamplesListActivity extends ListActivity {
 
 		super.setListAdapter(samplesListAdapter);
 
-        int LocationPermissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
 
-        if(LocationPermissionCheck != PackageManager.PERMISSION_GRANTED)
-            ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION }, MY_PERMISSIONS_REQUEST_LOCATION);
+		if(!hasPermissions(this, PERMISSIONS)){
+			ActivityCompat.requestPermissions(this, PERMISSIONS, MULTIPLE_PERMISSIONS_REQUEST_CODE);
+		}
 	}
+
+	public static boolean hasPermissions(Context context, String... permissions) {
+		if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
+			for (String permission : permissions) {
+				if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+	}
+
 
 	@Override
 	protected void onListItemClick(ListView listView, View view, int position,

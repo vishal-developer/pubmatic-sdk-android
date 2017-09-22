@@ -75,16 +75,18 @@ public class PubMaticNativeActivity extends Activity {
 		// ad.setTest(true); // Uncomment to serve ads in test mode
 
 		PubMaticNativeAdRequest adRequest = PubMaticNativeAdRequest
-				.createPubMaticNativeAdRequest(this, "31400", "52368", "383372", getAssetRequests());
+				.createPubMaticNativeAdRequest(this, "31400", "32504", "1096058", getAssetRequests());
 
 		// Request for ads
 		ad.execute(adRequest);
 	}
 
 	private List<PMAssetRequest> getAssetRequests() {
+		// First create some assets to add in the request
 		List<PMAssetRequest> assets = new ArrayList<PMAssetRequest>();
 
-		PMTitleAssetRequest titleAsset = new PMTitleAssetRequest(1);// Unique assetId is mandatory for each asset
+		// Unique assetId is mandatory for each asset
+		PMTitleAssetRequest titleAsset = new PMTitleAssetRequest(1);
 		titleAsset.setLength(50);
 		titleAsset.setRequired(true); // Optional (Default: false)
 		assets.add(titleAsset);
@@ -106,7 +108,7 @@ public class PubMaticNativeActivity extends Activity {
 		dataAssetRating.setDataAssetType(PMDataAssetTypes.rating);
 		assets.add(dataAssetRating);
 
-		PMDataAssetRequest dataAssetCta = new PMDataAssetRequest(7);
+		PMDataAssetRequest dataAssetCta = new PMDataAssetRequest(4);
 		dataAssetCta.setDataAssetType(PMDataAssetTypes.ctatext);
 		assets.add(dataAssetCta);
 
@@ -185,63 +187,65 @@ public class PubMaticNativeActivity extends Activity {
 								 * must match that of in request.
 								 */
 								switch (asset.getAssetId()) {
-								case 1:
-									txtTitle.setText(((PMTitleAssetResponse) asset)
-											.getTitleText());
-									break;
-								case 2:
-									PMNativeAd.Image iconImage = ((PMImageAssetResponse) asset)
-											.getImage();
-									if (iconImage != null) {
-										imgLogo.setImageBitmap(null);
-										ad.loadImage(imgLogo,
-												iconImage.getUrl());
-									}
-									break;
-								case 3:
-									PMNativeAd.Image mainImage = ((PMImageAssetResponse) asset)
-											.getImage();
-									if (mainImage != null) {
-										imgMain.setImageBitmap(null);
-										ad.loadImage(imgMain,
-												mainImage.getUrl());
-									}
-									break;
-								case 5:
-									txtDescription
-											.setText(((PMDataAssetResponse) asset)
-													.getValue());
-									break;
-								case 7:
-									ctaText
-											.setText(((PMDataAssetResponse) asset).getValue());
-									break;
-								case 6:
-									String ratingStr = ((PMDataAssetResponse) asset)
-											.getValue();
-									try {
-										float rating = Float
-												.parseFloat(ratingStr);
-										if (rating > 0f) {
-											ratingBar.setRating(rating);
-											ratingBar
-													.setVisibility(View.VISIBLE);
-										} else {
-											ratingBar.setRating(rating);
-											ratingBar.setVisibility(View.GONE);
+									case 1:
+										txtTitle.setText(((PMTitleAssetResponse) asset)
+												.getTitleText());
+										break;
+									case 2:
+										PMNativeAd.Image iconImage = ((PMImageAssetResponse) asset)
+												.getImage();
+										if (iconImage != null) {
+											imgLogo.setImageBitmap(null);
+											ad.loadImage(imgLogo,
+													iconImage.getUrl());
 										}
-									} catch (Exception e) {
-										// Invalid rating string
-										Log.e("NativeActivity",
-												"Error parsing 'rating'");
-									}
-									break;
+										break;
+									case 3:
+										PMNativeAd.Image mainImage = ((PMImageAssetResponse) asset)
+												.getImage();
+										if (mainImage != null) {
+											imgMain.setImageBitmap(null);
+											ad.loadImage(imgMain,
+													mainImage.getUrl());
+										}
+										break;
+									case 5:
+										txtDescription
+												.setText(((PMDataAssetResponse) asset)
+														.getValue());
+										break;
+									case 4:
+										ctaText
+												.setText(((PMDataAssetResponse) asset).getValue());
+										break;
+									case 6:
+										String ratingStr = ((PMDataAssetResponse) asset)
+												.getValue();
+										try {
+											float rating = Float
+													.parseFloat(ratingStr);
+											if (rating > 0f) {
+												ratingBar.setRating(rating);
+												ratingBar
+														.setVisibility(View.VISIBLE);
+											} else {
+												ratingBar.setRating(rating);
+												ratingBar.setVisibility(View.GONE);
+											}
+										} catch (Exception e) {
+											// Invalid rating string
+											Log.e("NativeActivity",
+													"Error parsing 'rating'");
+										}
+										break;
 
-								default: // NOOP
-									break;
+									default: // NOOP
+										break;
 								}
 							} catch (Exception ex) {
 								appendOutput("ERROR in rendering asset. Skipping asset.");
+								if(ex!=null)
+									ex.printStackTrace();
 							}
 						}
 					}
