@@ -15,8 +15,7 @@ Supported Ad formats
 ## What is new in [latest release](../../releases/latest)?
 
 * Removed permission from SDK manifest and added in sample application's manifest.
-* Removed sending IP address in all ad request.
-* Added click tracking in calendar and store picture event of MRAID ad.
+* Fixed other minor issues.
 
 For full change log , please go to [CHANGELOG](CHANGELOG.md)
 
