@@ -49,7 +49,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.pubmatic.sdk.common.AdResponse.Renderable;
-import com.pubmatic.sdk.nativead.bean.PMAssetResponse;
+import com.pubmatic.sdk.nativead.bean.PMNativeAssetResponse;
 
 public final class NativeAdDescriptor extends AdDescriptor implements Renderable {
 
@@ -62,7 +62,7 @@ public final class NativeAdDescriptor extends AdDescriptor implements Renderable
     private String mediation = null; // mediation partner name
     private String mediationId = null; // id of the mediation partner
     private String fallbackUrl = null;
-    private List<PMAssetResponse> nativeAssetList = null;
+    private List<PMNativeAssetResponse> nativeAssetList = null;
 
     /**
      * Denotes whether the response received is of mediation or native
@@ -84,7 +84,7 @@ public final class NativeAdDescriptor extends AdDescriptor implements Renderable
      */
     public NativeAdDescriptor(int nativeVersion2, String clickUrl, String fallbackUrl,
             String[] impressionTrackers, String[] clickTrackers, String jsTrackerString,
-            List<PMAssetResponse> nativeAssetList) {
+            List<PMNativeAssetResponse> nativeAssetList) {
         this.click = clickUrl;
         this.impressionTrackers = impressionTrackers;
         this.clickTrackers = clickTrackers;
@@ -245,11 +245,11 @@ public final class NativeAdDescriptor extends AdDescriptor implements Renderable
         return typeMediation;
     }
 
-    public List<PMAssetResponse> getNativeAssetList() {
+    public List<PMNativeAssetResponse> getNativeAssetList() {
         return nativeAssetList;
     }
 
-    public void setNativeAssetList(List<PMAssetResponse> nativeAssetList) {
+    public void setNativeAssetList(List<PMNativeAssetResponse> nativeAssetList) {
         this.nativeAssetList = nativeAssetList;
     }
 

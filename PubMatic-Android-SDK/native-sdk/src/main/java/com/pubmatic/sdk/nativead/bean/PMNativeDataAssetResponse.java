@@ -1,18 +1,18 @@
 package com.pubmatic.sdk.nativead.bean;
 
-public class PMDataAssetResponse extends PMAssetResponse {
+public class PMNativeDataAssetResponse extends PMNativeAssetResponse {
 
 	/** Data Asset Type */
-	public PMDataAssetTypes dataAssetType = null;
+	public PMNativeDataAssetTypes dataAssetType = null;
 
 	/** Value of data asset received */
 	public String value;
 
-	public PMDataAssetTypes getDataAssetType() {
+	public PMNativeDataAssetTypes getDataAssetType() {
 		return dataAssetType;
 	}
 
-	public void setDataAssetType(PMDataAssetTypes dataAssetType) {
+	public void setDataAssetType(PMNativeDataAssetTypes dataAssetType) {
 		this.dataAssetType = dataAssetType;
 	}
 

@@ -67,7 +67,7 @@ import com.pubmatic.sdk.common.network.HttpHandler.HttpRequestListener;
 import com.pubmatic.sdk.common.network.HttpRequest;
 import com.pubmatic.sdk.common.network.HttpResponse;
 import com.pubmatic.sdk.common.ui.BrowserDialog;
-import com.pubmatic.sdk.nativead.bean.PMAssetResponse;
+import com.pubmatic.sdk.nativead.bean.PMNativeAssetResponse;
 
 /**
  * Main class used for requesting native ads. <br> Refer Sample application for example of
@@ -500,9 +500,9 @@ public final class PMNativeAd {
     /**
      * Get the list of native assets.
      *
-     * @return List of {@link PMAssetResponse} if response contains any assets else returns null
+     * @return List of {@link PMNativeAssetResponse} if response contains any assets else returns null
      */
-    public List<PMAssetResponse> getNativeAssets() {
+    public List<PMNativeAssetResponse> getNativeAssets() {
         if (mNativeAdDescriptor != null && mNativeAdDescriptor.getNativeAssetList() != null && mNativeAdDescriptor
                 .getNativeAssetList()
                 .size() > 0) {

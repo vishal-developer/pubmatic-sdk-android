@@ -35,20 +35,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.pubmatic.sampleapp.R;
-import com.pubmatic.sampleapp.banner.BannerDemoActivity;
 import com.pubmatic.sdk.common.PMError;
 import com.pubmatic.sdk.common.PMLogger;
 import com.pubmatic.sdk.nativead.PMNativeAd;
-import com.pubmatic.sdk.nativead.bean.PMAssetRequest;
-import com.pubmatic.sdk.nativead.bean.PMAssetResponse;
-import com.pubmatic.sdk.nativead.bean.PMDataAssetRequest;
-import com.pubmatic.sdk.nativead.bean.PMDataAssetResponse;
-import com.pubmatic.sdk.nativead.bean.PMDataAssetTypes;
-import com.pubmatic.sdk.nativead.bean.PMImageAssetRequest;
-import com.pubmatic.sdk.nativead.bean.PMImageAssetResponse;
-import com.pubmatic.sdk.nativead.bean.PMImageAssetTypes;
-import com.pubmatic.sdk.nativead.bean.PMTitleAssetRequest;
-import com.pubmatic.sdk.nativead.bean.PMTitleAssetResponse;
+import com.pubmatic.sdk.nativead.bean.PMNativeAssetRequest;
+import com.pubmatic.sdk.nativead.bean.PMNativeAssetResponse;
+import com.pubmatic.sdk.nativead.bean.PMNativeDataAssetRequest;
+import com.pubmatic.sdk.nativead.bean.PMNativeDataAssetResponse;
+import com.pubmatic.sdk.nativead.bean.PMNativeDataAssetTypes;
+import com.pubmatic.sdk.nativead.bean.PMNativeImageAssetRequest;
+import com.pubmatic.sdk.nativead.bean.PMNativeImageAssetResponse;
+import com.pubmatic.sdk.nativead.bean.PMNativeImageAssetTypes;
+import com.pubmatic.sdk.nativead.bean.PMNativeTitleAssetRequest;
+import com.pubmatic.sdk.nativead.bean.PMNativeTitleAssetResponse;
 import com.pubmatic.sdk.nativead.pubmatic.PMNativeAdRequest;
 
 public class NativeDemoActivity extends Activity {
@@ -139,35 +138,35 @@ public class NativeDemoActivity extends Activity {
 		ad.loadRequest(adRequest);
 	}
 
-	private List<PMAssetRequest> getAssetRequests() {
+	private List<PMNativeAssetRequest> getAssetRequests() {
 		// First create some assets to add in the request
-		List<PMAssetRequest> assets = new ArrayList<PMAssetRequest>();
+		List<PMNativeAssetRequest> assets = new ArrayList<PMNativeAssetRequest>();
 
 		// Unique assetId is mandatory for each asset
-		PMTitleAssetRequest titleAsset = new PMTitleAssetRequest(1);
+		PMNativeTitleAssetRequest titleAsset = new PMNativeTitleAssetRequest(1);
 		titleAsset.setLength(50);
 		titleAsset.setRequired(true); // Optional (Default: false)
 		assets.add(titleAsset);
 
-		PMImageAssetRequest imageAssetIcon = new PMImageAssetRequest(2);
-		imageAssetIcon.setImageType(PMImageAssetTypes.icon);
+		PMNativeImageAssetRequest imageAssetIcon = new PMNativeImageAssetRequest(2);
+		imageAssetIcon.setImageType(PMNativeImageAssetTypes.icon);
 		assets.add(imageAssetIcon);
 
-		PMImageAssetRequest imageAssetMainImage = new PMImageAssetRequest(3);
-		imageAssetMainImage.setImageType(PMImageAssetTypes.main);
+		PMNativeImageAssetRequest imageAssetMainImage = new PMNativeImageAssetRequest(3);
+		imageAssetMainImage.setImageType(PMNativeImageAssetTypes.main);
 		assets.add(imageAssetMainImage);
 
-		PMDataAssetRequest dataAssetDesc = new PMDataAssetRequest(5);
-		dataAssetDesc.setDataAssetType(PMDataAssetTypes.desc);
+		PMNativeDataAssetRequest dataAssetDesc = new PMNativeDataAssetRequest(5);
+		dataAssetDesc.setDataAssetType(PMNativeDataAssetTypes.desc);
 		dataAssetDesc.setLength(25);
 		assets.add(dataAssetDesc);
 
-		PMDataAssetRequest dataAssetRating = new PMDataAssetRequest(6);
-		dataAssetRating.setDataAssetType(PMDataAssetTypes.rating);
+		PMNativeDataAssetRequest dataAssetRating = new PMNativeDataAssetRequest(6);
+		dataAssetRating.setDataAssetType(PMNativeDataAssetTypes.rating);
 		assets.add(dataAssetRating);
 
-		PMDataAssetRequest dataAssetCta = new PMDataAssetRequest(4);
-		dataAssetCta.setDataAssetType(PMDataAssetTypes.ctatext);
+		PMNativeDataAssetRequest dataAssetCta = new PMNativeDataAssetRequest(4);
+		dataAssetCta.setDataAssetType(PMNativeDataAssetTypes.ctatext);
 		assets.add(dataAssetCta);
 
 		return assets;
@@ -230,8 +229,8 @@ public class NativeDemoActivity extends Activity {
 
 					@Override
 					public void run() {
-						List<PMAssetResponse> nativeAssets = ad.getNativeAssets();
-						for (PMAssetResponse asset : nativeAssets) {
+						List<PMNativeAssetResponse> nativeAssets = ad.getNativeAssets();
+						for (PMNativeAssetResponse asset : nativeAssets) {
 							try {
 								/*
 								 * As per openRTB standard, assetId in response
@@ -239,11 +238,11 @@ public class NativeDemoActivity extends Activity {
 								 */
 								switch (asset.getAssetId()) {
 								case 1:
-									txtTitle.setText(((PMTitleAssetResponse) asset)
+									txtTitle.setText(((PMNativeTitleAssetResponse) asset)
 											.getTitleText());
 									break;
 								case 2:
-									PMNativeAd.Image iconImage = ((PMImageAssetResponse) asset)
+									PMNativeAd.Image iconImage = ((PMNativeImageAssetResponse) asset)
 											.getImage();
 									if (iconImage != null) {
 										imgLogo.setImageBitmap(null);
@@ -252,7 +251,7 @@ public class NativeDemoActivity extends Activity {
 									}
 									break;
 								case 3:
-									PMNativeAd.Image mainImage = ((PMImageAssetResponse) asset)
+									PMNativeAd.Image mainImage = ((PMNativeImageAssetResponse) asset)
 											.getImage();
 									if (mainImage != null) {
 										imgMain.setImageBitmap(null);
@@ -262,15 +261,15 @@ public class NativeDemoActivity extends Activity {
 									break;
 								case 5:
 									txtDescription
-											.setText(((PMDataAssetResponse) asset)
+											.setText(((PMNativeDataAssetResponse) asset)
 													.getValue());
 									break;
 								case 4:
 									ctaText
-											.setText(((PMDataAssetResponse) asset).getValue());
+											.setText(((PMNativeDataAssetResponse) asset).getValue());
 									break;
 								case 6:
-									String ratingStr = ((PMDataAssetResponse) asset)
+									String ratingStr = ((PMNativeDataAssetResponse) asset)
 											.getValue();
 									try {
 										float rating = Float

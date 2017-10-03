@@ -3,10 +3,10 @@ package com.pubmatic.sdk.nativead.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PMImageAssetRequest extends PMAssetRequest {
+public class PMNativeImageAssetRequest extends PMNativeAssetRequest {
 
 	/** Image Type */
-	public PMImageAssetTypes imageType = null;
+	public PMNativeImageAssetTypes imageType = null;
 
 	/** Image width */
 	public int width;
@@ -17,16 +17,16 @@ public class PMImageAssetRequest extends PMAssetRequest {
 	/** Image mime types */
 	private List<String> mimeTypes;
 
-	public PMImageAssetRequest(int assetId) {
+	public PMNativeImageAssetRequest(int assetId) {
 		this.assetId = assetId;
 		this.mimeTypes = new ArrayList<>(0);
 	}
 
-	public PMImageAssetTypes getImageType() {
+	public PMNativeImageAssetTypes getImageType() {
 		return imageType;
 	}
 
-	public void setImageType(PMImageAssetTypes imageType) {
+	public void setImageType(PMNativeImageAssetTypes imageType) {
 		this.imageType = imageType;
 	}
 

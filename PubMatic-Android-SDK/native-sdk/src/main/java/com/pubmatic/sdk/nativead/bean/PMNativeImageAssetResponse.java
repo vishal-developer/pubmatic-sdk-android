@@ -2,13 +2,13 @@ package com.pubmatic.sdk.nativead.bean;
 
 import com.pubmatic.sdk.nativead.PMNativeAd.Image;
 
-public class PMImageAssetResponse extends PMAssetResponse {
+public class PMNativeImageAssetResponse extends PMNativeAssetResponse {
 
     /** Image Asset */
     public Image image;
 
     /** Image Type (Optional in response) */
-    public PMImageAssetTypes imageType;
+    public PMNativeImageAssetTypes imageType;
 
     public Image getImage() {
         return image;
@@ -23,11 +23,11 @@ public class PMImageAssetResponse extends PMAssetResponse {
      * 
      * @return Type of image asset
      */
-    public PMImageAssetTypes getImageType() {
+    public PMNativeImageAssetTypes getImageType() {
         return imageType;
     }
 
-    public void setImageType(PMImageAssetTypes imageType) {
+    public void setImageType(PMNativeImageAssetTypes imageType) {
         this.imageType = imageType;
     }
 }

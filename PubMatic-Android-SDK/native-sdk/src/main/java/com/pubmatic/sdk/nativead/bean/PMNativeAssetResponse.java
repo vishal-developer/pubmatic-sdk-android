@@ -1,6 +1,6 @@
 package com.pubmatic.sdk.nativead.bean;
 
-public abstract class PMAssetResponse {
+public abstract class PMNativeAssetResponse {
 	/** Asset Id */
 	public int assetId;
 

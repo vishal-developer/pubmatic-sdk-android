@@ -1,6 +1,6 @@
 package com.pubmatic.sdk.nativead.bean;
 
-public class PMTitleAssetResponse extends PMAssetResponse {
+public class PMNativeTitleAssetResponse extends PMNativeAssetResponse {
 
 	/** Title text received */
 	public String titleText;

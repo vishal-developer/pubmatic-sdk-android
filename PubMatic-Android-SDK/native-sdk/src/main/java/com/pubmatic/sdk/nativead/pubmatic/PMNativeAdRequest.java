@@ -53,14 +53,14 @@ import com.pubmatic.sdk.common.CommonConstants;
 import com.pubmatic.sdk.common.RRFormatter;
 import com.pubmatic.sdk.common.pubmatic.PMAdRequest;
 import com.pubmatic.sdk.nativead.PMNativeAd;
-import com.pubmatic.sdk.nativead.bean.PMAssetRequest;
-import com.pubmatic.sdk.nativead.bean.PMDataAssetRequest;
-import com.pubmatic.sdk.nativead.bean.PMImageAssetRequest;
-import com.pubmatic.sdk.nativead.bean.PMTitleAssetRequest;
+import com.pubmatic.sdk.nativead.bean.PMNativeAssetRequest;
+import com.pubmatic.sdk.nativead.bean.PMNativeDataAssetRequest;
+import com.pubmatic.sdk.nativead.bean.PMNativeImageAssetRequest;
+import com.pubmatic.sdk.nativead.bean.PMNativeTitleAssetRequest;
 
 public class PMNativeAdRequest extends PMAdRequest {
 
-	private List<PMAssetRequest> requestedAssetsList = null;
+	private List<PMNativeAssetRequest> requestedAssetsList = null;
 
 	private Context context;
 	private boolean test = false;
@@ -71,7 +71,7 @@ public class PMNativeAdRequest extends PMAdRequest {
 	 *
 	 * @return {@link AdRequest} instance
 	 */
-	public static PMNativeAdRequest createPMNativeAdRequest(Context context, String pubId, String siteId, String adId, List<PMAssetRequest> requestedAssets){
+	public static PMNativeAdRequest createPMNativeAdRequest(Context context, String pubId, String siteId, String adId, List<PMNativeAssetRequest> requestedAssets){
 
 		PMNativeAdRequest adRequest = new PMNativeAdRequest(context,
 				CommonConstants.PUBMATIC_AD_NETWORK_URL, requestedAssets);
@@ -82,7 +82,7 @@ public class PMNativeAdRequest extends PMAdRequest {
 	}
 
 	private PMNativeAdRequest(Context context, String adServerUrl,
-							  List<PMAssetRequest> requestedAssets) {
+							  List<PMNativeAssetRequest> requestedAssets) {
 		super(context);
 		this.context = context;
 		this.requestedAssetsList = requestedAssets;
@@ -166,50 +166,50 @@ public class PMNativeAdRequest extends PMAdRequest {
 			JSONObject titleObj;
 			JSONObject imageObj;
 			JSONObject dataObj;
-			for (PMAssetRequest assetRequest : requestedAssetsList) {
+			for (PMNativeAssetRequest assetRequest : requestedAssetsList) {
 				if (assetRequest != null) {
 					assetObj = new JSONObject();
 					assetObj.put(ID_STRING, assetRequest.getAssetId());
 					assetObj.put(REQUEST_REQUIRED,
 							(assetRequest.isRequired ? 1 : 0));
-					if (assetRequest instanceof PMTitleAssetRequest) {
+					if (assetRequest instanceof PMNativeTitleAssetRequest) {
 						// length is mandatory for title asset
-						if (((PMTitleAssetRequest) assetRequest).length > 0) {
+						if (((PMNativeTitleAssetRequest) assetRequest).length > 0) {
 							titleObj = new JSONObject();
 							titleObj.put(REQUEST_LEN,
-									((PMTitleAssetRequest) assetRequest).length);
+									((PMNativeTitleAssetRequest) assetRequest).length);
 							assetObj.putOpt(REQUEST_TITLE, titleObj);
 						} else {
 							assetObj = null;
 							Log.w("AdRequest",
 									"'length' parameter is mandatory for title asset");
 						}
-					} else if (assetRequest instanceof PMImageAssetRequest) {
+					} else if (assetRequest instanceof PMNativeImageAssetRequest) {
 						imageObj = new JSONObject();
-						if (((PMImageAssetRequest) assetRequest).imageType != null) {
+						if (((PMNativeImageAssetRequest) assetRequest).imageType != null) {
 							imageObj.put(REQUEST_TYPE,
-									((PMImageAssetRequest) assetRequest).imageType
+									((PMNativeImageAssetRequest) assetRequest).imageType
 											.getTypeId());
 						}
-						if (((PMImageAssetRequest) assetRequest).width > 0) {
+						if (((PMNativeImageAssetRequest) assetRequest).width > 0) {
 							imageObj.put(NATIVE_IMAGE_W,
-									((PMImageAssetRequest) assetRequest).width);
+									((PMNativeImageAssetRequest) assetRequest).width);
 						}
-						if (((PMImageAssetRequest) assetRequest).height > 0) {
+						if (((PMNativeImageAssetRequest) assetRequest).height > 0) {
 							imageObj.put(NATIVE_IMAGE_H,
-									((PMImageAssetRequest) assetRequest).height);
+									((PMNativeImageAssetRequest) assetRequest).height);
 						}
 						assetObj.putOpt(REQUEST_IMG, imageObj);
-					} else if (assetRequest instanceof PMDataAssetRequest) {
+					} else if (assetRequest instanceof PMNativeDataAssetRequest) {
 						dataObj = new JSONObject();
-						if (((PMDataAssetRequest) assetRequest).dataAssetType != null) {
+						if (((PMNativeDataAssetRequest) assetRequest).dataAssetType != null) {
 							dataObj.put(REQUEST_TYPE,
-									((PMDataAssetRequest) assetRequest).dataAssetType
+									((PMNativeDataAssetRequest) assetRequest).dataAssetType
 											.getTypeId());
 
-							if (((PMDataAssetRequest) assetRequest).length > 0) {
+							if (((PMNativeDataAssetRequest) assetRequest).length > 0) {
 								dataObj.put(REQUEST_LEN,
-										((PMDataAssetRequest) assetRequest).length);
+										((PMNativeDataAssetRequest) assetRequest).length);
 							}
 							assetObj.putOpt(REQUEST_DATA, dataObj);
 						} else {

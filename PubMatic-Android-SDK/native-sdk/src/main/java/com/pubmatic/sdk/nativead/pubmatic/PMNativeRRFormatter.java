@@ -62,10 +62,10 @@ import com.pubmatic.sdk.common.CommonConstants.AD_REQUEST_TYPE;
 import com.pubmatic.sdk.common.CommonConstants.CONTENT_TYPE;
 import com.pubmatic.sdk.nativead.NativeAdDescriptor;
 import com.pubmatic.sdk.nativead.PMNativeAd.Image;
-import com.pubmatic.sdk.nativead.bean.PMAssetResponse;
-import com.pubmatic.sdk.nativead.bean.PMDataAssetResponse;
-import com.pubmatic.sdk.nativead.bean.PMImageAssetResponse;
-import com.pubmatic.sdk.nativead.bean.PMTitleAssetResponse;
+import com.pubmatic.sdk.nativead.bean.PMNativeAssetResponse;
+import com.pubmatic.sdk.nativead.bean.PMNativeDataAssetResponse;
+import com.pubmatic.sdk.nativead.bean.PMNativeImageAssetResponse;
+import com.pubmatic.sdk.nativead.bean.PMNativeTitleAssetResponse;
 
 public class PMNativeRRFormatter implements RRFormatter {
 
@@ -103,7 +103,7 @@ public class PMNativeRRFormatter implements RRFormatter {
 
 		try {
 			if (httpResponse != null && httpResponse.getResponseData()!=null) {
-				ArrayList<PMAssetResponse> nativeAssetList = new ArrayList<PMAssetResponse>();
+				ArrayList<PMNativeAssetResponse> nativeAssetList = new ArrayList<PMNativeAssetResponse>();
 				String clickUrl = null;
 				String fallbackUrl = null;
 				String creativeId = null;
@@ -204,7 +204,7 @@ public class PMNativeRRFormatter implements RRFormatter {
 								if (!asset.isNull(RESPONSE_IMG)) {
 									JSONObject imageAssetObj = asset
 											.optJSONObject(RESPONSE_IMG);
-									PMImageAssetResponse imageAsset = new PMImageAssetResponse();
+									PMNativeImageAssetResponse imageAsset = new PMNativeImageAssetResponse();
 									imageAsset.assetId = assetId;
 									imageAsset.setImage(Image
 											.getImage(imageAssetObj));
@@ -216,7 +216,7 @@ public class PMNativeRRFormatter implements RRFormatter {
 								} else if (!asset.isNull(RESPONSE_TITLE)) {
 									JSONObject titleAssetObj = asset
 											.optJSONObject(RESPONSE_TITLE);
-									PMTitleAssetResponse titleAsset = new PMTitleAssetResponse();
+									PMNativeTitleAssetResponse titleAsset = new PMNativeTitleAssetResponse();
 									titleAsset.assetId = assetId;
 									titleAsset.titleText = titleAssetObj
 											.optString(RESPONSE_TEXT);
@@ -228,7 +228,7 @@ public class PMNativeRRFormatter implements RRFormatter {
 								} else if (!asset.isNull(RESPONSE_DATA)) {
 									JSONObject dataAssetObj = asset
 											.optJSONObject(RESPONSE_DATA);
-									PMDataAssetResponse dataAsset = new PMDataAssetResponse();
+									PMNativeDataAssetResponse dataAsset = new PMNativeDataAssetResponse();
 									dataAsset.assetId = assetId;
 									dataAsset.value = dataAssetObj
 											.optString(RESPONSE_VALUE);
