@@ -257,7 +257,7 @@ public class HeaderBiddingInterstitialHelper {
                                 pmPrefetchManager.loadInterstitialAd(impressionId, adView);
 
                                 //Once ad gets load, show Interstitial ad
-                                adView.showInterstitial();
+                                adView.show();
                             }
                         }
                     }

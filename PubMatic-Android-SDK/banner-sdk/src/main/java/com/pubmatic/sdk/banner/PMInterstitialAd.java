@@ -80,7 +80,7 @@ public class PMInterstitialAd implements PMAdRendered {
              * wants to skip the default SDK click processing; return false if the caller has
              * only implemented a "side-effect" such as logging and wants the default SDK logic
              * to continue.  For BaseAdView instances that are interstitial implementations MUST
-             * call closeInterstitial() if returning true from this method.
+             * call close() if returning true from this method.
              */
             public boolean onCloseButtonClick(PMInterstitialAd adView);
         }
@@ -373,7 +373,7 @@ public class PMInterstitialAd implements PMAdRendered {
 
 
     // main/background thread
-    public void closeInterstitial() {
+    public void close() {
         if (interstitialAdView != null) {
             interstitialAdView.closeInterstitial();
         }
@@ -387,11 +387,11 @@ public class PMInterstitialAd implements PMAdRendered {
         return interstitialAdView.isInterstitialReady();
     }
 
-    public void showInterstitial() {
+    public void show() {
         interstitialAdView.showInterstitial();
     }
 
-    public void showInterstitialForDuration(int durationSeconds) {
+    public void showForDuration(int durationSeconds) {
         interstitialAdView.showInterstitialWithDuration(durationSeconds);
     }
 
@@ -406,7 +406,7 @@ public class PMInterstitialAd implements PMAdRendered {
     }
 
     /**
-     * Sets the delay time between showing an interstitial with showInterstitial() and showing the
+     * Sets the delay time between showing an interstitial with show() and showing the
      * close button. A value of 0 indicates the button should be shown immediately.
      *
      * @param closeButtonDelay Time interval in seconds to delay showing a close button after

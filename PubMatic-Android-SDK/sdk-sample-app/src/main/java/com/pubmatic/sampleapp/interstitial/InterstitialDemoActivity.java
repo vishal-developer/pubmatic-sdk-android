@@ -25,7 +25,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.pubmatic.sampleapp.R;
-import com.pubmatic.sampleapp.banner.BannerDemoActivity;
 import com.pubmatic.sdk.banner.PMInterstitialAd;
 import com.pubmatic.sdk.banner.pubmatic.PMInterstitialAdRequest;
 import com.pubmatic.sdk.common.PMError;
@@ -103,7 +102,7 @@ public class InterstitialDemoActivity extends Activity {
                         "Ad loaded!",
                         Toast.LENGTH_SHORT).show();
                 if(interstitialAd.isReady())
-                    interstitialAd.showInterstitial();
+                    interstitialAd.show();
             }
         });
 

@@ -189,7 +189,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
              * wants to skip the default SDK click processing; return false if the caller has
              * only implemented a "side-effect" such as logging and wants the default SDK logic
              * to continue.  For BaseAdView instances that are interstitial implementations MUST
-             * call closeInterstitial() if returning true from this method.
+             * call close() if returning true from this method.
              */
             public boolean onCloseButtonClick(PMBannerAdView adView);
         }
@@ -671,7 +671,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
     }
 
     /**
-     * Sets the delay time between showing an interstitial with showInterstitial() and showing the
+     * Sets the delay time between showing an interstitial with show() and showing the
      * close button. A value of 0 indicates the button should be shown immediately.
      *
      * @param closeButtonDelay Time interval in seconds to delay showing a close button after
@@ -1033,7 +1033,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
     void showInterstitialWithDuration(int durationSeconds) {
 
         if (isInterstitial() == false) {
-            PMLogger.logEvent("showInterstitial requires interstitial instance", PMLogLevel.Error);
+            PMLogger.logEvent("show requires interstitial instance", PMLogLevel.Error);
             return;
         }
 
