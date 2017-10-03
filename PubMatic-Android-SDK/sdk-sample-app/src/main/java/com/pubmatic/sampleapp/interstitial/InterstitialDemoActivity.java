@@ -25,8 +25,10 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.pubmatic.sampleapp.R;
+import com.pubmatic.sampleapp.banner.BannerDemoActivity;
 import com.pubmatic.sdk.banner.PMInterstitialAd;
 import com.pubmatic.sdk.banner.pubmatic.PMInterstitialAdRequest;
+import com.pubmatic.sdk.common.PMError;
 import com.pubmatic.sdk.common.PMLogger;
 
 public class InterstitialDemoActivity extends Activity {
@@ -89,11 +91,10 @@ public class InterstitialDemoActivity extends Activity {
         interstitialAd.setUseInternalBrowser(true);
 
         interstitialAd.setRequestListener(new PMInterstitialAd.InterstitialAdListener.RequestListener() {
+
             @Override
-            public void onFailedToReceiveAd(PMInterstitialAd adView, int errorcode, String errorMessage) {
-                Toast.makeText(InterstitialDemoActivity.this,
-                               "Ad failed to load!",
-                               Toast.LENGTH_SHORT).show();
+            public void onFailedToReceiveAd(PMInterstitialAd ad, PMError error) {
+                Toast.makeText(InterstitialDemoActivity.this, error.toString(), Toast.LENGTH_LONG).show();
             }
 
             @Override

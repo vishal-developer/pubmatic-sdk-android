@@ -40,6 +40,7 @@ import java.net.URL;
 import com.pubmatic.sdk.common.CommonConstants;
 import com.pubmatic.sdk.common.CommonConstants.CONTENT_TYPE;
 import com.pubmatic.sdk.common.CommonConstants.PubError;
+import com.pubmatic.sdk.common.PMError;
 import com.pubmatic.sdk.common.PMLogger;
 
 public class HttpWorker {
@@ -172,14 +173,14 @@ public class HttpWorker {
 			
 			// Check whether the param is null or not
 			if (httpRequest == null || httpRequest.getRequestUrl() == null) {
-				httpResponse.errorType = PubError.REQUEST_ERROR;
+				httpResponse.setError(new PMError(PMError.INVALID_REQUEST, "Request error"));
 				return httpResponse;
 			}
 
 			String requestMethod = httpRequest.getRequestMethod();
 
 			if(TextUtils.isEmpty(requestMethod)) {
-				httpResponse.errorType = PubError.REQUEST_ERROR;
+				httpResponse.setError(new PMError(PMError.INVALID_REQUEST, "Request error"));
 				return httpResponse;
 			}
 
@@ -262,12 +263,10 @@ public class HttpWorker {
 					
 					if(redirectListener!=null && redirectListener.overrideRedirection()) {
 
-			        	httpResponse.errorCode 		= responseCode;
-
-						if (isCancelled()) 
-							httpResponse.errorType = PubError.REQUEST_CANCLE;
+						if (isCancelled())
+							httpResponse.setError(new PMError(PMError.REQUEST_CANCELLED, "Request was cancelled"));
 						else
-							httpResponse.errorType = PubError.REDIRECT_ERROR;
+							httpResponse.setError(new PMError(PMError.INVALID_REQUEST, "Redirection occured"));
 						
 						if(httpResponse!=null)
 						{
@@ -298,7 +297,7 @@ public class HttpWorker {
 					// Since the connection is successful, read the response
 					inputStream = httpUrlConnection.getInputStream();
 					if (inputStream == null) {
-						httpResponse.errorType = PubError.CONNECTION_ERROR;
+						httpResponse.setError(new PMError(PMError.NETWORK_ERROR, "Not able to get network connection"));
 						return httpResponse;
 					}
 					
@@ -309,13 +308,10 @@ public class HttpWorker {
 					while ((inputLine = reader.readLine()) != null) {
 						httpResponse.setResponse(inputLine);
 					}
-					httpResponse.errorType = PubError.SUCCESS_CODE;
-		        	
+
 				} // if (responseCode == HttpURLConnection.HTTP_OK) ends
 				else {
-					httpResponse.errorType = PubError.SERVER_ERROR;
-		        	if(httpUrlConnection!=null)
-		        		httpResponse.errorCode = httpUrlConnection.getResponseCode();
+					httpResponse.setError(new PMError(PMError.NETWORK_ERROR, "Request failed with error code : " + responseCode));
 				}
 			}
 
@@ -324,7 +320,7 @@ public class HttpWorker {
 			
 			// Return the data only if the current request is not cancelled
 			if (isCancelled()) {
-				httpResponse.errorType = PubError.REQUEST_CANCLE;
+				httpResponse.setError(new PMError(PMError.REQUEST_CANCELLED, "Request was cancelled"));
 				return httpResponse;
 			}
 			if(httpResponse!=null)
@@ -332,16 +328,14 @@ public class HttpWorker {
                                   PMLogger.PMLogLevel.Debug);
 			return httpResponse;
 		} catch (SocketTimeoutException e) {
-			//e.printStackTrace();
-			httpResponse.errorType = PubError.TIMEOUT_ERROR;
+			httpResponse.setError(new PMError(PMError.TIMEOUT_ERROR, "Request Time out"));
 			return httpResponse;
 		} catch (IOException e) {
-			//e.printStackTrace();
-			httpResponse.errorType = PubError.CONNECTION_ERROR;
+			httpResponse.setError(new PMError(PMError.NETWORK_ERROR, "Not able to get network connection"));
 			return httpResponse;
 		} catch (Exception e) {
 			e.printStackTrace();
-			httpResponse.errorType = PubError.INVALID_AD_ERROR;
+			httpResponse.setError(new PMError(PMError.INTERNAL_ERROR, "Internal Error occured"));
 			return httpResponse;
 		} finally {
 			try {

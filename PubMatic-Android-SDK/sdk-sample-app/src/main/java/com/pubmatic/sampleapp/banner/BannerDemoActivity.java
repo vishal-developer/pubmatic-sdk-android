@@ -31,6 +31,7 @@ import com.pubmatic.sdk.banner.PMBannerAdView;
 import com.pubmatic.sdk.banner.PMBannerAdView.BannerAdViewDelegate.RequestListener;
 import com.pubmatic.sdk.banner.pubmatic.PMBannerAdRequest;
 import com.pubmatic.sdk.common.PMAdSize;
+import com.pubmatic.sdk.common.PMError;
 import com.pubmatic.sdk.common.PMLogger;
 
 import static com.pubmatic.sdk.common.PMAdSize.PMBANNER_SIZE_300x250;
@@ -124,14 +125,15 @@ public class BannerDemoActivity extends Activity {
         mRequestListener = new RequestListener() {
 
             @Override
+            public void onFailedToReceiveAd(PMBannerAdView adView, PMError error) {
+                Toast.makeText(BannerDemoActivity.this, error.toString(), Toast.LENGTH_LONG).show();
+            }
+
+            @Override
             public void onReceivedAd(PMBannerAdView adView) {
                 adView.setVisibility(View.VISIBLE);
             }
 
-            @Override
-            public void onFailedToReceiveAd(PMBannerAdView arg0,  int errorCode, String msg) {
-                Toast.makeText(BannerDemoActivity.this, msg, Toast.LENGTH_LONG).show();
-            }
         };
 
         banner.setRequestListener(mRequestListener);

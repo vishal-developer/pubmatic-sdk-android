@@ -35,9 +35,7 @@ public class AdResponse {
 
 	private AdRequest mRequest;
 	private int mStatusCode;
-	private String errorCode;
-	private String errorMessage;
-	private Exception exception;
+	private PMError error;
 	private Renderable mRenderable;
 
 	public AdRequest getRequest() {
@@ -64,28 +62,11 @@ public class AdResponse {
 		this.mRenderable = renderable;
 	}
 
-	public String getErrorCode() {
-		return errorCode;
+	public PMError getError() {
+		return error;
 	}
 
-	public void setErrorCode(String errorcode) {
-		this.errorCode = errorcode;
+	public void setError(PMError error) {
+		this.error = error;
 	}
-
-	public String getErrorMessage() {
-		return errorMessage;
-	}
-
-	public void setErrorMessage(String errorMessage) {
-		this.errorMessage = errorMessage;
-	}
-
-	public Exception getException() {
-		return exception;
-	}
-
-	public void setException(Exception exception) {
-		this.exception = exception;
-	}
-
 }

@@ -77,6 +77,7 @@ import com.pubmatic.sdk.common.CommonConstants.CHANNEL;
 import com.pubmatic.sdk.common.LocationDetector;
 import com.pubmatic.sdk.common.PMAdRendered;
 import com.pubmatic.sdk.common.PMAdSize;
+import com.pubmatic.sdk.common.PMError;
 import com.pubmatic.sdk.common.PMLogger;
 import com.pubmatic.sdk.common.PMLogger.PMLogLevel;
 import com.pubmatic.sdk.common.PubMaticSDK;
@@ -132,10 +133,9 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
              * Failed to receive ad content (network or other related error).
              *
              * @param adView
-             * @param errorCode, if any, encountered while attempting to reqest an ad.
-             * @param errorMessage, error message if any
+             * @param error, if any, encountered while attempting to reqest an ad.
              */
-            public void onFailedToReceiveAd(PMBannerAdView adView, int errorCode, String errorMessage);
+            public void onFailedToReceiveAd(PMBannerAdView adView, PMError error);
 
             /**
              * Ad received and rendered.
@@ -985,16 +985,15 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                 }
                 else if(requestListener!=null)
                 {
-                    requestListener.onFailedToReceiveAd(PMBannerAdView.this, Integer.parseInt(adData.getErrorCode()), adData.getErrorMessage());
+                    requestListener.onFailedToReceiveAd(PMBannerAdView.this, response.getError());
                 }
             }
         }
 
         @Override
-        public void onErrorOccured(int errorType, int errorCode, String requestURL) {
-
+        public void onErrorOccured(PMError error, String requestURL) {
             if (requestListener != null) {
-                requestListener.onFailedToReceiveAd(PMBannerAdView.this, errorCode, null);
+                requestListener.onFailedToReceiveAd(PMBannerAdView.this,error);
             }
         }
 
@@ -1019,10 +1018,9 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             return false;
         }
 
-        String errorCode = adData.getErrorCode();
-        String errorMessage = adData.getErrorMessage();
+        PMError error = adData.getError();
 
-        if (!TextUtils.isEmpty(errorCode) || !TextUtils.isEmpty(errorMessage))
+        if(error != null)
             return false;
         else
             return true;
@@ -1951,7 +1949,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                     PMLogger.PMLogLevel.Error);
 
             if (requestListener != null) {
-                requestListener.onFailedToReceiveAd(PMBannerAdView.this, errorCode, description);
+                requestListener.onFailedToReceiveAd(PMBannerAdView.this, new PMError(PMError.RENDER_ERROR, "Error rendering creative : " + errorCode));
             }
 
             //removeContent();

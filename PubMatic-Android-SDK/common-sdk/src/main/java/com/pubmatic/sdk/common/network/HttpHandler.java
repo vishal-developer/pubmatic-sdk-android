@@ -29,6 +29,7 @@ package com.pubmatic.sdk.common.network;
 import java.util.ArrayList;
 
 import com.pubmatic.sdk.common.CommonConstants.PubError;
+import com.pubmatic.sdk.common.PMError;
 import com.pubmatic.sdk.common.network.HttpWorker.HttpRedirectListener;
 
 public class HttpHandler implements Runnable, HttpRedirectListener {
@@ -41,7 +42,7 @@ public class HttpHandler implements Runnable, HttpRedirectListener {
 
         void onRequestComplete(HttpResponse result, final String requestURL);
 
-        void onErrorOccured(int errorType, int errorCode, final String requestURL);
+        void onErrorOccured(PMError error, final String requestURL);
 
         boolean overrideRedirection();
     }
@@ -77,15 +78,16 @@ public class HttpHandler implements Runnable, HttpRedirectListener {
 
             if (response != null) {
 
-                if (response.errorType != PubError.SUCCESS_CODE) {
-                    mListener.onErrorOccured(response.errorType,
-                                             response.errorCode,
-                                             pubRequest.getRequestUrl());
+                PMError error = response.getError();
+
+                if(error != null) {
+                    mListener.onErrorOccured(error,pubRequest.getRequestUrl());
                 } else {
                     mListener.onRequestComplete(response, pubRequest.getRequestUrl());
                 }
+
             } else {
-                mListener.onErrorOccured(PubError.UNDEFINED_ERROR, -1, pubRequest.getRequestUrl());
+                mListener.onErrorOccured(new PMError(PMError.INTERNAL_ERROR, "Invalid error"), pubRequest.getRequestUrl());
             }
         }
     }

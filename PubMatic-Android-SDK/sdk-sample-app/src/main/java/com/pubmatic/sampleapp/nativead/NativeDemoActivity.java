@@ -32,8 +32,11 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.pubmatic.sampleapp.R;
+import com.pubmatic.sampleapp.banner.BannerDemoActivity;
+import com.pubmatic.sdk.common.PMError;
 import com.pubmatic.sdk.common.PMLogger;
 import com.pubmatic.sdk.nativead.PMNativeAd;
 import com.pubmatic.sdk.nativead.bean.PMAssetRequest;
@@ -216,14 +219,6 @@ public class NativeDemoActivity extends Activity {
 	private class AdRequestListener implements PMNativeAd.NativeRequestListener {
 
 		@Override
-		public void onNativeAdFailed(PMNativeAd ad, Exception ex) {
-			if(ex!=null) {
-				ex.printStackTrace();
-				appendOutput("Error Message/Code : " + ex!=null ? ex.getMessage() : "No msg.");
-			}
-		}
-
-		@Override
 		public void onNativeAdReceived(final PMNativeAd ad) {
 
 			if (ad != null) {
@@ -323,6 +318,11 @@ public class NativeDemoActivity extends Activity {
 				ad.trackViewForInteractions(mLayout);
 			}
 
+		}
+
+		@Override
+		public void onNativeAdFailed(PMNativeAd ad, PMError error) {
+			Toast.makeText(NativeDemoActivity.this, error.toString(), Toast.LENGTH_LONG).show();
 		}
 
 		@Override

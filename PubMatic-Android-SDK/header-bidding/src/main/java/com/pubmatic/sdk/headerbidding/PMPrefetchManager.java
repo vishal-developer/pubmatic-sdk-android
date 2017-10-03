@@ -38,6 +38,7 @@ import com.pubmatic.sdk.common.CommonConstants;
 import com.pubmatic.sdk.common.CommonConstants.CONTENT_TYPE;
 import com.pubmatic.sdk.common.LocationDetector;
 import com.pubmatic.sdk.common.PMAdRendered;
+import com.pubmatic.sdk.common.PMError;
 import com.pubmatic.sdk.common.PMLogger;
 import com.pubmatic.sdk.common.PubMaticSDK;
 import com.pubmatic.sdk.common.ResponseGenerator;
@@ -338,8 +339,8 @@ public class PMPrefetchManager implements ResponseGenerator {
         }
 
         @Override
-        public void onErrorOccured(int errorType, int errorCode, String requestURL) {
-            String message = "Error Occurred while sending HB request.  " + " Code : " + errorCode + " requestURL " + requestURL;
+        public void onErrorOccured(PMError error, String requestURL) {
+            String message = "Error Occurred while sending HB request.  " + " Error : " + error + " requestURL " + requestURL;
             PMLogger.logEvent(message, PMLogger.PMLogLevel.Debug);
             if (pmPreFetchListener != null)
                 pmPreFetchListener.onBidsFailed(message);

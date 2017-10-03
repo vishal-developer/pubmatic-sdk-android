@@ -22,6 +22,7 @@ import com.pubmatic.sdk.banner.PMBannerAdView;
 import com.pubmatic.sdk.banner.pubmatic.PMBannerAdRequest;
 import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.PMAdSize;
+import com.pubmatic.sdk.common.PMError;
 import com.pubmatic.sdk.common.pubmatic.PMAdRequest;
 
 import java.util.LinkedHashMap;
@@ -285,11 +286,11 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
     }
 
     @Override
-    public void onFailedToReceiveAd(PMBannerAdView adView, int errorCode, final String msg) {
+    public void onFailedToReceiveAd(PMBannerAdView adView, final PMError error) {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
                 dismiss();
             }
         });

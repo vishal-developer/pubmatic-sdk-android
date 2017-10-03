@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.pubmatic.sdk.banner.PMInterstitialAd;
 import com.pubmatic.sdk.banner.pubmatic.PMInterstitialAdRequest;
 import com.pubmatic.sdk.common.AdRequest;
+import com.pubmatic.sdk.common.PMError;
 import com.pubmatic.sdk.common.PubMaticSDK;
 import com.pubmatic.sdk.common.pubmatic.PMAdRequest;
 
@@ -201,12 +202,13 @@ public class InterstitialAdFragment extends DialogFragment {
         mInterstitialAd = new PMInterstitialAd(getActivity());
 
         mInterstitialAd.setRequestListener(new PMInterstitialAd.InterstitialAdListener.RequestListener() {
+
             @Override
-            public void onFailedToReceiveAd(PMInterstitialAd adView, int errorCode, final String msg) {
+            public void onFailedToReceiveAd(PMInterstitialAd ad, final PMError error) {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
                         dismiss();
                     }
                 });

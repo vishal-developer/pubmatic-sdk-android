@@ -28,11 +28,11 @@ package com.pubmatic.sdk.common.network;
 
 import com.pubmatic.sdk.common.CommonConstants.CONTENT_TYPE;
 import com.pubmatic.sdk.common.CommonConstants.PubError;
+import com.pubmatic.sdk.common.PMError;
 
 public class HttpResponse {
 
-    public int errorCode = 0;
-    public int errorType = PubError.UNDEFINED_ERROR;
+    private PMError error;
     private CONTENT_TYPE contentType = CONTENT_TYPE.INVALID;
     private StringBuffer stringResponse = null;
     private HttpRequest httpRequest = null;
@@ -77,4 +77,11 @@ public class HttpResponse {
         contentType = type;
     }
 
+    public PMError getError() {
+        return error;
+    }
+
+    public void setError(PMError error) {
+        this.error = error;
+    }
 }

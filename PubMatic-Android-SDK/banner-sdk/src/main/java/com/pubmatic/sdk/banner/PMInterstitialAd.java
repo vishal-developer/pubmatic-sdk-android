@@ -8,6 +8,7 @@ import android.view.View;
 
 import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.PMAdRendered;
+import com.pubmatic.sdk.common.PMError;
 import com.pubmatic.sdk.common.ResponseGenerator;
 
 public class PMInterstitialAd implements PMAdRendered {
@@ -26,10 +27,9 @@ public class PMInterstitialAd implements PMAdRendered {
              * Failed to receive ad content (network or other related error).
              *
              * @param ad
-             * @param errorCode, if any, encountered while attempting to reqest an ad.
-             * @param errorMessage, error message if any
+             * @param error, if any, encountered while attempting to reqest an ad.
              */
-            public void onFailedToReceiveAd(PMInterstitialAd ad, int errorCode, String errorMessage);
+            public void onFailedToReceiveAd(PMInterstitialAd ad, PMError error);
 
             /**
              * Ad received and rendered.
@@ -315,8 +315,8 @@ public class PMInterstitialAd implements PMAdRendered {
         this.requestListener = listener;
         interstitialAdView.setRequestListener(new PMBannerAdView.BannerAdViewDelegate.RequestListener() {
             @Override
-            public void onFailedToReceiveAd(PMBannerAdView adView, int errorCode, String errorMessage) {
-                requestListener.onFailedToReceiveAd(PMInterstitialAd.this, errorCode, errorMessage);
+            public void onFailedToReceiveAd(PMBannerAdView adView, PMError error) {
+                requestListener.onFailedToReceiveAd(PMInterstitialAd.this, error);
             }
 
             @Override

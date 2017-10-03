@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.pubmatic.sdk.common.AdRequest;
+import com.pubmatic.sdk.common.PMError;
 import com.pubmatic.sdk.common.pubmatic.PMAdRequest;
 import com.pubmatic.sdk.nativead.PMNativeAd;
 import com.pubmatic.sdk.nativead.bean.PMAssetRequest;
@@ -313,25 +314,6 @@ public class NativeAdFragment extends DialogFragment {
     private class AdRequestListener implements PMNativeAd.NativeRequestListener {
 
         @Override
-        public void onNativeAdFailed(PMNativeAd ad, final Exception ex) {
-
-            if(ex!=null) {
-                ex.printStackTrace();
-            }
-
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if(ex!=null)
-                        Toast.makeText(getActivity(), ex.getMessage(), Toast.LENGTH_LONG).show();
-                    else
-                        Toast.makeText(getActivity(), "Unable to load Native ad", Toast.LENGTH_LONG).show();
-                    dismiss();
-                }
-            });
-        }
-
-        @Override
         public void onNativeAdReceived(final PMNativeAd ad) {
 
             if (ad != null) {
@@ -428,6 +410,17 @@ public class NativeAdFragment extends DialogFragment {
                 ad.trackViewForInteractions(mLayout);
             }
 
+        }
+
+        @Override
+        public void onNativeAdFailed(PMNativeAd ad, final PMError error) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
+                    dismiss();
+                }
+            });
         }
 
         @Override

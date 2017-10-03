@@ -40,12 +40,15 @@ import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.AdResponse;
 import com.pubmatic.sdk.common.CommonConstants;
 import com.pubmatic.sdk.common.CommonConstants.CONTENT_TYPE;
+import com.pubmatic.sdk.common.PMError;
 import com.pubmatic.sdk.common.RRFormatter;
 import com.pubmatic.sdk.common.network.HttpRequest;
 import com.pubmatic.sdk.common.network.HttpResponse;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+
+import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_ERROR;
 
 public class PMBannerRRFormatter implements RRFormatter {
 
@@ -119,8 +122,7 @@ public class PMBannerRRFormatter implements RRFormatter {
             String errorCode;
             if (!TextUtils.isEmpty(errorCode = response.optString(kerror_code))) {
 
-                pubResponse.setErrorCode(errorCode);
-                pubResponse.setErrorMessage(response.getString(kerror_message));
+                pubResponse.setError(new PMError(PMError.SERVER_ERROR, response.optString(kerror_message) + " : " + errorCode));
                 return pubResponse;
             }
 
@@ -161,7 +163,7 @@ public class PMBannerRRFormatter implements RRFormatter {
             pubResponse.setRenderable(adDescriptor);
 
         } catch (JSONException | UnsupportedEncodingException e) {
-            e.printStackTrace();
+            pubResponse.setError(new PMError(PMError.INTERNAL_ERROR, "Error formatting banner response"));
         } finally {
             //response = null;
         }

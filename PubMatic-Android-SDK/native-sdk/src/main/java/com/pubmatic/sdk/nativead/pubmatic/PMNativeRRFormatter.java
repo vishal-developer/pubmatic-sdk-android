@@ -54,6 +54,7 @@ import android.text.TextUtils;
 import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.AdResponse;
 import com.pubmatic.sdk.common.CommonConstants;
+import com.pubmatic.sdk.common.PMError;
 import com.pubmatic.sdk.common.RRFormatter;
 import com.pubmatic.sdk.common.network.HttpRequest;
 import com.pubmatic.sdk.common.network.HttpResponse;
@@ -98,6 +99,8 @@ public class PMNativeRRFormatter implements RRFormatter {
 
 		NativeAdDescriptor nativeAdDescriptor = null;
 
+		PMError error = null;
+
 		try {
 			if (httpResponse != null && httpResponse.getResponseData()!=null) {
 				ArrayList<PMAssetResponse> nativeAssetList = new ArrayList<PMAssetResponse>();
@@ -121,10 +124,10 @@ public class PMNativeRRFormatter implements RRFormatter {
 				// message.
 
 				if (!object.isNull(kerror_code)
-						&& !(object.getString(kerror_code).equalsIgnoreCase(""))) {
+						&& !(object.optString(kerror_code).equalsIgnoreCase(""))) {
 
-					adResponse.setErrorCode(object.getString(kerror_code));
-					adResponse.setErrorMessage(object.getString(kerror_message));
+					error = new PMError(PMError.SERVER_ERROR, object.optString(kerror_message) + " : " + object.optInt(kerror_code));
+					adResponse.setError(error);
 
 					return adResponse;
 				}
@@ -256,7 +259,8 @@ public class PMNativeRRFormatter implements RRFormatter {
 				JSONObject errorResponse = new JSONObject(httpResponse.getResponseData());
 				String errorMessage = errorResponse.optString(RESPONSE_ERROR);
 				if (!TextUtils.isEmpty(errorMessage)) {
-					adResponse.setErrorMessage(errorMessage);
+					error = new PMError(PMError.NO_ADS_AVAILABLE, errorMessage);
+					adResponse.setError(error);
 				}
 			} catch (JSONException ex) {
 				ex.printStackTrace();
