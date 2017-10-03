@@ -41,6 +41,7 @@ import java.util.Observer;
 import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
@@ -677,18 +678,39 @@ public final class PMNativeAd {
     }
 
     private void fireCallback(int callbackType,
-            PMError error) {
+            final PMError error) {
 
         // Check if listener is set.
         if (mListener != null) {
 
             switch (callbackType) {
                 case NATIVEAD_RECEIVED:
-                    mListener.onNativeAdReceived(this);
+                    try {
+                        ((Activity) mContext).runOnUiThread(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                mListener.onNativeAdReceived(PMNativeAd.this);
+                            }
+                        });
+                    }catch(ClassCastException e) {
+                        mListener.onNativeAdFailed(PMNativeAd.this, new PMError(PMError.INVALID_REQUEST, "Activity context is required and passed is application context."));
+                    }
                     break;
                 case NATIVEAD_FAILED:
                     PMLogger.logEvent("Error response : " + error.toString(),PMLogLevel.Error);
-                    mListener.onNativeAdFailed(this, error);
+
+                    try {
+                        ((Activity) mContext).runOnUiThread(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                mListener.onNativeAdFailed(PMNativeAd.this, error);
+                            }
+                        });
+                    }catch(ClassCastException e) {
+                        mListener.onNativeAdFailed(PMNativeAd.this, new PMError(PMError.INVALID_REQUEST, "Activity context is required and passed is application context."));
+                    }
                     break;
                 case THIRDPARTY_RECEIVED:
 

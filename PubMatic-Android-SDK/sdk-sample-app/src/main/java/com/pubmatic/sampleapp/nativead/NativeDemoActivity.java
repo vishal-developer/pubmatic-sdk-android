@@ -225,80 +225,74 @@ public class NativeDemoActivity extends Activity {
 				appendOutput("Native Ad Received. Response is : \n "
 						+ ad.getAdResponse());
 
-				runOnUiThread(new Runnable() {
-
-					@Override
-					public void run() {
-						List<PMNativeAssetResponse> nativeAssets = ad.getNativeAssets();
-						for (PMNativeAssetResponse asset : nativeAssets) {
-							try {
-								/*
-								 * As per openRTB standard, assetId in response
-								 * must match that of in request.
-								 */
-								switch (asset.getAssetId()) {
-								case 1:
-									txtTitle.setText(((PMNativeTitleAssetResponse) asset)
-											.getTitleText());
-									break;
-								case 2:
-									PMNativeAd.Image iconImage = ((PMNativeImageAssetResponse) asset)
-											.getImage();
-									if (iconImage != null) {
-										imgLogo.setImageBitmap(null);
-										ad.loadImage(imgLogo,
-												iconImage.getUrl());
-									}
-									break;
-								case 3:
-									PMNativeAd.Image mainImage = ((PMNativeImageAssetResponse) asset)
-											.getImage();
-									if (mainImage != null) {
-										imgMain.setImageBitmap(null);
-										ad.loadImage(imgMain,
-												mainImage.getUrl());
-									}
-									break;
-								case 5:
-									txtDescription
-											.setText(((PMNativeDataAssetResponse) asset)
-													.getValue());
-									break;
-								case 4:
-									ctaText
-											.setText(((PMNativeDataAssetResponse) asset).getValue());
-									break;
-								case 6:
-									String ratingStr = ((PMNativeDataAssetResponse) asset)
-											.getValue();
-									try {
-										float rating = Float
-												.parseFloat(ratingStr);
-										if (rating > 0f) {
-											ratingBar.setRating(rating);
-											ratingBar
-													.setVisibility(View.VISIBLE);
-										} else {
-											ratingBar.setRating(rating);
-											ratingBar.setVisibility(View.GONE);
-										}
-									} catch (Exception e) {
-										// Invalid rating string
-										Log.e("NativeActivity",
-												"Error parsing 'rating'");
-									}
-									break;
-
-								default: // NOOP
-									break;
-								}
-							} catch (Exception ex) {
-								appendOutput("ERROR in rendering asset. Skipping asset.");
-								ex.printStackTrace();
+				List<PMNativeAssetResponse> nativeAssets = ad.getNativeAssets();
+				for (PMNativeAssetResponse asset : nativeAssets) {
+					try {
+						/*
+						 * As per openRTB standard, assetId in response
+						 * must match that of in request.
+						 */
+						switch (asset.getAssetId()) {
+						case 1:
+							txtTitle.setText(((PMNativeTitleAssetResponse) asset)
+									.getTitleText());
+							break;
+						case 2:
+							PMNativeAd.Image iconImage = ((PMNativeImageAssetResponse) asset)
+									.getImage();
+							if (iconImage != null) {
+								imgLogo.setImageBitmap(null);
+								ad.loadImage(imgLogo,
+										iconImage.getUrl());
 							}
+							break;
+						case 3:
+							PMNativeAd.Image mainImage = ((PMNativeImageAssetResponse) asset)
+									.getImage();
+							if (mainImage != null) {
+								imgMain.setImageBitmap(null);
+								ad.loadImage(imgMain,
+										mainImage.getUrl());
+							}
+							break;
+						case 5:
+							txtDescription
+									.setText(((PMNativeDataAssetResponse) asset)
+											.getValue());
+							break;
+						case 4:
+							ctaText
+									.setText(((PMNativeDataAssetResponse) asset).getValue());
+							break;
+						case 6:
+							String ratingStr = ((PMNativeDataAssetResponse) asset)
+									.getValue();
+							try {
+								float rating = Float
+										.parseFloat(ratingStr);
+								if (rating > 0f) {
+									ratingBar.setRating(rating);
+									ratingBar
+											.setVisibility(View.VISIBLE);
+								} else {
+									ratingBar.setRating(rating);
+									ratingBar.setVisibility(View.GONE);
+								}
+							} catch (Exception e) {
+								// Invalid rating string
+								Log.e("NativeActivity",
+										"Error parsing 'rating'");
+							}
+							break;
+
+						default: // NOOP
+							break;
 						}
+					} catch (Exception ex) {
+						appendOutput("ERROR in rendering asset. Skipping asset.");
+						ex.printStackTrace();
 					}
-				});
+				}
 
 				if (ad.getJsTracker() != null) {
 					appendOutput(ad.getJsTracker());
