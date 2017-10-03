@@ -35,7 +35,7 @@ import com.pubmatic.sdk.common.pubmatic.PUBAdSize;
 import com.pubmatic.sdk.common.pubmatic.PMAdRequest;
 
 /**
- * PMBannerAdRequest class provides parameters for banner ad request. To request Banner Ad, you need to pass valid PMBannerAdRequest instance to PMBannerAdView’s execute() method.
+ * PMBannerAdRequest class provides parameters for banner ad request. To request Banner Ad, you need to pass valid PMBannerAdRequest instance to PMBannerAdView’s loadRequest() method.
  */
 public class PMBannerAdRequest extends PMAdRequest {
 

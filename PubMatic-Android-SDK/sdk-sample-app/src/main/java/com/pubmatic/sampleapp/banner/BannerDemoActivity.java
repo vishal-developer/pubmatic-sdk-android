@@ -33,8 +33,6 @@ import com.pubmatic.sdk.banner.pubmatic.PMBannerAdRequest;
 import com.pubmatic.sdk.common.PMAdSize;
 import com.pubmatic.sdk.common.PMLogger;
 
-import java.util.Map;
-
 import static com.pubmatic.sdk.common.PMAdSize.PUBBANNER_SIZE_300x250;
 
 public class BannerDemoActivity extends Activity {
@@ -48,7 +46,7 @@ public class BannerDemoActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pubmatic_activity_runtime_banner);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-        PMLogger.setLogLevel(PMLogger.LogLevel.Debug);
+        PMLogger.setLogLevel(PMLogger.PMLogLevel.Debug);
 
 
         banner = (PMBannerAdView)findViewById(R.id.banner);
@@ -137,7 +135,7 @@ public class BannerDemoActivity extends Activity {
         };
 
         banner.setRequestListener(mRequestListener);
-        banner.execute(adRequest);
+        banner.loadRequest(adRequest);
     }
 
     @Override

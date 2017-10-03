@@ -29,7 +29,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,7 +53,7 @@ public class SamplesListActivity extends ListActivity implements ActivityCompat.
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		PubMaticSDK.setLogLevel(PMLogger.LogLevel.Debug);
+		PubMaticSDK.setLogLevel(PMLogger.PMLogLevel.Debug);
 
 		// Use to check for potential leaks
 		// android.os.StrictMode.setVmPolicy(new

@@ -26,7 +26,10 @@
  */
 package com.pubmatic.sdk.common;
 
+import android.os.Debug;
 import android.util.Log;
+
+import junit.framework.Assert;
 
 /**
  * Logger file for logging SDK log statements
@@ -36,8 +39,8 @@ public class PMLogger {
     /**
      * Log level
      */
-    public enum LogLevel {
-        None, Error, Debug,
+    public enum PMLogLevel {
+        Custom, None, Verbose, Debug, Info, Warn, Error, Assert
     }
 
     /**
@@ -55,30 +58,32 @@ public class PMLogger {
          * @param event
          *            String representing the event to be logged.
          * @param logLevel
-         *            LogLevel of the event.
+         *            PMLogLevel of the event.
          * @return
          */
-        public void onLogEvent(String event, LogLevel logLevel);
+        public void onLogEvent(String event, PMLogLevel logLevel);
     }
 
-    private static LogLevel logLevel = LogLevel.Error;
+    private static LogListener logListener;
+
+    private static PMLogLevel logLevel = PMLogLevel.Error;
 
     /**
      * Sets the log level of the instance. Logging is done through console logging.
      * Default value is Error
      *
-     * @param logLevel LogLevel
+     * @param logLevel PMLogLevel
      */
-    public static void setLogLevel(LogLevel logLevel) {
+    public static void setLogLevel(PMLogLevel logLevel) {
         PMLogger.logLevel = logLevel;
     }
 
     /**
      * Returns the currently configured log level.
      *
-     * @return currently configured LogLevel
+     * @return currently configured PMLogLevel
      */
-    public LogLevel getLogLevel() {
+    public PMLogLevel getLogLevel() {
         return logLevel;
     }
 
@@ -87,20 +92,43 @@ public class PMLogger {
      * @param event
      * @param eventLevel
      */
-    public static void logEvent(String event, LogLevel eventLevel) {
-        if (eventLevel.ordinal() > logLevel.ordinal()) {
+    public static void logEvent(String event, PMLogLevel eventLevel) {
+        if (eventLevel.ordinal() < logLevel.ordinal()) {
             return;
         }
 
         switch (eventLevel){
+            case Info:
+                Log.i("PubMatic SDK", event);
+                break;
+            case Warn:
+                Log.w("PubMatic SDK", event);
+                break;
             case Debug:
                 Log.d("PubMatic SDK", event);
                 break;
             case Error:
+            case Assert:
                 Log.e("PubMatic SDK", event);
+                break;
+            case Verbose:
+                Log.v("PubMatic SDK", event);
                 break;
             default:
                 // Don't Log
         }
+
+        if(logListener!=null)
+            logListener.onLogEvent(event, eventLevel);
     }
+
+
+    public static LogListener getLogListener() {
+        return logListener;
+    }
+
+    public static void setLogListener(LogListener listener) {
+        logListener = listener;
+    }
+
 }

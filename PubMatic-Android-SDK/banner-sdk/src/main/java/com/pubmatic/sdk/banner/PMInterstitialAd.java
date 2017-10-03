@@ -10,9 +10,6 @@ import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.PMAdRendered;
 import com.pubmatic.sdk.common.ResponseGenerator;
 
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
 public class PMInterstitialAd implements PMAdRendered {
 
 
@@ -382,8 +379,8 @@ public class PMInterstitialAd implements PMAdRendered {
         }
     }
 
-    public void execute(AdRequest adrequest) throws IllegalArgumentException {
-        interstitialAdView.execute(adrequest);
+    public void loadRequest(AdRequest adrequest) throws IllegalArgumentException {
+        interstitialAdView.loadRequest(adrequest);
     }
 
     public void showInterstitial() {

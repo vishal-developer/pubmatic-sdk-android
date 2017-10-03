@@ -31,8 +31,6 @@ import static com.pubmatic.sdk.common.CommonConstants.NATIVE_IMAGE_H;
 import static com.pubmatic.sdk.common.CommonConstants.NATIVE_IMAGE_W;
 import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_URL;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.List;
@@ -47,7 +45,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.net.Uri;
-import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -58,9 +55,8 @@ import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.AdResponse;
 import com.pubmatic.sdk.common.AdResponse.Renderable;
 import com.pubmatic.sdk.common.CommonConstants;
-import com.pubmatic.sdk.common.CommonConstants.CHANNEL;
 import com.pubmatic.sdk.common.PMLogger;
-import com.pubmatic.sdk.common.PMLogger.LogLevel;
+import com.pubmatic.sdk.common.PMLogger.PMLogLevel;
 import com.pubmatic.sdk.common.LocationDetector;
 import com.pubmatic.sdk.common.PubMaticSDK;
 import com.pubmatic.sdk.common.RRFormatter;
@@ -244,14 +240,13 @@ public final class PMNativeAd {
     /**
      * @param adrequest
      */
-    public void execute(AdRequest adrequest) {
+    public void loadRequest(AdRequest adrequest) {
         setAdrequest(adrequest);
 
         if (checkForMandatoryParams()) {
             update();
         }
-        else
-        {
+        else {
             fireCallback(NATIVEAD_FAILED,
                     new Exception("Mandatory parameters validation error"));
         }
@@ -271,7 +266,7 @@ public final class PMNativeAd {
 			 */
             ex.printStackTrace();
             PMLogger.logEvent("ERROR: Native asset validation failed. Ad requested interrupted.",
-                     LogLevel.Error);
+                     PMLogger.PMLogLevel.Error);
         }
 
     }
@@ -316,7 +311,7 @@ public final class PMNativeAd {
 
         HttpRequest httpRequest = mRRFormatter.formatRequest(mAdRequest);
 
-        PMLogger.logEvent("Ad request:" + httpRequest.getRequestUrl(), LogLevel.Debug);
+        PMLogger.logEvent("Ad request:" + httpRequest.getRequestUrl(), PMLogger.PMLogLevel.Debug);
 
         HttpHandler requestProcessor = new HttpHandler(networkListener, httpRequest);
         Background.getExecutor().execute(requestProcessor);
@@ -362,13 +357,13 @@ public final class PMNativeAd {
                     String errorMessage = adData.getErrorMessage();
 
                     if (exception != null) {
-                        PMLogger.logEvent("Ad request failed: " + exception, LogLevel.Error);
+                        PMLogger.logEvent("Ad request failed: " + exception, PMLogLevel.Error);
 
                     } else {
                         if (String.valueOf(404).equals(errorCode)) {
 
                             PMLogger.logEvent("Error response from server.  Error code: " + errorCode + ". Error message: " + errorMessage,
-                                    LogLevel.Error);
+                                    PMLogger.PMLogLevel.Error);
                         }
                     }
 
@@ -393,9 +388,9 @@ public final class PMNativeAd {
             fireCallback(NATIVEAD_FAILED,
                          new Exception(errorType + ", " + errorCode));
 
-            LogLevel logLevel = LogLevel.Error;
+            PMLogger.PMLogLevel logLevel = PMLogger.PMLogLevel.Error;
             if (String.valueOf(404).equals(errorCode)) {
-                logLevel = LogLevel.Debug;
+                logLevel = PMLogger.PMLogLevel.Debug;
             }
 
             PMLogger.logEvent("Error response from server.  Error code: " + errorCode + ". Error type: " + errorType,

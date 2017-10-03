@@ -35,14 +35,11 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 
 public class LocationDetector extends Observable {
 
@@ -356,7 +353,7 @@ public class LocationDetector extends Observable {
 		@Override
 		public void onLocationChanged(Location loc) {
             PMLogger.logEvent("LocationListener.onLocationChanged location:" + loc.toString(),
-                              PMLogger.LogLevel.Debug);
+                              PMLogger.PMLogLevel.Debug);
 
 			location = loc;
 			changed	 =true;
@@ -366,19 +363,19 @@ public class LocationDetector extends Observable {
 		@Override
 		public void onProviderDisabled(String provider) {
             PMLogger.logEvent("LocationListener.onProviderDisabled provider:" + provider,
-                              PMLogger.LogLevel.Debug);
+                              PMLogger.PMLogLevel.Debug);
 		}
 
 		@Override
 		public void onProviderEnabled(String provider) {
             PMLogger.logEvent("LocationListener.onProviderEnabled provider:" + provider,
-                              PMLogger.LogLevel.Debug);
+                              PMLogger.PMLogLevel.Debug);
 		}
 
 		@Override
 		public void onStatusChanged(String provider, int status, Bundle extras) {
             PMLogger.logEvent("LocationListener.onStatusChanged provider:" + provider + " status:" + String
-                    .valueOf(status), PMLogger.LogLevel.Debug);
+                    .valueOf(status), PMLogger.PMLogLevel.Debug);
 
 			if (status == LocationProvider.AVAILABLE)
 				return;

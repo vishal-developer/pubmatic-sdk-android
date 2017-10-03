@@ -76,7 +76,7 @@ public class NativeDemoActivity extends Activity {
 		ratingBar = (RatingBar) findViewById(R.id.ratingbar);
 		txtLogView = (TextView) findViewById(R.id.textView);
 
-		setPrefetchIds("31400", "52368", "383372");
+		setPrefetchIds("31400", "32504", "1096058");
 	}
 
 	private void setPrefetchIds(String pubId, String siteId, String adId) {
@@ -133,7 +133,7 @@ public class NativeDemoActivity extends Activity {
 				.createPMNativeAdRequest(this, pubId, siteId, adId, getAssetRequests());
 
 		// Request for ads
-		ad.execute(adRequest);
+		ad.loadRequest(adRequest);
 	}
 
 	private List<PMAssetRequest> getAssetRequests() {
@@ -141,20 +141,20 @@ public class NativeDemoActivity extends Activity {
 		List<PMAssetRequest> assets = new ArrayList<PMAssetRequest>();
 
 		// Unique assetId is mandatory for each asset
-		PMTitleAssetRequest titleAsset = new PMTitleAssetRequest(3);
+		PMTitleAssetRequest titleAsset = new PMTitleAssetRequest(1);
 		titleAsset.setLength(50);
 		titleAsset.setRequired(true); // Optional (Default: false)
 		assets.add(titleAsset);
 
-		PMImageAssetRequest imageAssetIcon = new PMImageAssetRequest(1);
+		PMImageAssetRequest imageAssetIcon = new PMImageAssetRequest(2);
 		imageAssetIcon.setImageType(PMImageAssetTypes.icon);
 		assets.add(imageAssetIcon);
 
-		PMImageAssetRequest imageAssetMainImage = new PMImageAssetRequest(5);
+		PMImageAssetRequest imageAssetMainImage = new PMImageAssetRequest(3);
 		imageAssetMainImage.setImageType(PMImageAssetTypes.main);
 		assets.add(imageAssetMainImage);
 
-		PMDataAssetRequest dataAssetDesc = new PMDataAssetRequest(2);
+		PMDataAssetRequest dataAssetDesc = new PMDataAssetRequest(5);
 		dataAssetDesc.setDataAssetType(PMDataAssetTypes.desc);
 		dataAssetDesc.setLength(25);
 		assets.add(dataAssetDesc);
@@ -163,7 +163,7 @@ public class NativeDemoActivity extends Activity {
 		dataAssetRating.setDataAssetType(PMDataAssetTypes.rating);
 		assets.add(dataAssetRating);
 
-		PMDataAssetRequest dataAssetCta = new PMDataAssetRequest(7);
+		PMDataAssetRequest dataAssetCta = new PMDataAssetRequest(4);
 		dataAssetCta.setDataAssetType(PMDataAssetTypes.ctatext);
 		assets.add(dataAssetCta);
 
@@ -243,11 +243,11 @@ public class NativeDemoActivity extends Activity {
 								 * must match that of in request.
 								 */
 								switch (asset.getAssetId()) {
-								case 3:
+								case 1:
 									txtTitle.setText(((PMTitleAssetResponse) asset)
 											.getTitleText());
 									break;
-								case 1:
+								case 2:
 									PMNativeAd.Image iconImage = ((PMImageAssetResponse) asset)
 											.getImage();
 									if (iconImage != null) {
@@ -256,7 +256,7 @@ public class NativeDemoActivity extends Activity {
 												iconImage.getUrl());
 									}
 									break;
-								case 5:
+								case 3:
 									PMNativeAd.Image mainImage = ((PMImageAssetResponse) asset)
 											.getImage();
 									if (mainImage != null) {
@@ -265,12 +265,12 @@ public class NativeDemoActivity extends Activity {
 												mainImage.getUrl());
 									}
 									break;
-								case 2:
+								case 5:
 									txtDescription
 											.setText(((PMDataAssetResponse) asset)
 													.getValue());
 									break;
-								case 7:
+								case 4:
 									ctaText
 											.setText(((PMDataAssetResponse) asset).getValue());
 									break;
@@ -309,7 +309,7 @@ public class NativeDemoActivity extends Activity {
 				if (ad.getJsTracker() != null) {
 					appendOutput(ad.getJsTracker());
 					/*
-					 * Note: Publisher should execute the javascript tracker
+					 * Note: Publisher should loadRequest the javascript tracker
 					 * whenever possible.
 					 */
 				}
@@ -335,7 +335,7 @@ public class NativeDemoActivity extends Activity {
 
 
 		@Override
-		public void onLogEvent(String event, PMLogger.LogLevel logLevel) {
+		public void onLogEvent(String event, PMLogger.PMLogLevel logLevel) {
 			Log.i(LOG_TAG, event);
 		}
 	}

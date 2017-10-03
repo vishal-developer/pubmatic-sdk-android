@@ -10,9 +10,9 @@ public class PubMaticSDK {
     /**
      * Sets the log level of the instance. Logging is done through console logging.
      *
-     * @param level LogLevel
+     * @param level PMLogLevel
      */
-    public static void setLogLevel(PMLogger.LogLevel level) {
+    public static void setLogLevel(PMLogger.PMLogLevel level) {
         PMLogger.setLogLevel(level);
     }
 

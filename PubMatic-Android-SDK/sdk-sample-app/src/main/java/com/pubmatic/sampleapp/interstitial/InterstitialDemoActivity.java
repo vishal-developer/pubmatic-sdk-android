@@ -38,7 +38,7 @@ public class InterstitialDemoActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pubmatic_interstitial);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-        PMLogger.setLogLevel(PMLogger.LogLevel.Debug);
+        PMLogger.setLogLevel(PMLogger.PMLogLevel.Debug);
 
         setPrefetchIds("31400", "32504", "1059651");
     }
@@ -105,7 +105,7 @@ public class InterstitialDemoActivity extends Activity {
 
         PMInterstitialAdRequest adRequest = PMInterstitialAdRequest.createPMInterstitialAdRequest(
                 this, pubId, siteId, adId);
-        interstitialAd.execute(adRequest);
+        interstitialAd.loadRequest(adRequest);
     }
 
     private void destroyAd() {

@@ -37,7 +37,7 @@ public class ExpandProperties
 		}
 		catch (Exception ex)
 		{
-            PMLogger.logEvent("Error setting MRAID expand properties", PMLogger.LogLevel.Error);
+            PMLogger.logEvent("Error setting MRAID expand properties", PMLogger.PMLogLevel.Error);
 		}
 		
 		return properties;

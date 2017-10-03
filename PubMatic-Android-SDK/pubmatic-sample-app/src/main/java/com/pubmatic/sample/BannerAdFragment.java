@@ -25,7 +25,6 @@ import com.pubmatic.sdk.common.PMAdSize;
 import com.pubmatic.sdk.common.pubmatic.PMAdRequest;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 
 public class BannerAdFragment extends DialogFragment implements PMBannerAdView.BannerAdViewDelegate.RequestListener {
@@ -124,7 +123,7 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
         {
             // Make the ad request to Server
             if(adRequest!=null)
-                mBanner.execute(adRequest);
+                mBanner.loadRequest(adRequest);
             else {
                 dismiss();
             }
@@ -176,7 +175,7 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
 
                 Location location = new Location("user");
 
-                if(!latitude.equals("") && !longitude.equals(""))
+                if(!TextUtils.isEmpty(latitude) && !TextUtils.isEmpty(longitude))
                 {
                     location.setLatitude(Double.parseDouble(latitude));
                     location.setLongitude(Double.parseDouble(longitude));

@@ -192,13 +192,13 @@ public class HttpWorker {
 				url = new URL(getUrl.toString());
 
 				PMLogger.logEvent(TAG + ": Http GET request  = " + getUrl.toString(),
-						PMLogger.LogLevel.Debug);
+						PMLogger.PMLogLevel.Debug);
 				getUrl = null;
 			} else {
 				url = new URL(httpRequest.getRequestUrl());
 
 				PMLogger.logEvent(TAG + ": Http request  = " + httpRequest.getRequestUrl(),
-						PMLogger.LogLevel.Debug);
+						PMLogger.PMLogLevel.Debug);
 			}
 
 			// Get connection object
@@ -236,7 +236,7 @@ public class HttpWorker {
 						dataOutputStream.close();
 
                         PMLogger.logEvent(TAG + ": Http request body = " + postData.toString(),
-                                          PMLogger.LogLevel.Debug);
+                                          PMLogger.PMLogLevel.Debug);
 					}
 				}
 				
@@ -273,7 +273,7 @@ public class HttpWorker {
 						{
                             PMLogger.logEvent(TAG + ": Http redirect response  = " + httpResponse
                                                                       .getResponseData(),
-                                              PMLogger.LogLevel.Debug);
+                                              PMLogger.PMLogLevel.Debug);
 						}
 						return httpResponse;
 						
@@ -329,7 +329,7 @@ public class HttpWorker {
 			}
 			if(httpResponse!=null)
                 PMLogger.logEvent(TAG + ": Http response  = " + httpResponse.getResponseData(),
-                                  PMLogger.LogLevel.Debug);
+                                  PMLogger.PMLogLevel.Debug);
 			return httpResponse;
 		} catch (SocketTimeoutException e) {
 			//e.printStackTrace();

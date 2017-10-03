@@ -151,7 +151,7 @@ public class PMPrefetchManager implements ResponseGenerator {
 
                 HttpRequest httpRequest = formatHeaderBiddingRequest(adRequest);
                 PMLogger.logEvent("Request Url : " + httpRequest.getRequestUrl() + "\n body : " + httpRequest.getPostData(),
-                        PMLogger.LogLevel.Debug);
+                        PMLogger.PMLogLevel.Debug);
 
                 HttpHandler requestProcessor = new HttpHandler(networkListener, httpRequest);
 
@@ -164,7 +164,7 @@ public class PMPrefetchManager implements ResponseGenerator {
     private boolean validateHeaderBiddingRequest(PMPrefetchRequest adRequest)
     {
         if (adRequest.getImpressions().size() == 0) {
-            PMLogger.logEvent("No impressions found for Header Bidding Request.", PMLogger.LogLevel.Error);
+            PMLogger.logEvent("No impressions found for Header Bidding Request.", PMLogger.PMLogLevel.Error);
             getPrefetchListener().onBidsFailed("No impressions found for Header Bidding Request.");
             return false;
         }
@@ -302,21 +302,21 @@ public class PMPrefetchManager implements ResponseGenerator {
                             bidsMap.put(bid.getImpressionId(), bid);
 
                         } catch (JSONException e) {
-                            PMLogger.logEvent("Error parsing bid " + e.getMessage(), PMLogger.LogLevel.Debug);
+                            PMLogger.logEvent("Error parsing bid " + e.getMessage(), PMLogger.PMLogLevel.Debug);
                         }
                     }
                 }
                 else
                 {
-                    PMLogger.logEvent("Parsing error : No bids found", PMLogger.LogLevel.Debug);
+                    PMLogger.logEvent("Parsing error : No bids found", PMLogger.PMLogLevel.Debug);
                 }
             }
             else
             {
-                PMLogger.logEvent("Parsing error : No seatbid found", PMLogger.LogLevel.Debug);
+                PMLogger.logEvent("Parsing error : No seatbid found", PMLogger.PMLogLevel.Debug);
             }
         } catch (JSONException e) {
-            PMLogger.logEvent("Invalid Json response received for Header Bidding. " + e.getMessage(), PMLogger.LogLevel.Debug);
+            PMLogger.logEvent("Invalid Json response received for Header Bidding. " + e.getMessage(), PMLogger.PMLogLevel.Debug);
         }
 
         return bidsMap;
@@ -340,7 +340,7 @@ public class PMPrefetchManager implements ResponseGenerator {
         @Override
         public void onErrorOccured(int errorType, int errorCode, String requestURL) {
             String message = "Error Occurred while sending HB request.  " + " Code : " + errorCode + " requestURL " + requestURL;
-            PMLogger.logEvent(message, PMLogger.LogLevel.Debug);
+            PMLogger.logEvent(message, PMLogger.PMLogLevel.Debug);
             if (pmPreFetchListener != null)
                 pmPreFetchListener.onBidsFailed(message);
         }

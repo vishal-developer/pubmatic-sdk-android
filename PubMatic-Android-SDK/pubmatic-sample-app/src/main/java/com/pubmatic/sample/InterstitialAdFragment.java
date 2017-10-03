@@ -243,9 +243,9 @@ public class InterstitialAdFragment extends DialogFragment {
         boolean isUseInternalBrowserChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_USE_INTERNAL_BROWSER);
         mInterstitialAd.setUseInternalBrowser(isUseInternalBrowserChecked);
 
-        // Make the ad request to Server banner.execute(adRequest);
+        // Make the ad request to Server banner.loadRequest(adRequest);
         AdRequest adRequest = buildAdRequest();
-        mInterstitialAd.execute(adRequest);
+        mInterstitialAd.loadRequest(adRequest);
     }
 
     @Override

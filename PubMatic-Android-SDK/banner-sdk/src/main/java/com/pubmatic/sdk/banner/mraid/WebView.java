@@ -153,7 +153,7 @@ public class WebView extends android.webkit.WebView {
                     mraidBridgeJavascript = sb.toString();
                 } catch (Exception ex) {
                     PMLogger.logEvent("PM-WebView : Error during injecting mraid script in creative. "
-                                              + ex.getMessage(), PMLogger.LogLevel.Error);
+                                              + ex.getMessage(), PMLogger.PMLogLevel.Error);
                 }
             }
         }
@@ -232,7 +232,7 @@ public class WebView extends android.webkit.WebView {
     private class ChromeClient extends WebChromeClient {
         @Override
         public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
-            PMLogger.logEvent("PMSDK WebView : Console Log : "+consoleMessage.message(), PMLogger.LogLevel.Debug);
+            PMLogger.logEvent("PMSDK WebView : Console Log : "+consoleMessage.message(), PMLogger.PMLogLevel.Debug);
             return true;
         }
     }

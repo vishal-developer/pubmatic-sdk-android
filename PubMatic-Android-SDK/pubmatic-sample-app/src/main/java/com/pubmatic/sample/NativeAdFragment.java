@@ -4,12 +4,12 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,6 +43,8 @@ import java.util.List;
  *
  */
 public class NativeAdFragment extends DialogFragment {
+
+    private static final String TAG = "NativeAdFragment";
 
     private ConfigurationManager.PLATFORM mPlatform;
 
@@ -131,7 +133,7 @@ public class NativeAdFragment extends DialogFragment {
         // Request for ads
         AdRequest adRequest = buildAdRequest();
         if(adRequest!=null)
-            ad.execute(adRequest);
+            ad.loadRequest(adRequest);
     }
 
     /**
@@ -168,7 +170,7 @@ public class NativeAdFragment extends DialogFragment {
 
                 Location location = new Location("user");
 
-                if(!latitude.equals("") && !longitude.equals(""))
+                if(!TextUtils.isEmpty(latitude) && !TextUtils.isEmpty(longitude))
                 {
                     location.setLatitude(Double.parseDouble(latitude));
                     location.setLongitude(Double.parseDouble(longitude));
@@ -275,22 +277,24 @@ public class NativeAdFragment extends DialogFragment {
     }
 
     private List<PMAssetRequest> getAssetRequests() {
+        // First create some assets to add in the request
         List<PMAssetRequest> assets = new ArrayList<PMAssetRequest>();
 
-        PMTitleAssetRequest titleAsset = new PMTitleAssetRequest(3);// Unique assetId is mandatory for each asset
+        // Unique assetId is mandatory for each asset
+        PMTitleAssetRequest titleAsset = new PMTitleAssetRequest(1);
         titleAsset.setLength(50);
         titleAsset.setRequired(true); // Optional (Default: false)
         assets.add(titleAsset);
 
-        PMImageAssetRequest imageAssetIcon = new PMImageAssetRequest(1);
+        PMImageAssetRequest imageAssetIcon = new PMImageAssetRequest(2);
         imageAssetIcon.setImageType(PMImageAssetTypes.icon);
         assets.add(imageAssetIcon);
 
-        PMImageAssetRequest imageAssetMainImage = new PMImageAssetRequest(5);
+        PMImageAssetRequest imageAssetMainImage = new PMImageAssetRequest(3);
         imageAssetMainImage.setImageType(PMImageAssetTypes.main);
         assets.add(imageAssetMainImage);
 
-        PMDataAssetRequest dataAssetDesc = new PMDataAssetRequest(2);
+        PMDataAssetRequest dataAssetDesc = new PMDataAssetRequest(5);
         dataAssetDesc.setDataAssetType(PMDataAssetTypes.desc);
         dataAssetDesc.setLength(25);
         assets.add(dataAssetDesc);
@@ -299,7 +303,7 @@ public class NativeAdFragment extends DialogFragment {
         dataAssetRating.setDataAssetType(PMDataAssetTypes.rating);
         assets.add(dataAssetRating);
 
-        PMDataAssetRequest dataAssetCta = new PMDataAssetRequest(7);
+        PMDataAssetRequest dataAssetCta = new PMDataAssetRequest(4);
         dataAssetCta.setDataAssetType(PMDataAssetTypes.ctatext);
         assets.add(dataAssetCta);
 
@@ -344,11 +348,11 @@ public class NativeAdFragment extends DialogFragment {
 								 * must match that of in request.
 								 */
                                 switch (asset.getAssetId()) {
-                                    case 3:
+                                    case 1:
                                         txtTitle.setText(((PMTitleAssetResponse) asset)
                                                 .getTitleText());
                                         break;
-                                    case 1:
+                                    case 2:
                                         PMNativeAd.Image iconImage = ((PMImageAssetResponse) asset)
                                                 .getImage();
                                         if (iconImage != null) {
@@ -357,7 +361,7 @@ public class NativeAdFragment extends DialogFragment {
                                                     iconImage.getUrl());
                                         }
                                         break;
-                                    case 5:
+                                    case 3:
                                         PMNativeAd.Image mainImage = ((PMImageAssetResponse) asset)
                                                 .getImage();
                                         if (mainImage != null) {
@@ -366,12 +370,12 @@ public class NativeAdFragment extends DialogFragment {
                                                     mainImage.getUrl());
                                         }
                                         break;
-                                    case 2:
+                                    case 5:
                                         txtDescription
                                                 .setText(((PMDataAssetResponse) asset)
                                                         .getValue());
                                         break;
-                                    case 7:
+                                    case 4:
                                         ctaText
                                                 .setText(((PMDataAssetResponse) asset).getValue());
                                         break;
@@ -400,7 +404,7 @@ public class NativeAdFragment extends DialogFragment {
                                         break;
                                 }
                             } catch (Exception ex) {
-                                Log.i("NativeAdFragment", "ERROR in rendering asset. Skipping asset.");
+                                Log.e(TAG, "ERROR in rendering asset. Skipping asset.");
                                 ex.printStackTrace();
                             }
                         }

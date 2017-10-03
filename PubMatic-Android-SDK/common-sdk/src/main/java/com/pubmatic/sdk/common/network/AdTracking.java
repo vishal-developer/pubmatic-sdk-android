@@ -49,16 +49,16 @@ public class AdTracking {
                         if (responseCode != HttpURLConnection.HTTP_OK)
                         {
                             PMLogger.logEvent("PM-TrackerEvent : Error while invoking tracking URL : " + url + "HttpResponse:"+responseCode,
-                                              PMLogger.LogLevel.Error);
+                                              PMLogger.PMLogLevel.Custom);
                             return;
                         }else{
                             PMLogger.logEvent("PM-TrackerEvent : Ad Tracker fired successfully",
-                                              PMLogger.LogLevel.Debug);
+                                              PMLogger.PMLogLevel.Custom);
                         }
                     }
                 } catch (Exception ex) {
                     PMLogger.logEvent("PM-TrackerEvent : Error while invoking tracking URL : " + url,
-                                      PMLogger.LogLevel.Error);
+                                      PMLogger.PMLogLevel.Custom);
                 } finally {
                     if(httpUrlConnection !=null) {
                         httpUrlConnection.disconnect();

@@ -78,7 +78,7 @@ import com.pubmatic.sdk.common.LocationDetector;
 import com.pubmatic.sdk.common.PMAdRendered;
 import com.pubmatic.sdk.common.PMAdSize;
 import com.pubmatic.sdk.common.PMLogger;
-import com.pubmatic.sdk.common.PMLogger.LogLevel;
+import com.pubmatic.sdk.common.PMLogger.PMLogLevel;
 import com.pubmatic.sdk.common.PubMaticSDK;
 import com.pubmatic.sdk.common.RRFormatter;
 import com.pubmatic.sdk.common.ResponseGenerator;
@@ -632,7 +632,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
      * Sets the interval between updates. Set update interval to auto load ads after specified
      * update interval. <p/> Valid values for update interval are between 12 to 120 seconds.
      * <p/>
-     * Note: Make sure to set update interval before calling execute() method.
+     * Note: Make sure to set update interval before calling loadRequest() method.
      *
      * @param updateInterval Time interval in seconds between ad requests. Valid values are between
      * 12 to 120 (both inclusive).
@@ -642,16 +642,16 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             this.updateInterval = 12;
             PMLogger.logEvent(
                     "Valid update interval time is between 12 to 120 sec. Setting update interval to minimum 12 seconds",
-                    LogLevel.Debug);
+                    PMLogger.PMLogLevel.Debug);
         } else if (updateInterval > 12 && updateInterval <= 120) {
             this.updateInterval = updateInterval;
             PMLogger.logEvent("Ad Update interval set to " + updateInterval + " seconds.",
-                    LogLevel.Debug);
+                    PMLogger.PMLogLevel.Debug);
         } else if (updateInterval > 120) {
             this.updateInterval = 120;
             PMLogger.logEvent(
                     "Valid update interval time is between 12 to 120 sec. Setting update interval to maximum 120 seconds",
-                    LogLevel.Debug);
+                    PMLogLevel.Debug);
         }
     }
 
@@ -774,7 +774,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
     /**
      * @param adrequest
      */
-    public void execute(AdRequest adrequest) throws IllegalArgumentException {
+    public void loadRequest(AdRequest adrequest) throws IllegalArgumentException {
         setAdRequest(adrequest);
         update();
     }
@@ -954,8 +954,8 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
         HttpRequest httpRequest = mRRFormatter.formatRequest(mAdRequest);
 
-        PMLogger.logEvent("Ad request:" + httpRequest.getRequestUrl(), LogLevel.Debug);
-        PMLogger.logEvent("Ad request body:" + httpRequest.getPostData(), LogLevel.Debug);
+        PMLogger.logEvent("Ad request URL :" + httpRequest.getRequestUrl(), PMLogLevel.Custom);
+        PMLogger.logEvent("Ad request body:" + httpRequest.getPostData(), PMLogLevel.Custom);
 
         HttpHandler requestProcessor = new HttpHandler(networkListener, httpRequest);
         Background.getExecutor().execute(requestProcessor);
@@ -1009,7 +1009,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
         // ErrorHandling section
         if (adData == null) {
-            PMLogger.logEvent("Ad Response passed is Null.", LogLevel.Error);
+            PMLogger.logEvent("Ad Response passed is Null.", PMLogger.PMLogLevel.Error);
             return false;
         }
 
@@ -1331,10 +1331,10 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         super.onWindowFocusChanged(hasWindowFocus);
 
         if (hasWindowFocus) {
-            PMLogger.logEvent("Window focus gain ad is VISIBLE", LogLevel.Debug);
+            PMLogger.logEvent("Window focus gain ad is VISIBLE", PMLogger.PMLogLevel.Debug);
             setViewVisibility(View.VISIBLE);
         } else {
-            PMLogger.logEvent("Window focus lost ad is INVISIBLE", LogLevel.Debug);
+            PMLogger.logEvent("Window focus lost ad is INVISIBLE", PMLogger.PMLogLevel.Debug);
             setViewVisibility(View.INVISIBLE);
         }
 
@@ -1345,10 +1345,10 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         super.onVisibilityChanged(changedView, visibility);
 
         if (visibility == View.VISIBLE) {
-            PMLogger.logEvent("Ad view is VISIBLE", LogLevel.Debug);
+            PMLogger.logEvent("Ad view is VISIBLE", PMLogLevel.Debug);
             performAdTracking();
         } else
-            PMLogger.logEvent("Ad view is INVISIBLE", LogLevel.Debug);
+            PMLogger.logEvent("Ad view is INVISIBLE", PMLogLevel.Debug);
 
         //If Publisher enabled the update interval timer feature
         setViewVisibility(visibility);
@@ -1476,7 +1476,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                 if (intentAvailable(intent)) {
                     getContext().startActivity(intent);
                 } else {
-                    PMLogger.logEvent("Unable to start activity for browsing URL:" + url, LogLevel.Error);
+                    PMLogger.logEvent("Unable to start activity for browsing URL:" + url, PMLogger.PMLogLevel.Error);
                 }
             }
         });
@@ -1846,7 +1846,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                 // ((BitmapDrawable)
                 // closeButtonDrawable).setGravity(Gravity.CENTER);
             } catch (Exception ex) {
-                PMLogger.logEvent("Error loading built in close button.  Exception:" + ex, LogLevel.Error);
+                PMLogger.logEvent("Error loading built in close button.  Exception:" + ex, PMLogLevel.Error);
             }
         }
 
@@ -1924,7 +1924,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                                          String description,
                                          String failingUrl) {
             PMLogger.logEvent("Error loading rich media ad content.  Error code:" + String.valueOf(errorCode) + " Description:" + description,
-                    LogLevel.Error);
+                    PMLogger.PMLogLevel.Error);
 
             if (requestListener != null) {
                 requestListener.onFailedToReceiveAd(PMBannerAdView.this, errorCode, description);
@@ -2501,7 +2501,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                             }
                         } else {
                             PMLogger.logEvent("Unable to start activity for calendary edit.",
-                                    LogLevel.Error);
+                                    PMLogger.PMLogLevel.Error);
                         }
                     }
                 });
@@ -2544,7 +2544,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
                             PMLogger.logEvent(
                                     "Error obtaining photo request to save to camera roll.  Exception:" + ex,
-                                    LogLevel.Error);
+                                    PMLogger.PMLogLevel.Error);
                         }
 
                         @Override
@@ -2570,7 +2570,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                                                 bridge.sendErrorMessage(errorMessage,
                                                         Consts.CommandStorePicture);
 
-                                                PMLogger.logEvent(errorMessage, LogLevel.Error);
+                                                PMLogger.logEvent(errorMessage, PMLogger.PMLogLevel.Error);
                                                 return;
                                             }
 
@@ -2584,14 +2584,14 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                                         } else {
                                             PMLogger.logEvent(errorMessage + " WRITE_EXTERNAL_STORAGE permission is not granted. " +
                                                             "Please grant this permission to save pictures in storage. ",
-                                                    LogLevel.Error);
+                                                    PMLogLevel.Error);
                                         }
                                     } catch (Exception ex) {
                                         bridge.sendErrorMessage(errorMessage,
                                                 Consts.CommandStorePicture);
 
                                         PMLogger.logEvent(errorMessage + " Exception:" + ex,
-                                                LogLevel.Error);
+                                                PMLogger.PMLogLevel.Error);
                                     }
                                 }
                             });
@@ -2812,7 +2812,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                 try {
                     runnable.run();
                 } catch (Exception ex) {
-                    PMLogger.logEvent("Exception during runOnUiThread:" + ex, LogLevel.Error);
+                    PMLogger.logEvent("Exception during runOnUiThread:" + ex, PMLogger.PMLogLevel.Error);
                 }
             }
         };
@@ -2823,7 +2823,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             activity.runOnUiThread(uiRunnable);
         } else {
             PMLogger.logEvent("Context not instance of Activity, unable to run on UI thread.",
-                    LogLevel.Error);
+                    PMLogger.PMLogLevel.Error);
         }
     }
 
@@ -2916,7 +2916,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                         clickTrackers.add( URLDecoder.decode(responseGenerator.getClickTrackingUrl(impressionId), CommonConstants.ENCODING_UTF_8));
                     }
                 } else {
-                    PMLogger.logEvent("Creative not found for impression Id = "+impressionId, LogLevel.Error);
+                    PMLogger.logEvent("Creative not found for impression Id = "+impressionId, PMLogger.PMLogLevel.Error);
                     return;
                 }
 
