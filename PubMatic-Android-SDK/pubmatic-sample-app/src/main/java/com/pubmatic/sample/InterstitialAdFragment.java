@@ -214,7 +214,8 @@ public class InterstitialAdFragment extends DialogFragment {
 
             @Override
             public void onReceivedAd(PMInterstitialAd adView) {
-                mInterstitialAd.showInterstitial();
+                if(mInterstitialAd.isReady())
+                    mInterstitialAd.showInterstitial();
             }
 
         });

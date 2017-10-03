@@ -355,6 +355,8 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
     private ScheduledFuture<?> closeButtonFuture = null;
 
     // Interstitial configuration
+    private boolean isInterstitialReady = false;
+    private boolean isInterstitialShown = false;
     private ExpandDialog interstitialDialog = null;
     private ScheduledFuture<?> interstitialDelayFuture = null;
 
@@ -533,6 +535,10 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         }
 
         return false;
+    }
+
+    boolean isInterstitialReady() {
+        return isInterstitialReady;
     }
 
     /**
@@ -1027,30 +1033,44 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
     }
 
     void showInterstitialWithDuration(int durationSeconds) {
+
         if (isInterstitial() == false) {
-            throw new IllegalStateException("showInterstitial requires interstitial instance");
+            PMLogger.logEvent("showInterstitial requires interstitial instance", PMLogLevel.Error);
+            return;
         }
 
-        if (interstitialDelayFuture != null) {
-            interstitialDelayFuture.cancel(true);
-            interstitialDelayFuture = null;
-        }
+        //Show the interstitial ad if it is not already shown and if it is ready to show
+        if (isInterstitialReady) {
+            if (!isInterstitialShown) {
+                isInterstitialShown = true;
 
-        interstitialDialog.show();
+                if (interstitialDelayFuture != null) {
+                    interstitialDelayFuture.cancel(true);
+                    interstitialDelayFuture = null;
+                }
 
-        prepareCloseButton();
-        performAdTracking();
+                interstitialDialog.show();
 
-        if (durationSeconds > 0) {
-            interstitialDelayFuture = Background.getExecutor().schedule(new Runnable() {
-                                                                            @Override
-                                                                            public void run() {
-                                                                                closeInterstitial();
-                                                                            }
+                prepareCloseButton();
+                performAdTracking();
 
-                                                                        },
-                    durationSeconds,
-                    TimeUnit.SECONDS);
+                if (durationSeconds > 0) {
+                    interstitialDelayFuture = Background.getExecutor().schedule(new Runnable() {
+                                                                                    @Override
+                                                                                    public void run() {
+                                                                                        closeInterstitial();
+                                                                                    }
+
+                                                                                },
+                            durationSeconds,
+                            TimeUnit.SECONDS);
+                }
+
+            }else{
+                PMLogger.logEvent("Ad is already shown once, please request new ad using loadRequest", PMLogLevel.Debug);
+            }
+        }else{
+            PMLogger.logEvent("Cannot present interstitial. It is not ready", PMLogLevel.Debug);
         }
     }
 
@@ -1121,6 +1141,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
         if (invokeTracking && (mAdDescriptor != null)) {
             invokeTracking = false;
+            mImpressionTrackerSent = true;
 
             if (mAdDescriptor.getImpressionTrackers().size() > 0) {
                 for (String url : mAdDescriptor.getImpressionTrackers()) {
@@ -1226,6 +1247,9 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         this.mAdDescriptor = adDescriptor;
         if(!isInterstitial())
             performAdTracking();
+        else {//If interstitial
+            isInterstitialReady = true;
+        }
 
         if (requestListener != null) {
             requestListener.onReceivedAd(PMBannerAdView.this);

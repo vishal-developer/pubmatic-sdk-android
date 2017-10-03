@@ -99,7 +99,8 @@ public class InterstitialDemoActivity extends Activity {
                 Toast.makeText(InterstitialDemoActivity.this,
                         "Ad loaded!",
                         Toast.LENGTH_SHORT).show();
-                interstitialAd.showInterstitial();
+                if(interstitialAd.isReady())
+                    interstitialAd.showInterstitial();
             }
         });
 

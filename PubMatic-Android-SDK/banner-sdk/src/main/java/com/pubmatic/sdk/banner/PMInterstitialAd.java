@@ -383,6 +383,10 @@ public class PMInterstitialAd implements PMAdRendered {
         interstitialAdView.loadRequest(adrequest);
     }
 
+    public boolean isReady() {
+        return interstitialAdView.isInterstitialReady();
+    }
+
     public void showInterstitial() {
         interstitialAdView.showInterstitial();
     }
