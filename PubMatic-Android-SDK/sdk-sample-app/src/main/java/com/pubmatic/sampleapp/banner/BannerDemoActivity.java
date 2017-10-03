@@ -33,7 +33,7 @@ import com.pubmatic.sdk.banner.pubmatic.PMBannerAdRequest;
 import com.pubmatic.sdk.common.PMAdSize;
 import com.pubmatic.sdk.common.PMLogger;
 
-import static com.pubmatic.sdk.common.PMAdSize.PUBBANNER_SIZE_300x250;
+import static com.pubmatic.sdk.common.PMAdSize.PMBANNER_SIZE_300x250;
 
 public class BannerDemoActivity extends Activity {
 
@@ -101,11 +101,11 @@ public class BannerDemoActivity extends Activity {
                 BannerDemoActivity.this,
                 pubId, siteId, adId);
 
-        adRequest.setAdSize(PMAdSize.PUBBANNER_SIZE_320x50);
+        adRequest.setAdSize(PMAdSize.PMBANNER_SIZE_320x50);
 
         PMAdSize size1 = new PMAdSize(300,50);
         PMAdSize size2 = new PMAdSize(640,100);
-        PMAdSize arr[]= {size1, size2, PUBBANNER_SIZE_300x250, PMAdSize.PUBBANNER_SIZE_320x100};
+        PMAdSize arr[]= {size1, size2, PMBANNER_SIZE_300x250, PMAdSize.PMBANNER_SIZE_320x100};
         adRequest.setOptionalAdSizes(arr);
 
         adRequest.setAndroidAidEnabled(true);

@@ -38,8 +38,6 @@ import android.location.Location;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.pubmatic.sdk.common.pubmatic.PUBAdSize;
-
 
 public abstract class AdRequest {
 
@@ -242,15 +240,6 @@ public abstract class AdRequest {
 	 */
 	public void setAdSize(PMAdSize adSize) {
 		mPMAdSize = adSize;
-	}
-
-	/**
-	 * PUBAdSize is deprecated, use PMAdSize class instead.
-	 * @return
-	 */
-	@Deprecated
-	public void setAdSize(PUBAdSize adSize) {
-		mPMAdSize = new PMAdSize(adSize.getAdWidth(), adSize.getAdHeight());
 	}
 
 	public String getUserAgent() {

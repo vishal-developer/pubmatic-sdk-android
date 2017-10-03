@@ -81,10 +81,12 @@ public class InterstitialDemoActivity extends Activity {
 
     private void loadAd(String pubId, String siteId, String adId, View view) {
 
-        if (interstitialAd == null) {
-            interstitialAd = new PMInterstitialAd(this);
-            interstitialAd.setUseInternalBrowser(true);
+        if (interstitialAd != null) {
+            interstitialAd.destroy();
+            interstitialAd = null;
         }
+        interstitialAd = new PMInterstitialAd(this);
+        interstitialAd.setUseInternalBrowser(true);
 
         interstitialAd.setRequestListener(new PMInterstitialAd.InterstitialAdListener.RequestListener() {
             @Override

@@ -31,7 +31,6 @@ import android.content.Context;
 import com.pubmatic.sdk.common.PMAdSize;
 import com.pubmatic.sdk.common.RRFormatter;
 import com.pubmatic.sdk.common.pubmatic.PMConstants;
-import com.pubmatic.sdk.common.pubmatic.PUBAdSize;
 import com.pubmatic.sdk.common.pubmatic.PMAdRequest;
 
 /**
@@ -149,28 +148,6 @@ public class PMBannerAdRequest extends PMAdRequest {
 	 */
 	public void setOptionalAdSizes(PMAdSize[] mMultiAdSizes) {
 		this.mMultiAdSizes = mMultiAdSizes;
-	}
-
-	/**
-	 * Set the multisize keyword with provided pair of ad sizes. Compatible
-	 * creative would be returned based on DSP auctioning. Maximum first 4
-	 * sizes would be considered at server.
-	 *
-	 * PUBAdSise is deprecated, use PMAdSize class instead.
-	 * @param mMultiAdSizes
-	 */
-	@Deprecated
-	public void setOptionalAdSizes(PUBAdSize[] mMultiAdSizes) {
-
-		if(mMultiAdSizes!=null && mMultiAdSizes.length>0) {
-			this.mMultiAdSizes = new PMAdSize[mMultiAdSizes.length];
-
-			for(int index = 0; index<mMultiAdSizes.length; index++) {
-
-				PMAdSize adSize = new PMAdSize(mMultiAdSizes[index].getAdWidth(), mMultiAdSizes[index].getAdHeight());
-				this.mMultiAdSizes[index] = adSize;
-			}
-		}
 	}
 
 	/**
