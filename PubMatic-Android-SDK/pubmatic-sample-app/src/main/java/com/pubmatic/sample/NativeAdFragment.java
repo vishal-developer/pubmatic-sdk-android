@@ -409,13 +409,14 @@ public class NativeAdFragment extends DialogFragment {
 
         @Override
         public void onNativeAdFailed(PMNativeAd ad, final PMError error) {
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
+            try {
+                if(error!=null)
                     Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
-                    dismiss();
-                }
-            });
+                dismiss();
+            }
+            catch(IllegalStateException e) {
+                return;
+            }
         }
 
         @Override

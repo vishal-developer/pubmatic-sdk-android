@@ -812,7 +812,8 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                                 requestListener.onReceivedAd(PMBannerAdView.this);
                                 break;
                             case BANNER_AD_FAILED:
-                                PMLogger.logEvent("Error response : " + error.toString(), PMLogLevel.Error);
+                                if(error!=null)
+                                    PMLogger.logEvent("Error response : " + error.toString(), PMLogLevel.Error);
                                 requestListener.onFailedToReceiveAd(PMBannerAdView.this, error);
                                 break;
                         }
@@ -1026,9 +1027,11 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                 if (isAdResponseValid(adData)) {
                     renderAdDescriptor(adData.getRenderable());
                 }
-                else if(requestListener!=null)
-                {
-                    fireCallback(BANNER_AD_FAILED, response.getError());
+                else {
+                    PMError error = response.getError();
+                    if(error==null)
+                        error = new PMError(PMError.INVALID_RESPONSE, "Invalid ad response for given ad tag. Please check ad tag parameters.");
+                    fireCallback(BANNER_AD_FAILED, error);
                 }
             }
         }

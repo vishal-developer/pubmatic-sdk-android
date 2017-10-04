@@ -342,31 +342,49 @@ public final class PMNativeAd {
         }
     }
 
+    /**
+     * Checks whether Adresponse resulted in null or error code.
+     *
+     * @param adData AdResponse instance
+     * @return true if valid response.
+     */
+    private boolean isAdResponseValid(AdResponse adData) {
+
+        // ErrorHandling section
+        if (adData == null) {
+            PMLogger.logEvent("Ad Response passed is Null.", PMLogger.PMLogLevel.Error);
+            return false;
+        }
+
+        PMError error = adData.getError();
+
+        if(error != null)
+            return false;
+        else
+            return true;
+    }
+
     private HttpRequestListener networkListener = new HttpRequestListener() {
 
         @Override
         public void onRequestComplete(HttpResponse response, String requestURL) {
 
-            if (response != null) {
+            if (response != null && mRRFormatter!=null) {
 
                 AdResponse adData = mRRFormatter.formatResponse(response);
                 if (adData.getRequest() != mAdRequest) {
                     return;
                 }
 
-                PMError error = adData.getError();
-                if(error != null)
-                {
-                    PMLogger.logEvent("Ad request failed: " + error, PMLogLevel.Error);
-
-                    if (mListener != null) {
-                        mListener.onNativeAdFailed(PMNativeAd.this, error);
-                    }
-
-                    return;
+                if (isAdResponseValid(adData)) {
+                    renderAdDescriptor(adData.getRenderable());
                 }
-
-                renderAdDescriptor(adData.getRenderable());
+                else {
+                    PMError error = response.getError();
+                    if(error==null)
+                        error = new PMError(PMError.INVALID_RESPONSE, "Invalid ad response for given ad tag. Please check ad tag parameters.");
+                    fireCallback(NATIVEAD_FAILED, error);
+                }
             }
         }
 
@@ -699,7 +717,8 @@ public final class PMNativeAd {
                                 mListener.onNativeAdReceived(PMNativeAd.this);
                                 break;
                             case NATIVEAD_FAILED:
-                                PMLogger.logEvent("Error response : " + error.toString(), PMLogLevel.Error);
+                                if(error!=null)
+                                    PMLogger.logEvent("Error response : " + error.toString(), PMLogLevel.Error);
                                 mListener.onNativeAdFailed(PMNativeAd.this, error);
                                 break;
                             case THIRDPARTY_RECEIVED:

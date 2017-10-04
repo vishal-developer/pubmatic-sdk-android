@@ -205,19 +205,22 @@ public class InterstitialAdFragment extends DialogFragment {
 
             @Override
             public void onFailedToReceiveAd(PMInterstitialAd ad, final PMError error) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
+                try {
+                    if(error!=null)
                         Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
-                        dismiss();
-                    }
-                });
+                    dismiss();
+                }
+                catch(IllegalStateException e) {
+                    return;
+                }
             }
 
             @Override
             public void onReceivedAd(PMInterstitialAd adView) {
                 if(mInterstitialAd.isReady())
                     mInterstitialAd.show();
+                else
+                    Toast.makeText(getActivity(), "Interstitial ad is not ready, please try after some time.", Toast.LENGTH_LONG).show();
             }
 
         });

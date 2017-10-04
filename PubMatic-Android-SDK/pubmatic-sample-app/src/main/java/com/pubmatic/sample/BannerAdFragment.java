@@ -287,13 +287,15 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
 
     @Override
     public void onFailedToReceiveAd(PMBannerAdView adView, final PMError error) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
+
+        try {
+            if(error!=null)
                 Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
-                dismiss();
-            }
-        });
+            dismiss();
+        }
+        catch(IllegalStateException e) {
+            return;
+        }
     }
 
     @Override

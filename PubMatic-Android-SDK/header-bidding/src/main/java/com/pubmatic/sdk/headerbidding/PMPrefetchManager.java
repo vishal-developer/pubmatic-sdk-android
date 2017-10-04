@@ -190,7 +190,8 @@ public class PMPrefetchManager implements ResponseGenerator {
                                 getPrefetchListener().onBidsFetched(publisherHBResponse);
                                 break;
                             case PREFETCH_AD_FAILED:
-                                PMLogger.logEvent("Error response : " + error.toString(), PMLogger.PMLogLevel.Error);
+                                if(error!=null)
+                                    PMLogger.logEvent("Error response : " + error.toString(), PMLogger.PMLogLevel.Error);
                                 getPrefetchListener().onBidsFailed(error);
                                 break;
                         }

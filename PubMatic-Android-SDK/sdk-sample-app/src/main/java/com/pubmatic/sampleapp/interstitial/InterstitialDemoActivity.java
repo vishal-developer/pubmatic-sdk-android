@@ -85,6 +85,8 @@ public class InterstitialDemoActivity extends Activity {
                  public void onClick(View v) {
                      if (interstitialAd != null && interstitialAd.isReady())
                          interstitialAd.show();
+                     else
+                         Toast.makeText(InterstitialDemoActivity.this, "Interstitial ad is not ready, please try after some time.", Toast.LENGTH_LONG).show();
                  }
              }
         );
