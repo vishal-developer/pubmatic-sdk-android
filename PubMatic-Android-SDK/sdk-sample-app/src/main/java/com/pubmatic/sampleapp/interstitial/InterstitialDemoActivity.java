@@ -60,7 +60,7 @@ public class InterstitialDemoActivity extends Activity {
 
         //Handle click of load ad button
         Button loadAdBtn = (Button)findViewById(R.id.loadAdBtn);
-        loadAdBtn.setText("Load Interstitial Ad");
+        loadAdBtn.setText("Load Ad");
         loadAdBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -78,6 +78,16 @@ public class InterstitialDemoActivity extends Activity {
                 loadAd(pubId, siteId, adId, v);
             }
         });
+
+        Button showAdBtn = (Button)findViewById(R.id.showInterstitialBtn);
+        showAdBtn.setOnClickListener(new View.OnClickListener() {
+                 @Override
+                 public void onClick(View v) {
+                     if (interstitialAd != null && interstitialAd.isReady())
+                         interstitialAd.show();
+                 }
+             }
+        );
     }
 
     private void loadAd(String pubId, String siteId, String adId, View view) {
@@ -101,8 +111,6 @@ public class InterstitialDemoActivity extends Activity {
                 Toast.makeText(InterstitialDemoActivity.this,
                         "Ad loaded!",
                         Toast.LENGTH_SHORT).show();
-                if(interstitialAd.isReady())
-                    interstitialAd.show();
             }
         });
 
