@@ -189,36 +189,4 @@ public class CommonConstants {
 	public enum MediationNetwork {
 		FACEBOOK_AUDIENCE_NETWORK, MOPUB
 	}
-
-	public class PubError {
-
-		// Server communication General error
-
-		public static final int INVALID_AD_ERROR 		= -1;
-
-		public static final int UNDEFINED_ERROR 		= -999;
-
-		public static final int REQUEST_ERROR 			= -1000;
-
-		public static final int CONNECTION_ERROR 		= -1001;
-
-		public static final int SERVER_ERROR 			= -1002;
-
-		public static final int REQUEST_CANCLE 			= -1003;
-
-		public static final int TIMEOUT_ERROR 			= -1004;
-
-		public static final int GENERIC_IO_ERROR 		= -1005;
-
-		public static final int INVALID_RESPONSE_ERROR 	= -1006;
-
-		public static final int JSON_ERROR 				= -1007;
-
-		public static final int REDIRECT_ERROR 			= -1302;
-
-		public static final int SUCCESS_CODE 			= 0;
-
-	}
-
-	public static final String PARSING_ERROR = "-5463";
 }

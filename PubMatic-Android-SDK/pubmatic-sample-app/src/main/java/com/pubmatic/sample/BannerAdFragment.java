@@ -154,7 +154,7 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
                 return null;
             }
 
-            adRequest = PMBannerAdRequest.createPMBannerAdRequest(getActivity(), pubId, siteId, adId);
+            adRequest = PMBannerAdRequest.createPMBannerAdRequest( pubId, siteId, adId);
 
             try
             {

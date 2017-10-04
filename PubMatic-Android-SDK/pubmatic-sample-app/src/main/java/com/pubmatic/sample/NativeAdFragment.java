@@ -157,7 +157,7 @@ public class NativeAdFragment extends DialogFragment {
                 return null;
             }
 
-            adRequest = PMNativeAdRequest.createPMNativeAdRequest(getActivity(), pubId, siteId, adId, getAssetRequests());
+            adRequest = PMNativeAdRequest.createPMNativeAdRequest(pubId, siteId, adId, getAssetRequests());
 
             // Configuration Parameters
             String androidAidEnabled = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED);

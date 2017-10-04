@@ -39,7 +39,6 @@ import java.net.URL;
 
 import com.pubmatic.sdk.common.CommonConstants;
 import com.pubmatic.sdk.common.CommonConstants.CONTENT_TYPE;
-import com.pubmatic.sdk.common.CommonConstants.PubError;
 import com.pubmatic.sdk.common.PMError;
 import com.pubmatic.sdk.common.PMLogger;
 

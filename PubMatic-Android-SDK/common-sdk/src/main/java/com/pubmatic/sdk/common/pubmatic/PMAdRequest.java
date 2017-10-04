@@ -68,7 +68,6 @@ public abstract class PMAdRequest extends AdRequest {
     protected String                        mZip = null;
     protected String                        mDMA = null;
 
-    protected Context                       mContext;
     protected AD_TYPE                       mAdType;
     protected AWT_OPTION                    mAWT = null;
     protected OPERID                        mOperId;
@@ -115,9 +114,8 @@ public abstract class PMAdRequest extends AdRequest {
     }
 
     //---------------- protected methods to be used internally ------------------
-    protected PMAdRequest(Context context) {
-        super(CommonConstants.CHANNEL.PUBMATIC, context);
-        mContext = context;
+    protected PMAdRequest() {
+        super(CommonConstants.CHANNEL.PUBMATIC);
 
     //  mDefaultedCampaignList = new ArrayList<>(0);
     }

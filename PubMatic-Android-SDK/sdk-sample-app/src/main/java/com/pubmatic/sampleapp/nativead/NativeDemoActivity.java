@@ -132,7 +132,7 @@ public class NativeDemoActivity extends Activity {
 		// ad.setTest(true); // Uncomment to serve ads in test mode
 
 		PMNativeAdRequest adRequest = PMNativeAdRequest
-				.createPMNativeAdRequest(this, pubId, siteId, adId, getAssetRequests());
+				.createPMNativeAdRequest(pubId, siteId, adId, getAssetRequests());
 
 		// Request for ads
 		ad.loadRequest(adRequest);

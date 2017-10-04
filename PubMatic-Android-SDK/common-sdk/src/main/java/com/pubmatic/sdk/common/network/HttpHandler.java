@@ -28,7 +28,6 @@ package com.pubmatic.sdk.common.network;
 
 import java.util.ArrayList;
 
-import com.pubmatic.sdk.common.CommonConstants.PubError;
 import com.pubmatic.sdk.common.PMError;
 import com.pubmatic.sdk.common.network.HttpWorker.HttpRedirectListener;
 

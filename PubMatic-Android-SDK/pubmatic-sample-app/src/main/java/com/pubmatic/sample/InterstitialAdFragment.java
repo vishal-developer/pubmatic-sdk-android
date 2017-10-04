@@ -91,7 +91,7 @@ public class InterstitialAdFragment extends DialogFragment {
                 return null;
             }
 
-            adRequest = PMInterstitialAdRequest.createPMInterstitialAdRequest(getActivity(), pubId, siteId, adId);
+            adRequest = PMInterstitialAdRequest.createPMInterstitialAdRequest(pubId, siteId, adId);
 
             // Configuration Parameters
             String androidAidEnabled = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED);

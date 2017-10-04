@@ -11,6 +11,7 @@ import com.google.android.gms.ads.doubleclick.AppEventListener;
 import com.google.android.gms.ads.doubleclick.PublisherAdRequest;
 import com.google.android.gms.ads.doubleclick.PublisherAdView;
 import com.pubmatic.sdk.banner.PMBannerAdView;
+import com.pubmatic.sdk.common.PMError;
 import com.pubmatic.sdk.headerbidding.PMAdSize;
 import com.pubmatic.sdk.headerbidding.PMPrefetchRequest;
 import com.pubmatic.sdk.headerbidding.PMBid;
@@ -91,8 +92,8 @@ public class HeaderBiddingBannerHelper {
             }
 
             @Override
-            public void onBidsFailed(String errorMessage) {
-                Log.d(TAG, "Header Bidding failed. " + errorMessage);
+            public void onBidsFailed(PMError error) {
+                Log.d(TAG, "Header Bidding failed. " + error.toString());
 
                 // Get on with requesting DFP for ads without HB data.
                 requestDFPAd(null);
@@ -268,7 +269,7 @@ public class HeaderBiddingBannerHelper {
             bannerImpressions.add(new PMBannerImpression(getUniqueIdForView(adSlotInfo.adView), adSlotInfo.slotName, adSlotInfo.adSizes, 1));
         }
 
-        adRequest = PMPrefetchRequest.initHBRequestForImpression(mContext, "31400", bannerImpressions);
+        adRequest = PMPrefetchRequest.initHBRequestForImpression("31400", bannerImpressions);
 
         return adRequest;
     }

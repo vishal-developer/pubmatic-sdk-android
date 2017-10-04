@@ -49,7 +49,6 @@ public class BannerDemoActivity extends Activity {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         PMLogger.setLogLevel(PMLogger.PMLogLevel.Debug);
 
-
         banner = (PMBannerAdView)findViewById(R.id.banner);
 
         setPrefetchIds("31400",
@@ -99,7 +98,6 @@ public class BannerDemoActivity extends Activity {
     private void loadAd(String pubId, String siteId, String adId) {
 
         PMBannerAdRequest adRequest = PMBannerAdRequest.createPMBannerAdRequest(
-                BannerDemoActivity.this,
                 pubId, siteId, adId);
 
         adRequest.setAdSize(PMAdSize.PMBANNER_SIZE_320x50);
@@ -125,7 +123,7 @@ public class BannerDemoActivity extends Activity {
         mRequestListener = new RequestListener() {
 
             @Override
-            public void onFailedToReceiveAd(PMBannerAdView adView, PMError error) {
+            public void onFailedToReceiveAd(PMBannerAdView adView, final PMError error) {
                 Toast.makeText(BannerDemoActivity.this, error.toString(), Toast.LENGTH_LONG).show();
             }
 

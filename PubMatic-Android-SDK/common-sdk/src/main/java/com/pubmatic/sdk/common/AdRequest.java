@@ -41,6 +41,7 @@ import android.util.Log;
 
 public abstract class AdRequest {
 
+	protected Context                   mContext;
 	/**
 	 *
 	 */
@@ -85,7 +86,7 @@ public abstract class AdRequest {
 
 	protected RRFormatter 				mRRFormatter;
 
-	protected AdRequest(CommonConstants.CHANNEL channel, Context context) {
+	protected AdRequest(CommonConstants.CHANNEL channel) {
 		mChannel = channel;
 		mUrlParams = new HashMap<>(0);
 	}
@@ -182,6 +183,13 @@ public abstract class AdRequest {
 	}
 
 	//------------------------- All public Getter/Setter -------------------------
+	public Context getContext() {
+		return mContext;
+	}
+
+	public void setContext(Context mContext) {
+		this.mContext = mContext;
+	}
 
 	/**
 	 * Adds custom key-value parameters in Ad request

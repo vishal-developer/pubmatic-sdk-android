@@ -418,6 +418,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         mAdRequest      = null;
         mRRFormatter    = null;
         mAdRequest      = adRequest;
+        mAdRequest.setContext(getContext());
         mChannel        = adRequest.getChannel();
 
         createRRFormatter();
@@ -499,10 +500,14 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
     }
 
     private boolean checkForMandatoryParams() {
-        if(mAdRequest!=null)
-            return mAdRequest.checkMandatoryParams();
-        else
-            return false;
+        boolean result = (mAdRequest!=null) ?
+                mAdRequest.checkMandatoryParams() : false;
+
+        if(! (getContext() instanceof Activity )) {
+            result = false;
+        }
+
+        return result;
     }
 
     private void updateOnLayout() {
@@ -782,8 +787,46 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
      */
     public void loadRequest(AdRequest adrequest) throws IllegalArgumentException {
         setAdRequest(adrequest);
-        update();
+
+        if (checkForMandatoryParams()) {
+            update();
+        } else{
+            fireCallback(BANNER_AD_FAILED, new PMError(PMError.INVALID_REQUEST, "Mandatory parameters validation error"));
+        }
     }
+
+    private void fireCallback(final int callbackType,
+                              final PMError error) {
+
+        // Check if listener is set.
+        if (requestListener != null) {
+
+            try {
+                ((Activity) getContext()).runOnUiThread(new Runnable() {
+
+                    @Override
+                    public void run() {
+
+                        switch (callbackType) {
+                            case BANNER_AD_RECEIVED:
+                                requestListener.onReceivedAd(PMBannerAdView.this);
+                                break;
+                            case BANNER_AD_FAILED:
+                                PMLogger.logEvent("Error response : " + error.toString(), PMLogLevel.Error);
+                                requestListener.onFailedToReceiveAd(PMBannerAdView.this, error);
+                                break;
+                        }
+                    }
+                });
+
+            } catch (ClassCastException e) {
+                requestListener.onFailedToReceiveAd(PMBannerAdView.this, new PMError(PMError.INVALID_REQUEST, "Activity context is required and passed is application context."));
+            }
+        }
+    }
+
+    // constants and listeners
+    private static final int  BANNER_AD_RECEIVED = 10001, BANNER_AD_FAILED = 10002;
 
     /**
      * Updates ad.
@@ -985,7 +1028,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                 }
                 else if(requestListener!=null)
                 {
-                    requestListener.onFailedToReceiveAd(PMBannerAdView.this, response.getError());
+                    fireCallback(BANNER_AD_FAILED, response.getError());
                 }
             }
         }
@@ -993,7 +1036,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         @Override
         public void onErrorOccured(PMError error, String requestURL) {
             if (requestListener != null) {
-                requestListener.onFailedToReceiveAd(PMBannerAdView.this,error);
+                fireCallback(BANNER_AD_FAILED, error);
             }
         }
 
@@ -1250,7 +1293,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         }
 
         if (requestListener != null) {
-            requestListener.onReceivedAd(PMBannerAdView.this);
+            fireCallback(BANNER_AD_RECEIVED, null);
         }
     }
 
@@ -1949,7 +1992,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                     PMLogger.PMLogLevel.Error);
 
             if (requestListener != null) {
-                requestListener.onFailedToReceiveAd(PMBannerAdView.this, new PMError(PMError.RENDER_ERROR, "Error rendering creative : " + errorCode));
+                fireCallback(BANNER_AD_FAILED, new PMError(PMError.RENDER_ERROR, "Error rendering creative : " + errorCode));
             }
 
             //removeContent();

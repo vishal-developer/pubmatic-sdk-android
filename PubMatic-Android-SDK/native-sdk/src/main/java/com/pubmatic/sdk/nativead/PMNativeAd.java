@@ -147,9 +147,15 @@ public final class PMNativeAd {
 
     }
 
-    private boolean checkForMandatoryParams() {
-    	return (mAdRequest!=null) ?
+    private boolean checkForMandatoryParams() throws ClassCastException {
+    	boolean result = (mAdRequest!=null) ?
          mAdRequest.checkMandatoryParams() : false;
+
+        if(! (mContext instanceof Activity )) {
+            result = false;
+        }
+
+        return result;
     }
 
     /**
@@ -247,8 +253,7 @@ public final class PMNativeAd {
 
         if (checkForMandatoryParams()) {
             update();
-        }
-        else {
+        } else {
             fireCallback(NATIVEAD_FAILED, new PMError(PMError.INVALID_REQUEST, "Mandatory parameters validation error"));
         }
 
@@ -677,55 +682,46 @@ public final class PMNativeAd {
         }
     }
 
-    private void fireCallback(int callbackType,
+    private void fireCallback(final int callbackType,
             final PMError error) {
 
         // Check if listener is set.
         if (mListener != null) {
 
-            switch (callbackType) {
-                case NATIVEAD_RECEIVED:
-                    try {
-                        ((Activity) mContext).runOnUiThread(new Runnable() {
+            try {
+                ((Activity) mContext).runOnUiThread(new Runnable() {
 
-                            @Override
-                            public void run() {
+                    @Override
+                    public void run() {
+
+                        switch (callbackType) {
+                            case NATIVEAD_RECEIVED:
                                 mListener.onNativeAdReceived(PMNativeAd.this);
-                            }
-                        });
-                    }catch(ClassCastException e) {
-                        mListener.onNativeAdFailed(PMNativeAd.this, new PMError(PMError.INVALID_REQUEST, "Activity context is required and passed is application context."));
-                    }
-                    break;
-                case NATIVEAD_FAILED:
-                    PMLogger.logEvent("Error response : " + error.toString(),PMLogLevel.Error);
-
-                    try {
-                        ((Activity) mContext).runOnUiThread(new Runnable() {
-
-                            @Override
-                            public void run() {
+                                break;
+                            case NATIVEAD_FAILED:
+                                PMLogger.logEvent("Error response : " + error.toString(), PMLogLevel.Error);
                                 mListener.onNativeAdFailed(PMNativeAd.this, error);
-                            }
-                        });
-                    }catch(ClassCastException e) {
-                        mListener.onNativeAdFailed(PMNativeAd.this, new PMError(PMError.INVALID_REQUEST, "Activity context is required and passed is application context."));
-                    }
-                    break;
-                case THIRDPARTY_RECEIVED:
+                                break;
+                            case THIRDPARTY_RECEIVED:
 
-                    break;
-                case NATIVEAD_CLICKED:
-                    mListener.onNativeAdClicked(this);
-                    break;
+                                break;
+                            case NATIVEAD_CLICKED:
+                                mListener.onNativeAdClicked(PMNativeAd.this);
+                                break;
+                        }
+                    }
+                });
+
+            } catch (ClassCastException e) {
+                mListener.onNativeAdFailed(PMNativeAd.this, new PMError(PMError.INVALID_REQUEST, "Activity context is required and passed is application context."));
             }
         }
     }
 
  // constants and listeners
-    private final int  NATIVEAD_RECEIVED = 10001, NATIVEAD_FAILED = 10002, THIRDPARTY_RECEIVED = 10003, NATIVEAD_CLICKED = 10004;
+    private static final int  NATIVEAD_RECEIVED = 10001, NATIVEAD_FAILED = 10002, THIRDPARTY_RECEIVED = 10003, NATIVEAD_CLICKED = 10004;
     
-    private final int  IMPRESSION_TRACKER = 20001, CLICK_TRACKER = 2002;
+    private static final int  IMPRESSION_TRACKER = 20001, CLICK_TRACKER = 2002;
     
     public static class Image {
 
@@ -802,6 +798,7 @@ public final class PMNativeAd {
 			throw new IllegalArgumentException("AdRequest object is null");
 
         mAdRequest = adRequest;
+        mAdRequest.setContext(mContext);
 
 		//Create RRFormater
 		createRRFormatter();

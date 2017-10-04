@@ -42,20 +42,19 @@ public class PMBannerAdRequest extends PMAdRequest {
 	protected boolean	 mIsInterstitial = false;
 
 	//---------------- Object creational methods ------------------
-	protected PMBannerAdRequest(Context context) {
-		super(context);
+	protected PMBannerAdRequest() {
+		super();
 	}
 
 	/**
 	 * Creates Ad request with Publisher credentials i.e Publisher Id, Site Id, AdTag Id
-	 * @param context
 	 * @param pubId
 	 * @param siteId
 	 * @param adId
 	 * @return
 	 */
-	public static PMBannerAdRequest createPMBannerAdRequest(Context context, String pubId, String siteId, String adId) {
-		PMBannerAdRequest bannerAdRequest = new PMBannerAdRequest(context);
+	public static PMBannerAdRequest createPMBannerAdRequest(String pubId, String siteId, String adId) {
+		PMBannerAdRequest bannerAdRequest = new PMBannerAdRequest();
 		bannerAdRequest.setPubId(pubId);
 		bannerAdRequest.setSiteId(siteId);
 		bannerAdRequest.setAdId(adId);

@@ -57,22 +57,22 @@ public class PMPrefetchRequest extends PMBannerAdRequest {
     private Set<String> adSlotIdsHB;
 
 
-    private PMPrefetchRequest(Context context) {
-        super(context);
+    private PMPrefetchRequest() {
+        super();
         impressions = new ArrayList<>();
         adSlotIdsHB = new HashSet<>();
     }
 
-    private PMPrefetchRequest(Context context, String pubId, PMBannerImpression impression) {
-        this(context);
+    private PMPrefetchRequest(String pubId, PMBannerImpression impression) {
+        this();
         this.mPubId = pubId;
 
         if(impression.validate())
             impressions.add(impression);
     }
 
-    private PMPrefetchRequest(Context context, String pubId, List<PMBannerImpression> impressions) {
-        this(context);
+    private PMPrefetchRequest(String pubId, List<PMBannerImpression> impressions) {
+        this();
         this.mPubId = pubId;
 
         for(PMBannerImpression impression : impressions)
@@ -82,12 +82,12 @@ public class PMPrefetchRequest extends PMBannerAdRequest {
         }
     }
 
-    public static PMPrefetchRequest initHBRequestForImpression(Context context, String pubId, PMBannerImpression impression) {
-        return new PMPrefetchRequest(context, pubId, impression);
+    public static PMPrefetchRequest initHBRequestForImpression(String pubId, PMBannerImpression impression) {
+        return new PMPrefetchRequest(pubId, impression);
     }
 
-    public static PMPrefetchRequest initHBRequestForImpression(Context context, String pubId, List<PMBannerImpression> impressions) {
-        return new PMPrefetchRequest(context, pubId, impressions);
+    public static PMPrefetchRequest initHBRequestForImpression(String pubId, List<PMBannerImpression> impressions) {
+        return new PMPrefetchRequest(pubId, impressions);
     }
 
     public List<PMBannerImpression> getImpressions()
@@ -135,6 +135,7 @@ public class PMPrefetchRequest extends PMBannerAdRequest {
     }
 
     void createRequest(Context context) {
+        setContext(context);
         setAdType(AD_TYPE.BANNER);
         setAWT(AWT_OPTION.DEFAULT);
         setUpUrlParams();

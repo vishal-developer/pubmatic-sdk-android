@@ -27,6 +27,7 @@
 
 package com.pubmatic.sdk.headerbidding;
 
+import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
 import android.webkit.WebView;
@@ -87,9 +88,9 @@ public class PMPrefetchManager implements ResponseGenerator {
         /**
          * Failure callback for header bidding. Publisher must go ahead with normal DFP calls.
          *
-         * @param errorMessage Failure message.
+         * @param error Failure message.
          */
-        void onBidsFailed(String errorMessage);
+        void onBidsFailed(PMError error);
     }
 
     private Map<String, PMBid> publisherHBResponse = new HashMap<>();
@@ -166,12 +167,44 @@ public class PMPrefetchManager implements ResponseGenerator {
     {
         if (adRequest.getImpressions().size() == 0) {
             PMLogger.logEvent("No impressions found for Header Bidding Request.", PMLogger.PMLogLevel.Error);
-            getPrefetchListener().onBidsFailed("No impressions found for Header Bidding Request.");
+            fireCallback(PREFETCH_AD_FAILED, new PMError(PMError.NO_ADS_AVAILABLE,"No impressions found for Header Bidding Request."));
             return false;
         }
-
         return true;
     }
+
+    private void fireCallback(final int callbackType,
+                              final PMError error) {
+
+        // Check if listener is set.
+        if (getPrefetchListener() != null) {
+
+            try {
+                ((Activity) mContext).runOnUiThread(new Runnable() {
+
+                    @Override
+                    public void run() {
+
+                        switch (callbackType) {
+                            case PREFETCH_AD_RECEIVED:
+                                getPrefetchListener().onBidsFetched(publisherHBResponse);
+                                break;
+                            case PREFETCH_AD_FAILED:
+                                PMLogger.logEvent("Error response : " + error.toString(), PMLogger.PMLogLevel.Error);
+                                getPrefetchListener().onBidsFailed(error);
+                                break;
+                        }
+                    }
+                });
+
+            } catch (ClassCastException e) {
+                getPrefetchListener().onBidsFailed(new PMError(PMError.INVALID_REQUEST, "Activity context is required and passed is application context."));
+            }
+        }
+    }
+
+    // constants and listeners
+    private static final int  PREFETCH_AD_RECEIVED = 10001, PREFETCH_AD_FAILED = 10002;
 
     /**
      * Provide the rendered adView from PubMatic cached creative.
@@ -332,10 +365,10 @@ public class PMPrefetchManager implements ResponseGenerator {
             if (pmPreFetchListener == null)
                 return;
 
-            if (publisherHBResponse != null && publisherHBResponse.size() > 0)
-                pmPreFetchListener.onBidsFetched(publisherHBResponse);
+            if(publisherHBResponse != null && publisherHBResponse.size() > 0)
+                fireCallback(PREFETCH_AD_RECEIVED, null);
             else
-                pmPreFetchListener.onBidsFailed("No Bids available");
+                fireCallback(PREFETCH_AD_FAILED, new PMError(PMError.NO_ADS_AVAILABLE, "No Bids available"));
         }
 
         @Override
@@ -343,7 +376,7 @@ public class PMPrefetchManager implements ResponseGenerator {
             String message = "Error Occurred while sending HB request.  " + " Error : " + error + " requestURL " + requestURL;
             PMLogger.logEvent(message, PMLogger.PMLogLevel.Debug);
             if (pmPreFetchListener != null)
-                pmPreFetchListener.onBidsFailed(message);
+                fireCallback(PREFETCH_AD_FAILED, error);
         }
 
         @Override

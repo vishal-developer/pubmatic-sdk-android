@@ -71,20 +71,18 @@ public class PMNativeAdRequest extends PMAdRequest {
 	 *
 	 * @return {@link AdRequest} instance
 	 */
-	public static PMNativeAdRequest createPMNativeAdRequest(Context context, String pubId, String siteId, String adId, List<PMNativeAssetRequest> requestedAssets){
+	public static PMNativeAdRequest createPMNativeAdRequest(String pubId, String siteId, String adId, List<PMNativeAssetRequest> requestedAssets){
 
-		PMNativeAdRequest adRequest = new PMNativeAdRequest(context,
-				CommonConstants.PUBMATIC_AD_NETWORK_URL, requestedAssets);
+		PMNativeAdRequest adRequest = new PMNativeAdRequest(CommonConstants.PUBMATIC_AD_NETWORK_URL, requestedAssets);
 		adRequest.setPubId(pubId);
 		adRequest.setSiteId(siteId);
 		adRequest.setAdId(adId);
 		return adRequest;
 	}
 
-	private PMNativeAdRequest(Context context, String adServerUrl,
+	private PMNativeAdRequest(String adServerUrl,
 							  List<PMNativeAssetRequest> requestedAssets) {
-		super(context);
-		this.context = context;
+		super();
 		this.requestedAssetsList = requestedAssets;
 
 		StringBuilder sb = new StringBuilder();
