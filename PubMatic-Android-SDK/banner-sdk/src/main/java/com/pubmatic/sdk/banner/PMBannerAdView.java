@@ -80,6 +80,7 @@ import com.pubmatic.sdk.common.PMAdSize;
 import com.pubmatic.sdk.common.PMError;
 import com.pubmatic.sdk.common.PMLogger;
 import com.pubmatic.sdk.common.PMLogger.PMLogLevel;
+import com.pubmatic.sdk.common.PMUtils;
 import com.pubmatic.sdk.common.PubMaticSDK;
 import com.pubmatic.sdk.common.RRFormatter;
 import com.pubmatic.sdk.common.ResponseGenerator;
@@ -1012,8 +1013,11 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         PMLogger.logEvent("Ad request URL :" + httpRequest.getRequestUrl(), PMLogLevel.Custom);
         PMLogger.logEvent("Ad request body:" + httpRequest.getPostData(), PMLogLevel.Custom);
 
-        HttpHandler requestProcessor = new HttpHandler(networkListener, httpRequest);
-        Background.getExecutor().execute(requestProcessor);
+        if(PMUtils.isNetworkConnected(getContext())) {
+            HttpHandler requestProcessor = new HttpHandler(networkListener, httpRequest);
+            Background.getExecutor().execute(requestProcessor);
+        } else
+            fireCallback(BANNER_AD_FAILED, new PMError(PMError.NETWORK_ERROR, "Not able to get network connection"));
 
     }
 

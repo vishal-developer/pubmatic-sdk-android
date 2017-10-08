@@ -60,6 +60,7 @@ import com.pubmatic.sdk.common.PMError;
 import com.pubmatic.sdk.common.PMLogger;
 import com.pubmatic.sdk.common.PMLogger.PMLogLevel;
 import com.pubmatic.sdk.common.LocationDetector;
+import com.pubmatic.sdk.common.PMUtils;
 import com.pubmatic.sdk.common.PubMaticSDK;
 import com.pubmatic.sdk.common.RRFormatter;
 import com.pubmatic.sdk.common.network.AdTracking;
@@ -321,9 +322,11 @@ public final class PMNativeAd {
         HttpRequest httpRequest = mRRFormatter.formatRequest(mAdRequest);
 
         PMLogger.logEvent("Ad request:" + httpRequest.getRequestUrl(), PMLogger.PMLogLevel.Debug);
-
-        HttpHandler requestProcessor = new HttpHandler(networkListener, httpRequest);
-        Background.getExecutor().execute(requestProcessor);
+        if(PMUtils.isNetworkConnected(mContext)) {
+            HttpHandler requestProcessor = new HttpHandler(networkListener, httpRequest);
+            Background.getExecutor().execute(requestProcessor);
+        } else
+            fireCallback(NATIVEAD_FAILED, new PMError(PMError.NETWORK_ERROR, "Not able to get network connection"));
 
     }
 

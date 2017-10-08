@@ -32,6 +32,7 @@ import android.content.Context;
 import android.location.Location;
 import android.webkit.WebView;
 
+import com.pubmatic.sdk.banner.Background;
 import com.pubmatic.sdk.banner.PMBannerAdView;
 import com.pubmatic.sdk.banner.PMInterstitialAd;
 import com.pubmatic.sdk.banner.pubmatic.PMBannerAdRequest;
@@ -41,6 +42,7 @@ import com.pubmatic.sdk.common.LocationDetector;
 import com.pubmatic.sdk.common.PMAdRendered;
 import com.pubmatic.sdk.common.PMError;
 import com.pubmatic.sdk.common.PMLogger;
+import com.pubmatic.sdk.common.PMUtils;
 import com.pubmatic.sdk.common.PubMaticSDK;
 import com.pubmatic.sdk.common.ResponseGenerator;
 import com.pubmatic.sdk.common.network.HttpHandler;
@@ -155,10 +157,14 @@ public class PMPrefetchManager implements ResponseGenerator {
                 PMLogger.logEvent("Request Url : " + httpRequest.getRequestUrl() + "\n body : " + httpRequest.getPostData(),
                         PMLogger.PMLogLevel.Debug);
 
-                HttpHandler requestProcessor = new HttpHandler(networkListener, httpRequest);
+                if(PMUtils.isNetworkConnected(mContext)) {
+                    HttpHandler requestProcessor = new HttpHandler(networkListener, httpRequest);
 
-                ExecutorService executor = Executors.newSingleThreadExecutor();
-                executor.execute(requestProcessor);
+                    ExecutorService executor = Executors.newSingleThreadExecutor();
+                    executor.execute(requestProcessor);
+                } else
+                    fireCallback(PREFETCH_AD_FAILED, new PMError(PMError.NETWORK_ERROR, "Not able to get network connection"));
+
             }
         }
     }
