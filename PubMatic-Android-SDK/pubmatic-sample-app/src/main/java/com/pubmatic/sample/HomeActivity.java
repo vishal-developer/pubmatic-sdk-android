@@ -5,6 +5,7 @@ import android.app.ActionBar;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,9 +13,11 @@ import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.text.Html;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.pubmatic.sdk.common.PMLogger;
 import com.pubmatic.sdk.common.PubMaticSDK;
@@ -81,6 +84,8 @@ public class HomeActivity extends FragmentActivity implements
                 .setContentDescription("Logs")
                 .setIcon(getResources().getDrawable(R.drawable.logs))
                 .setTabListener(this));
+
+        actionBar.setTitle((Html.fromHtml("<font color=\"#FFFFFF\">" + getString(R.string.app_name) + "</font>")));
 
         mPMPagerAdapter = new PMPagerAdapter(getSupportFragmentManager(), this);
 
