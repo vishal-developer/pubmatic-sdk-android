@@ -1,1 +1,1 @@
-include ':common-sdk', ':banner-sdk', ':sdk-sample-app', ':native-sdk', ':header-bidding-sample', ':header-bidding', 'pubmatic-sample-app'
+include ':common-sdk', ':banner-sdk', ':native-sdk', ':header-bidding-sample', ':header-bidding', 'pubmatic-sample-app'
