@@ -249,14 +249,17 @@ public final class PMNativeAd {
      * @param adrequest
      */
     public void loadRequest(AdRequest adrequest) {
-        setAdrequest(adrequest);
+        try {
+            setAdrequest(adrequest);
 
-        if (checkForMandatoryParams()) {
-            update();
-        } else {
-            fireCallback(NATIVEAD_FAILED, new PMError(PMError.INVALID_REQUEST, "Mandatory parameters validation error"));
+            if (checkForMandatoryParams()) {
+                update();
+            } else {
+                fireCallback(NATIVEAD_FAILED, new PMError(PMError.INVALID_REQUEST, "Mandatory parameters validation error"));
+            }
+        } catch(Exception e) {
+            fireCallback(NATIVEAD_FAILED, new PMError(PMError.INTERNAL_ERROR, "Something went wrong. Please verify error : "+e.toString()));
         }
-
     }
 
     /**
@@ -373,6 +376,7 @@ public final class PMNativeAd {
 
                 AdResponse adData = mRRFormatter.formatResponse(response);
                 if (adData.getRequest() != mAdRequest) {
+                    fireCallback(NATIVEAD_FAILED, new PMError(PMError.INTERNAL_ERROR, "Native request mismatch error"));
                     return;
                 }
 
@@ -391,12 +395,7 @@ public final class PMNativeAd {
         @Override
         public void onErrorOccured(PMError error, String requestURL) {
 
-            if (mAdRequest != null && requestURL != null) {
-                return;
-            }
-
-            fireCallback(NATIVEAD_FAILED,error);
-
+            fireCallback(NATIVEAD_FAILED, error);
         }
 
         @Override

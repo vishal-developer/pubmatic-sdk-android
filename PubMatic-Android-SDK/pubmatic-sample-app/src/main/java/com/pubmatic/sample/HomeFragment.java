@@ -387,9 +387,10 @@ public class HomeFragment extends Fragment {
             Log.i("CheckPubMaticAdTag : ", exception.toString());
         }
 
-        if(TextUtils.isEmpty(pubId) || TextUtils.isEmpty(siteId) || TextUtils.isEmpty(adId))
-            return false;
-        else
+        //No need to validate, as SDK responds with proper error code.
+//        if(TextUtils.isEmpty(pubId) || TextUtils.isEmpty(siteId) || TextUtils.isEmpty(adId))
+//            return false;
+//        else
             return true;
     }
 

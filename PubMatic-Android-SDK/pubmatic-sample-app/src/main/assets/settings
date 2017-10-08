@@ -2,9 +2,9 @@
   "PubMatic": {
     "Banner": {
       "Ad Tag": {
-        "PubId": "31400",
-        "SiteId": "32504",
-        "AdId": "439662"
+        "PubId": "156453",
+        "SiteId": "219778",
+        "AdId": "1178234"
       },
       "Configuration": {
         "Width": "320",
@@ -18,9 +18,9 @@
     },
     "Interstitial": {
       "Ad Tag": {
-        "PubId": "31400",
-        "SiteId": "32504",
-        "AdId": "1059651"
+        "PubId": "156453",
+        "SiteId": "219778",
+        "AdId": "1178356"
       },
       "Configuration": {
 
@@ -32,9 +32,9 @@
     },
     "Native": {
       "Ad Tag": {
-        "PubId": "31400",
-        "SiteId": "32504",
-        "AdId": "1096058"
+        "PubId": "156453",
+        "SiteId": "219778",
+        "AdId": "1178273"
       },
       "Configuration": {
 

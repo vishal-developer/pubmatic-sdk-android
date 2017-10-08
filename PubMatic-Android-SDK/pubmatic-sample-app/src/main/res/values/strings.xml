@@ -2,6 +2,8 @@
     <string name="app_name">PubMaticSample</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
+    <string name="interstitial_screen_description">Interstitial ads are full-screen ads that cover the interface of host app. They\'re typically displayed at natural transition points in the flow of an app, such as between activities or during the pause between levels in a game. When an app shows an interstitial ad, the user has the choice to either tap on the ad and continue to its destination or close it and return to the app.
+    </string>
 
     <string name="help_text"><h2>Welcome to the PubMatic\'s SDK Sample app.</h2><br/>" +
                 "    This application helps you to test PubMatic\'s ad tag.<br/>" +

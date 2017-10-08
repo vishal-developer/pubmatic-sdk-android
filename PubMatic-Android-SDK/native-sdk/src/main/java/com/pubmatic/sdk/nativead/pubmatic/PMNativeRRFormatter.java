@@ -123,11 +123,9 @@ public class PMNativeRRFormatter implements RRFormatter {
 				// wrong ad parameters, return the error with error code and error
 				// message.
 
-				if (!object.isNull(kerror_code)
-						&& !(object.optString(kerror_code).equalsIgnoreCase(""))) {
-
-					error = new PMError(PMError.SERVER_ERROR, object.optString(kerror_message) + " : " + object.optInt(kerror_code));
-					adResponse.setError(error);
+				String errorCode;
+				if (!TextUtils.isEmpty(errorCode = responseObj.optString(kerror_code))) {
+					adResponse.setError(new PMError(PMError.NO_ADS_AVAILABLE, "No ads found : " + errorCode));
 
 					return adResponse;
 				}
@@ -261,12 +259,17 @@ public class PMNativeRRFormatter implements RRFormatter {
 				if (!TextUtils.isEmpty(errorMessage)) {
 					error = new PMError(PMError.NO_ADS_AVAILABLE, errorMessage);
 					adResponse.setError(error);
+				} else {
+					adResponse.setError(new PMError(PMError.INVALID_RESPONSE, e.getMessage()));
 				}
+
 			} catch (JSONException ex) {
 				ex.printStackTrace();
+				adResponse.setError(new PMError(PMError.INVALID_RESPONSE, e.getMessage()));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			adResponse.setError(new PMError(PMError.INVALID_RESPONSE, e.getMessage()));
 		}
 
 		adResponse.setRenderable(nativeAdDescriptor);

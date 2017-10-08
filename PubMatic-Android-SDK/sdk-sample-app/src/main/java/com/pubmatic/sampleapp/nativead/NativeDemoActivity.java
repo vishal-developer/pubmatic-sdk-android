@@ -78,7 +78,7 @@ public class NativeDemoActivity extends Activity {
 		ratingBar = (RatingBar) findViewById(R.id.ratingbar);
 		txtLogView = (TextView) findViewById(R.id.textView);
 
-		setPrefetchIds("31400", "32504", "1096058");
+		setPrefetchIds("156453", "219778", "1178273");
 	}
 
 	private void setPrefetchIds(String pubId, String siteId, String adId) {

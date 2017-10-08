@@ -51,9 +51,7 @@ public class BannerDemoActivity extends Activity {
 
         banner = (PMBannerAdView)findViewById(R.id.banner);
 
-        setPrefetchIds("31400",
-                "32504",
-                "439662");
+        setPrefetchIds("156453", "219778", "1178234");
 
 
     }
@@ -136,6 +134,8 @@ public class BannerDemoActivity extends Activity {
 
         banner.setRequestListener(mRequestListener);
         banner.loadRequest(adRequest);
+        banner.loadRequest(adRequest);
+
     }
 
     @Override

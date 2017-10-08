@@ -41,7 +41,7 @@ public class InterstitialDemoActivity extends Activity {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         PMLogger.setLogLevel(PMLogger.PMLogLevel.Debug);
 
-        setPrefetchIds("31400", "32504", "1059651");
+        setPrefetchIds("156453", "219778", "1178356");
     }
 
     private void setPrefetchIds(String pubId, String siteId, String adId) {
@@ -83,8 +83,10 @@ public class InterstitialDemoActivity extends Activity {
         showAdBtn.setOnClickListener(new View.OnClickListener() {
                  @Override
                  public void onClick(View v) {
-                     if (interstitialAd != null && interstitialAd.isReady())
-                         interstitialAd.show();
+                     if (interstitialAd != null) {
+                         interstitialAd.showCloseButtonAfterDelay(3);
+                         interstitialAd.showForDuration(10);
+                     }
                      else
                          Toast.makeText(InterstitialDemoActivity.this, "Interstitial ad is not ready, please try after some time.", Toast.LENGTH_LONG).show();
                  }
@@ -113,6 +115,10 @@ public class InterstitialDemoActivity extends Activity {
                 Toast.makeText(InterstitialDemoActivity.this,
                         "Ad loaded!",
                         Toast.LENGTH_SHORT).show();
+                if (interstitialAd != null) {
+                    interstitialAd.showCloseButtonAfterDelay(3);
+                    interstitialAd.showForDuration(10);
+                }
             }
         });
 

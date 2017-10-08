@@ -77,8 +77,7 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
         builder.setView(view);
 
         //Create Dialog and Set the transparent black opacity for dialog
-        Drawable drawable = new ColorDrawable(Color.BLACK);
-        drawable.setAlpha(220);
+        Drawable drawable = new ColorDrawable(Color.WHITE);
         Dialog dialog = builder.create();
         dialog.getWindow().setBackgroundDrawable(drawable);
 
@@ -148,11 +147,6 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
             String pubId = mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).get(PMConstants.SETTINGS_AD_TAG_PUB_ID);
             String siteId = mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).get(PMConstants.SETTINGS_AD_TAG_SITE_ID);
             String adId = mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).get(PMConstants.SETTINGS_AD_TAG_AD_ID);
-
-            if(TextUtils.isEmpty(pubId) || TextUtils.isEmpty(siteId) || TextUtils.isEmpty(adId)) {
-                Toast.makeText(getActivity(), "Please enter pubId, siteId and adId", Toast.LENGTH_LONG).show();
-                return null;
-            }
 
             adRequest = PMBannerAdRequest.createPMBannerAdRequest( pubId, siteId, adId);
 

@@ -4,16 +4,15 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
+import android.content.res.Configuration;
 import android.location.Location;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
+import android.webkit.WebView;
 
 import com.pubmatic.sdk.banner.PMInterstitialAd;
 import com.pubmatic.sdk.banner.pubmatic.PMInterstitialAdRequest;
@@ -24,9 +23,13 @@ import com.pubmatic.sdk.common.pubmatic.PMAdRequest;
 
 import java.util.LinkedHashMap;
 
+import static com.pubmatic.sample.R.id.showBtn;
+
 public class InterstitialAdFragment extends DialogFragment {
 
     private boolean isFragmentActive = true;
+
+    private WebView webView =null;
 
     private ConfigurationManager.PLATFORM mPlatform;
 
@@ -55,20 +58,45 @@ public class InterstitialAdFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState)
     {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.banner_template, null);
-        builder.setView(view);
+
+        Dialog dialog = new Dialog(getActivity(), android.R.style.Theme_Black_NoTitleBar);
+        dialog.setContentView(R.layout.interstitial_template);
 
 
-        Drawable drawable = new ColorDrawable(Color.BLACK);
-        drawable.setAlpha(120);
-        Dialog dialog = builder.create();
-        dialog.getWindow().setBackgroundDrawable(drawable);
+        Button loadAdBtn = (Button) dialog.findViewById(R.id.loadAdBtn);
+        if(loadAdBtn!=null)
+            loadAdBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    loadAd();
+                }
+            });
 
-        loadAd();
+        Button showBtn = (Button) dialog.findViewById(R.id.showBtn);
+        if(showBtn!=null)
+            showBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showAd();
+                }
+            });
 
         return dialog;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+    }
+
+    private void showAd() {
+        if(mInterstitialAd!=null && mInterstitialAd.isReady()) {
+            mInterstitialAd.showCloseButtonAfterDelay(3);
+            mInterstitialAd.showForDuration(10);
+        }
+        else
+            Toast.makeText(getActivity(), "Interstitial ad is not ready, please try after some time.", Toast.LENGTH_LONG).show();
     }
 
     /**
@@ -84,12 +112,6 @@ public class InterstitialAdFragment extends DialogFragment {
             String pubId = mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).get(PMConstants.SETTINGS_AD_TAG_PUB_ID);
             String siteId = mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).get(PMConstants.SETTINGS_AD_TAG_SITE_ID);
             String adId = mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).get(PMConstants.SETTINGS_AD_TAG_AD_ID);
-
-            if(pubId == null || pubId.equals("") || siteId == null || siteId.equals("") || adId == null || adId.equals(""))
-            {
-                Toast.makeText(getActivity(), "Please enter pubId, siteId and adId", Toast.LENGTH_LONG).show();
-                return null;
-            }
 
             adRequest = PMInterstitialAdRequest.createPMInterstitialAdRequest(pubId, siteId, adId);
 
@@ -208,7 +230,7 @@ public class InterstitialAdFragment extends DialogFragment {
                 try {
                     if(error!=null)
                         Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
-                    dismiss();
+                    //dismiss();
                 }
                 catch(IllegalStateException e) {
                     return;
@@ -217,10 +239,7 @@ public class InterstitialAdFragment extends DialogFragment {
 
             @Override
             public void onReceivedAd(PMInterstitialAd adView) {
-                if(mInterstitialAd.isReady())
-                    mInterstitialAd.show();
-                else
-                    Toast.makeText(getActivity(), "Interstitial ad is not ready, please try after some time.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "Interstitial ad is loaded. Press 'Show Ad' button now", Toast.LENGTH_LONG).show();
             }
 
         });
@@ -238,11 +257,11 @@ public class InterstitialAdFragment extends DialogFragment {
 
             @Override
             public boolean onCloseButtonClick(PMInterstitialAd adView) {
-                if(isFragmentActive) {
-                    dismiss();
-                    return true;
-                } else
+//                if(isFragmentActive) {
+//                    dismiss();
                     return false;
+//                } else
+//                    return false;
             }
         });
 
@@ -252,6 +271,14 @@ public class InterstitialAdFragment extends DialogFragment {
         // Make the ad request to Server banner.loadRequest(adRequest);
         AdRequest adRequest = buildAdRequest();
         mInterstitialAd.loadRequest(adRequest);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        if(mInterstitialAd!=null)
+            mInterstitialAd.destroy();
+        dismiss();
+        super.onConfigurationChanged(newConfig);
     }
 
     @Override

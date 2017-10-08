@@ -296,7 +296,7 @@ public class HttpWorker {
 					// Since the connection is successful, read the response
 					inputStream = httpUrlConnection.getInputStream();
 					if (inputStream == null) {
-						httpResponse.setError(new PMError(PMError.NETWORK_ERROR, "Not able to get network connection"));
+						httpResponse.setError(new PMError(PMError.NETWORK_ERROR, httpUrlConnection.getResponseMessage()));
 						return httpResponse;
 					}
 					
@@ -309,8 +309,10 @@ public class HttpWorker {
 					}
 
 				} // if (responseCode == HttpURLConnection.HTTP_OK) ends
-				else {
-					httpResponse.setError(new PMError(PMError.NETWORK_ERROR, "Request failed with error code : " + responseCode));
+				else if(responseCode>=500){
+					httpResponse.setError(new PMError(PMError.SERVER_ERROR, httpUrlConnection.getResponseMessage()));
+				}else {
+					httpResponse.setError(new PMError(PMError.NETWORK_ERROR, httpUrlConnection.getResponseMessage()));
 				}
 			}
 
@@ -330,11 +332,11 @@ public class HttpWorker {
 			httpResponse.setError(new PMError(PMError.TIMEOUT_ERROR, "Request Time out"));
 			return httpResponse;
 		} catch (IOException e) {
-			httpResponse.setError(new PMError(PMError.NETWORK_ERROR, "Not able to get network connection"));
+			httpResponse.setError(new PMError(PMError.NETWORK_ERROR, e.getMessage()));
 			return httpResponse;
 		} catch (Exception e) {
 			e.printStackTrace();
-			httpResponse.setError(new PMError(PMError.INTERNAL_ERROR, "Internal Error occured"));
+			httpResponse.setError(new PMError(PMError.INTERNAL_ERROR, e.getMessage()));
 			return httpResponse;
 		} finally {
 			try {

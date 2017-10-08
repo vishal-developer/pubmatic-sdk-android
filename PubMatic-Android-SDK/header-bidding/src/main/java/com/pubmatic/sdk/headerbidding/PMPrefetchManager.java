@@ -167,7 +167,7 @@ public class PMPrefetchManager implements ResponseGenerator {
     {
         if (adRequest.getImpressions().size() == 0) {
             PMLogger.logEvent("No impressions found for Header Bidding Request.", PMLogger.PMLogLevel.Error);
-            fireCallback(PREFETCH_AD_FAILED, new PMError(PMError.NO_ADS_AVAILABLE,"No impressions found for Header Bidding Request."));
+            fireCallback(PREFETCH_AD_FAILED, new PMError(PMError.NO_ADS_AVAILABLE,"Missing valid impression objects for this request."));
             return false;
         }
         return true;

@@ -97,8 +97,7 @@ public class NativeAdFragment extends DialogFragment {
 
         initLayout(view);
 
-        Drawable drawable = new ColorDrawable(Color.BLACK);
-        drawable.setAlpha(220);
+        Drawable drawable = new ColorDrawable(Color.WHITE);
         Dialog dialog = builder.create();
         dialog.getWindow().setBackgroundDrawable(drawable);
 
@@ -151,12 +150,6 @@ public class NativeAdFragment extends DialogFragment {
             String siteId = mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).get(PMConstants.SETTINGS_AD_TAG_SITE_ID);
             String adId = mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).get(PMConstants.SETTINGS_AD_TAG_AD_ID);
 
-            if(pubId == null || pubId.equals("") || siteId == null || siteId.equals("") || adId == null || adId.equals(""))
-            {
-                Toast.makeText(getActivity(), "Please enter pubId, siteId and adId", Toast.LENGTH_LONG).show();
-                return null;
-            }
-
             adRequest = PMNativeAdRequest.createPMNativeAdRequest(pubId, siteId, adId, getAssetRequests());
 
             // Configuration Parameters
@@ -186,47 +179,47 @@ public class NativeAdFragment extends DialogFragment {
 
                 String state = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_STATE);
 
-                if(!state.equals("") && !state.equals(""))
+                if(!TextUtils.isEmpty(state))
                     ((PMNativeAdRequest)adRequest).setState(state);
 
                 String zip = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_ZIP);
 
-                if(!zip.equals("") && zip != null)
+                if(!TextUtils.isEmpty(zip))
                     ((PMNativeAdRequest)adRequest).setZip(zip);
 
                 String appDomain = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_APP_DOMAIN);
 
-                if(!appDomain.equals("") && appDomain != null)
+                if(!TextUtils.isEmpty(appDomain))
                     ((PMNativeAdRequest)adRequest).setAppDomain(appDomain);
 
                 String appCategory = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_APP_CATEGORY);
 
-                if(!appCategory.equals("") && appCategory != null)
+                if(!TextUtils.isEmpty(appCategory))
                     ((PMNativeAdRequest)adRequest).setAppCategory(appCategory);
 
                 String iabCategory = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_IAB_CATEGORY);
 
-                if(!iabCategory.equals("") && iabCategory != null)
+                if(!TextUtils.isEmpty(iabCategory))
                     ((PMNativeAdRequest)adRequest).setIABCategory(iabCategory);
 
                 String storeUrl = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_STORE_URL);
 
-                if(!storeUrl.equals("") && storeUrl != null)
+                if(!TextUtils.isEmpty(storeUrl))
                     ((PMNativeAdRequest)adRequest).setStoreURL(storeUrl);
 
                 String yearOfBirth = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_YEAR_OF_BIRTH);
 
-                if(!yearOfBirth.equals("") && yearOfBirth != null)
+                if(!TextUtils.isEmpty(yearOfBirth))
                     ((PMNativeAdRequest)adRequest).setYearOfBirth(yearOfBirth);
 
                 String income = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_INCOME);
 
-                if(!income.equals("") && income != null)
+                if(!TextUtils.isEmpty(income))
                     ((PMNativeAdRequest)adRequest).setIncome(income);
 
                 String ethnicity = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_ETHNICITY);
 
-                if(!ethnicity.equals("") && ethnicity != null)
+                if(!TextUtils.isEmpty(ethnicity))
                 {
                     if(ethnicity.equalsIgnoreCase("HISPANIC"))
                         ((PMNativeAdRequest)adRequest).setEthnicity(PMAdRequest.ETHNICITY.HISPANIC);
@@ -240,7 +233,7 @@ public class NativeAdFragment extends DialogFragment {
 
                 String gender = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_GENDER);
 
-                if(gender != null && !gender.equals(""))
+                if(!TextUtils.isEmpty(gender))
                 {
                     if(gender.equalsIgnoreCase("Male") || gender.equalsIgnoreCase("M"))
                         ((PMNativeAdRequest)adRequest).setGender(PMAdRequest.GENDER.MALE);
@@ -252,20 +245,21 @@ public class NativeAdFragment extends DialogFragment {
 
                 String dma = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_DMA);
 
-                if(!dma.equals("") && dma != null)
+                if(!TextUtils.isEmpty(dma))
                     ((PMNativeAdRequest)adRequest).setDMA(dma);
 
                 String paid = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_PAID);
 
-                if(!paid.equals("") && paid != null)
+                if(!TextUtils.isEmpty(paid))
                     ((PMNativeAdRequest)adRequest).setApplicationPaid(Boolean.parseBoolean(paid));
 
                 String coppa = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_COPPA);
-                ((PMNativeAdRequest)adRequest).setCoppa(Boolean.parseBoolean(coppa));
+                if(!TextUtils.isEmpty(coppa))
+                    ((PMNativeAdRequest)adRequest).setCoppa(Boolean.parseBoolean(coppa));
 
                 String ormaCompliance = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_ORMA_COMPLIANCE);
 
-                if(!ormaCompliance.equals("") && ormaCompliance != null)
+                if(!TextUtils.isEmpty(ormaCompliance))
                     ((PMNativeAdRequest)adRequest).setOrmmaComplianceLevel(Integer.parseInt(ormaCompliance));
             }
             catch (Exception exception)

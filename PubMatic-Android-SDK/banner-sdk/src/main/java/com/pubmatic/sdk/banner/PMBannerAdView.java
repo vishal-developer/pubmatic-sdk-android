@@ -785,13 +785,17 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
     /**
      * @param adrequest
      */
-    public void loadRequest(AdRequest adrequest) throws IllegalArgumentException {
-        setAdRequest(adrequest);
+    public void loadRequest(AdRequest adrequest) {
+        try {
+            setAdRequest(adrequest);
 
-        if (checkForMandatoryParams()) {
-            update();
-        } else{
-            fireCallback(BANNER_AD_FAILED, new PMError(PMError.INVALID_REQUEST, "Mandatory parameters validation error"));
+            if (checkForMandatoryParams()) {
+                update();
+            } else {
+                fireCallback(BANNER_AD_FAILED, new PMError(PMError.INVALID_REQUEST, "Missing Mandatory parameters"));
+            }
+        } catch(Exception e) {
+            fireCallback(BANNER_AD_FAILED, new PMError(PMError.INTERNAL_ERROR, "Something went wrong. Please verify error : "+e.toString()));
         }
     }
 
@@ -854,7 +858,8 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         // If channel is set => adcontroller is initialized correctly
         if (mChannel == null || mAdRequest==null || mAdRequest.checkMandatoryParams()==false) {
 
-            throw new IllegalArgumentException("Required parameters are not set.");
+            fireCallback(BANNER_AD_FAILED, new PMError(PMError.INVALID_REQUEST, "Missing Mandatory parameters"));
+            return;
         }
 
         if (adUpdateIntervalFuture != null) {
@@ -929,7 +934,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                 break;
 
             case Interstitial:
-                interstitialDialog.removeAllViews();
+                closeInterstitial();
         }
 
         mAdRequest = null;
@@ -1020,15 +1025,11 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             if (response != null && mRRFormatter!=null) {
 
                 AdResponse adData = mRRFormatter.formatResponse(response);
-                if (adData.getRequest() != mAdRequest) {
-                    return;
-                }
 
                 if (isAdResponseValid(adData)) {
                     renderAdDescriptor(adData.getRenderable());
-                }
-                else {
-                    PMError error = response.getError();
+                } else {
+                    PMError error = adData.getError();
                     if(error==null)
                         error = new PMError(PMError.INVALID_RESPONSE, "Invalid ad response for given ad tag. Please check ad tag parameters.");
                     fireCallback(BANNER_AD_FAILED, error);
@@ -1290,15 +1291,8 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         webView.loadFragment(creative, mraidBridge, url);
 
         this.mAdDescriptor = adDescriptor;
-        if(!isInterstitial())
-            performAdTracking();
-        else {//If interstitial
-            isInterstitialReady = true;
-        }
 
-        if (requestListener != null) {
-            fireCallback(BANNER_AD_RECEIVED, null);
-        }
+        notifyAdReadyEvent();
     }
 
     @SuppressWarnings("deprecation")
@@ -1853,10 +1847,10 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             switch (mraidBridge.getState()) {
                 case Default:
                     if (placementType == PlacementType.Interstitial) {
-                        if (mraidBridge.getExpandProperties().useCustomClose() == false) {
+                        if (mraidBridge.getExpandProperties().useCustomClose() == false && closeButtonDelay <= 0) {
                             showCloseButton();
+                            return;
                         }
-                        return;
                     }
                     break;
 
@@ -1972,6 +1966,19 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         }
     }
 
+    private void notifyAdReadyEvent() {
+
+        if(isInterstitial())
+            isInterstitialReady = true;
+        else
+            performAdTracking();
+
+        if (requestListener != null) {
+            fireCallback(BANNER_AD_RECEIVED, null);
+        }
+
+    }
+
     private class WebViewHandler implements WebView.Handler {
         @Override
         public void webViewPageStarted(WebView webView) {
@@ -1996,7 +2003,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                     PMLogger.PMLogLevel.Error);
 
             if (requestListener != null) {
-                fireCallback(BANNER_AD_FAILED, new PMError(PMError.RENDER_ERROR, "Error rendering creative : " + errorCode));
+                fireCallback(BANNER_AD_FAILED, new PMError(PMError.RENDER_ERROR, description+" (" + errorCode+")"));
             }
 
             //removeContent();
@@ -2841,11 +2848,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
                 ((RelativeLayout) closeArea).addView(imageView, layoutParams);
             }
-        }
-
-        @Override
-        public void show() {
-            super.show();
         }
     }
 

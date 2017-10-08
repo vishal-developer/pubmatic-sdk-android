@@ -122,7 +122,7 @@ public class PMBannerRRFormatter implements RRFormatter {
             String errorCode;
             if (!TextUtils.isEmpty(errorCode = response.optString(kerror_code))) {
 
-                pubResponse.setError(new PMError(PMError.SERVER_ERROR, response.optString(kerror_message) + " : " + errorCode));
+                pubResponse.setError(new PMError(PMError.NO_ADS_AVAILABLE, "No ads found : " + errorCode));
                 return pubResponse;
             }
 
@@ -163,7 +163,7 @@ public class PMBannerRRFormatter implements RRFormatter {
             pubResponse.setRenderable(adDescriptor);
 
         } catch (JSONException | UnsupportedEncodingException e) {
-            pubResponse.setError(new PMError(PMError.INTERNAL_ERROR, "Error formatting banner response"));
+            pubResponse.setError(new PMError(PMError.INVALID_RESPONSE, e.getMessage()));
         } finally {
             //response = null;
         }
