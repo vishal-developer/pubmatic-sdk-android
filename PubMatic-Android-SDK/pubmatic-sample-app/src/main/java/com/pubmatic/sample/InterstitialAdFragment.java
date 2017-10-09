@@ -291,7 +291,12 @@ public class InterstitialAdFragment extends DialogFragment {
         if(mInterstitialAd!=null)
             mInterstitialAd.destroy();
         mInterstitialAd = null;
-        dismiss();
+        dismissAllowingStateLoss();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        //No call for super(). Bug on API Level > 11.
     }
 
     @Override
