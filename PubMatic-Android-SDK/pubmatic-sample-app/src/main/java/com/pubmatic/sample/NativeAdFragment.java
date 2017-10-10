@@ -23,17 +23,8 @@ import android.widget.Toast;
 import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.PMError;
 import com.pubmatic.sdk.common.pubmatic.PMAdRequest;
+import com.pubmatic.sdk.nativead.bean.*;
 import com.pubmatic.sdk.nativead.PMNativeAd;
-import com.pubmatic.sdk.nativead.bean.PMNativeAssetRequest;
-import com.pubmatic.sdk.nativead.bean.PMNativeAssetResponse;
-import com.pubmatic.sdk.nativead.bean.PMNativeDataAssetRequest;
-import com.pubmatic.sdk.nativead.bean.PMNativeDataAssetResponse;
-import com.pubmatic.sdk.nativead.bean.PMNativeDataAssetTypes;
-import com.pubmatic.sdk.nativead.bean.PMNativeImageAssetRequest;
-import com.pubmatic.sdk.nativead.bean.PMNativeImageAssetResponse;
-import com.pubmatic.sdk.nativead.bean.PMNativeImageAssetTypes;
-import com.pubmatic.sdk.nativead.bean.PMNativeTitleAssetRequest;
-import com.pubmatic.sdk.nativead.bean.PMNativeTitleAssetResponse;
 import com.pubmatic.sdk.nativead.pubmatic.PMNativeAdRequest;
 
 import java.util.ArrayList;

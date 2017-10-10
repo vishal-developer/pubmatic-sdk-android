@@ -1033,7 +1033,10 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                 if (isAdResponseValid(adData)) {
                     renderAdDescriptor(adData.getRenderable());
                 } else {
-                    PMError error = adData.getError();
+                    PMError error = null;
+                    if(adData!=null)
+                        error = adData.getError();
+
                     if(error==null)
                         error = new PMError(PMError.INVALID_RESPONSE, "Invalid ad response for given ad tag. Please check ad tag parameters.");
                     fireCallback(BANNER_AD_FAILED, error);

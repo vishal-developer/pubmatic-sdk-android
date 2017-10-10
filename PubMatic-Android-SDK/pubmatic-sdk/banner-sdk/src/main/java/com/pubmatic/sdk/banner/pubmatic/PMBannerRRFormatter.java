@@ -92,8 +92,7 @@ public class PMBannerRRFormatter implements RRFormatter {
         // Parsing of the response.
         try {
             JSONObject jsonObject = new JSONObject(response.getResponseData());
-            JSONObject object = jsonObject.getJSONObject(kPubMatic_BidTag);
-            AdResponse adResponse = parseJSONResponse(object);
+            AdResponse adResponse = parseJSONResponse(jsonObject);
             adResponse.setRequest(mRequest);
             return adResponse;
         }catch(JSONException je){
@@ -102,27 +101,29 @@ public class PMBannerRRFormatter implements RRFormatter {
         }
     }
 
-    private AdResponse parseJSONResponse(JSONObject response){
+    private AdResponse parseJSONResponse(JSONObject jsonObject){
 
-        if(response == null){
+        if(jsonObject == null){
             return null;
         }
-
         AdResponse pubResponse = new AdResponse();
 
-        Map<String, String> adInfo = new HashMap<String, String>();
-        ArrayList<String> impressionTrackers = new ArrayList<String>();
-        ArrayList<String> clickTrackers = new ArrayList<String>();
-        adInfo.put("type", "thirdparty");
-
         try {
+
+            JSONObject response = jsonObject.getJSONObject(kPubMatic_BidTag);
+
+            Map<String, String> adInfo = new HashMap<String, String>();
+            ArrayList<String> impressionTrackers = new ArrayList<String>();
+            ArrayList<String> clickTrackers = new ArrayList<String>();
+            adInfo.put("type", "thirdparty");
+
             // If there is an error from the server which happens when provided
             // wrong ad parameters, return the error with error code and error
             // message.
             String errorCode;
             if (!TextUtils.isEmpty(errorCode = response.optString(kerror_code))) {
-
-                pubResponse.setError(new PMError(PMError.NO_ADS_AVAILABLE, "No ads found : " + errorCode));
+                String errorMessage = response.optString(kerror_message);
+                pubResponse.setError(new PMError(PMError.NO_ADS_AVAILABLE, errorMessage +" : "+ errorCode));
                 return pubResponse;
             }
 
