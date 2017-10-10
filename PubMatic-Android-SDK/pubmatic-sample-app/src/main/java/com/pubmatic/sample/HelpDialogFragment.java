@@ -23,7 +23,7 @@ public class HelpDialogFragment extends DialogFragment {
 
     private String getHelpText() {
         return "<h2>Welcome to the PubMatic's SDK Sample app.</h2><br/>" +
-                "    This application helps you test PubMatic’s ad tag.<br/>" +
+                "    This application helps you test PubMatic's ad tag.<br/>" +
                 "    <br/>How to use:<br/>" +
                 "    1. Select the desired ad type.<br/>" +
                 "    2. Input your ad tag details below. These can be obtained while creating an ad tag in the PubMatic UI or from the PubMatic Sales team, who can get new ad tags for your app.<br/>" +

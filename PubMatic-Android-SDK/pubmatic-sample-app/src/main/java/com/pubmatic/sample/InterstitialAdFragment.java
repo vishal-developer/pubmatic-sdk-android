@@ -124,12 +124,17 @@ public class InterstitialAdFragment extends DialogFragment {
             adRequest = PMInterstitialAdRequest.createPMInterstitialAdRequest(pubId, siteId, adId);
 
             // Configuration Parameters
-            String androidAidEnabled = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED);
-            ((PMInterstitialAdRequest)adRequest).setAndroidAidEnabled(Boolean.parseBoolean(androidAidEnabled));
+            LinkedHashMap<String, String> map = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION);
+            if(map!=null && map.size()>0) {
+                String androidAidEnabled = map.get(PMConstants.SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED);
+                if (!TextUtils.isEmpty(androidAidEnabled))
+                    ((PMInterstitialAdRequest) adRequest).setAndroidAidEnabled(Boolean.parseBoolean(androidAidEnabled));
 
-            String coppa = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_TARGETTING_COPPA);
-            if(!TextUtils.isEmpty(coppa))
-                ((PMInterstitialAdRequest)adRequest).setCoppa(Boolean.parseBoolean(coppa));
+//                String coppa = map.get(PMConstants.SETTINGS_TARGETTING_COPPA);
+//                if(!TextUtils.isEmpty(coppa))
+//                    ((PMInterstitialAdRequest)adRequest).setCoppa(Boolean.parseBoolean(coppa));
+            }
+
 
             try
             {
@@ -137,9 +142,9 @@ public class InterstitialAdFragment extends DialogFragment {
                 String latitude = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_LATITUDE);
                 String longitude = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_LONGITUDE);
 
-                Location location = new Location("user");
-
                 if(!TextUtils.isEmpty(longitude) && !TextUtils.isEmpty(latitude)) {
+
+                    Location location = new Location("user");
                     location.setLatitude(Double.parseDouble(latitude));
                     location.setLongitude(Double.parseDouble(longitude));
 

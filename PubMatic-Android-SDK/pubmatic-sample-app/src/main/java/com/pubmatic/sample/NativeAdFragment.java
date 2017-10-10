@@ -153,8 +153,12 @@ public class NativeAdFragment extends DialogFragment {
             adRequest = PMNativeAdRequest.createPMNativeAdRequest(pubId, siteId, adId, getAssetRequests());
 
             // Configuration Parameters
-            String androidAidEnabled = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED);
-            ((PMNativeAdRequest)adRequest).setAndroidAidEnabled(Boolean.parseBoolean(androidAidEnabled));
+            LinkedHashMap<String, String> map = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION);
+            if(map!=null && map.size()>0) {
+                String androidAidEnabled = map.get(PMConstants.SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED);
+                if (!TextUtils.isEmpty(androidAidEnabled))
+                    ((PMNativeAdRequest) adRequest).setAndroidAidEnabled(Boolean.parseBoolean(androidAidEnabled));
+            }
 
             try
             {

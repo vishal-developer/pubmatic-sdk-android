@@ -23,7 +23,7 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile project(':common-sdk')
+    compile project(':pubmatic-sdk:common-sdk')
 }
 
 // Task to delete the old jar

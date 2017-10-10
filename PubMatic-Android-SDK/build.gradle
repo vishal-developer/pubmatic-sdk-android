@@ -29,5 +29,5 @@ task generateAllJars() {
 
 }
 
-generateAllJars.dependsOn(':common-sdk:exportJar', ':banner-sdk:exportJar', ':native-sdk:exportJar', ':header-bidding:exportJar')
+generateAllJars.dependsOn(':pubmatic-sdk:common-sdk:exportJar', ':pubmatic-sdk:banner-sdk:exportJar', ':pubmatic-sdk:native-sdk:exportJar', ':pubmatic-sdk:header-bidding:exportJar')
 
