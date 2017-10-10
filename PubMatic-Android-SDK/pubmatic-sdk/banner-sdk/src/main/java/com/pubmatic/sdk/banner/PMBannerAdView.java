@@ -1116,8 +1116,8 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                 }
 
             }else{
-                PMLogger.logEvent("Ad is already shown once, please request new ad using loadRequest", PMLogLevel.Debug);
-                fireCallback(BANNER_AD_FAILED, new PMError(PMError.INTERSTITIAL_ALREADY_USED, "Ad is already shown once, please request new ad using loadRequest"));
+                PMLogger.logEvent("Ad is already shown once, please request new ad", PMLogLevel.Error);
+                fireCallback(BANNER_AD_FAILED, new PMError(PMError.INTERSTITIAL_ALREADY_USED, "Ad is already shown once, please request new ad"));
             }
         }else{
             PMLogger.logEvent("Cannot present interstitial. It is not ready", PMLogLevel.Debug);
