@@ -321,7 +321,9 @@ public final class PMNativeAd {
 
         HttpRequest httpRequest = mRRFormatter.formatRequest(mAdRequest);
 
-        PMLogger.logEvent("Ad request:" + httpRequest.getRequestUrl(), PMLogger.PMLogLevel.Debug);
+        PMLogger.logEvent("Ad request URL :" + httpRequest.getRequestUrl(), PMLogLevel.Custom);
+        PMLogger.logEvent("Ad request body:" + httpRequest.getPostData(), PMLogLevel.Custom);
+
         if(PMUtils.isNetworkConnected(mContext)) {
             HttpHandler requestProcessor = new HttpHandler(networkListener, httpRequest);
             Background.getExecutor().execute(requestProcessor);
@@ -387,7 +389,7 @@ public final class PMNativeAd {
                     renderAdDescriptor(adData.getRenderable());
                 }
                 else {
-                    PMError error = response.getError();
+                    PMError error = adData.getError();
                     if(error==null)
                         error = new PMError(PMError.INVALID_RESPONSE, "Invalid ad response for given ad tag. Please check ad tag parameters.");
                     fireCallback(NATIVEAD_FAILED, error);

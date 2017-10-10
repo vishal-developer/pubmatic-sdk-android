@@ -101,7 +101,7 @@ public class InterstitialAdFragment extends DialogFragment {
     private void showAd() {
         if(mInterstitialAd!=null && mInterstitialAd.isReady()) {
             mInterstitialAd.showCloseButtonAfterDelay(3);
-            mInterstitialAd.showForDuration(10);
+            mInterstitialAd.show();
         }
         else
             Toast.makeText(getActivity(), "Interstitial ad is not ready, please try after some time.", Toast.LENGTH_LONG).show();

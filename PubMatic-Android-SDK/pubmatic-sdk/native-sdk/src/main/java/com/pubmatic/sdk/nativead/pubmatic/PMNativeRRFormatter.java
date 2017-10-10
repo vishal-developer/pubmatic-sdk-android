@@ -124,7 +124,7 @@ public class PMNativeRRFormatter implements RRFormatter {
 				// message.
 
 				String errorCode;
-				if (!TextUtils.isEmpty(errorCode = responseObj.optString(kerror_code))) {
+				if (!TextUtils.isEmpty(errorCode = object.optString(kerror_code))) {
 					adResponse.setError(new PMError(PMError.NO_ADS_AVAILABLE, "No ads found : " + errorCode));
 
 					return adResponse;
