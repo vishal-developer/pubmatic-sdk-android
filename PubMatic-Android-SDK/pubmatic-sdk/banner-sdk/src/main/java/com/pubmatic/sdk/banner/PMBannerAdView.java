@@ -1400,12 +1400,16 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
     public void onWindowFocusChanged(boolean hasWindowFocus) {
         super.onWindowFocusChanged(hasWindowFocus);
 
-        if (hasWindowFocus) {
-            PMLogger.logEvent("Window focus gain ad is VISIBLE", PMLogger.PMLogLevel.Debug);
-            setViewVisibility(View.VISIBLE);
-        } else {
-            PMLogger.logEvent("Window focus lost ad is INVISIBLE", PMLogger.PMLogLevel.Debug);
-            setViewVisibility(View.INVISIBLE);
+        try {
+            if (hasWindowFocus) {
+                PMLogger.logEvent("Window focus gain ad is VISIBLE", PMLogger.PMLogLevel.Debug);
+                setViewVisibility(View.VISIBLE);
+            } else {
+                PMLogger.logEvent("Window focus lost ad is INVISIBLE", PMLogger.PMLogLevel.Debug);
+                setViewVisibility(View.INVISIBLE);
+            }
+        }catch (Exception e) {
+            PMLogger.logEvent("Exception in PMBannerAdView:onWindowFocusChanged - "+e.getMessage(), PMLogLevel.Error);
         }
 
     }
