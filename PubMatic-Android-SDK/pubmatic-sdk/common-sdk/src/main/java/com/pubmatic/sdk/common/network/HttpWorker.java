@@ -309,7 +309,7 @@ public class HttpWorker {
 					}
 
 				} // if (responseCode == HttpURLConnection.HTTP_OK) ends
-				else if(responseCode>=500){
+				else if(responseCode>=500 && responseCode<600){
 					httpResponse.setError(new PMError(PMError.SERVER_ERROR, httpUrlConnection.getResponseMessage()));
 				}else {
 					httpResponse.setError(new PMError(PMError.NETWORK_ERROR, httpUrlConnection.getResponseMessage()));
@@ -331,12 +331,9 @@ public class HttpWorker {
 		} catch (SocketTimeoutException e) {
 			httpResponse.setError(new PMError(PMError.TIMEOUT_ERROR, "Request Time out"));
 			return httpResponse;
-		} catch (IOException e) {
-			httpResponse.setError(new PMError(PMError.NETWORK_ERROR, e.getMessage()));
-			return httpResponse;
 		} catch (Exception e) {
 			e.printStackTrace();
-			httpResponse.setError(new PMError(PMError.INTERNAL_ERROR, e.getMessage()));
+			httpResponse.setError(new PMError(PMError.NETWORK_ERROR, e.getMessage()));
 			return httpResponse;
 		} finally {
 			try {
