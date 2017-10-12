@@ -369,14 +369,14 @@ public class PMPrefetchManager implements ResponseGenerator {
                 else
                 {
                     PMLogger.logEvent("Parsing error : No bids found", PMLogger.PMLogLevel.Debug);
-                    adDescripor.error = new PMError(PMError.INVALID_RESPONSE, "No bids available");
+                    adDescripor.error = new PMError(PMError.NO_ADS_AVAILABLE, "No bids available");
                     return adDescripor;
                 }
             }
             else
             {
                 PMLogger.logEvent("Parsing error : No seatbid found", PMLogger.PMLogLevel.Debug);
-                adDescripor.error = new PMError(PMError.INVALID_RESPONSE, "No bids available");
+                adDescripor.error = new PMError(PMError.NO_ADS_AVAILABLE, "No bids available");
                 return adDescripor;
             }
         } catch (JSONException e) {
