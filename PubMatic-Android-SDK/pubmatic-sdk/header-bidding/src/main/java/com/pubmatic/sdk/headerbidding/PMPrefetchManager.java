@@ -168,8 +168,8 @@ public class PMPrefetchManager implements ResponseGenerator {
 
             }
         } else {
-            PMLogger.logEvent("Missing or invalid impressions found for Header Bidding Request.", PMLogger.PMLogLevel.Error);
-            fireCallback(PREFETCH_AD_FAILED, new PMError(PMError.INVALID_REQUEST,"Missing or invalid impressions found for Header Bidding Request."));
+            PMLogger.logEvent("Missing valid impressions found for Header Bidding Request.", PMLogger.PMLogLevel.Error);
+            fireCallback(PREFETCH_AD_FAILED, new PMError(PMError.INVALID_REQUEST,"Missing valid impressions found for Header Bidding Request."));
         }
     }
 
@@ -177,8 +177,8 @@ public class PMPrefetchManager implements ResponseGenerator {
     {
         String pubId = adRequest.getPubId();
         if(TextUtils.isEmpty(pubId)) {
-            PMLogger.logEvent("Missing or Invalid Publisher ID for this request.", PMLogger.PMLogLevel.Error);
-            fireCallback(PREFETCH_AD_FAILED, new PMError(PMError.INVALID_REQUEST,"Missing or Invalid Publisher ID for this request."));
+            PMLogger.logEvent("Missing Publisher ID for this request.", PMLogger.PMLogLevel.Error);
+            fireCallback(PREFETCH_AD_FAILED, new PMError(PMError.INVALID_REQUEST,"Missing Publisher ID for this request."));
             return false;
         }
         return true;
