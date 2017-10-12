@@ -95,7 +95,6 @@ public class HeaderBiddingBannerHelper {
             @Override
             public void onBidsFailed(PMError error) {
                 if(error!=null) {
-                    Toast.makeText(mContext, error.toString(), Toast.LENGTH_LONG).show();
                     Log.d(TAG, "Header Bidding failed. " + error.toString());
                 }
 

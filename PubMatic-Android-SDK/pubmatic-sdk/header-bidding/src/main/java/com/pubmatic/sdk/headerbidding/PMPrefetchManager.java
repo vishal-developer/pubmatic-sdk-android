@@ -37,6 +37,7 @@ import com.pubmatic.sdk.banner.Background;
 import com.pubmatic.sdk.banner.PMBannerAdView;
 import com.pubmatic.sdk.banner.PMInterstitialAd;
 import com.pubmatic.sdk.banner.pubmatic.PMBannerAdRequest;
+import com.pubmatic.sdk.common.AdResponse;
 import com.pubmatic.sdk.common.CommonConstants;
 import com.pubmatic.sdk.common.CommonConstants.CONTENT_TYPE;
 import com.pubmatic.sdk.common.LocationDetector;
@@ -96,7 +97,13 @@ public class PMPrefetchManager implements ResponseGenerator {
         void onBidsFailed(PMError error);
     }
 
-    private Map<String, PMBid> publisherHBResponse = new HashMap<>();
+    private class PrefetchAdDescripor {
+        public Map<String, PMBid> publisherHBResponse = new HashMap<>();
+        public PMError error;
+
+    }
+
+    private PrefetchAdDescripor adDescripor;
 
     private List<WeakReference<PMAdRendered>> pubmaticAdViews;
     private List<WeakReference<PMAdRendered>> pubmaticInterstitialAdViews;
@@ -198,7 +205,7 @@ public class PMPrefetchManager implements ResponseGenerator {
 
                         switch (callbackType) {
                             case PREFETCH_AD_RECEIVED:
-                                getPrefetchListener().onBidsFetched(publisherHBResponse);
+                                getPrefetchListener().onBidsFetched(adDescripor.publisherHBResponse);
                                 break;
                             case PREFETCH_AD_FAILED:
                                 if(error!=null)
@@ -229,8 +236,8 @@ public class PMPrefetchManager implements ResponseGenerator {
         if(pmAdRendered!=null)
             pmAdRendered.renderPrefetchedAd(impressionId, this);
 
-        if(publisherHBResponse!=null)
-            publisherHBResponse.remove(impressionId);
+        if(adDescripor!=null && adDescripor.publisherHBResponse!=null)
+            adDescripor.publisherHBResponse.remove(impressionId);
 
         // Save a weak reference to this view. To be used in destroy method later.
         if (pubmaticAdViews == null)
@@ -249,8 +256,8 @@ public class PMPrefetchManager implements ResponseGenerator {
         if(pmAdRendered!=null)
             pmAdRendered.renderPrefetchedAd(impressionId, this);
 
-        if(publisherHBResponse!=null)
-            publisherHBResponse.remove(impressionId);
+        if(adDescripor!=null && adDescripor.publisherHBResponse!=null)
+            adDescripor.publisherHBResponse.remove(impressionId);
 
         // Save a weak reference to this view. To be used in destroy method later.
         if (pubmaticInterstitialAdViews == null)
@@ -272,9 +279,9 @@ public class PMPrefetchManager implements ResponseGenerator {
         return httpRequest;
     }
 
-    private Map<String, PMBid> formatHBResponse(HttpResponse response) {
+    private PrefetchAdDescripor formatHBResponse(HttpResponse response) {
 
-        Map<String, PMBid> bidsMap = new HashMap<>();
+        PrefetchAdDescripor adDescripor = new PrefetchAdDescripor();
 
         JSONObject headerBiddingJsonObject;
         JSONArray seatBidJsonArray;
@@ -288,6 +295,11 @@ public class PMPrefetchManager implements ResponseGenerator {
 
         try
         {
+
+            if(response==null || TextUtils.isEmpty(response.getResponseData())) {
+                adDescripor.error = new PMError(PMError.INVALID_RESPONSE, "Invalid server response for prefetch ad request.");
+                return adDescripor;
+            }
             headerBiddingJsonObject = new JSONObject(response.getResponseData());
 
             seatBidJsonArray = headerBiddingJsonObject.optJSONArray("seatbid");
@@ -345,7 +357,9 @@ public class PMPrefetchManager implements ResponseGenerator {
                                 }
                             }
 
-                            bidsMap.put(bid.getImpressionId(), bid);
+                            if(adDescripor.publisherHBResponse==null)
+                                adDescripor.publisherHBResponse = new HashMap<>();
+                            adDescripor.publisherHBResponse.put(bid.getImpressionId(), bid);
 
                         } catch (JSONException e) {
                             PMLogger.logEvent("Error parsing bid " + e.getMessage(), PMLogger.PMLogLevel.Debug);
@@ -355,17 +369,39 @@ public class PMPrefetchManager implements ResponseGenerator {
                 else
                 {
                     PMLogger.logEvent("Parsing error : No bids found", PMLogger.PMLogLevel.Debug);
+                    adDescripor.error = new PMError(PMError.INVALID_RESPONSE, "No bids available");
+                    return adDescripor;
                 }
             }
             else
             {
                 PMLogger.logEvent("Parsing error : No seatbid found", PMLogger.PMLogLevel.Debug);
+                adDescripor.error = new PMError(PMError.INVALID_RESPONSE, "No bids available");
+                return adDescripor;
             }
         } catch (JSONException e) {
             PMLogger.logEvent("Invalid Json response received for Header Bidding. " + e.getMessage(), PMLogger.PMLogLevel.Debug);
+            adDescripor.error = new PMError(PMError.INVALID_RESPONSE, e.getMessage());
+            return adDescripor;
         }
 
-        return bidsMap;
+        return adDescripor;
+    }
+
+    /**
+     * Checks whether Adresponse resulted in null or error code.
+     *
+     * @param adData AdResponse instance
+     * @return true if valid response.
+     */
+    private boolean isAdResponseValid(PrefetchAdDescripor adData) {
+
+        // ErrorHandling section
+        if (adData == null || adData.error != null) {
+            return false;
+        }
+
+        return true;
     }
 
     private HttpHandler.HttpRequestListener networkListener = new HttpHandler.HttpRequestListener() {
@@ -373,14 +409,15 @@ public class PMPrefetchManager implements ResponseGenerator {
         @Override
         public void onRequestComplete(HttpResponse response, String requestURL) {
             // parse request to populate the hbCreatives map.
-            publisherHBResponse = formatHBResponse(response);
-            if (pmPreFetchListener == null)
-                return;
+            adDescripor = formatHBResponse(response);
 
-            if(publisherHBResponse != null && publisherHBResponse.size() > 0)
+            if (isAdResponseValid(adDescripor)) {
                 fireCallback(PREFETCH_AD_RECEIVED, null);
-            else
-                fireCallback(PREFETCH_AD_FAILED, new PMError(PMError.NO_ADS_AVAILABLE, "No Bids available"));
+            } else {
+                if(adDescripor.error!=null)
+                    adDescripor.error = new PMError(PMError.INVALID_RESPONSE, "Invalid ad response for given Prefetch request. Please check request parameters.");
+                fireCallback(PREFETCH_AD_FAILED, adDescripor.error);
+            }
         }
 
         @Override
@@ -401,8 +438,11 @@ public class PMPrefetchManager implements ResponseGenerator {
      * Release resources, clear maps and destroy the adViews used.
      */
     public void destroy() {
-        if(publisherHBResponse!=null)
-            publisherHBResponse.clear();
+        if(adDescripor!=null) {
+            if(adDescripor.publisherHBResponse!=null)
+                adDescripor.publisherHBResponse.clear();
+            adDescripor = null;
+        }
 
         // Reset all PMBannerAdViews.
         if (pubmaticAdViews != null && pubmaticAdViews.size() != 0) {
@@ -427,9 +467,9 @@ public class PMPrefetchManager implements ResponseGenerator {
     @Override
     public String getTrackingUrl(String impressionId) {
 
-        if(publisherHBResponse != null)
+        if(adDescripor!=null && adDescripor.publisherHBResponse != null)
         {
-            PMBid pmBid = publisherHBResponse.get(impressionId);
+            PMBid pmBid = adDescripor.publisherHBResponse.get(impressionId);
             return pmBid.getTrackingUrl();
         }
 
@@ -439,9 +479,9 @@ public class PMPrefetchManager implements ResponseGenerator {
     @Override
     public String getClickTrackingUrl(String impressionId) {
 
-        if(publisherHBResponse != null)
+        if(adDescripor!=null && adDescripor.publisherHBResponse != null)
         {
-            PMBid pmBid = publisherHBResponse.get(impressionId);
+            PMBid pmBid = adDescripor.publisherHBResponse.get(impressionId);
             return pmBid.getClickTrackingUrl();
         }
 
@@ -451,9 +491,9 @@ public class PMPrefetchManager implements ResponseGenerator {
     @Override
     public String getCreative(String impressionId) {
 
-        if(publisherHBResponse != null)
+        if(adDescripor!=null && adDescripor.publisherHBResponse != null)
         {
-            PMBid pmBid = publisherHBResponse.get(impressionId);
+            PMBid pmBid = adDescripor.publisherHBResponse.get(impressionId);
             if(pmBid!=null)
                 return pmBid.getCreative();
         }
@@ -465,9 +505,9 @@ public class PMPrefetchManager implements ResponseGenerator {
     @Override
     public Double getPrice(String impressionId) {
 
-        if(publisherHBResponse != null)
+        if(adDescripor!=null && adDescripor.publisherHBResponse != null)
         {
-            PMBid pmBid = publisherHBResponse.get(impressionId);
+            PMBid pmBid = adDescripor.publisherHBResponse.get(impressionId);
             return pmBid.getPrice();
         }
 

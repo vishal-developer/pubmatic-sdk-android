@@ -101,7 +101,9 @@ public class HeaderBiddingInterstitialHelper {
 
             @Override
             public void onBidsFailed(PMError error) {
-                Log.d(TAG, "Header Bidding failed. " + error.toString());
+                if(error!=null) {
+                    Log.d(TAG, "Header Bidding failed. " + error.toString());
+                }
 
                 // Get on with requesting DFP for ads without HB data.
                 requestDFPAd(null);
