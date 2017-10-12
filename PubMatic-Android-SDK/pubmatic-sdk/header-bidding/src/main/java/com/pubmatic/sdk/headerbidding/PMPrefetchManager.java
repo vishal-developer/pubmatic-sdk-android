@@ -140,43 +140,47 @@ public class PMPrefetchManager implements ResponseGenerator {
 
     public void prefetchCreatives(PMPrefetchRequest adRequest) {
 
-        if(adRequest!=null && adRequest.getImpressions()!=null && adRequest.getImpressions().size() > 0) {
+        try {
+            if (adRequest != null && adRequest.getImpressions() != null && adRequest.getImpressions().size() > 0) {
 
-            if(validateHeaderBiddingRequest(adRequest))
-            {
-                // If User has provided the location set the source as user
-                Location userProvidedLocation = adRequest.getLocation();
-                if(userProvidedLocation != null) {
-                    userProvidedLocation.setProvider("user");
-                    adRequest.setLocation(userProvidedLocation);
+                if (validateHeaderBiddingRequest(adRequest)) {
+                    // If User has provided the location set the source as user
+                    Location userProvidedLocation = adRequest.getLocation();
+                    if (userProvidedLocation != null) {
+                        userProvidedLocation.setProvider("user");
+                        adRequest.setLocation(userProvidedLocation);
+                    }
+
+                    // Insert the location parameter in ad request,
+                    // if publisher has enabled location detection
+                    if (PubMaticSDK.isLocationDetectionEnabled()) {
+                        location = LocationDetector.getInstance(mContext).getLocation();
+                        if (location != null)
+                            adRequest.setLocation(location);
+                    }
+
+                    adRequest.createRequest(mContext);
+
+                    HttpRequest httpRequest = formatHeaderBiddingRequest(adRequest);
+                    PMLogger.logEvent("Request Url : " + httpRequest.getRequestUrl() + "\n body : " + httpRequest.getPostData(),
+                            PMLogger.PMLogLevel.Debug);
+
+                    if (PMUtils.isNetworkConnected(mContext)) {
+                        HttpHandler requestProcessor = new HttpHandler(networkListener, httpRequest);
+
+                        ExecutorService executor = Executors.newSingleThreadExecutor();
+                        executor.execute(requestProcessor);
+                    } else
+                        fireCallback(PREFETCH_AD_FAILED, new PMError(PMError.NETWORK_ERROR, "Not able to get network connection"));
+
                 }
-
-                // Insert the location parameter in ad request,
-                // if publisher has enabled location detection
-                if(PubMaticSDK.isLocationDetectionEnabled()) {
-                    location = LocationDetector.getInstance(mContext).getLocation();
-                    if(location != null)
-                        adRequest.setLocation(location);
-                }
-
-                adRequest.createRequest(mContext);
-
-                HttpRequest httpRequest = formatHeaderBiddingRequest(adRequest);
-                PMLogger.logEvent("Request Url : " + httpRequest.getRequestUrl() + "\n body : " + httpRequest.getPostData(),
-                        PMLogger.PMLogLevel.Debug);
-
-                if(PMUtils.isNetworkConnected(mContext)) {
-                    HttpHandler requestProcessor = new HttpHandler(networkListener, httpRequest);
-
-                    ExecutorService executor = Executors.newSingleThreadExecutor();
-                    executor.execute(requestProcessor);
-                } else
-                    fireCallback(PREFETCH_AD_FAILED, new PMError(PMError.NETWORK_ERROR, "Not able to get network connection"));
-
+            } else {
+                PMLogger.logEvent("Missing valid impressions found for Prefetch Request.", PMLogger.PMLogLevel.Error);
+                fireCallback(PREFETCH_AD_FAILED, new PMError(PMError.INVALID_REQUEST, "Missing valid impressions found for Header Bidding Request."));
             }
-        } else {
-            PMLogger.logEvent("Missing valid impressions found for Header Bidding Request.", PMLogger.PMLogLevel.Error);
-            fireCallback(PREFETCH_AD_FAILED, new PMError(PMError.INVALID_REQUEST,"Missing valid impressions found for Header Bidding Request."));
+        }catch(Exception e) {
+            PMLogger.logEvent("Internal error occurred while requesting Prefetch Request.", PMLogger.PMLogLevel.Error);
+            fireCallback(PREFETCH_AD_FAILED, new PMError(PMError.INTERNAL_ERROR, e.getMessage()));
         }
     }
 
@@ -233,17 +237,22 @@ public class PMPrefetchManager implements ResponseGenerator {
      */
     public void loadBannerAd(String impressionId, PMAdRendered pmAdRendered) {
 
-        if(pmAdRendered!=null)
-            pmAdRendered.renderPrefetchedAd(impressionId, this);
+        try {
+            if(pmAdRendered!=null)
+                pmAdRendered.renderPrefetchedAd(impressionId, this);
 
-        if(adDescripor!=null && adDescripor.publisherHBResponse!=null)
-            adDescripor.publisherHBResponse.remove(impressionId);
+            if(adDescripor!=null && adDescripor.publisherHBResponse!=null)
+                adDescripor.publisherHBResponse.remove(impressionId);
 
-        // Save a weak reference to this view. To be used in destroy method later.
-        if (pubmaticAdViews == null)
-            pubmaticAdViews = new ArrayList<>();
-        WeakReference<PMAdRendered> weakRefAdView = new WeakReference<>(pmAdRendered);
-        pubmaticAdViews.add(weakRefAdView);
+            // Save a weak reference to this view. To be used in destroy method later.
+            if (pubmaticAdViews == null)
+                pubmaticAdViews = new ArrayList<>();
+            WeakReference<PMAdRendered> weakRefAdView = new WeakReference<>(pmAdRendered);
+            pubmaticAdViews.add(weakRefAdView);
+        }catch(Exception e) {
+            PMLogger.logEvent("Internal error occurred while rendering Prefetched Request.", PMLogger.PMLogLevel.Error);
+            fireCallback(PREFETCH_AD_FAILED, new PMError(PMError.INTERNAL_ERROR, e.getMessage()));
+        }
     }
 
     /**
@@ -253,18 +262,22 @@ public class PMPrefetchManager implements ResponseGenerator {
      */
     public void loadInterstitialAd(String impressionId, PMAdRendered pmAdRendered) {
 
-        if(pmAdRendered!=null)
-            pmAdRendered.renderPrefetchedAd(impressionId, this);
+        try {
+            if (pmAdRendered != null)
+                pmAdRendered.renderPrefetchedAd(impressionId, this);
 
-        if(adDescripor!=null && adDescripor.publisherHBResponse!=null)
-            adDescripor.publisherHBResponse.remove(impressionId);
+            if (adDescripor != null && adDescripor.publisherHBResponse != null)
+                adDescripor.publisherHBResponse.remove(impressionId);
 
-        // Save a weak reference to this view. To be used in destroy method later.
-        if (pubmaticInterstitialAdViews == null)
-            pubmaticInterstitialAdViews = new ArrayList<>();
-        WeakReference<PMAdRendered> weakRefAdView = new WeakReference<>(pmAdRendered);
-        pubmaticInterstitialAdViews.add(weakRefAdView);
-
+            // Save a weak reference to this view. To be used in destroy method later.
+            if (pubmaticInterstitialAdViews == null)
+                pubmaticInterstitialAdViews = new ArrayList<>();
+            WeakReference<PMAdRendered> weakRefAdView = new WeakReference<>(pmAdRendered);
+            pubmaticInterstitialAdViews.add(weakRefAdView);
+        } catch(Exception e) {
+            PMLogger.logEvent("Internal error occurred while rendering Prefetched Request.", PMLogger.PMLogLevel.Error);
+            fireCallback(PREFETCH_AD_FAILED, new PMError(PMError.INTERNAL_ERROR, e.getMessage()));
+        }
     }
 
     private HttpRequest formatHeaderBiddingRequest(PMBannerAdRequest adRequest) {
