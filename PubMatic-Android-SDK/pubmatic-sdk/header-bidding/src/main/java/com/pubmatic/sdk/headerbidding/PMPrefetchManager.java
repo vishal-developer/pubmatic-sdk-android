@@ -30,6 +30,7 @@ package com.pubmatic.sdk.headerbidding;
 import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
+import android.text.TextUtils;
 import android.webkit.WebView;
 
 import com.pubmatic.sdk.banner.Background;
@@ -132,7 +133,7 @@ public class PMPrefetchManager implements ResponseGenerator {
 
     public void prefetchCreatives(PMPrefetchRequest adRequest) {
 
-        if(adRequest!=null) {
+        if(adRequest!=null && adRequest.getImpressions()!=null && adRequest.getImpressions().size() > 0) {
 
             if(validateHeaderBiddingRequest(adRequest))
             {
@@ -166,14 +167,18 @@ public class PMPrefetchManager implements ResponseGenerator {
                     fireCallback(PREFETCH_AD_FAILED, new PMError(PMError.NETWORK_ERROR, "Not able to get network connection"));
 
             }
+        } else {
+            PMLogger.logEvent("Missing or invalid impressions found for Header Bidding Request.", PMLogger.PMLogLevel.Error);
+            fireCallback(PREFETCH_AD_FAILED, new PMError(PMError.INVALID_REQUEST,"Missing or invalid impressions found for Header Bidding Request."));
         }
     }
 
     private boolean validateHeaderBiddingRequest(PMPrefetchRequest adRequest)
     {
-        if (adRequest.getImpressions().size() == 0) {
-            PMLogger.logEvent("No impressions found for Header Bidding Request.", PMLogger.PMLogLevel.Error);
-            fireCallback(PREFETCH_AD_FAILED, new PMError(PMError.NO_ADS_AVAILABLE,"Missing valid impression objects for this request."));
+        String pubId = adRequest.getPubId();
+        if(TextUtils.isEmpty(pubId)) {
+            PMLogger.logEvent("Missing or Invalid Publisher ID for this request.", PMLogger.PMLogLevel.Error);
+            fireCallback(PREFETCH_AD_FAILED, new PMError(PMError.INVALID_REQUEST,"Missing or Invalid Publisher ID for this request."));
             return false;
         }
         return true;

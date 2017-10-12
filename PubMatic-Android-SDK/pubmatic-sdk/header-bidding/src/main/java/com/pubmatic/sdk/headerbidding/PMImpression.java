@@ -27,6 +27,10 @@
 
 package com.pubmatic.sdk.headerbidding;
 
+import android.text.TextUtils;
+
+import com.pubmatic.sdk.common.PMLogger;
+
 import org.json.JSONArray;
 
 import java.util.List;
@@ -85,14 +89,13 @@ public class PMImpression {
 
     protected boolean validate()
     {
-        if(id == null || id.equals("")) {
+        if(TextUtils.isEmpty(id)) {
+            PMLogger.logEvent("Invalid Impression ID found for Impression", PMLogger.PMLogLevel.Debug);
+            return false;
+        } else if(TextUtils.isEmpty(adSlotId)) {
+            PMLogger.logEvent("Invalid Slot ID found for Impression", PMLogger.PMLogLevel.Debug);
             return false;
         }
-
-        if(adSlotId == null || adSlotId.equals("")) {
-            return false;
-        }
-
         return true;
     }
 }

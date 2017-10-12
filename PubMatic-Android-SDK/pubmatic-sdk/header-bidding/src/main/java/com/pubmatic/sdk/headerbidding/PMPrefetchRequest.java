@@ -35,6 +35,7 @@ import android.util.DisplayMetrics;
 import com.pubmatic.sdk.banner.pubmatic.PMBannerAdRequest;
 import com.pubmatic.sdk.common.AdvertisingIdClient;
 import com.pubmatic.sdk.common.CommonConstants;
+import com.pubmatic.sdk.common.PMLogger;
 import com.pubmatic.sdk.common.pubmatic.PUBDeviceInformation;
 import com.pubmatic.sdk.common.pubmatic.PMConstants;
 import com.pubmatic.sdk.common.PMUtils;
@@ -79,6 +80,9 @@ public class PMPrefetchRequest extends PMBannerAdRequest {
         {
             if(impression.validate())
                 this.impressions.add(impression);
+            else {
+                PMLogger.logEvent("Invalid Impression found for this request, hence ignoring this impression.", PMLogger.PMLogLevel.Debug);
+            }
         }
     }
 

@@ -27,6 +27,8 @@
 
 package com.pubmatic.sdk.headerbidding;
 
+import com.pubmatic.sdk.common.PMLogger;
+
 import java.util.List;
 
 /**
@@ -63,8 +65,10 @@ public class PMBannerImpression extends PMImpression {
     protected boolean validate()
     {
         if(super.validate()) {
-            if (adSizes==null || adSizes.size() == 0)
+            if (adSizes==null || adSizes.size() == 0) {
+                PMLogger.logEvent("Invalid Ad Size found for Impression", PMLogger.PMLogLevel.Debug);
                 return false;
+            }
         }
         else
             return false;
