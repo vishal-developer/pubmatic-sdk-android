@@ -414,7 +414,7 @@ public class PMPrefetchManager implements ResponseGenerator {
             if (isAdResponseValid(adDescripor)) {
                 fireCallback(PREFETCH_AD_RECEIVED, null);
             } else {
-                if(adDescripor.error!=null)
+                if(adDescripor.error==null)
                     adDescripor.error = new PMError(PMError.INVALID_RESPONSE, "Invalid ad response for given Prefetch request. Please check request parameters.");
                 fireCallback(PREFETCH_AD_FAILED, adDescripor.error);
             }
