@@ -27,7 +27,7 @@ public class HomeScreen extends Activity implements View.OnClickListener{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        PubMaticSDK.setLogLevel(PMLogger.LogLevel.Debug);
+        PubMaticSDK.setLogLevel(PMLogger.PMLogLevel.Debug);
         ((Button)findViewById(R.id.banner_demo)).setOnClickListener(this);
         ((Button)findViewById(R.id.interstitial_demo)).setOnClickListener(this);
 

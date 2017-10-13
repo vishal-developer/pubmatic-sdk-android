@@ -29,7 +29,13 @@ dependencies {
     })
     compile 'com.android.support:appcompat-v7:23.1.0'
     testCompile 'junit:junit:4.12'
-    compile project(':common-sdk')
-    compile project(':banner-sdk')
-    compile project(':native-sdk')
+
+    //To integrate PubMatic common sdk
+    compile project(':pubmatic-sdk:common-sdk')
+
+    //To integrate PubMatic banner sdk
+    compile project(':pubmatic-sdk:banner-sdk')
+
+    //To integrate PubMatic native sdk
+    compile project(':pubmatic-sdk:native-sdk')
 }

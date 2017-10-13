@@ -9,8 +9,12 @@ import android.support.v4.app.FragmentStatePagerAdapter;
  */
 
 public class PMPagerAdapter extends FragmentStatePagerAdapter {
-    public PMPagerAdapter(FragmentManager fm) {
+
+    private HomeActivity activity;
+
+    public PMPagerAdapter(FragmentManager fm, HomeActivity homeActivity) {
         super(fm);
+        activity = homeActivity;
     }
 
     @Override
@@ -24,6 +28,10 @@ public class PMPagerAdapter extends FragmentStatePagerAdapter {
             case 1:
                 Fragment settingsFragment = new SettingsFragment();
                 return settingsFragment;
+            case 2:
+                LogFragment logsFragment = new LogFragment();
+                logsFragment.setLogs(activity.getLogs());
+                return logsFragment;
             default:
                 Fragment fragment = new HomeFragment();
                 return fragment;
@@ -32,6 +40,6 @@ public class PMPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return 2;
+        return 3;
     }
 }

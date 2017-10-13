@@ -2,9 +2,9 @@
   "PubMatic": {
     "Banner": {
       "Ad Tag": {
-        "PubId": "31400",
-        "SiteId": "32504",
-        "AdId": "439662"
+        "PubId": "156453",
+        "SiteId": "219778",
+        "AdId": "1178234"
       },
       "Configuration": {
         "Width": "320",
@@ -18,12 +18,9 @@
     },
     "Interstitial": {
       "Ad Tag": {
-        "PubId": "31400",
-        "SiteId": "32504",
-        "AdId": "1059651"
-      },
-      "Configuration": {
-
+        "PubId": "156453",
+        "SiteId": "219778",
+        "AdId": "1178356"
       },
       "Targetting": {
         "City": "Pune",
@@ -32,12 +29,9 @@
     },
     "Native": {
       "Ad Tag": {
-        "PubId": "31400",
-        "SiteId": "52368",
-        "AdId": "383372"
-      },
-      "Configuration": {
-
+        "PubId": "156453",
+        "SiteId": "219778",
+        "AdId": "1178273"
       },
       "Targetting": {
         "City": "Pune",

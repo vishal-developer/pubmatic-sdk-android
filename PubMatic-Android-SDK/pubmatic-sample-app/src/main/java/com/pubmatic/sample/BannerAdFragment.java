@@ -22,10 +22,10 @@ import com.pubmatic.sdk.banner.PMBannerAdView;
 import com.pubmatic.sdk.banner.pubmatic.PMBannerAdRequest;
 import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.PMAdSize;
+import com.pubmatic.sdk.common.PMError;
 import com.pubmatic.sdk.common.pubmatic.PMAdRequest;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 
 public class BannerAdFragment extends DialogFragment implements PMBannerAdView.BannerAdViewDelegate.RequestListener {
@@ -77,8 +77,7 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
         builder.setView(view);
 
         //Create Dialog and Set the transparent black opacity for dialog
-        Drawable drawable = new ColorDrawable(Color.BLACK);
-        drawable.setAlpha(220);
+        Drawable drawable = new ColorDrawable(Color.WHITE);
         Dialog dialog = builder.create();
         dialog.getWindow().setBackgroundDrawable(drawable);
 
@@ -124,7 +123,7 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
         {
             // Make the ad request to Server
             if(adRequest!=null)
-                mBanner.execute(adRequest);
+                mBanner.loadRequest(adRequest);
             else {
                 dismiss();
             }
@@ -149,12 +148,7 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
             String siteId = mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).get(PMConstants.SETTINGS_AD_TAG_SITE_ID);
             String adId = mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).get(PMConstants.SETTINGS_AD_TAG_AD_ID);
 
-            if(TextUtils.isEmpty(pubId) || TextUtils.isEmpty(siteId) || TextUtils.isEmpty(adId)) {
-                Toast.makeText(getActivity(), "Please enter pubId, siteId and adId", Toast.LENGTH_LONG).show();
-                return null;
-            }
-
-            adRequest = PMBannerAdRequest.createPMBannerAdRequest(getActivity(), pubId, siteId, adId);
+            adRequest = PMBannerAdRequest.createPMBannerAdRequest( pubId, siteId, adId);
 
             try
             {
@@ -176,7 +170,7 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
 
                 Location location = new Location("user");
 
-                if(!latitude.equals("") && !longitude.equals(""))
+                if(!TextUtils.isEmpty(latitude) && !TextUtils.isEmpty(longitude))
                 {
                     location.setLatitude(Double.parseDouble(latitude));
                     location.setLongitude(Double.parseDouble(longitude));
@@ -286,14 +280,16 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
     }
 
     @Override
-    public void onFailedToReceiveAd(PMBannerAdView adView, int errorCode, final String msg) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
-                dismiss();
-            }
-        });
+    public void onFailedToReceiveAd(PMBannerAdView adView, final PMError error) {
+
+        try {
+            if(error!=null)
+                Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
+            dismiss();
+        }
+        catch(IllegalStateException e) {
+            return;
+        }
     }
 
     @Override

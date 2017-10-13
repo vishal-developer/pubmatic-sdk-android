@@ -29,6 +29,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.pubmatic.sdk.common.PMLogger;
+
 import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -52,7 +54,6 @@ public class HomeFragment extends Fragment {
     private View mLoadAd;
 
     private LinkedHashMap<String, LinkedHashMap<String, String>> mSettings;
-
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -298,6 +299,8 @@ public class HomeFragment extends Fragment {
         @Override
         public void onClick(View view) {
 
+            ((HomeActivity)getActivity()).resetLogs();
+
             if(mAdType == ConfigurationManager.AD_TYPE.BANNER)
             {
                 if(mPlatform == ConfigurationManager.PLATFORM.PUBMATIC)
@@ -384,9 +387,10 @@ public class HomeFragment extends Fragment {
             Log.i("CheckPubMaticAdTag : ", exception.toString());
         }
 
-        if(TextUtils.isEmpty(pubId) || TextUtils.isEmpty(siteId) || TextUtils.isEmpty(adId))
-            return false;
-        else
+        //No need to validate, as SDK responds with proper error code.
+//        if(TextUtils.isEmpty(pubId) || TextUtils.isEmpty(siteId) || TextUtils.isEmpty(adId))
+//            return false;
+//        else
             return true;
     }
 

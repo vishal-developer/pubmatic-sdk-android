@@ -4,12 +4,12 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,18 +21,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.pubmatic.sdk.common.AdRequest;
+import com.pubmatic.sdk.common.PMError;
 import com.pubmatic.sdk.common.pubmatic.PMAdRequest;
+import com.pubmatic.sdk.nativead.bean.*;
 import com.pubmatic.sdk.nativead.PMNativeAd;
-import com.pubmatic.sdk.nativead.bean.PMAssetRequest;
-import com.pubmatic.sdk.nativead.bean.PMAssetResponse;
-import com.pubmatic.sdk.nativead.bean.PMDataAssetRequest;
-import com.pubmatic.sdk.nativead.bean.PMDataAssetResponse;
-import com.pubmatic.sdk.nativead.bean.PMDataAssetTypes;
-import com.pubmatic.sdk.nativead.bean.PMImageAssetRequest;
-import com.pubmatic.sdk.nativead.bean.PMImageAssetResponse;
-import com.pubmatic.sdk.nativead.bean.PMImageAssetTypes;
-import com.pubmatic.sdk.nativead.bean.PMTitleAssetRequest;
-import com.pubmatic.sdk.nativead.bean.PMTitleAssetResponse;
 import com.pubmatic.sdk.nativead.pubmatic.PMNativeAdRequest;
 
 import java.util.ArrayList;
@@ -43,6 +35,8 @@ import java.util.List;
  *
  */
 public class NativeAdFragment extends DialogFragment {
+
+    private static final String TAG = "NativeAdFragment";
 
     private ConfigurationManager.PLATFORM mPlatform;
 
@@ -94,8 +88,7 @@ public class NativeAdFragment extends DialogFragment {
 
         initLayout(view);
 
-        Drawable drawable = new ColorDrawable(Color.BLACK);
-        drawable.setAlpha(220);
+        Drawable drawable = new ColorDrawable(Color.WHITE);
         Dialog dialog = builder.create();
         dialog.getWindow().setBackgroundDrawable(drawable);
 
@@ -131,7 +124,7 @@ public class NativeAdFragment extends DialogFragment {
         // Request for ads
         AdRequest adRequest = buildAdRequest();
         if(adRequest!=null)
-            ad.execute(adRequest);
+            ad.loadRequest(adRequest);
     }
 
     /**
@@ -148,17 +141,15 @@ public class NativeAdFragment extends DialogFragment {
             String siteId = mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).get(PMConstants.SETTINGS_AD_TAG_SITE_ID);
             String adId = mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).get(PMConstants.SETTINGS_AD_TAG_AD_ID);
 
-            if(pubId == null || pubId.equals("") || siteId == null || siteId.equals("") || adId == null || adId.equals(""))
-            {
-                Toast.makeText(getActivity(), "Please enter pubId, siteId and adId", Toast.LENGTH_LONG).show();
-                return null;
-            }
-
-            adRequest = PMNativeAdRequest.createPMNativeAdRequest(getActivity(), pubId, siteId, adId, getAssetRequests());
+            adRequest = PMNativeAdRequest.createPMNativeAdRequest(pubId, siteId, adId, getAssetRequests());
 
             // Configuration Parameters
-            String androidAidEnabled = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED);
-            ((PMNativeAdRequest)adRequest).setAndroidAidEnabled(Boolean.parseBoolean(androidAidEnabled));
+            LinkedHashMap<String, String> map = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION);
+            if(map!=null && map.size()>0) {
+                String androidAidEnabled = map.get(PMConstants.SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED);
+                if (!TextUtils.isEmpty(androidAidEnabled))
+                    ((PMNativeAdRequest) adRequest).setAndroidAidEnabled(Boolean.parseBoolean(androidAidEnabled));
+            }
 
             try
             {
@@ -168,7 +159,7 @@ public class NativeAdFragment extends DialogFragment {
 
                 Location location = new Location("user");
 
-                if(!latitude.equals("") && !longitude.equals(""))
+                if(!TextUtils.isEmpty(latitude) && !TextUtils.isEmpty(longitude))
                 {
                     location.setLatitude(Double.parseDouble(latitude));
                     location.setLongitude(Double.parseDouble(longitude));
@@ -183,47 +174,47 @@ public class NativeAdFragment extends DialogFragment {
 
                 String state = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_STATE);
 
-                if(!state.equals("") && !state.equals(""))
+                if(!TextUtils.isEmpty(state))
                     ((PMNativeAdRequest)adRequest).setState(state);
 
                 String zip = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_ZIP);
 
-                if(!zip.equals("") && zip != null)
+                if(!TextUtils.isEmpty(zip))
                     ((PMNativeAdRequest)adRequest).setZip(zip);
 
                 String appDomain = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_APP_DOMAIN);
 
-                if(!appDomain.equals("") && appDomain != null)
+                if(!TextUtils.isEmpty(appDomain))
                     ((PMNativeAdRequest)adRequest).setAppDomain(appDomain);
 
                 String appCategory = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_APP_CATEGORY);
 
-                if(!appCategory.equals("") && appCategory != null)
+                if(!TextUtils.isEmpty(appCategory))
                     ((PMNativeAdRequest)adRequest).setAppCategory(appCategory);
 
                 String iabCategory = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_IAB_CATEGORY);
 
-                if(!iabCategory.equals("") && iabCategory != null)
+                if(!TextUtils.isEmpty(iabCategory))
                     ((PMNativeAdRequest)adRequest).setIABCategory(iabCategory);
 
                 String storeUrl = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_STORE_URL);
 
-                if(!storeUrl.equals("") && storeUrl != null)
+                if(!TextUtils.isEmpty(storeUrl))
                     ((PMNativeAdRequest)adRequest).setStoreURL(storeUrl);
 
                 String yearOfBirth = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_YEAR_OF_BIRTH);
 
-                if(!yearOfBirth.equals("") && yearOfBirth != null)
+                if(!TextUtils.isEmpty(yearOfBirth))
                     ((PMNativeAdRequest)adRequest).setYearOfBirth(yearOfBirth);
 
                 String income = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_INCOME);
 
-                if(!income.equals("") && income != null)
+                if(!TextUtils.isEmpty(income))
                     ((PMNativeAdRequest)adRequest).setIncome(income);
 
                 String ethnicity = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_ETHNICITY);
 
-                if(!ethnicity.equals("") && ethnicity != null)
+                if(!TextUtils.isEmpty(ethnicity))
                 {
                     if(ethnicity.equalsIgnoreCase("HISPANIC"))
                         ((PMNativeAdRequest)adRequest).setEthnicity(PMAdRequest.ETHNICITY.HISPANIC);
@@ -237,7 +228,7 @@ public class NativeAdFragment extends DialogFragment {
 
                 String gender = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_GENDER);
 
-                if(gender != null && !gender.equals(""))
+                if(!TextUtils.isEmpty(gender))
                 {
                     if(gender.equalsIgnoreCase("Male") || gender.equalsIgnoreCase("M"))
                         ((PMNativeAdRequest)adRequest).setGender(PMAdRequest.GENDER.MALE);
@@ -249,20 +240,21 @@ public class NativeAdFragment extends DialogFragment {
 
                 String dma = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_DMA);
 
-                if(!dma.equals("") && dma != null)
+                if(!TextUtils.isEmpty(dma))
                     ((PMNativeAdRequest)adRequest).setDMA(dma);
 
                 String paid = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_PAID);
 
-                if(!paid.equals("") && paid != null)
+                if(!TextUtils.isEmpty(paid))
                     ((PMNativeAdRequest)adRequest).setApplicationPaid(Boolean.parseBoolean(paid));
 
                 String coppa = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_COPPA);
-                ((PMNativeAdRequest)adRequest).setCoppa(Boolean.parseBoolean(coppa));
+                if(!TextUtils.isEmpty(coppa))
+                    ((PMNativeAdRequest)adRequest).setCoppa(Boolean.parseBoolean(coppa));
 
                 String ormaCompliance = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_ORMA_COMPLIANCE);
 
-                if(!ormaCompliance.equals("") && ormaCompliance != null)
+                if(!TextUtils.isEmpty(ormaCompliance))
                     ((PMNativeAdRequest)adRequest).setOrmmaComplianceLevel(Integer.parseInt(ormaCompliance));
             }
             catch (Exception exception)
@@ -274,33 +266,35 @@ public class NativeAdFragment extends DialogFragment {
         return  adRequest;
     }
 
-    private List<PMAssetRequest> getAssetRequests() {
-        List<PMAssetRequest> assets = new ArrayList<PMAssetRequest>();
+    private List<PMNativeAssetRequest> getAssetRequests() {
+        // First create some assets to add in the request
+        List<PMNativeAssetRequest> assets = new ArrayList<PMNativeAssetRequest>();
 
-        PMTitleAssetRequest titleAsset = new PMTitleAssetRequest(3);// Unique assetId is mandatory for each asset
+        // Unique assetId is mandatory for each asset
+        PMNativeTitleAssetRequest titleAsset = new PMNativeTitleAssetRequest(1);
         titleAsset.setLength(50);
         titleAsset.setRequired(true); // Optional (Default: false)
         assets.add(titleAsset);
 
-        PMImageAssetRequest imageAssetIcon = new PMImageAssetRequest(1);
-        imageAssetIcon.setImageType(PMImageAssetTypes.icon);
+        PMNativeImageAssetRequest imageAssetIcon = new PMNativeImageAssetRequest(2);
+        imageAssetIcon.setImageType(PMNativeImageAssetTypes.icon);
         assets.add(imageAssetIcon);
 
-        PMImageAssetRequest imageAssetMainImage = new PMImageAssetRequest(5);
-        imageAssetMainImage.setImageType(PMImageAssetTypes.main);
+        PMNativeImageAssetRequest imageAssetMainImage = new PMNativeImageAssetRequest(3);
+        imageAssetMainImage.setImageType(PMNativeImageAssetTypes.main);
         assets.add(imageAssetMainImage);
 
-        PMDataAssetRequest dataAssetDesc = new PMDataAssetRequest(2);
-        dataAssetDesc.setDataAssetType(PMDataAssetTypes.desc);
+        PMNativeDataAssetRequest dataAssetDesc = new PMNativeDataAssetRequest(5);
+        dataAssetDesc.setDataAssetType(PMNativeDataAssetTypes.desc);
         dataAssetDesc.setLength(25);
         assets.add(dataAssetDesc);
 
-        PMDataAssetRequest dataAssetRating = new PMDataAssetRequest(6);
-        dataAssetRating.setDataAssetType(PMDataAssetTypes.rating);
+        PMNativeDataAssetRequest dataAssetRating = new PMNativeDataAssetRequest(6);
+        dataAssetRating.setDataAssetType(PMNativeDataAssetTypes.rating);
         assets.add(dataAssetRating);
 
-        PMDataAssetRequest dataAssetCta = new PMDataAssetRequest(7);
-        dataAssetCta.setDataAssetType(PMDataAssetTypes.ctatext);
+        PMNativeDataAssetRequest dataAssetCta = new PMNativeDataAssetRequest(4);
+        dataAssetCta.setDataAssetType(PMNativeDataAssetTypes.ctatext);
         assets.add(dataAssetCta);
 
         return assets;
@@ -309,103 +303,82 @@ public class NativeAdFragment extends DialogFragment {
     private class AdRequestListener implements PMNativeAd.NativeRequestListener {
 
         @Override
-        public void onNativeAdFailed(PMNativeAd ad, final Exception ex) {
-
-            if(ex!=null) {
-                ex.printStackTrace();
-            }
-
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(getActivity(), ex.getMessage(), Toast.LENGTH_LONG).show();
-                    dismiss();
-                }
-            });
-        }
-
-        @Override
         public void onNativeAdReceived(final PMNativeAd ad) {
 
             if (ad != null) {
 
-                getActivity().runOnUiThread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        List<PMAssetResponse> nativeAssets = ad.getNativeAssets();
-                        for (PMAssetResponse asset : nativeAssets) {
-                            try {
-								/*
-								 * As per openRTB standard, assetId in response
-								 * must match that of in request.
-								 */
-                                switch (asset.getAssetId()) {
-                                    case 3:
-                                        txtTitle.setText(((PMTitleAssetResponse) asset)
-                                                .getTitleText());
-                                        break;
-                                    case 1:
-                                        PMNativeAd.Image iconImage = ((PMImageAssetResponse) asset)
-                                                .getImage();
-                                        if (iconImage != null) {
-                                            imgLogo.setImageBitmap(null);
-                                            ad.loadImage(imgLogo,
-                                                    iconImage.getUrl());
-                                        }
-                                        break;
-                                    case 5:
-                                        PMNativeAd.Image mainImage = ((PMImageAssetResponse) asset)
-                                                .getImage();
-                                        if (mainImage != null) {
-                                            imgMain.setImageBitmap(null);
-                                            ad.loadImage(imgMain,
-                                                    mainImage.getUrl());
-                                        }
-                                        break;
-                                    case 2:
-                                        txtDescription
-                                                .setText(((PMDataAssetResponse) asset)
-                                                        .getValue());
-                                        break;
-                                    case 7:
-                                        ctaText
-                                                .setText(((PMDataAssetResponse) asset).getValue());
-                                        break;
-                                    case 6:
-                                        String ratingStr = ((PMDataAssetResponse) asset)
-                                                .getValue();
-                                        try {
-                                            float rating = Float
-                                                    .parseFloat(ratingStr);
-                                            if (rating > 0f) {
-                                                ratingBar.setRating(rating);
-                                                ratingBar
-                                                        .setVisibility(View.VISIBLE);
-                                            } else {
-                                                ratingBar.setRating(rating);
-                                                ratingBar.setVisibility(View.GONE);
-                                            }
-                                        } catch (Exception e) {
-                                            // Invalid rating string
-                                            Log.e("NativeActivity",
-                                                    "Error parsing 'rating'");
-                                        }
-                                        break;
-
-                                    default: // NOOP
-                                        break;
+                List<PMNativeAssetResponse> nativeAssets = ad.getNativeAssets();
+                for (PMNativeAssetResponse asset : nativeAssets) {
+                    try {
+                        /*
+                         * As per openRTB standard, assetId in response
+                         * must match that of in request.
+                         */
+                        switch (asset.getAssetId()) {
+                            case 1:
+                                txtTitle.setText(((PMNativeTitleAssetResponse) asset)
+                                        .getTitleText());
+                                break;
+                            case 2:
+                                PMNativeAd.Image iconImage = ((PMNativeImageAssetResponse) asset)
+                                        .getImage();
+                                if (iconImage != null) {
+                                    imgLogo.setImageBitmap(null);
+                                    ad.loadImage(imgLogo,
+                                            iconImage.getUrl());
                                 }
-                            } catch (Exception ex) {
-                                Log.i("NativeAdFragment", "ERROR in rendering asset. Skipping asset.");
-                                ex.printStackTrace();
-                            }
+                                break;
+                            case 3:
+                                PMNativeAd.Image mainImage = ((PMNativeImageAssetResponse) asset)
+                                        .getImage();
+                                if (mainImage != null) {
+                                    imgMain.setImageBitmap(null);
+                                    ad.loadImage(imgMain,
+                                            mainImage.getUrl());
+                                }
+                                break;
+                            case 5:
+                                txtDescription
+                                        .setText(((PMNativeDataAssetResponse) asset)
+                                                .getValue());
+                                break;
+                            case 4:
+                                ctaText
+                                        .setText(((PMNativeDataAssetResponse) asset).getValue());
+                                break;
+                            case 6:
+                                String ratingStr = ((PMNativeDataAssetResponse) asset)
+                                        .getValue();
+                                try {
+                                    float rating = Float
+                                            .parseFloat(ratingStr);
+                                    if (rating > 0f) {
+                                        ratingBar.setRating(rating);
+                                        ratingBar
+                                                .setVisibility(View.VISIBLE);
+                                    } else {
+                                        ratingBar.setRating(rating);
+                                        ratingBar.setVisibility(View.GONE);
+                                    }
+                                } catch (Exception e) {
+                                    // Invalid rating string
+                                    Log.e(TAG,
+                                            "Error parsing 'rating'");
+                                }
+                                break;
+
+                            default: // NOOP
+                                break;
                         }
+                    } catch (Exception ex) {
+                        Log.e(TAG, "ERROR in rendering asset. Skipping asset.");
+                        ex.printStackTrace();
                     }
-                });
+                }
+
 
                 if (ad.getJsTracker() != null) {
-                    Log.i("NativeAdFragment", ad.getJsTracker());
+                    Log.i(TAG, ad.getJsTracker());
 					/*
 					 * Note: Publisher should execute the javascript tracker
 					 * whenever possible.
@@ -421,6 +394,18 @@ public class NativeAdFragment extends DialogFragment {
                 ad.trackViewForInteractions(mLayout);
             }
 
+        }
+
+        @Override
+        public void onNativeAdFailed(PMNativeAd ad, final PMError error) {
+            try {
+                if(error!=null)
+                    Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
+                dismiss();
+            }
+            catch(IllegalStateException e) {
+                return;
+            }
         }
 
         @Override

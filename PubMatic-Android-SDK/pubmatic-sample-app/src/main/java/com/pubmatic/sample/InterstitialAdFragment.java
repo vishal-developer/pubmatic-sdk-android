@@ -1,31 +1,33 @@
 package com.pubmatic.sample;
 
-import android.app.AlertDialog;
+import android.app.ActionBar;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
-import android.graphics.Color;
+import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.pubmatic.sdk.banner.PMInterstitialAd;
 import com.pubmatic.sdk.banner.pubmatic.PMInterstitialAdRequest;
 import com.pubmatic.sdk.common.AdRequest;
+import com.pubmatic.sdk.common.PMError;
 import com.pubmatic.sdk.common.PubMaticSDK;
 import com.pubmatic.sdk.common.pubmatic.PMAdRequest;
 
 import java.util.LinkedHashMap;
 
-public class InterstitialAdFragment extends DialogFragment {
 
-    private boolean isFragmentActive = true;
+public class InterstitialAdFragment extends DialogFragment {
 
     private ConfigurationManager.PLATFORM mPlatform;
 
@@ -54,20 +56,55 @@ public class InterstitialAdFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState)
     {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.banner_template, null);
-        builder.setView(view);
 
+        Dialog dialog = new Dialog(getActivity(), android.R.style.Theme_DeviceDefault);
+        dialog.setContentView(R.layout.interstitial_template);
 
-        Drawable drawable = new ColorDrawable(Color.BLACK);
-        drawable.setAlpha(120);
-        Dialog dialog = builder.create();
-        dialog.getWindow().setBackgroundDrawable(drawable);
+        Button loadAdBtn = (Button) dialog.findViewById(R.id.loadAdBtn);
+        if(loadAdBtn!=null)
+            loadAdBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    loadAd();
+                }
+            });
 
-        loadAd();
+        Button showBtn = (Button) dialog.findViewById(R.id.showBtn);
+        if(showBtn!=null)
+            showBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showAd();
+                }
+            });
 
         return dialog;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        final ActionBar actionBar = getDialog().getActionBar();
+        actionBar.setHomeButtonEnabled(false);
+        actionBar.setTitle(R.string.app_name);
+        actionBar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(android.R.color.holo_blue_dark)));
+    }
+
+    @Override
+    public void onStop() {
+        destroyAd();
+        super.onStop();
+
+    }
+
+    private void showAd() {
+        if(mInterstitialAd!=null && mInterstitialAd.isReady()) {
+            mInterstitialAd.showCloseButtonAfterDelay(3);
+            mInterstitialAd.show();
+        }
+        else
+            Toast.makeText(getActivity(), "Interstitial ad is not ready, please try after some time.", Toast.LENGTH_LONG).show();
     }
 
     /**
@@ -84,21 +121,20 @@ public class InterstitialAdFragment extends DialogFragment {
             String siteId = mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).get(PMConstants.SETTINGS_AD_TAG_SITE_ID);
             String adId = mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).get(PMConstants.SETTINGS_AD_TAG_AD_ID);
 
-            if(pubId == null || pubId.equals("") || siteId == null || siteId.equals("") || adId == null || adId.equals(""))
-            {
-                Toast.makeText(getActivity(), "Please enter pubId, siteId and adId", Toast.LENGTH_LONG).show();
-                return null;
-            }
-
-            adRequest = PMInterstitialAdRequest.createPMInterstitialAdRequest(getActivity(), pubId, siteId, adId);
+            adRequest = PMInterstitialAdRequest.createPMInterstitialAdRequest(pubId, siteId, adId);
 
             // Configuration Parameters
-            String androidAidEnabled = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED);
-            ((PMInterstitialAdRequest)adRequest).setAndroidAidEnabled(Boolean.parseBoolean(androidAidEnabled));
+            LinkedHashMap<String, String> map = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION);
+            if(map!=null && map.size()>0) {
+                String androidAidEnabled = map.get(PMConstants.SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED);
+                if (!TextUtils.isEmpty(androidAidEnabled))
+                    ((PMInterstitialAdRequest) adRequest).setAndroidAidEnabled(Boolean.parseBoolean(androidAidEnabled));
 
-            String coppa = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_TARGETTING_COPPA);
-            if(!TextUtils.isEmpty(coppa))
-                ((PMInterstitialAdRequest)adRequest).setCoppa(Boolean.parseBoolean(coppa));
+//                String coppa = map.get(PMConstants.SETTINGS_TARGETTING_COPPA);
+//                if(!TextUtils.isEmpty(coppa))
+//                    ((PMInterstitialAdRequest)adRequest).setCoppa(Boolean.parseBoolean(coppa));
+            }
+
 
             try
             {
@@ -106,9 +142,9 @@ public class InterstitialAdFragment extends DialogFragment {
                 String latitude = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_LATITUDE);
                 String longitude = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_LONGITUDE);
 
-                Location location = new Location("user");
-
                 if(!TextUtils.isEmpty(longitude) && !TextUtils.isEmpty(latitude)) {
+
+                    Location location = new Location("user");
                     location.setLatitude(Double.parseDouble(latitude));
                     location.setLongitude(Double.parseDouble(longitude));
 
@@ -201,20 +237,22 @@ public class InterstitialAdFragment extends DialogFragment {
         mInterstitialAd = new PMInterstitialAd(getActivity());
 
         mInterstitialAd.setRequestListener(new PMInterstitialAd.InterstitialAdListener.RequestListener() {
+
             @Override
-            public void onFailedToReceiveAd(PMInterstitialAd adView, int errorCode, final String msg) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
-                        dismiss();
-                    }
-                });
+            public void onFailedToReceiveAd(PMInterstitialAd ad, final PMError error) {
+                try {
+                    if(error!=null)
+                        Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
+                    //dismiss();
+                }
+                catch(IllegalStateException e) {
+                    return;
+                }
             }
 
             @Override
             public void onReceivedAd(PMInterstitialAd adView) {
-                mInterstitialAd.showInterstitial();
+                Toast.makeText(getActivity(), "Interstitial ad is loaded. Press 'Show Ad' button now", Toast.LENGTH_LONG).show();
             }
 
         });
@@ -232,28 +270,43 @@ public class InterstitialAdFragment extends DialogFragment {
 
             @Override
             public boolean onCloseButtonClick(PMInterstitialAd adView) {
-                if(isFragmentActive) {
-                    dismiss();
-                    return true;
-                } else
+//                if(isFragmentActive) {
+//                    dismiss();
                     return false;
+//                } else
+//                    return false;
             }
         });
 
         boolean isUseInternalBrowserChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_USE_INTERNAL_BROWSER);
         mInterstitialAd.setUseInternalBrowser(isUseInternalBrowserChecked);
 
-        // Make the ad request to Server banner.execute(adRequest);
+        // Make the ad request to Server banner.loadRequest(adRequest);
         AdRequest adRequest = buildAdRequest();
-        mInterstitialAd.execute(adRequest);
+        mInterstitialAd.loadRequest(adRequest);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+
+        super.onConfigurationChanged(newConfig);
+    }
+
+    private void destroyAd() {
+        if(mInterstitialAd!=null)
+            mInterstitialAd.destroy();
+        mInterstitialAd = null;
+        dismissAllowingStateLoss();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        //No call for super(). Bug on API Level > 11.
     }
 
     @Override
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
-        isFragmentActive = false;
-        if(mInterstitialAd!=null)
-            mInterstitialAd.destroy();
-        mInterstitialAd = null;
+        destroyAd();
     }
 }
