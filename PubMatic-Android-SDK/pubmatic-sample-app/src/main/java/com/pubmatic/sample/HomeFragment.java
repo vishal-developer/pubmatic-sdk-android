@@ -285,8 +285,7 @@ public class HomeFragment extends Fragment {
             else
                 mAdType = ConfigurationManager.AD_TYPE.BANNER;
 
-            if(ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
-                refreshSettings();
+            refreshSettings();
 
             if(mDialog != null)
                 mDialog.dismiss();

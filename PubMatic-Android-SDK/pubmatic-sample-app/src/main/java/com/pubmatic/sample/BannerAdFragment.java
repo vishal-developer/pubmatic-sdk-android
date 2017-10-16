@@ -279,7 +279,7 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
     public void onFailedToReceiveAd(PMBannerAdView adView, final PMError error) {
 
         try {
-            if(error!=null)
+            if(error!=null && getActivity() != null)
                 Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
             dismiss();
         }
