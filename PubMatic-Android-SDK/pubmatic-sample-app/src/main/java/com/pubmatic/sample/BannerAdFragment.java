@@ -160,10 +160,6 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
 
                 ((PMBannerAdRequest)adRequest).setAdSize(new PMAdSize(widthInt, heightInt));
 
-                // Configuration Parameters
-                String androidAidEnabled = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION).get(PMConstants.SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED);
-                adRequest.setAndroidAidEnabled(Boolean.parseBoolean(androidAidEnabled));
-
                 // Targetting Parameters
                 String latitude = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_LATITUDE);
                 String longitude = mSettings.get(PMConstants.SETTINGS_HEADING_TARGETTING).get(PMConstants.SETTINGS_TARGETTING_LONGITUDE);

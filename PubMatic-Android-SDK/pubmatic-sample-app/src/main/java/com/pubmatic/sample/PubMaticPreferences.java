@@ -21,11 +21,14 @@ public class PubMaticPreferences {
 		}
 	}
 
+	/**
+	 * The method will return true if the preference is never set
+	 */
     public static Boolean getBooleanPreference(Activity context, String key)
 	{
 		if(context!=null) {
 			SharedPreferences sharedPref = context.getSharedPreferences(PREFERENCE_FILE_NAME, Context.MODE_PRIVATE);
-			return sharedPref.getBoolean(key, false);
+			return sharedPref.getBoolean(key, true);
 		} else
 			return false;
 	}

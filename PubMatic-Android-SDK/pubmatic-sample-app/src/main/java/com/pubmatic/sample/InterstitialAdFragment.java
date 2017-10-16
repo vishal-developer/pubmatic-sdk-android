@@ -35,11 +35,7 @@ public class InterstitialAdFragment extends DialogFragment {
 
     private PMInterstitialAd mInterstitialAd;
 
-    public InterstitialAdFragment()
-    {
-        boolean isAutoLocationDetectionChecked = PubMaticPreferences.getBooleanPreference(getActivity(), PubMaticPreferences.PREFERENCE_KEY_AUTO_LOCATION_DETECTION);
-        PubMaticSDK.setLocationDetectionEnabled(isAutoLocationDetectionChecked);
-    }
+    public InterstitialAdFragment() {}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -122,19 +118,6 @@ public class InterstitialAdFragment extends DialogFragment {
             String adId = mSettings.get(PMConstants.SETTINGS_HEADING_AD_TAG).get(PMConstants.SETTINGS_AD_TAG_AD_ID);
 
             adRequest = PMInterstitialAdRequest.createPMInterstitialAdRequest(pubId, siteId, adId);
-
-            // Configuration Parameters
-            LinkedHashMap<String, String> map = mSettings.get(PMConstants.SETTINGS_HEADING_CONFIGURATION);
-            if(map!=null && map.size()>0) {
-                String androidAidEnabled = map.get(PMConstants.SETTINGS_CONFIGURATION_ANDROID_AID_ENABLED);
-                if (!TextUtils.isEmpty(androidAidEnabled))
-                    ((PMInterstitialAdRequest) adRequest).setAndroidAidEnabled(Boolean.parseBoolean(androidAidEnabled));
-
-//                String coppa = map.get(PMConstants.SETTINGS_TARGETTING_COPPA);
-//                if(!TextUtils.isEmpty(coppa))
-//                    ((PMInterstitialAdRequest)adRequest).setCoppa(Boolean.parseBoolean(coppa));
-            }
-
 
             try
             {
