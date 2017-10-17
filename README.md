@@ -1,31 +1,15 @@
 PubMatic SDK for Android
 ========================
+PubMatic, the leading independent media technology company, focuses on helping publishers:
 
-The PubMatic Android SDK makes it easy to incorporate ads into android applications. SDK is completely modular, which provides the following benefits:
+* Maximize the value of their digital assets.
+* Leverage their brands.
+* Scale their systems across all chosen platforms for audience growth.
 
-- You can integrate with either single or multiple ad formats at same time.
-- Considerably reduces SDK size
-
-Supported Ad formats
---------
-* Banner
-* Interstitial
-* Native
-
-## What is new in [latest release](../../releases/latest)?
-
-* Revised Sample application
-* Automatic Location detection
-* Hashing of UDID parameter
-* Support of multisize feature for banner ad
-* Support of Header-Biding via DFP for Banner
-* Bug fixed Multiple adtype parameter in ad request
-* Added Github wiki pages for SDK features ([wiki](../../wiki))
-
-For full change log , please go to [CHANGELOG](CHANGELOG.md)
+The PubMatic iOS SDK helps application developers integrate the robust PubMatic platform to monetize their iOS app inventory. Once the SDK is integrated with an app, developers can use the PubMatic platform to control, monitor, and optimize their inventory’s financial performance.
 
 ## Integration
-PubMatic SDK supports various integration methods, please follow [Develper guide](../../wiki) to integrate SDK  to your android application
+PubMatic SDK supports various integration methods, please follow [Develper guide](../../wiki) to integrate SDK with your iOS application
 
 
 License
