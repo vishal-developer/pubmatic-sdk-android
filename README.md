@@ -9,7 +9,7 @@ PubMatic, the leading independent media technology company, focuses on helping p
 The PubMatic Android SDK helps application developers integrate the robust PubMatic platform to monetize their Android app inventory. Once the SDK is integrated with an app, developers can use the PubMatic platform to control, monitor, and optimize their inventory’s financial performance.
 
 ## Integration
-PubMatic SDK supports various integration methods, please follow [Develper guide](../../wiki) to integrate SDK with your Android application
+PubMatic SDK supports various integration methods, please follow [Developer guide](../../wiki) to integrate SDK with your Android application
 
 
 License

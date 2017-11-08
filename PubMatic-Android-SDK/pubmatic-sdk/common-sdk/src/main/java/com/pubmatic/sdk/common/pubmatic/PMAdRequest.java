@@ -41,9 +41,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
-import static com.pubmatic.sdk.common.pubmatic.PMConstants.DNT_PARAM;
-
 /**
  * Abstract class for PubMatic (SSP) channel ad requests (e.g. PMBannerAdRequest, PMNativeAdRequest etc)
  */
@@ -366,6 +363,10 @@ public abstract class PMAdRequest extends AdRequest {
 
             // Setting sdk_ver
             putPostData(PMConstants.SDK_VER_PARAM, PUBDeviceInformation.msdkVersion);
+
+            //pmZoneId
+            putPostData("pmZoneId",getPMZoneId());
+
 
             // Send KAdNetwork id if any
 //            if(mKAdNetworkId != null && !mKAdNetworkId.equals(""))
