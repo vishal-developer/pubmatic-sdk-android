@@ -1,3 +1,7 @@
+﻿##  5.3.1
+
+- Added support for pmZoneId in ad request
+
 ## 5.3.0
 - Modified SDK to mandate only two basic permissions.
 - Upgraded SDK minimum version to Android v4.4 (API Level 19)
