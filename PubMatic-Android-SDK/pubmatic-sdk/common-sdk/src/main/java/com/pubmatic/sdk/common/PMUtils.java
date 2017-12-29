@@ -26,48 +26,77 @@
  */
 package com.pubmatic.sdk.common;
 
-import android.annotation.SuppressLint;
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
+import android.net.Network;
 import android.net.NetworkInfo;
 import android.provider.Settings;
-import android.text.TextUtils;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.webkit.WebView;
 
 import java.security.MessageDigest;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 public class PMUtils {
 
     public static boolean isNetworkConnected(Context context) {
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        // Assume thisActivity is the current activity
+        if(ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_NETWORK_STATE)
+                == PackageManager.PERMISSION_GRANTED) {
 
-        return cm.getActiveNetworkInfo() != null;
+            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+
+                Network[] activeNetworks = cm.getAllNetworks();
+                for (Network n: activeNetworks) {
+                    NetworkInfo nInfo = cm.getNetworkInfo(n);
+                    if(nInfo.isConnected())
+                        return true;
+                }
+
+            } else {
+                NetworkInfo[] info = cm.getAllNetworkInfo();
+                if (info != null)
+                    for (NetworkInfo anInfo : info)
+                        if (anInfo.getState() == NetworkInfo.State.CONNECTED) {
+                            return true;
+                        }
+            }
+        }
+
+        return false;
     }
 
     public static String getNetworkType(Context context){
+        if(ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_NETWORK_STATE)
+                == PackageManager.PERMISSION_GRANTED) {
+            try {
+                ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        try {
-            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                // It requires ACCESS_NETWORK_STATE permission
+                NetworkInfo networkInfo = cm.getActiveNetworkInfo();
 
-            // It requires ACCESS_NETWORK_STATE permission
-            NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-
-            if (networkInfo != null) {
-                switch (networkInfo.getType()) {
-                    case ConnectivityManager.TYPE_MOBILE:
-                        return "cellular";
-                    case ConnectivityManager.TYPE_WIFI:
-                        return "wifi";
-                    default:
-                        return null;
+                if (networkInfo != null) {
+                    switch (networkInfo.getType()) {
+                        case ConnectivityManager.TYPE_MOBILE:
+                            return "cellular";
+                        case ConnectivityManager.TYPE_WIFI:
+                            return "wifi";
+                        default:
+                            return null;
+                    }
                 }
-            }
 
-        } catch (Exception e) {
-            Log.e("PMUtils", "ACCESS_NETWORK_STATE permission is not granted.");
+            } catch (Exception e) {
+                Log.e("PMUtils", "ACCESS_NETWORK_STATE permission is not granted.");
+            }
         }
+
         return null;
     }
 
@@ -120,4 +149,21 @@ public class PMUtils {
         }
     }
 
+    /**
+     *
+     * @return yyyy-MM-dd HH:mm:ss formate date as string
+     */
+    public static String getCurrentTimeStamp(){
+        try {
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+            String currentDateTime = dateFormat.format(new Date()); // Find todays date
+
+            return currentDateTime;
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            return null;
+        }
+    }
 }

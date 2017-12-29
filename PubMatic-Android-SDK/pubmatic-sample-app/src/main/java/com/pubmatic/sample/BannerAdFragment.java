@@ -131,6 +131,8 @@ public class BannerAdFragment extends DialogFragment implements PMBannerAdView.B
             Toast.makeText(getActivity(), "Please verify the mandatory ad request parameters", Toast.LENGTH_LONG).show();
             dismiss();
             illegalArgumentException.printStackTrace();
+        } finally {
+            adRequest = null;
         }
     }
 

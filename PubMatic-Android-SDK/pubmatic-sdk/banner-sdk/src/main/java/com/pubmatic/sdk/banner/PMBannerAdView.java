@@ -106,8 +106,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -336,8 +334,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
     // User agent used for all requests
     private String userAgent = null;
-    //No need to have location here. Can get directly from singleton.
-    private Location location;
 
     // Configuration
     private int updateInterval = 0;
@@ -378,7 +374,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
     private WebView.Handler webViewHandler = new WebViewHandler();
 
     // Updating
-//    private boolean updateOnLayout = false;
     private boolean deferredUpdate = false;
     private BannerAdDescriptor mAdDescriptor = null;
     private ScheduledFuture<?> adUpdateIntervalFuture = null;
@@ -407,6 +402,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
     private RRFormatter 	mRRFormatter 	= null;
 
     private CHANNEL mChannel;
+    private LocationDetector mLocationDetector;
 
     private void setAdRequest(AdRequest adRequest) throws IllegalArgumentException {
         if (adRequest == null) {
@@ -425,11 +421,9 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         createRRFormatter();
 
         //Start the location update if Publisher has enabled location detection
-        if(PubMaticSDK.isLocationDetectionEnabled()) {
-            location = LocationDetector.getInstance(getContext()).getLocation();
-            if(LocationDetector.getInstance(getContext()).hasObserver(locationObserver) == false) {
-                LocationDetector.getInstance(getContext()).addObserver(locationObserver);
-            }
+        if(PubMaticSDK.isLocationDetectionEnabled() && mLocationDetector==null) {
+            mLocationDetector = LocationDetector.getInstance(getContext().getApplicationContext());
+            mLocationDetector.registerForLocationUpdates();
         }
     }
 
@@ -752,10 +746,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         return false;
     }
 
-    public Location getLocation() {
-        return location;
-    }
-
     /**
      * Resets instance state to it's default (doesn't destroy configured parameters). Stops update
      * interval timer, closes internal browser if open, disables location detection.
@@ -775,11 +765,27 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
             adUpdateIntervalFuture = null;
         }
 
+        if(mLocationDetector!=null) {
+            mLocationDetector.unregisterForLocationUpdates();
+            mLocationDetector = null;
+        }
+
         closeInterstitial();
 
         closeInternalBrowser();
+        if(webView!=null) {
+            webView.destroy();
+            webView = null;
+        }
+        if(mraidTwoPartWebView!=null) {
+            mraidTwoPartWebView.destroy();
+            mraidTwoPartWebView = null;
+        }
         browserDialog = null;
         unregisterReceiver();
+        mAdRequest = null;
+
+        mRRFormatter = null;
 
     }
 
@@ -911,16 +917,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         }
     }
 
-    private Observer locationObserver = new Observer() {
-        @Override
-        public void update(Observable observable, Object data) {
-
-            if(data instanceof Location) {
-                location = (Location) data;
-            }
-        }
-    };
-
     /**
      * Removes any displayed ad content.
      */
@@ -1004,8 +1000,8 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
         // Insert the location parameter in ad request,
         // if publisher has enabled location detection
-        if(PubMaticSDK.isLocationDetectionEnabled() && location != null) {
-            mAdRequest.setLocation(location);
+        if(PubMaticSDK.isLocationDetectionEnabled() && mLocationDetector!=null) {
+            mAdRequest.setLocation(mLocationDetector.getLocation());
         }
 
         HttpRequest httpRequest = mRRFormatter.formatRequest(mAdRequest);
@@ -1333,6 +1329,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                 webView.clearView();
             }
             webView.clearHistory();
+            webView = null;
         }
 
         mAdDescriptor = null;

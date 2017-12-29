@@ -482,7 +482,7 @@ public class PMPrefetchRequest extends PMBannerAdRequest {
                     asJsonObject.put("adtype", String.valueOf(12));
 
                 asJsonObject.put("pageURL", pubDeviceInformation.mPageURL);
-                asJsonObject.put("kltstamp", pubDeviceInformation.mDeviceTimeStamp);
+                asJsonObject.put("kltstamp", PMUtils.getCurrentTimeStamp());
 
                 if (mLocation != null) {
                     String loc = mLocation.getLatitude() + "," + mLocation.getLongitude();

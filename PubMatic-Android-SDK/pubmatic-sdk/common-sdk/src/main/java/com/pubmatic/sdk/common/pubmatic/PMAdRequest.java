@@ -155,9 +155,9 @@ public abstract class PMAdRequest extends AdRequest {
         else if(mAdType == AD_TYPE.AUDIO)
             putPostData(PMConstants.AD_TYPE_PARAM, String.valueOf(14));
 
-        putPostData(PMConstants.AD_POSITION_PARAM, String.valueOf(PUBDeviceInformation.mAdPosition));
-        putPostData(PMConstants.IN_IFRAME_PARAM, String.valueOf(PUBDeviceInformation.mInIframe));
-        putPostData(PMConstants.AD_VISIBILITY_PARAM, String.valueOf(PUBDeviceInformation.mAdVisibility));
+        putPostData(PMConstants.AD_POSITION_PARAM, String.valueOf(pubDeviceInformation.mAdPosition));
+        putPostData(PMConstants.IN_IFRAME_PARAM, String.valueOf(pubDeviceInformation.mInIframe));
+        putPostData(PMConstants.AD_VISIBILITY_PARAM, String.valueOf(pubDeviceInformation.mAdVisibility));
         putPostData(PMConstants.APP_CATEGORY_PARAM, mAppCategory);
         putPostData(PMConstants.NETWORK_TYPE_PARAM, PMUtils.getNetworkType(mContext));
         if(mCoppa!=null)
@@ -167,7 +167,7 @@ public abstract class PMAdRequest extends AdRequest {
         putPostData(PMConstants.APP_DOMAIN_PARAM, mAppDomain);
         putPostData(PMConstants.STORE_URL_PARAM, mStoreURL);
         putPostData(PMConstants.APP_ID_PARAM, mAid);
-        putPostData(PMConstants.JS_PARAM, String.valueOf(PUBDeviceInformation.mJavaScriptSupport));
+        putPostData(PMConstants.JS_PARAM, String.valueOf(pubDeviceInformation.mJavaScriptSupport));
         putPostData(PMConstants.DEVICE_ORIENTATION_PARAM, String.valueOf(getDeviceOrientation(mContext)));
         putPostData(PMConstants.API_PARAM, "3::4::5");
 
@@ -362,33 +362,12 @@ public abstract class PMAdRequest extends AdRequest {
             }
 
             // Setting sdk_ver
-            putPostData(PMConstants.SDK_VER_PARAM, PUBDeviceInformation.msdkVersion);
+            putPostData(PMConstants.SDK_VER_PARAM, pubDeviceInformation.msdkVersion);
 
             //pmZoneId
-            putPostData("pmZoneId",getPMZoneId());
-
-
-            // Send KAdNetwork id if any
-//            if(mKAdNetworkId != null && !mKAdNetworkId.equals(""))
-//                putPostData(CommonConstants.PASSBACK_KAD_NETWORK, mKAdNetworkId);
-//
-//             Send last defaulted network id if any
-//            if(mLastDefaultedNetworkId != null && !mLastDefaultedNetworkId.equals(""))
-//                putPostData(CommonConstants.PASSBACK_LAST_DEFAULTED_NETWORK, mLastDefaultedNetworkId);
-//
-//             //Send defaulted campaign list
-//            if(mDefaultedCampaignList.size() > 0)
-//            {
-//                String campaignIds = "";
-//
-//                for(String campaignId : mDefaultedCampaignList)
-//                    campaignIds = campaignIds + campaignId + ",";
-//
-//                campaignIds = campaignIds.substring(0, campaignIds.length()-1);
-//
-//                putPostData(CommonConstants.PASSBACK_CAMPAIGNS, campaignIds);
-//
-//            }
+            if(getPMZoneId() != null) {
+                putPostData("pmZoneId", getPMZoneId());
+            }
 
             //Append custom parameters
 

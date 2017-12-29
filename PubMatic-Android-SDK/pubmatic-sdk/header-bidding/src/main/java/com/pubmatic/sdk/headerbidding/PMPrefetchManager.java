@@ -33,11 +33,9 @@ import android.location.Location;
 import android.text.TextUtils;
 import android.webkit.WebView;
 
-import com.pubmatic.sdk.banner.Background;
 import com.pubmatic.sdk.banner.PMBannerAdView;
 import com.pubmatic.sdk.banner.PMInterstitialAd;
 import com.pubmatic.sdk.banner.pubmatic.PMBannerAdRequest;
-import com.pubmatic.sdk.common.AdResponse;
 import com.pubmatic.sdk.common.CommonConstants;
 import com.pubmatic.sdk.common.CommonConstants.CONTENT_TYPE;
 import com.pubmatic.sdk.common.LocationDetector;
@@ -110,7 +108,8 @@ public class PMPrefetchManager implements ResponseGenerator {
 
     private PMPrefetchListener pmPreFetchListener;
 
-    private Location location;
+    // Location support
+    private LocationDetector mLocationDetector;
 
     public PMPrefetchManager(Context context, PMPrefetchListener pmPrefetchListener) {
         mContext = context;
@@ -153,10 +152,11 @@ public class PMPrefetchManager implements ResponseGenerator {
 
                     // Insert the location parameter in ad request,
                     // if publisher has enabled location detection
-                    if (PubMaticSDK.isLocationDetectionEnabled()) {
-                        location = LocationDetector.getInstance(mContext).getLocation();
-                        if (location != null)
-                            adRequest.setLocation(location);
+                    //Start the location update if Publisher has enabled location detection
+                    if(PubMaticSDK.isLocationDetectionEnabled() && mLocationDetector==null) {
+                        mLocationDetector = LocationDetector.getInstance(mContext.getApplicationContext());
+                        mLocationDetector.registerForLocationUpdates();
+                        adRequest.setLocation(mLocationDetector.getLocation());
                     }
 
                     adRequest.createRequest(mContext);
@@ -455,6 +455,11 @@ public class PMPrefetchManager implements ResponseGenerator {
             if(adDescripor.publisherHBResponse!=null)
                 adDescripor.publisherHBResponse.clear();
             adDescripor = null;
+        }
+
+        if(mLocationDetector!=null) {
+            mLocationDetector.unregisterForLocationUpdates();
+            mLocationDetector = null;
         }
 
         // Reset all PMBannerAdViews.

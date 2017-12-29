@@ -1,4 +1,10 @@
-﻿##  5.3.1
+﻿##  5.3.2
+
+- Minor bug fixes
+- Using Google Play Services for fetching Advertising Id.
+- Upgraded required Android plugin for Gradle from 2.3.3 to 3.0.1
+
+##  5.3.1
 
 - Added support for pmZoneId in ad request
 

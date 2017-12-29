@@ -5,7 +5,6 @@ import android.app.ActionBar;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,13 +16,12 @@ import android.text.Html;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.TextView;
 
 import com.pubmatic.sdk.common.PMLogger;
 import com.pubmatic.sdk.common.PubMaticSDK;
 
 public class HomeActivity extends FragmentActivity implements
-        ActionBar.TabListener, PMLogger.LogListener {
+        ActionBar.TabListener {
 
     private StringBuffer text;
     PMPagerAdapter mPMPagerAdapter;
@@ -33,15 +31,18 @@ public class HomeActivity extends FragmentActivity implements
     private int MULTIPLE_PERMISSIONS_REQUEST_CODE = 123;
     private static String[] PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
-    @Override
-    public void onLogEvent(String event, PMLogger.PMLogLevel logLevel) {
+    PMLogger.LogListener logListener = new PMLogger.LogListener() {
+        @Override
+        public void onLogEvent(String event, PMLogger.PMLogLevel logLevel) {
 
-        if(logLevel== PMLogger.PMLogLevel.Custom) {
-            if (text == null)
-                text = new StringBuffer();
-            text.append("\n" + event);
+            if(logLevel== PMLogger.PMLogLevel.Custom) {
+                if (text == null)
+                    text = new StringBuffer();
+                text.append("\n" + event);
+            }
         }
-    }
+
+    };
 
     public String getLogs() {
         return text==null? "" : text.toString();
@@ -55,7 +56,7 @@ public class HomeActivity extends FragmentActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        PMLogger.setLogListener(this);
+        PMLogger.setLogListener(logListener);
         PMLogger.setLogLevel(PMLogger.PMLogLevel.Custom);
 
         boolean isAutoLocationDetectionChecked = PubMaticPreferences.getBooleanPreference(this, PubMaticPreferences.PREFERENCE_KEY_AUTO_LOCATION_DETECTION);
@@ -166,5 +167,12 @@ public class HomeActivity extends FragmentActivity implements
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        logListener = null;
+        PMLogger.setLogListener(null);
     }
 }

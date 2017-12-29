@@ -50,8 +50,6 @@ import com.pubmatic.sdk.common.CommonConstants;
 
 public final class PUBDeviceInformation {
 
-	private static Context mApplicationContext = null;
-
 	public String mDeviceMake = null;
 	public String mDeviceModel = null;
 	public String mDeviceOSName = null;
@@ -64,20 +62,18 @@ public final class PUBDeviceInformation {
 	public String mPageURL = null;
 
 	public String mDeviceCountryCode = null;
-	//public String mDeviceIpAddress = null;
 	public String mDeviceUserAgent = null;
 	public String mCarrierName = null;
 	public String mDeviceAcceptLanguage = null;
 	public String mDeviceScreenResolution = null;
 
-    public String mDeviceTimeStamp = "";
 	public double mDeviceTimeZone = 0.0;
 	// Hard Coded Values
-	public static int mJavaScriptSupport = DeviceConstants.mPubDeviceJavaScriptSupport;
-	public static int mAdVisibility = DeviceConstants.mAdVisibility;
-	public static int mInIframe = DeviceConstants.mInIframe;
-	public static final String mAdPosition = DeviceConstants.mAdPosition;
-	public static final String msdkVersion = CommonConstants.SDK_VERSION;
+	public int mJavaScriptSupport = 1;
+	public int mAdVisibility = 0;
+	public int mInIframe = 0;
+	public final String mAdPosition = "-1x-1";
+	public final String msdkVersion = CommonConstants.SDK_VERSION;
 	private static PUBDeviceInformation instance = null;
 
 	/**
@@ -85,16 +81,16 @@ public final class PUBDeviceInformation {
 	 */
 	private PUBDeviceInformation(Context context) {
 		// Get the application context
-		mApplicationContext = context;
+
 
 		// Get the device ODIN number
 		mDeviceMake = Build.MANUFACTURER;
 		mDeviceModel = Build.MODEL;
-		mDeviceOSName = DeviceConstants.mDeviceOsName;
+		mDeviceOSName = "Android";//DeviceConstants.mDeviceOsName;
 		mDeviceOSVersion = Build.VERSION.RELEASE;
 
 		// Get the device screen resolution
-		WindowManager window = (WindowManager) mApplicationContext
+		WindowManager window = (WindowManager) context
 				.getSystemService(Context.WINDOW_SERVICE);
 		Display display = window.getDefaultDisplay();
 		mDeviceScreenResolution = display.getWidth() + "x"
@@ -105,7 +101,7 @@ public final class PUBDeviceInformation {
 		mDeviceTimeZone = (double) cal.getTimeZone().getRawOffset() / 3600000;
 
 		// Get the user agent string
-		WebView webView = new WebView(mApplicationContext);
+		WebView webView = new WebView(context);
 		mDeviceUserAgent = webView.getSettings().getUserAgentString();
 		webView = null;
 
@@ -128,13 +124,13 @@ public final class PUBDeviceInformation {
 		}
 
 		// Get the application name and version number
-		PackageManager manager = mApplicationContext.getPackageManager();
+		PackageManager manager = context.getPackageManager();
 		PackageInfo info;
 		try {
-			info = manager.getPackageInfo(mApplicationContext.getPackageName(),
+			info = manager.getPackageInfo(context.getPackageName(),
 					0);
 			mApplicationName = info.applicationInfo.loadLabel(manager).toString();
-			mPackageName = mApplicationContext.getPackageName();
+			mPackageName = context.getPackageName();
 			mApplicationVersion = info.versionName;
 			//mPageURL = mApplicationName + "_" + mApplicationVersion;
 		} catch (Exception e) {
@@ -143,10 +139,6 @@ public final class PUBDeviceInformation {
 			info = null;
 			manager = null;
 		}
-
-		//mDeviceIpAddress = getDeviceIpAddress();
-
-        mDeviceTimeStamp = getCurrentTimeStamp();
 	}
 
 	// Return the same instance
@@ -157,42 +149,4 @@ public final class PUBDeviceInformation {
 		return instance;
 	}
 
-	@Deprecated
-	private synchronized static String getDeviceIpAddress() {
-		/*WifiManager wifiManager = (WifiManager) mApplicationContext
-				.getSystemService(Context.WIFI_SERVICE);
-		if (wifiManager != null) {
-			try {
-				//It requires ACCESS_WIFI_STATE permission
-				WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-				if (wifiInfo != null) {
-					String strIpAdd = Formatter.formatIpAddress(wifiInfo
-							.getIpAddress());
-					return strIpAdd;
-				}
-			} catch (SecurityException e) {
-				Log.e(TAG, "Unable to get IP address using WiFiManager.");
-			}
-			return null;
-		}*/
-		return null;
-	}
-
-	/**
-	 *
-	 * @return yyyy-MM-dd HH:mm:ss formate date as string
-	 */
-	private static String getCurrentTimeStamp(){
-		try {
-
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-			String currentDateTime = dateFormat.format(new Date()); // Find todays date
-
-			return currentDateTime;
-		} catch (Exception e) {
-			e.printStackTrace();
-
-			return null;
-		}
-	}
 }

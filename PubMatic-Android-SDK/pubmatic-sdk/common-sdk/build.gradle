@@ -3,8 +3,8 @@ apply plugin: 'com.github.dcendents.android-maven'
 group='com.github.pm-library'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.0'
+    compileSdkVersion 26
+    buildToolsVersion '26.0.2'
 
     defaultConfig {
         minSdkVersion 19
@@ -40,6 +40,7 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
+    compile 'com.google.android.gms:play-services-ads:11.8.0'
 }
 
 // Task to delete the old jar

@@ -35,8 +35,6 @@ import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
 
 import org.json.JSONObject;
 
@@ -128,7 +126,7 @@ public final class PMNativeAd {
 	protected RRFormatter 		mRRFormatter 	= null;
 
     // Location support
-    private Location location;
+    private LocationDetector mLocationDetector;
 
 
     protected void setAdrequest(AdRequest adRequest) {
@@ -139,11 +137,9 @@ public final class PMNativeAd {
         setAdRequest(adRequest);
 
         //Start the location update if Publisher has enabled location detection
-        if(PubMaticSDK.isLocationDetectionEnabled() && mContext!=null) {
-            location = LocationDetector.getInstance(mContext).getLocation();
-            if(LocationDetector.getInstance(mContext).hasObserver(locationObserver) == false) {
-                LocationDetector.getInstance(mContext).addObserver(locationObserver);
-            }
+        if(PubMaticSDK.isLocationDetectionEnabled() && mLocationDetector==null) {
+            mLocationDetector = LocationDetector.getInstance(mContext.getApplicationContext());
+            mLocationDetector.registerForLocationUpdates();
         }
 
     }
@@ -304,8 +300,9 @@ public final class PMNativeAd {
         // Insert the location parameter in ad request,
         // if publisher has enabled location detection
         // and does not provid location
-        if(PubMaticSDK.isLocationDetectionEnabled() && location != null)
-            mAdRequest.setLocation(location);
+        if(PubMaticSDK.isLocationDetectionEnabled() && mLocationDetector!=null) {
+            mAdRequest.setLocation(mLocationDetector.getLocation());
+        }
 
         // Make a fresh adRequest
         mAdRequest.setUserAgent(mUserAgent);
@@ -495,20 +492,6 @@ public final class PMNativeAd {
         }
     }
 
-    public Location getLocation() {
-        return location;
-    }
-
-    private Observer locationObserver = new Observer() {
-        @Override
-        public void update(Observable observable, Object data) {
-
-            if(data instanceof Location) {
-                location = (Location) data;
-            }
-        }
-    };
-
     public void reset() {
 
         mNativeAdDescriptor = null;
@@ -525,6 +508,12 @@ public final class PMNativeAd {
             mBrowserDialog.dismiss();
             mBrowserDialog = null;
         }
+
+        if(mLocationDetector!=null) {
+            mLocationDetector.unregisterForLocationUpdates();
+            mLocationDetector = null;
+        }
+
         mListener = null;
     }
 
