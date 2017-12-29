@@ -1,20 +1,12 @@
 package com.pubmatic.sample;
 
-import android.Manifest;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -29,13 +21,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.pubmatic.sdk.common.PMLogger;
 
 import java.io.Serializable;
+import java.lang.ref.WeakReference;
 import java.util.LinkedHashMap;
-import java.util.List;
 
-import static com.pubmatic.sdk.banner.mraid.Consts.PlacementType.Interstitial;
 
 /**
  * This fragment loads 'mSettings' object in memory from Settings.json file in asset folder.
@@ -193,6 +183,8 @@ public class HomeFragment extends Fragment {
         //editText.setOnFocusChangeListener(onSettingFocusChangedListener);
         editText.getBackground().setColorFilter(getResources().getColor(android.R.color.holo_blue_dark), PorterDuff.Mode.SRC_IN);
         editText.setInputType(InputType.TYPE_CLASS_TEXT);
+
+        final WeakReference<LinkedHashMap<String, LinkedHashMap<String, String>>> weakSettings = new WeakReference<LinkedHashMap<String, LinkedHashMap<String, String>>>(mSettings);
         editText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count,
@@ -207,7 +199,7 @@ public class HomeFragment extends Fragment {
                 String headerKey = tag.split(":")[0];
                 String settingKey = tag.split(":")[1];
 
-                mSettings.get(headerKey).put(settingKey, value);
+                weakSettings.get().get(headerKey).put(settingKey, value);
             }
             @Override
             public void afterTextChanged(Editable newText) {
@@ -315,7 +307,7 @@ public class HomeFragment extends Fragment {
                         bannerAdDialogFragment.show(getActivity().getFragmentManager(), "BannerAdFragment");
                     }
                     else
-                        Toast.makeText(getActivity(), "Please enter pubId, siteId and adId", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity().getApplicationContext(), "Please enter pubId, siteId and adId", Toast.LENGTH_LONG).show();
                 }
             }
             else if(mAdType == ConfigurationManager.AD_TYPE.INTERSTITIAL)
@@ -333,7 +325,7 @@ public class HomeFragment extends Fragment {
                         interstitialAdFragment.show(getActivity().getFragmentManager(), "interstitialAdFragment");
                     }
                     else
-                        Toast.makeText(getActivity(), "Please enter pubId, siteId and adId", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity().getApplicationContext(), "Please enter pubId, siteId and adId", Toast.LENGTH_LONG).show();
                 }
             }
             else if(mAdType == ConfigurationManager.AD_TYPE.NATIVE)
@@ -351,7 +343,7 @@ public class HomeFragment extends Fragment {
                         nativeAdFragment.show(getActivity().getFragmentManager(), "NativeAdFragment");
                     }
                     else
-                        Toast.makeText(getActivity(), "Please enter pubId, siteId and adId", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity().getApplicationContext(), "Please enter pubId, siteId and adId", Toast.LENGTH_LONG).show();
                 }
             }
         }

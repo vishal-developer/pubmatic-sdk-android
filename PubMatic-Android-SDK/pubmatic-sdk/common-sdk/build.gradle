@@ -40,7 +40,7 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile 'com.google.android.gms:play-services-ads:11.8.0'
+    compile 'com.android.support:support-compat:26.1.0'
 }
 
 // Task to delete the old jar

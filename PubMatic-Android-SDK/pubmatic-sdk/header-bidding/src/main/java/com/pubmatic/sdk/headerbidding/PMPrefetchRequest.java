@@ -355,6 +355,8 @@ public class PMPrefetchRequest extends PMBannerAdRequest {
             } else {
                 String androidId = PMUtils.getUdidFromContext(mContext);
 
+                adInfo = null;
+
                 switch (mHashing)
                 {
                     case SHA1:
@@ -552,6 +554,7 @@ public class PMPrefetchRequest extends PMBannerAdRequest {
                 }
                 asJsonObject.put(PMConstants.UDID_TYPE_PARAM, String.valueOf(com.pubmatic.sdk.headerbidding.PMConstants.ANDROID_ID));
             }
+            adInfo = null;
             //End of 'lmt' specific parameter
 
             if(getEthnicity() != null) {

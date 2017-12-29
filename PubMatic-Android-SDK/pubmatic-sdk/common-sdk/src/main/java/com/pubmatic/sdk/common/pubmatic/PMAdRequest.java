@@ -322,6 +322,8 @@ public abstract class PMAdRequest extends AdRequest {
             } else
                 putDeviceIDToAdRequest();
 
+            adInfo = null;
+
             if (getEthnicity() != null) {
                 switch (getEthnicity()) {
                     case HISPANIC:
