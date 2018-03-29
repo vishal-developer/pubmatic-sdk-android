@@ -96,8 +96,8 @@ public class PMBannerAdRequest extends PMAdRequest {
 				PMAdSize size = mMultiAdSizes[length];
 				if(size!=null) {
 					multisize.append(size.getAdWidth()+"x"+size.getAdHeight());
-					length++;
 				}
+				length++;
 				if(length!=mMultiAdSizes.length)
 					multisize.append(",");
 			}

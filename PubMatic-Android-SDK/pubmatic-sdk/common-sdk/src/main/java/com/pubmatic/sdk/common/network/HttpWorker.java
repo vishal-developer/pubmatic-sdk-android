@@ -222,9 +222,6 @@ public class HttpWorker {
 				// Uploading the body of POST request
 				if(requestMethod.equalsIgnoreCase(CommonConstants.HTTPMETHODPOST) && httpRequest.getPostData() != null) {
 					String postData = httpRequest.getPostData();
-					httpUrlConnection
-							.setFixedLengthStreamingMode(postData.toString()
-									.getBytes().length);
 
 					DataOutputStream dataOutputStream = new DataOutputStream(
 							httpUrlConnection.getOutputStream());

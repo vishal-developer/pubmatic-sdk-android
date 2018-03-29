@@ -28,6 +28,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.ConsoleMessage;
@@ -181,48 +182,44 @@ public class WebView extends android.webkit.WebView {
             view.setFocusableInTouchMode(true);
         }
 
-        @SuppressWarnings("deprecation")
         @Override
         public void onReceivedError(android.webkit.WebView view, int errorCode,
                 String description, String failingUrl) {
             super.onReceivedError(view, errorCode, description, failingUrl);
 
-            if (handler != null)
+            if (handler != null && Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
                 handler.webViewReceivedError((WebView) view, errorCode,
                                              description, failingUrl);
         }
 
-        @TargetApi(android.os.Build.VERSION_CODES.M)
         @Override
         public void onReceivedError(android.webkit.WebView view, WebResourceRequest request,
                                     WebResourceError error) {
             super.onReceivedError(view, request, error);
 
-            if(request.isForMainFrame()) {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && request.isForMainFrame()) {
 
                 if (handler != null)
                     handler.webViewReceivedError((WebView) view, request, error);
             }
         }
 
-        @SuppressWarnings("deprecation")
         @Override
         public boolean shouldOverrideUrlLoading(android.webkit.WebView view,
                 String url) {
             boolean override = false;
 
-            if (handler != null)
+            if (handler != null && Build.VERSION.SDK_INT < Build.VERSION_CODES.N)
                 override = handler.webViewShouldOverrideUrlLoading((WebView) view, url);
 
             return override;
         }
 
-        @TargetApi(android.os.Build.VERSION_CODES.M)
         @Override
         public boolean shouldOverrideUrlLoading(android.webkit.WebView view, WebResourceRequest request) {
             boolean override = super.shouldOverrideUrlLoading(view, request);
 
-            if (handler != null)
+            if (handler != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
                 override = handler.webViewShouldOverrideUrlLoading((WebView)view, request);
 
             return override;
