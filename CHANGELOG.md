@@ -1,4 +1,8 @@
-﻿##  5.3.2
+﻿##  5.3.3
+
+- Minor bug fixes
+
+##  5.3.2
 
 - Minor bug fixes
 - Upgraded required Android plugin for Gradle from 2.3.3 to 3.0.1
