@@ -228,7 +228,7 @@ public class HttpWorker {
 					if (dataOutputStream != null) {
 						// Write the content
 						dataOutputStream
-								.writeBytes(postData.toString());
+								.write(postData.getBytes("UTF-8"));
 						dataOutputStream.flush();
 						dataOutputStream.close();
 
