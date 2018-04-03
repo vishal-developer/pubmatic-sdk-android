@@ -36,9 +36,9 @@ import com.pubmatic.sdk.banner.pubmatic.PMBannerAdRequest;
 import com.pubmatic.sdk.common.AdvertisingIdClient;
 import com.pubmatic.sdk.common.CommonConstants;
 import com.pubmatic.sdk.common.PMLogger;
-import com.pubmatic.sdk.common.pubmatic.PUBDeviceInformation;
-import com.pubmatic.sdk.common.pubmatic.PMConstants;
 import com.pubmatic.sdk.common.PMUtils;
+import com.pubmatic.sdk.common.pubmatic.PMConstants;
+import com.pubmatic.sdk.common.pubmatic.PUBDeviceInformation;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -48,9 +48,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import static android.R.attr.width;
-import static java.security.AccessController.getContext;
 
 public class PMPrefetchRequest extends PMBannerAdRequest {
 
@@ -384,7 +381,7 @@ public class PMPrefetchRequest extends PMBannerAdRequest {
 
             deviceJsonObject.put("js", pubDeviceInformation.mJavaScriptSupport);
 
-            deviceJsonObject.put("ua", getUserAgent());
+            deviceJsonObject.put("ua", PUBDeviceInformation.getUserAgent(mContext));
             //DeviceIpAddress is deprecated.
             //deviceJsonObject.put("ip", pubDeviceInformation.mDeviceIpAddress);
             deviceJsonObject.put("make", pubDeviceInformation.mDeviceMake);

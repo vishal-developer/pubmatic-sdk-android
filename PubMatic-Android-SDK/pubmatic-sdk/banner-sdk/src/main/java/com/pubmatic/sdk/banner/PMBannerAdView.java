@@ -89,6 +89,7 @@ import com.pubmatic.sdk.common.network.HttpHandler;
 import com.pubmatic.sdk.common.network.HttpHandler.HttpRequestListener;
 import com.pubmatic.sdk.common.network.HttpRequest;
 import com.pubmatic.sdk.common.network.HttpResponse;
+import com.pubmatic.sdk.common.pubmatic.PUBDeviceInformation;
 import com.pubmatic.sdk.common.ui.BrowserDialog;
 
 import org.json.JSONObject;
@@ -332,9 +333,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
     final private int CloseAreaSizeDp = 50;
     final private int OrientationReset = Short.MIN_VALUE;
 
-    // User agent used for all requests
-    private String userAgent = null;
-
     // Configuration
     private int updateInterval = 0;
     private int viewVisibility = View.INVISIBLE;
@@ -423,7 +421,12 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         //Start the location update if Publisher has enabled location detection
         if(PubMaticSDK.isLocationDetectionEnabled() && mLocationDetector==null) {
             mLocationDetector = LocationDetector.getInstance(getContext().getApplicationContext());
-            mLocationDetector.registerForLocationUpdates();
+            ((Activity)getContext()).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mLocationDetector.registerForLocationUpdates();
+                }
+            });
         }
     }
 
@@ -511,16 +514,6 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 //
 //            update();
 //        }
-    }
-
-    private void initUserAgent() {
-        if (TextUtils.isEmpty(userAgent)) {
-            userAgent = getWebView().getSettings().getUserAgentString();
-
-            if (TextUtils.isEmpty(userAgent)) {
-                userAgent = CommonConstants.DEFAULT_USER_AGENT;
-            }
-        }
     }
 
     /**
@@ -974,14 +967,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         }
 
         //Fetch user-agent, if publisher has not explicitly provided
-        if(TextUtils.isEmpty(mAdRequest.getUserAgent())) {
-            initUserAgent();
-            mAdRequest.setUserAgent(userAgent);
-        } else {
-            //Set the publisher provided user-agent.
-            // It also requied for other http calls.
-            userAgent = mAdRequest.getUserAgent();
-        }
+        mAdRequest.setUserAgent(PUBDeviceInformation.getUserAgent(getContext()));
 
         // Set common width/height param to all platforms.
         // Respective AdRequest implementation will send them as per their key name.
@@ -1198,7 +1184,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                     try {
                         AdTracking.invokeTrackingUrl(CommonConstants.NETWORK_TIMEOUT_SECONDS,
                                 URLDecoder.decode(url, "UTF-8"),
-                                userAgent);
+                                PUBDeviceInformation.getUserAgent(getContext()));
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
@@ -1235,7 +1221,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                 for (String url : mAdDescriptor.getImpressionTrackers()) {
                     AdTracking.invokeTrackingUrl(CommonConstants.NETWORK_TIMEOUT_SECONDS,
                             url,
-                            userAgent);
+                            PUBDeviceInformation.getUserAgent(getContext()));
                 }
             }
             mImpressionTrackerSent = true;
@@ -1253,7 +1239,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                 for (String url : mAdDescriptor.getClickTrackers()) {
                     AdTracking.invokeTrackingUrl(CommonConstants.NETWORK_TIMEOUT_SECONDS,
                             url,
-                            userAgent);
+                            PUBDeviceInformation.getUserAgent(getContext()));
                 }
             }
             mClickTrackerSent = true;
@@ -1267,7 +1253,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
                 for (String url : mAdDescriptor.getClickTrackers()) {
                     AdTracking.invokeTrackingUrl(CommonConstants.NETWORK_TIMEOUT_SECONDS,
                             url,
-                            userAgent);
+                            PUBDeviceInformation.getUserAgent(getContext()));
                 }
             }
             mClickTrackerSent = true;
@@ -2619,7 +2605,7 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
 
             ImageRequest.create(CommonConstants.NETWORK_TIMEOUT_SECONDS,
                     url,
-                    userAgent,
+                    PUBDeviceInformation.getUserAgent(getContext()),
                     false,
                     new ImageRequest.Handler() {
                         @Override

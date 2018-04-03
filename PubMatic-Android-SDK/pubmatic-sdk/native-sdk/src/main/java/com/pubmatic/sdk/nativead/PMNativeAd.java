@@ -66,6 +66,7 @@ import com.pubmatic.sdk.common.network.HttpHandler;
 import com.pubmatic.sdk.common.network.HttpHandler.HttpRequestListener;
 import com.pubmatic.sdk.common.network.HttpRequest;
 import com.pubmatic.sdk.common.network.HttpResponse;
+import com.pubmatic.sdk.common.pubmatic.PUBDeviceInformation;
 import com.pubmatic.sdk.common.ui.BrowserDialog;
 import com.pubmatic.sdk.nativead.bean.PMNativeAssetResponse;
 
@@ -114,7 +115,6 @@ public final class PMNativeAd {
     private boolean mImpressionTrackerSent = false;
     private boolean mClickTrackerSent = false;
     private NativeRequestListener mListener = null;
-    private String mUserAgent = null;
     private boolean test = false;
     private final HashMap<String, String> mAdRequestParameters;
     private BrowserDialog mBrowserDialog = null;
@@ -139,7 +139,12 @@ public final class PMNativeAd {
         //Start the location update if Publisher has enabled location detection
         if(PubMaticSDK.isLocationDetectionEnabled() && mLocationDetector==null) {
             mLocationDetector = LocationDetector.getInstance(mContext.getApplicationContext());
-            mLocationDetector.registerForLocationUpdates();
+            ((Activity)mContext).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mLocationDetector.registerForLocationUpdates();
+                }
+            });
         }
 
     }
@@ -288,8 +293,6 @@ public final class PMNativeAd {
 
         reset();
 
-        initUserAgent();
-
         // If User has provided the location set the source as user
         Location userProvidedLocation = mAdRequest.getLocation();
         if(userProvidedLocation != null) {
@@ -305,16 +308,7 @@ public final class PMNativeAd {
         }
 
         // Make a fresh adRequest
-        mAdRequest.setUserAgent(mUserAgent);
-        //Fetch user-agent, if publisher has not explicitly provided
-//        if(TextUtils.isEmpty(mAdRequest.getUserAgent())) {
-//            initUserAgent();
-//            mAdRequest.setUserAgent(mUserAgent);
-//        } else {
-//            //Set the publisher provided user-agent.
-//            // It also requied for other http calls.
-//            mUserAgent = mAdRequest.getUserAgent();
-//        }
+        mAdRequest.setUserAgent(PUBDeviceInformation.getUserAgent(mContext));
 
         HttpRequest httpRequest = mRRFormatter.formatRequest(mAdRequest);
 
@@ -574,40 +568,18 @@ public final class PMNativeAd {
     }
 
     // Private methods start
-    private void initUserAgent() {
-        if (TextUtils.isEmpty(mUserAgent)) {
-            WebView webView = new WebView(mContext);
-            mUserAgent = webView.getSettings().getUserAgentString();
-
-            if (TextUtils.isEmpty(mUserAgent)) {
-                mUserAgent = CommonConstants.DEFAULT_USER_AGENT;
-            }
-
-            webView = null;
-        }
-    }
-
-    /**
-     * Accessor to the User-Agent header value the SDK will send to the ad network.
-     *
-     * @return
-     */
-    private String getUserAgent() {
-        return mUserAgent;
-    }
-
     private void sendImpressions(final int trackerType) {
         if (mNativeAdDescriptor != null) {
             switch (trackerType) {
                 case IMPRESSION_TRACKER:
                      AdTracking.invokeTrackingUrl(CommonConstants.NETWORK_TIMEOUT_SECONDS,
                                                   mNativeAdDescriptor.getNativeAdImpressionTrackers(),
-                                                  mUserAgent);
+                             PUBDeviceInformation.getUserAgent(mContext));
                     break;
                 case CLICK_TRACKER:
                     AdTracking.invokeTrackingUrl(CommonConstants.NETWORK_TIMEOUT_SECONDS,
                                                  mNativeAdDescriptor.getNativeAdClickTrackers(),
-                                                 mUserAgent);
+                            PUBDeviceInformation.getUserAgent(mContext));
                     break;
             }
         }

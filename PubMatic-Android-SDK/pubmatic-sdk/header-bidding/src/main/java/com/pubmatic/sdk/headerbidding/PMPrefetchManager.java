@@ -31,7 +31,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
 import android.text.TextUtils;
-import android.webkit.WebView;
 
 import com.pubmatic.sdk.banner.PMBannerAdView;
 import com.pubmatic.sdk.banner.PMInterstitialAd;
@@ -48,6 +47,7 @@ import com.pubmatic.sdk.common.ResponseGenerator;
 import com.pubmatic.sdk.common.network.HttpHandler;
 import com.pubmatic.sdk.common.network.HttpRequest;
 import com.pubmatic.sdk.common.network.HttpResponse;
+import com.pubmatic.sdk.common.pubmatic.PUBDeviceInformation;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -74,7 +74,6 @@ import java.util.concurrent.Executors;
 public class PMPrefetchManager implements ResponseGenerator {
 
     private Context mContext;
-    private String userAgent;
 
     /**
      * Listener to channel result events of a header bidding request to the publisher app.
@@ -114,10 +113,6 @@ public class PMPrefetchManager implements ResponseGenerator {
     public PMPrefetchManager(Context context, PMPrefetchListener pmPrefetchListener) {
         mContext = context;
         this.pmPreFetchListener = pmPrefetchListener;
-
-        WebView webView = new WebView(context);
-        userAgent = webView.getSettings().getUserAgentString();
-        webView = null;
     }
 
     public PMPrefetchListener getPrefetchListener() {
@@ -155,7 +150,12 @@ public class PMPrefetchManager implements ResponseGenerator {
                     //Start the location update if Publisher has enabled location detection
                     if(PubMaticSDK.isLocationDetectionEnabled() && mLocationDetector==null) {
                         mLocationDetector = LocationDetector.getInstance(mContext.getApplicationContext());
-                        mLocationDetector.registerForLocationUpdates();
+                        ((Activity)mContext).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mLocationDetector.registerForLocationUpdates();
+                            }
+                        });
                         adRequest.setLocation(mLocationDetector.getLocation());
                     }
 
@@ -282,13 +282,12 @@ public class PMPrefetchManager implements ResponseGenerator {
 
     private HttpRequest formatHeaderBiddingRequest(PMBannerAdRequest adRequest) {
         HttpRequest httpRequest = new HttpRequest(CONTENT_TYPE.URL_ENCODED);
-        httpRequest.setUserAgent(adRequest.getUserAgent());
+        httpRequest.setUserAgent(PUBDeviceInformation.getUserAgent(mContext));
         httpRequest.setConnection("close");
         httpRequest.setRequestMethod(CommonConstants.HTTPMETHODPOST);
         httpRequest.setRequestType(CommonConstants.AD_REQUEST_TYPE.PUB_BANNER);
         httpRequest.setRequestUrl(adRequest.getRequestUrl());
         httpRequest.setPostData(adRequest.getPostData());
-        httpRequest.setUserAgent(userAgent);
         return httpRequest;
     }
 

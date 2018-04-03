@@ -31,11 +31,7 @@
  */
 package com.pubmatic.sdk.common.pubmatic;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
-
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -43,9 +39,13 @@ import android.os.Build;
 import android.telephony.TelephonyManager;
 import android.view.Display;
 import android.view.WindowManager;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import com.pubmatic.sdk.common.CommonConstants;
+
+import java.util.Calendar;
+import java.util.Locale;
 
 
 public final class PUBDeviceInformation {
@@ -62,7 +62,6 @@ public final class PUBDeviceInformation {
 	public String mPageURL = null;
 
 	public String mDeviceCountryCode = null;
-	public String mDeviceUserAgent = null;
 	public String mCarrierName = null;
 	public String mDeviceAcceptLanguage = null;
 	public String mDeviceScreenResolution = null;
@@ -75,6 +74,7 @@ public final class PUBDeviceInformation {
 	public final String mAdPosition = "-1x-1";
 	public final String msdkVersion = CommonConstants.SDK_VERSION;
 	private static PUBDeviceInformation instance = null;
+	private static String sUserAgent=null;
 
 	/**
 	 * Constructor
@@ -99,11 +99,6 @@ public final class PUBDeviceInformation {
 		// Get the system time and time zone
 		Calendar cal = Calendar.getInstance();
 		mDeviceTimeZone = (double) cal.getTimeZone().getRawOffset() / 3600000;
-
-		// Get the user agent string
-		WebView webView = new WebView(context);
-		mDeviceUserAgent = webView.getSettings().getUserAgentString();
-		webView = null;
 
 		// Get the device country code using local and accept language
 		mDeviceAcceptLanguage = Locale.getDefault().toString();
@@ -149,4 +144,19 @@ public final class PUBDeviceInformation {
 		return instance;
 	}
 
+	public static String getUserAgent(final Context context) {
+		if(sUserAgent==null) {
+			((Activity)context).runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.JELLY_BEAN_MR1) {
+						sUserAgent = WebSettings.getDefaultUserAgent(context);
+					} else {
+						sUserAgent = (new WebView(context)).getSettings().getUserAgentString();
+					}
+				}
+			});
+		}
+		return sUserAgent;
+	}
 }
