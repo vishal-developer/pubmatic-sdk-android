@@ -27,37 +27,26 @@
 
 package com.pubmatic.sdk.nativead;
 
-import static com.pubmatic.sdk.common.CommonConstants.NATIVE_IMAGE_H;
-import static com.pubmatic.sdk.common.CommonConstants.NATIVE_IMAGE_W;
-import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_URL;
-
-import java.security.MessageDigest;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.json.JSONObject;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.net.Uri;
-import android.text.TextUtils;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 
 import com.pubmatic.sdk.common.AdRequest;
 import com.pubmatic.sdk.common.AdResponse;
 import com.pubmatic.sdk.common.AdResponse.Renderable;
 import com.pubmatic.sdk.common.CommonConstants;
+import com.pubmatic.sdk.common.LocationDetector;
 import com.pubmatic.sdk.common.PMError;
 import com.pubmatic.sdk.common.PMLogger;
 import com.pubmatic.sdk.common.PMLogger.PMLogLevel;
-import com.pubmatic.sdk.common.LocationDetector;
 import com.pubmatic.sdk.common.PMUtils;
 import com.pubmatic.sdk.common.PubMaticSDK;
 import com.pubmatic.sdk.common.RRFormatter;
@@ -69,6 +58,17 @@ import com.pubmatic.sdk.common.network.HttpResponse;
 import com.pubmatic.sdk.common.pubmatic.PUBDeviceInformation;
 import com.pubmatic.sdk.common.ui.BrowserDialog;
 import com.pubmatic.sdk.nativead.bean.PMNativeAssetResponse;
+
+import org.json.JSONObject;
+
+import java.security.MessageDigest;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static com.pubmatic.sdk.common.CommonConstants.NATIVE_IMAGE_H;
+import static com.pubmatic.sdk.common.CommonConstants.NATIVE_IMAGE_W;
+import static com.pubmatic.sdk.common.CommonConstants.RESPONSE_URL;
 
 /**
  * Main class used for requesting native ads. <br> Refer Sample application for example of
@@ -139,9 +139,12 @@ public final class PMNativeAd {
         //Start the location update if Publisher has enabled location detection
         if(PubMaticSDK.isLocationDetectionEnabled() && mLocationDetector==null) {
             mLocationDetector = LocationDetector.getInstance(mContext.getApplicationContext());
-            ((Activity)mContext).runOnUiThread(new Runnable() {
+
+            // Delegate in main UI thread.
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
+                    // this will run in the main thread
                     mLocationDetector.registerForLocationUpdates();
                 }
             });

@@ -31,11 +31,12 @@
  */
 package com.pubmatic.sdk.common.pubmatic;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.telephony.TelephonyManager;
 import android.view.Display;
 import android.view.WindowManager;
@@ -145,17 +146,37 @@ public final class PUBDeviceInformation {
 	}
 
 	public static String getUserAgent(final Context context) {
+
 		if(sUserAgent==null) {
-			((Activity)context).runOnUiThread(new Runnable() {
+
+			// Return the user agent from system properties only for first time
+			String ua;
+			try {
+				ua = System.getProperty("http.agent");
+			} catch(Exception e) {
+				ua = "PubMatic Android SDK v"+CommonConstants.SDK_VERSION;
+			}
+			// Delegate the UA in main thread from worker thread.
+			// It will not block the UI thread on app launch.
+			new Thread(new Runnable() {
 				@Override
 				public void run() {
-					if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.JELLY_BEAN_MR1) {
-						sUserAgent = WebSettings.getDefaultUserAgent(context);
-					} else {
-						sUserAgent = (new WebView(context)).getSettings().getUserAgentString();
-					}
+
+					new Handler(Looper.getMainLooper()).post(new Runnable() {
+						@Override
+						public void run() {
+							// this will run in the main thread
+							if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.JELLY_BEAN_MR1) {
+								sUserAgent = WebSettings.getDefaultUserAgent(context);
+							} else {
+								sUserAgent = (new WebView(context)).getSettings().getUserAgentString();
+							}
+						}
+					});
+
 				}
-			});
+			}).start();
+			return ua;
 		}
 		return sUserAgent;
 	}

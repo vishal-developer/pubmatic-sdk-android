@@ -42,11 +42,12 @@ import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.location.Location;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
-import android.os.Build;
 import android.os.AsyncTask;
+import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.text.TextUtils;
@@ -421,9 +422,12 @@ public class PMBannerAdView extends ViewGroup implements PMAdRendered {
         //Start the location update if Publisher has enabled location detection
         if(PubMaticSDK.isLocationDetectionEnabled() && mLocationDetector==null) {
             mLocationDetector = LocationDetector.getInstance(getContext().getApplicationContext());
-            ((Activity)getContext()).runOnUiThread(new Runnable() {
+
+            // Delegate in main UI thread.
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
+                    // this will run in the main thread
                     mLocationDetector.registerForLocationUpdates();
                 }
             });

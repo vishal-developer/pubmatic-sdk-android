@@ -30,6 +30,8 @@ package com.pubmatic.sdk.headerbidding;
 import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 
 import com.pubmatic.sdk.banner.PMBannerAdView;
@@ -150,9 +152,12 @@ public class PMPrefetchManager implements ResponseGenerator {
                     //Start the location update if Publisher has enabled location detection
                     if(PubMaticSDK.isLocationDetectionEnabled() && mLocationDetector==null) {
                         mLocationDetector = LocationDetector.getInstance(mContext.getApplicationContext());
-                        ((Activity)mContext).runOnUiThread(new Runnable() {
+
+                        // Delegate in main UI thread.
+                        new Handler(Looper.getMainLooper()).post(new Runnable() {
                             @Override
                             public void run() {
+                                // this will run in the main thread
                                 mLocationDetector.registerForLocationUpdates();
                             }
                         });
