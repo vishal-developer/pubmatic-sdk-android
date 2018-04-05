@@ -1,11 +1,11 @@
 package com.pubmatic.headerbiddingsample;
 
-import android.app.Activity;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.doubleclick.AppEventListener;
@@ -14,10 +14,10 @@ import com.google.android.gms.ads.doubleclick.PublisherAdView;
 import com.pubmatic.sdk.banner.PMBannerAdView;
 import com.pubmatic.sdk.common.PMError;
 import com.pubmatic.sdk.headerbidding.PMAdSize;
-import com.pubmatic.sdk.headerbidding.PMPrefetchRequest;
-import com.pubmatic.sdk.headerbidding.PMBid;
 import com.pubmatic.sdk.headerbidding.PMBannerImpression;
+import com.pubmatic.sdk.headerbidding.PMBid;
 import com.pubmatic.sdk.headerbidding.PMPrefetchManager;
+import com.pubmatic.sdk.headerbidding.PMPrefetchRequest;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -127,79 +127,80 @@ public class HeaderBiddingBannerHelper {
      */
     private void requestDFPAd(final Map<String, PMBid> hBResponse) {
 
-        ((Activity)mContext).runOnUiThread(new Runnable() {
-                          @Override
-                          public void run() {
-                              PublisherAdRequest adRequest;
-                              PublisherAdView publisherAdView;
-                              Set<PublisherAdView> adViewsSet = getAdViewsSet();
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                // this will run in the main thread
 
-                              if (hBResponse != null) {
-                                  // Loop over all those publisherAdViews that participated in Header Bidding i.e. have a valid impressionId mapped to them.
-                                  for (AdSlotInfo adSlotInfo : adSlotInfoList) {
-                                      if (adSlotInfo != null) {
-                                          publisherAdView = adSlotInfo.adView;
+                PublisherAdRequest adRequest;
+                PublisherAdView publisherAdView;
+                Set<PublisherAdView> adViewsSet = getAdViewsSet();
 
-                                          try {
-                                              String impressionId = getUniqueIdForView(adSlotInfo.adView);
+                if (hBResponse != null) {
+                    // Loop over all those publisherAdViews that participated in Header Bidding i.e. have a valid impressionId mapped to them.
+                    for (AdSlotInfo adSlotInfo : adSlotInfoList) {
+                        if (adSlotInfo != null) {
+                            publisherAdView = adSlotInfo.adView;
 
-                                              //Fetch the winning bid details for the impressionId & send to DFP
-                                              PMBid pubResponse = hBResponse.get(impressionId);
+                            try {
+                                String impressionId = getUniqueIdForView(adSlotInfo.adView);
 
-                                              if (pubResponse != null) {
+                                //Fetch the winning bid details for the impressionId & send to DFP
+                                PMBid pubResponse = hBResponse.get(impressionId);
 
-                                                  PublisherAdRequest.Builder requestBuilder = new PublisherAdRequest.Builder();
+                                if (pubResponse != null) {
 
-                                                  if (!TextUtils.isEmpty(pubResponse.getDealId())) {
-                                                      requestBuilder.addCustomTargeting(WDEAL_ID, pubResponse.getDealId());
-                                                      Log.d(TAG, "DFP custom param [" + WDEAL_ID + "] = " + pubResponse.getDealId());
-                                                  }
+                                    PublisherAdRequest.Builder requestBuilder = new PublisherAdRequest.Builder();
 
-                                                  if (!TextUtils.isEmpty(pubResponse.getImpressionId())) {
-                                                      requestBuilder.addCustomTargeting(BID_ID, pubResponse.getImpressionId());
-                                                      Log.d(TAG, "DFP custom param [" + BID_ID + "] = " + pubResponse.getImpressionId());
-                                                  }
+                                    if (!TextUtils.isEmpty(pubResponse.getDealId())) {
+                                        requestBuilder.addCustomTargeting(WDEAL_ID, pubResponse.getDealId());
+                                        Log.d(TAG, "DFP custom param [" + WDEAL_ID + "] = " + pubResponse.getDealId());
+                                    }
 
-                                                  String price = String.valueOf(pubResponse.getPrice());
+                                    if (!TextUtils.isEmpty(pubResponse.getImpressionId())) {
+                                        requestBuilder.addCustomTargeting(BID_ID, pubResponse.getImpressionId());
+                                        Log.d(TAG, "DFP custom param [" + BID_ID + "] = " + pubResponse.getImpressionId());
+                                    }
 
-                                                  if (!TextUtils.isEmpty(price)) {
-                                                      double bidPrice = Double.valueOf(price);
+                                    String price = String.valueOf(pubResponse.getPrice());
 
-                                                      if (bidPrice > 0.0d) {
-                                                          requestBuilder.addCustomTargeting(BID, price);
-                                                          requestBuilder.addCustomTargeting(BID_STATUS, "1");
-                                                          Log.d(TAG, "DFP custom param [" + BID + "] = " + price + " & [" + BID_STATUS + "] = 1");
-                                                      } else {
-                                                          requestBuilder.addCustomTargeting(BID_STATUS, "0");
-                                                          Log.d(TAG, "DFP custom param [" + BID_STATUS + "] = 0");
-                                                      }
-                                                  }
+                                    if (!TextUtils.isEmpty(price)) {
+                                        double bidPrice = Double.valueOf(price);
 
-                                                  adRequest = requestBuilder.build();
-                                                  publisherAdView.loadAd(adRequest);
-                                                  adViewsSet.remove(publisherAdView);
-                                              } else {
-                                                  adRequest = new PublisherAdRequest.Builder().build();
+                                        if (bidPrice > 0.0d) {
+                                            requestBuilder.addCustomTargeting(BID, price);
+                                            requestBuilder.addCustomTargeting(BID_STATUS, "1");
+                                            Log.d(TAG, "DFP custom param [" + BID + "] = " + price + " & [" + BID_STATUS + "] = 1");
+                                        } else {
+                                            requestBuilder.addCustomTargeting(BID_STATUS, "0");
+                                            Log.d(TAG, "DFP custom param [" + BID_STATUS + "] = 0");
+                                        }
+                                    }
 
-                                                  publisherAdView.loadAd(adRequest);
-                                                  adViewsSet.remove(publisherAdView);
-                                              }
-                                          } catch (Exception ex) {
-                                              // Do nothing. This view will send normal adRequest later.
-                                              Log.e(TAG, "Error while sending request to DFP :: " + ex.toString());
-                                          }
-                                      }
-                                  }
-                              }
+                                    adRequest = requestBuilder.build();
+                                    publisherAdView.loadAd(adRequest);
+                                    adViewsSet.remove(publisherAdView);
+                                } else {
+                                    adRequest = new PublisherAdRequest.Builder().build();
 
-                              // Send Ad Request for the remaining adViews.
-                              for (PublisherAdView ad : adViewsSet) {
-                                  adRequest = new PublisherAdRequest.Builder().build();
-                                  ad.loadAd(adRequest);
-                              }
-                          }
-                      }
-        );
+                                    publisherAdView.loadAd(adRequest);
+                                    adViewsSet.remove(publisherAdView);
+                                }
+                            } catch (Exception ex) {
+                                // Do nothing. This view will send normal adRequest later.
+                                Log.e(TAG, "Error while sending request to DFP :: " + ex.toString());
+                            }
+                        }
+                    }
+                }
+
+                // Send Ad Request for the remaining adViews.
+                for (PublisherAdView ad : adViewsSet) {
+                    adRequest = new PublisherAdRequest.Builder().build();
+                    ad.loadAd(adRequest);
+                }
+            }
+        });
     }
 
     private Set<PublisherAdView> getAdViewsSet() {
