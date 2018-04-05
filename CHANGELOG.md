@@ -1,4 +1,8 @@
-﻿##  5.3.3
+﻿##  5.3.4
+
+- Optimised ad request API to reduce load time
+
+##  5.3.3
 
 - Minor bug fixes
 
